@@ -9,7 +9,7 @@ import (
 
 // simplified ternary operator (bool ? val : 0), returns second argument, if the condition (first arg) is true, returns 0 if not
 //  I.If(true,3) // 3
-//  I.If(false,0) // 0
+//  I.If(false,3) // 0
 func If(b bool, yes int64) int64 {
 	if b {
 		return yes

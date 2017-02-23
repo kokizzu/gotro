@@ -10,6 +10,7 @@ Design Goal:
   - B - Boolean
   - C - Character (or Rune)
   - F - Floating Point
+  - L - Logging
   - M - Map
   - I - Integer
   - S - String
