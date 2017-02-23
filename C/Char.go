@@ -1,6 +1,6 @@
 package C
 
-// Character/Rune Support package
+// Character/Rune support package
 
 // check whether the character is a digit or not
 //  C.IsDigit('9') // true

@@ -1,6 +1,6 @@
 package A
 
-// Array Support package
+// Array support package
 
 // array (slice) of anything
 //  v := A.X{}
