@@ -14,4 +14,4 @@ Design Goal:
   - I - Integer
   - S - String
   - T - Time (and Date)
-  - X - Anything
+  - X - Anything (aka interface{})
