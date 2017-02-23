@@ -1,6 +1,7 @@
 package L
 
 import (
+	"fmt"
 	"github.com/davecgh/go-spew/spew"
 	"github.com/fatih/color"
 	"github.com/kokizzu/gotro/I"
@@ -17,7 +18,6 @@ var LOG *logging.Logger
 var FILE_PATH string
 var GO_PATH string
 var GO_ROOT string
-var BgRed, BgGreen (func(format string, a ...interface{}) string)
 var LOG *logging.Logger
 
 // initialize logger
@@ -34,8 +34,6 @@ func init() {
 	)
 	formatter := logging.NewBackendFormatter(backend, format)
 	logging.SetBackend(formatter)
-	BgGreen = color.New(color.BgGreen).SprintfFunc()
-	BgRed = color.New(color.BgRed).SprintfFunc()
 }
 
 // get a stacktrace as string
@@ -73,4 +71,21 @@ func IsError(err error, msg string, args ...interface{}) bool {
 	res = pretty.Formatter(err)
 	LOG.Criticalf("%# v\n    StackTrace: %s", res, str)
 	return true
+}
+
+// describe anything
+func Describe(args ...interface{}) {
+	pc, file, line, _ := runtime.Caller(1)
+	prefix := ``
+	if len(file) >= len(FILE_PATH) {
+		prefix = file[len(FILE_PATH):]
+	}
+	str := color.CyanString(prefix + `:` + I.ToStr(line) + `: `)
+	str += color.YellowString(` ` + runtime.FuncForPC(pc).Name() + "\n")
+	for _, arg := range args {
+		//res, _ := json.MarshalIndent(variable, `   `, `  `)
+		res := pretty.Formatter(arg)
+		str += fmt.Sprintf("\t%# v\n", res)
+	}
+	LOG.Debug(strings.Replace(str, `%`, `%%`, -1))
 }
