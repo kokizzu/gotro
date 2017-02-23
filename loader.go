@@ -11,6 +11,7 @@ import (
 	_ "github.com/kokizzu/gotro/S"
 	_ "github.com/kokizzu/gotro/T"
 	_ "github.com/kokizzu/gotro/X"
+	_ "github.com/kokizzu/gotro/Z"
 )
 
 func main() {
