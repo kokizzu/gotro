@@ -4,7 +4,7 @@ GotRo (lit. Gotong Royong, meaning in Indonesia: do it together, mutual cooperat
 
 Design Goal:
 - As similar as possible to Elixir's Phoenix Framework
-- Opinionated (choose the best)
+- Opinionated (choose the best dependency)
 - 1-letter supporting package (so we can use something like: I.ToS(1234) to convert `int64` to `string`), such as:
   - A - Array
   - B - Boolean
