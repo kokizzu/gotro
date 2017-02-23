@@ -3,11 +3,12 @@ package S
 // String support package
 import (
 	"encoding/json"
+	"strconv"
+	"strings"
+
 	"github.com/kokizzu/gotro/B"
 	"github.com/kokizzu/gotro/I"
 	"github.com/kokizzu/gotro/L"
-	"strconv"
-	"strings"
 )
 
 // check whether the input string (first arg) starts with a certain character (second arg) or not.
@@ -59,6 +60,17 @@ func ToLower(str string) string {
 // S.ToUpper(`bisa`) // "BISA"
 func ToUpper(str string) string {
 	return strings.ToUpper(str)
+}
+
+// Get character at specific index
+// S.CharAt("Halo", 3) // 'o'
+func CharAt(str string, index int) string {
+	for in, ch := range str {
+		if in == index {
+			return string(ch)
+		}
+	}
+	return ""
 }
 
 /*
