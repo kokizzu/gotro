@@ -73,6 +73,18 @@ func CharAt(str string, index int) string {
 	return ""
 }
 
+// Remove character at specific index
+// S.RemoveCharAt("Halo", 3) // "Hal"
+func RemoveCharAt(str string, index int) string {
+	var chars []byte
+	for in, ch := range str {
+		if index != in {
+			chars = append(chars, string(ch)...)
+		}
+	}
+	return string(chars)
+}
+
 /*
 func main() {
     // Merubah huruf pertama pada setiap kata menjadi kapital
