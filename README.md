@@ -1,5 +1,6 @@
-# Garuda
-Garuda framework is rewrite of gitlab.com/kokizzu/gokil, that uses fasthttprouter
+# GotRo
+
+GotRo (lit. Gotong Royong, meaning in Indonesia: do it together, mutual cooperation) framework is rewrite of gitlab.com/kokizzu/gokil, that uses fasthttprouter
 
 Design Goal:
 - As similar as possible to Elixir's Phoenix Framework
