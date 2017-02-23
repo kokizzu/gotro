@@ -3,9 +3,114 @@ package S
 // String support package
 import (
 	"encoding/json"
+	"github.com/kokizzu/gotro/B"
+	"github.com/kokizzu/gotro/I"
 	"github.com/kokizzu/gotro/L"
 	"strconv"
+	"strings"
 )
+
+// check whether the input string (first arg) starts with a certain character (second arg) or not.
+//  S.StartsWith(`adakah`,`ad`) // bool(true)
+//  S.StartsWith(`adakah`,`bad`) // bool(false)
+func StartsWith(str, prefix string) bool {
+	return strings.HasPrefix(str, prefix)
+}
+
+// check whether the input string (first arg) ends with a certain character (second arg) or not.
+//  S.EndsWith(`adakah`,`ah`)) // bool(true)
+//  S.EndsWith(`adakah`,`aka`)) // bool(false)
+func EndsWith(str, suffix string) bool {
+	return strings.HasSuffix(str, suffix)
+}
+
+// check whether the input string (first arg) contains a certain sub string (second arg) or not.
+//  S.Contains(`komputer`,`om`)) // bool(true)
+//  S.Contains(`komputer`,`opu`)) // bool(false)
+func Contains(str, substr string) bool {
+	return strings.Contains(str, substr)
+}
+
+// count how many specific character (first arg) that the string (second arg) contains
+//  S.Count(`komputeer`,`e`))// output int(2)
+func Count(str, substr string) int {
+	return strings.Count(str, substr)
+}
+
+// erase spaces from left and right
+//  S.Trim(` withtrim:  `) // `withtrim:`
+func Trim(str string) string {
+	return strings.TrimSpace(str)
+}
+
+// replace all substring with another substring
+//  S.Replace(`bisa`,`is`,`us`) // `busa`
+func Replace(haystack, needle, gold string) string {
+	return strings.Replace(haystack, needle, gold, -1)
+}
+
+// change the characters in string to lowercase
+//  S.ToLower(`BIsa`) // "bisa"
+func ToLower(str string) string {
+	return strings.ToLower(str)
+}
+
+// change the characters in string to uppercase
+// S.ToUpper(`bisa`) // "BISA"
+func ToUpper(str string) string {
+	return strings.ToUpper(str)
+}
+
+/*
+func main() {
+    // Merubah huruf pertama pada setiap kata menjadi kapital
+    // Change first letter for every word to uppercase
+    L.Describe(S.ToTitle(`Disa dasi`)) // output "Disa Dasi"
+}
+*/
+func ToTitle(str string) string {
+	return strings.Title(str)
+}
+
+// add single quote in the beginning and the end of string.
+//  S.Q(`coba`) // `'coba'`
+//  S.Q(`123`)  // `'123'`
+func Q(str string) string {
+	return `'` + str + `'`
+}
+
+// replace ` and give double quote (for table names)
+//  S.ZZ(`coba"`) // `"coba&quot;"`
+func ZZ(str string) string {
+	str = Trim(str)
+	str = Replace(str, `"`, `&quot;`)
+	return `"` + str + `"`
+}
+
+// give ' to boolean value
+//  S.ZB(true)  // `'true'`
+//  S.ZB(false) // `'false'`
+// boolean
+func ZB(b bool) string {
+	return `'` + B.ToS(b) + `'`
+}
+
+// give ' to int64 value
+//  S.ZI(23)) // '23'
+//  S.ZI(03)) // '3'
+func ZI(num int64) string {
+	return `'` + I.ToS(num) + `'`
+}
+
+// double quote a json string
+//  hai := `{'test':123,"bla":[1,2,3,4]}`
+//  L.Print(S.ZJ(hai))// output "{'test':123,\"bla\":[1,2,3,4]}"
+func ZJ(str string) string {
+	str = Replace(str, "\r", `\r`)
+	str = Replace(str, "\n", `\n`)
+	str = Replace(str, `"`, `\"`)
+	return `"` + str + `"`
+}
 
 // simplified ternary operator (bool ? val : 0), returns second argument, if the condition (first arg) is true, returns empty string if not
 //  S.If(true,`a`) // `a`

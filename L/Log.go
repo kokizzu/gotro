@@ -1,5 +1,7 @@
 package L
 
+// Logging support package
+
 import (
 	"fmt"
 	"github.com/davecgh/go-spew/spew"
@@ -12,13 +14,11 @@ import (
 	"strings"
 )
 
-// Logging support package
 var LOG *logging.Logger
 
 var FILE_PATH string
 var GO_PATH string
 var GO_ROOT string
-var LOG *logging.Logger
 
 // initialize logger
 func init() {
@@ -73,6 +73,23 @@ func IsError(err error, msg string, args ...interface{}) bool {
 	return true
 }
 
+// print error
+func CheckIf(is_err bool, msg string, args ...interface{}) bool {
+	if !is_err {
+		return false
+	}
+	pc, file, line, _ := runtime.Caller(1)
+	str := color.MagentaString(file[len(FILE_PATH):] + `:` + I.ToStr(line) + `: `)
+	str += color.YellowString(` ` + runtime.FuncForPC(pc).Name() + `: `)
+	LOG.Errorf(str+msg, args...)
+	res := pretty.Formatter(is_err)
+	LOG.Errorf("%# v\n", res)
+	str = StackTrace(3)
+	res = pretty.Formatter(is_err)
+	LOG.Criticalf("%# v\n    StackTrace: %s", res, str)
+	return true
+}
+
 // describe anything
 func Describe(args ...interface{}) {
 	pc, file, line, _ := runtime.Caller(1)
@@ -88,4 +105,12 @@ func Describe(args ...interface{}) {
 		str += fmt.Sprintf("\t%# v\n", res)
 	}
 	LOG.Debug(strings.Replace(str, `%`, `%%`, -1))
+}
+
+// replacement for fmt.Println, gives line number
+func Print(any ...interface{}) {
+	_, file, line, _ := runtime.Caller(1)
+	str := color.CyanString(file[len(FILE_PATH):] + `:` + I.ToStr(line) + `: `)
+	LOG.Info(strings.Replace(str, `%`, `%%`, -1))
+	fmt.Println(any...)
 }

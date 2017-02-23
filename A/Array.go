@@ -1,5 +1,10 @@
 package A
 
+import (
+	"encoding/json"
+	"github.com/kokizzu/gotro/L"
+)
+
 // Array support package
 
 // array (slice) of anything
@@ -14,3 +19,12 @@ type X []interface{}
 //    `bar`: `yay`,
 //  })
 type MSX []map[string]interface{}
+
+// convert map array of string to JSON string type
+//  m:= []interface{}{123,`abc`}
+//  L.Print(A.ToJson(m)) // [123,"abc"]
+func ToJson(arr []interface{}) string {
+	str, err := json.Marshal(arr)
+	L.IsError(err, `Slice.ToJson failed`, arr)
+	return string(str)
+}

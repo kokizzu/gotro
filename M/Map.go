@@ -2,13 +2,11 @@ package M
 
 import (
 	"bytes"
-	"encoding/gob"
 	"encoding/json"
 	"fmt"
 	"github.com/kokizzu/gotro/I"
 	"github.com/kokizzu/gotro/L"
 	"github.com/kokizzu/gotro/S"
-	"gitlab.com/kokizzu/gokil/M"
 	"sort"
 	"strconv"
 	"strings"
@@ -658,4 +656,13 @@ func (hash IX) ToSX() SX {
 		res[I.ToS(k)] = v
 	}
 	return res
+}
+
+// convert map[string]interface{} to json
+//  m :=  map[string]interface{}{`buah`:123,`angka`:`dia`}
+//  M.ToJson(m) // {"angka":"dia","buah":123}
+func ToJson(hash map[string]interface{}) string {
+	str, err := json.Marshal(hash)
+	L.IsError(err, `M.ToJson failed`, hash)
+	return string(str)
 }

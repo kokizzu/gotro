@@ -2,10 +2,10 @@ package T
 
 // Time support package
 import (
-	"crypto/rand"
 	"github.com/kokizzu/gotro/F"
 	"github.com/kokizzu/gotro/I"
 	"github.com/kokizzu/gotro/L"
+	"math/rand"
 	"time"
 )
 
