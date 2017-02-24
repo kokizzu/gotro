@@ -62,19 +62,21 @@ func ToUpper(str string) string {
 	return strings.ToUpper(str)
 }
 
-// Get character at specific index
-// S.CharAt("Halo", 3) // 'o'
+// get character at specific index, utf-8 safe
+//  S.CharAt(`Halo 世界`, 5) // `世` // utf-8 example, if characters not shown, it's probably your font/editor/plugin
+//  S.CharAt(`Halo`, 3) // `o`
 func CharAt(str string, index int) string {
 	for in, ch := range str {
 		if in == index {
 			return string(ch)
 		}
 	}
-	return ""
+	return ``
 }
 
-// Remove character at specific index
-// S.RemoveCharAt("Halo", 3) // "Hal"
+// remove character at specific index, utf-8 safe
+//  S.RemoveCharAt(`Halo 世界`, 5) // `Halo 界` --> utf-8 example, if characters not shown, it's probably your font/editor/plugin
+//  S.RemoveCharAt(`Halo`, 3) // `Hal`
 func RemoveCharAt(str string, index int) string {
 	var chars []byte
 	for in, ch := range str {
@@ -85,13 +87,8 @@ func RemoveCharAt(str string, index int) string {
 	return string(chars)
 }
 
-/*
-func main() {
-    // Merubah huruf pertama pada setiap kata menjadi kapital
-    // Change first letter for every word to uppercase
-    L.Describe(S.ToTitle(`Disa dasi`)) // output "Disa Dasi"
-}
-*/
+// Change first letter for every word to uppercase
+//  S.ToTitle(`Disa dasi`)) // output "Disa Dasi"
 func ToTitle(str string) string {
 	return strings.Title(str)
 }
