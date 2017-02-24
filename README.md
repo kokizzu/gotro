@@ -1,7 +1,7 @@
 # GotRo
 
 GotRo is abbreviation of `Gotong Royong`. the meaning in `Indonesia`: "do it together", "mutual cooperation". 
-This Framework is rewrite of [gokil](gitlab.com/kokizzu/gokil), that previously use [fasthttp](https://github.com/julienschmidt/httprouter) but now rewritten using [fasthttprouter](github.com/buaazp/fasthttprouter)
+This Framework is rewrite of [gokil](gitlab.com/kokizzu/gokil), that previously use [fasthttp](//github.com/julienschmidt/httprouter) but now rewritten using [fasthttprouter](github.com/buaazp/fasthttprouter)
 
 ## Design Goal
 - As similar as possible to Elixir's Phoenix Framework
@@ -30,30 +30,32 @@ This Framework is rewrite of [gokil](gitlab.com/kokizzu/gokil), that previously 
 
 These dependencies automatically installed when you run `go get`
 
-- [Terminal Color](//github.com/fatih/color)
-- [Pretty Print Variables](//github.com/kr/pretty)
+- [FastHttp](//github.com/valyala/fasthttp)
 - [Logging](//github.com/op/go-logging)
-- [FastHttp Library](//github.com/valyala/fasthttp)
+- [Pretty Print Variables](//github.com/kr/pretty)
+- [Terminal Color](//github.com/fatih/color)
 
 ## TODO
 
 - Add httprouter to `W`, add logging, add panic handling (stacktrace censoring), add session loading
 - List most of Phoenix features and add it to `W`
+- [Review](//goo.gl/tBkfse) which databases we must support primarily for `D` (drop ones that hard to install), that can be silver bullet for extreme cases (high-write: sharding/partitioning and multi-master replication or auto-failover; full-text-search) 
 - Review which databases we must support primarily for `D` (drop ones that hard to install), that can be silver bullet for extreme cases (high-write: sharding/partitioning and multi-master replication or auto-failover; full-text-search) 
-  - [ArangoDB](https://www.arangodb.com/)
-  - [ChronicleMap](http://chronicle.software/products/chronicle-map/)
-  - [Couchbase](http://couchbase.com)
-  - [CouchDB](http://couchdb.apache.org/)
-  - [CockroachDB](https://www.cockroachlabs.com/)
-  - [Ellasandra](https://github.com/strapdata/elassandra)
-  - [GunDB](http://gundb.github.io)
-  - [Impala](http://impala.apache.org/)
-  - [InfluxDB](https://docs.influxdata.com/influxdb)
-  - [OrientDB](http://orientdb.com)
-  - [PostgreXL](http://www.postgres-xl.org/)
-  - [Riak](http://docs.basho.com/riak)
-  - [ScyllaDB](http://www.scylladb.com)
-  - [Titan](http://titan.thinkaurelius.com/)
-- Add [Example function](https://blog.golang.org/examples) and more documentation 
+  - [ArangoDB](//www.arangodb.com/)
+  - [Cassandra](//cassandra.apache.org)
+  - [Couchbase](//couchbase.com)
+  - [CouchDB](//couchdb.apache.org/)
+  - [CockroachDB](//www.cockroachlabs.com/)
+  - [GunDB](//gundb.github.io)
+  - [Impala](//impala.apache.org/)
+  - [InfluxDB](//docs.influxdata.com/influxdb)
+  - [MariaDB](//mariadb.org)
+  - [OrientDB](//orientdb.com)
+  - [PostgreXL](//www.postgres-xl.org/)
+  - [Riak](//docs.basho.com/riak)
+  - [ScyllaDB](//www.scylladb.com)
+- Review which queuing service we're gonna use ([NSQ](//nsq.io), [Redis](//redis.io)), requirement: must support persistence
+- Add [ExampleXxx function](//blog.golang.org/examples), getting started and more documentation 
 - Create example API App
-- Write a book for about [Advanced Programming](https://goo.gl/X4BIlM), [database systems](https://goo.gl/uR8iVB) and [web programming](https://goo.gl/Bl3fPE)
+- Add graceful restart (zero downtime deployment): [grace](//github.com/facebookgo/grace) or [endless](//github.com/fvbock/endless)
+- Write a book for about [Advanced Programming](//goo.gl/X4BIlM), [Database Systems](//goo.gl/uR8iVB) and [Web Programming](//goo.gl/Bl3fPE) that includes this framework
