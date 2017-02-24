@@ -26,6 +26,15 @@ This Framework is rewrite of [gokil](gitlab.com/kokizzu/gokil), that previously 
 
 `go get -u -v github.com/kokizzu/gotro`
 
+## Dependencies
+
+These dependencies automatically installed when you run `go get`
+
+- [Terminal Color](//github.com/fatih/color)
+- [Pretty Print Variables](//github.com/kr/pretty)
+- [Logging](//github.com/op/go-logging)
+- [FastHttp Library](//github.com/valyala/fasthttp)
+
 ## TODO
 
 - Add httprouter to `W`, add logging, add panic handling (stacktrace censoring), add session loading

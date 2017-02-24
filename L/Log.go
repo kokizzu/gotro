@@ -4,7 +4,6 @@ package L
 
 import (
 	"fmt"
-	"github.com/davecgh/go-spew/spew"
 	"github.com/fatih/color"
 	"github.com/kokizzu/gotro/I"
 	"github.com/kr/pretty"
@@ -26,7 +25,6 @@ func init() {
 	FILE_PATH = file[:4+strings.Index(file, `/src/`)]
 	GO_PATH = os.Getenv(`GOPATH`)
 	GO_ROOT = os.Getenv(`GOROOT`)
-	spew.Config.Indent = `  `
 	LOG = logging.MustGetLogger(`[GotRo]`)
 	backend := logging.NewLogBackend(os.Stderr, ``, 0)
 	format := logging.MustStringFormatter(

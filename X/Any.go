@@ -12,7 +12,6 @@ import (
 	"github.com/kokizzu/gotro/L"
 	"github.com/kokizzu/gotro/M"
 	"github.com/kokizzu/gotro/S"
-	"gitlab.com/kokizzu/gokil/K"
 	"strconv"
 	"strings"
 	"time"
@@ -170,7 +169,7 @@ func ToS(any interface{}) string {
 	case fmt.Stringer:
 		return v.String()
 	default:
-		return K.ToJson5(v)
+		return ToJson5(v)
 	}
 	return ``
 }
@@ -441,7 +440,7 @@ func ToJson5(any interface{}) string {
 		return A.ToJson(orig)
 	default:
 		str, err := json.Marshal(any)
-		L.IsError(err, `K.ToJson5 failed`, any)
+		L.IsError(err, `X.ToJson5 failed`, any)
 		return string(str)
 	}
 	// TODO: add more types (M/A) here, do not EVER TRY to use reflection in this case
@@ -458,13 +457,13 @@ func ToJson5(any interface{}) string {
 //  // ]
 func ToJsonPretty(any interface{}) string {
 	res, err := json.MarshalIndent(any, ``, `  `)
-	L.IsError(err, `K.ToJsonPretty failed`, any)
+	L.IsError(err, `X.ToJsonPretty failed`, any)
 	return string(res)
 }
 
 // convert to standard json text
 func ToJson(any interface{}) string {
 	res, err := json.Marshal(any)
-	L.IsError(err, `K.ToJson failed`, any)
+	L.IsError(err, `X.ToJson failed`, any)
 	return string(res)
 }
