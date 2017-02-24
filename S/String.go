@@ -32,6 +32,22 @@ func Contains(str, substr string) bool {
 	return strings.Contains(str, substr)
 }
 
+// compare two input string (first arg) equal with another input string (second arg).
+//  S.Equals(`komputer`,`komputer`)) // bool(true)
+//  S.Equals(`komputer`,`Komputer`)) // bool(false)
+func Equals(strFirst, strSecond string) bool {
+	if len(strFirst) != len(strSecond) {
+		return false
+	}
+
+	for a := 0; a < len(strSecond); a++ {
+		if strFirst[a] != strSecond[a] {
+			return false
+		}
+	}
+	return true
+}
+
 // count how many specific character (first arg) that the string (second arg) contains
 //  S.Count(`komputeer`,`e`))// output int(2)
 func Count(str, substr string) int {
