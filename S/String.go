@@ -6,10 +6,11 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/kokizzu/gotro/B"
+	"crypto/sha256"
+	"encoding/base64"
 	"github.com/kokizzu/gotro/I"
 	"github.com/kokizzu/gotro/L"
-	"math/rand"
+	"regexp"
 )
 
 // check whether the input string (first arg) starts with a certain character (second arg) or not.
@@ -101,46 +102,6 @@ func ToTitle(str string) string {
 	return strings.Title(str)
 }
 
-// add single quote in the beginning and the end of string.
-//  S.Q(`coba`) // `'coba'`
-//  S.Q(`123`)  // `'123'`
-func Q(str string) string {
-	return `'` + str + `'`
-}
-
-// replace ` and give double quote (for table names)
-//  S.ZZ(`coba"`) // `"coba&quot;"`
-func ZZ(str string) string {
-	str = Trim(str)
-	str = Replace(str, `"`, `&quot;`)
-	return `"` + str + `"`
-}
-
-// give ' to boolean value
-//  S.ZB(true)  // `'true'`
-//  S.ZB(false) // `'false'`
-// boolean
-func ZB(b bool) string {
-	return `'` + B.ToS(b) + `'`
-}
-
-// give ' to int64 value
-//  S.ZI(23)) // '23'
-//  S.ZI(03)) // '3'
-func ZI(num int64) string {
-	return `'` + I.ToS(num) + `'`
-}
-
-// double quote a json string
-//  hai := `{'test':123,"bla":[1,2,3,4]}`
-//  L.Print(S.ZJ(hai))// output "{'test':123,\"bla\":[1,2,3,4]}"
-func ZJ(str string) string {
-	str = Replace(str, "\r", `\r`)
-	str = Replace(str, "\n", `\n`)
-	str = Replace(str, `"`, `\"`)
-	return `"` + str + `"`
-}
-
 // simplified ternary operator (bool ? val : 0), returns second argument, if the condition (first arg) is true, returns empty string if not
 //  S.If(true,`a`) // `a`
 //  S.If(false,`a`) // ``
@@ -152,13 +113,36 @@ func If(b bool, yes string) string {
 }
 
 // ternary operator (bool ? val1 : val2), returns second argument if the condition (first arg) is true, third argument if not
-//  I.IfElse(true,`a`,`b`) // `a`
-//  I.IfElse(false,`a`,`b`) // `b`
+//  S.IfElse(true,`a`,`b`) // `a`
+//  S.IfElse(false,`a`,`b`) // `b`
 func IfElse(b bool, yes, no string) string {
 	if b {
 		return yes
 	}
 	return no
+}
+
+// coalesce, return first non-empty string
+//  S.IfEmpty(``,`2`) // `2`
+//  S.IfEmpty(`1`,`2`) // `1`
+func IfEmpty(str1, str2 string) string {
+	if str1 != `` {
+		return str1
+	}
+	return str2
+}
+
+// coalesce, return first non-empty string
+//  S.Coalesce(`1`,`2`) // `1`
+//  S.Coalesce(``,`2`) // `2`
+//  S.Coalesce(``,``,`3`) // `3`
+func Coalesce(strs ...string) string {
+	for _, str := range strs {
+		if str != `` {
+			return str
+		}
+	}
+	return ``
 }
 
 // convert string to int64, returns 0 and silently print error if not valid
@@ -235,64 +219,51 @@ func JsonAsArr(str string) (res []interface{}, ok bool) {
 	return
 }
 
-const i2c_cb63 = `-0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz`
-
-var c2i_cb63 map[rune]int64
-
-func init() {
-	c2i_cb63 = map[rune]int64{}
-	for i, ch := range i2c_cb63 {
-		c2i_cb63[ch] = int64(i)
-	}
+// split a string (first arg) by characters (second arg) into array of strings (output).
+//  S.Split(`biiiissssa`,`i`) // output []string{"b", "", "", "", "ssssa"}
+func Split(str, sep string) []string {
+	return strings.Split(str, sep)
 }
 
-// convert integer to custom base-63 encoding that lexicographically correct, positive integer only
-//  0       -
-//  1..10   0..9
-//  11..36  A..Z
-//  37      _
-//  38..63  a..z
-//  S.EncodeCB63(11) // `A`
-//  S.EncodeCB63(1)) // `1`
-func EncodeCB63(id int64, min_len int) string {
-	if min_len < 1 {
-		min_len = 1
-	}
-	str := make([]byte, 0, 12)
-	for id > 0 {
-		mod := rune(id % 64)
-		str = append(str, i2c_cb63[mod])
-		id /= 64
-	}
-	for len(str) < min_len {
-		str = append(str, i2c_cb63[0])
-	}
-	l := len(str)
-	for i, j := 0, l-1; i < l/2; i, j = i+1, j-1 {
-		str[i], str[j] = str[j], str[i]
-	}
-	return string(str)
+// append padStr to left until length is lenStr
+func PadLeft(s string, padStr string, lenStr int) string {
+	var padCount int
+	padCount = I.MaxOf(lenStr-len(s), 0)
+	return strings.Repeat(padStr, padCount) + s
 }
 
-// convert custom base-63 encoding to int64
-func DecodeCB63(str string) (int64, bool) {
-	res := int64(0)
-	for _, ch := range str {
-		res *= 64
-		val, ok := c2i_cb63[ch]
-		if L.CheckIf(!ok, `Invalid character for CB63: `+string(ch)) {
-			return -1, false
+// append padStr to right until length is lenStr
+func PadRight(s string, padStr string, lenStr int) string {
+	var padCount int
+	padCount = I.MaxOf(lenStr-len(s), 0)
+	return s + strings.Repeat(padStr, padCount)
+}
+
+// hash password with sha256 (without salt)
+func HashPassword(pass string) string {
+	res1 := []byte(pass)
+	res2 := sha256.Sum256(res1)
+	res3 := res2[:]
+	return base64.StdEncoding.EncodeToString(res3)
+}
+
+// return empty string if str is not a valid email
+func ValidateEmail(str string) string {
+	res := strings.Split(str, `@`)
+	if len(res) != 2 {
+		return ``
+	}
+	if (strings.Trim(res[0], `abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!#$%&'*+-/=?^_{|}~.`)) == `` {
+		if strings.Trim(res[1], `abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-.`) == `` {
+			return str
 		}
-		res += val
 	}
-	return res, true
+	return ``
 }
 
-// random CB63
-func RandomCB63(len int64) string {
-	res := ``
-	for z := int64(0); z < len; z++ {
-		res += EncodeCB63(rand.Int63(), 11)
-	}
-	return res
+var re_non_phone = regexp.MustCompile(`[^-+\d,]+`)
+
+// remove invalid characters of a phone number
+func ValidatePhone(str string) string {
+	return re_non_phone.ReplaceAllString(str, ``)
 }

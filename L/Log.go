@@ -26,6 +26,9 @@ var NUM_CPU float64
 var CPU_STAT2, CPU_STAT4, CPU_STAT5, LAST_STAT7 int64
 var CPU_PERCENT, RAM_PERCENT float64
 var LAST_CPU_CALL, LAST_RAM_CALL int64
+var TIMETRACK_MIN_DURATION float64
+
+const BR2 = "\n<br/>"
 
 // initialize logger
 func init() {
@@ -40,6 +43,8 @@ func init() {
 	)
 	formatter := logging.NewBackendFormatter(backend, format)
 	logging.SetBackend(formatter)
+
+	TIMETRACK_MIN_DURATION = 100 // 100ms is slow query
 
 	NUM_CPU = float64(runtime.NumCPU())
 	PercentCPU()
@@ -184,4 +189,47 @@ func Print(any ...interface{}) {
 	str := color.CyanString(file[len(FILE_PATH):] + `:` + I.ToStr(line) + `: `)
 	LOG.Info(strings.Replace(str, `%`, `%%`, -1))
 	fmt.Println(any...)
+}
+
+// print error message and exit program
+func PanicIf(err error, msg string, args ...interface{}) {
+	if err == nil {
+		return
+	}
+	pc, file, line, _ := runtime.Caller(1)
+	strf := file[len(FILE_PATH):] + `:` + I.ToStr(line) + `: `
+	str := color.MagentaString(strf)
+	strf2 := ` ` + runtime.FuncForPC(pc).Name() + `: `
+	str += color.YellowString(strf2)
+	LOG.Criticalf(str+msg, args...)
+	stt := StackTrace(3)
+	res := pretty.Formatter(err)
+	LOG.Criticalf("%# v\n    StackTrace: %s", res, stt)
+	panic(fmt.Errorf(err.Error()+BR2+fmt.Sprintf("%# v"+BR2+"    StackTrace: %s", res, stt)+BR2+strf+strf2+BR2+msg, args...))
+}
+
+// return elapsed time in ms, show 1st level, returns in ms
+func TimeTrack(start time.Time, name string) float64 {
+	_, file, line, _ := runtime.Caller(1)
+	prefix := color.YellowString(file[len(FILE_PATH):] + `:` + I.ToStr(line) + `: `)
+	elapsed := float64(time.Since(start).Nanoseconds()) / 1000000.0
+	if elapsed < TIMETRACK_MIN_DURATION {
+		return elapsed
+	}
+	suffix := color.GreenString(`%.2f ms`, elapsed)
+	LOG.Noticef(prefix+"%s "+suffix, name)
+	return elapsed
+}
+
+// return elapsed time in ms, show 3nd level, returns in ms
+func LogTrack(start time.Time, name string) float64 {
+	_, file, line, _ := runtime.Caller(3)
+	prefix := color.CyanString(file[len(FILE_PATH):] + `:` + I.ToStr(line) + `: `)
+	elapsed := float64(time.Since(start).Nanoseconds()) / 1000000.0
+	if elapsed < TIMETRACK_MIN_DURATION {
+		return elapsed
+	}
+	suffix := color.CyanString(`%.2f ms`, elapsed)
+	LOG.Noticef(prefix+"%s "+suffix, name)
+	return elapsed
 }

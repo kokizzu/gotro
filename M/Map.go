@@ -666,3 +666,8 @@ func ToJson(hash map[string]interface{}) string {
 	L.IsError(err, `M.ToJson failed`, hash)
 	return string(str)
 }
+
+// set key with any value
+func (hash SX) Set(key string, val interface{}) {
+	hash[key] = val
+}

@@ -3,6 +3,7 @@ package A
 import (
 	"encoding/json"
 	"github.com/kokizzu/gotro/L"
+	"strings"
 )
 
 // Array support package
@@ -27,4 +28,11 @@ func ToJson(arr []interface{}) string {
 	str, err := json.Marshal(arr)
 	L.IsError(err, `Slice.ToJson failed`, arr)
 	return string(str)
+}
+
+// combine strings in the array of string with the chosen string separator
+//  m1:= []string{`satu`,`dua`}
+//  A.StrJoin(m1,`-`) // satu-dua
+func StrJoin(arr []string, sep string) string {
+	return strings.Join(arr, sep)
 }
