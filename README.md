@@ -40,21 +40,21 @@ These dependencies automatically installed when you run `go get`
 - Add httprouter to `W`, add logging, add panic handling (stacktrace censoring), add session loading
 - List most of Phoenix features and add it to `W`
 - [Review](//goo.gl/tBkfse) which databases we must support primarily for `D` (drop ones that hard to install), that can be silver bullet for extreme cases (high-write: sharding/partitioning and multi-master replication or auto-failover; full-text-search) 
-- Review which databases we must support primarily for `D` (drop ones that hard to install), that can be silver bullet for extreme cases (high-write: sharding/partitioning and multi-master replication or auto-failover; full-text-search) 
-  - [ArangoDB](//www.arangodb.com/)
-  - [Cassandra](//cassandra.apache.org)
+  - [ArangoDB](//www.arangodb.com)
+  - [Cassandra](//cassandra.apache.org) <-- second case
   - [Couchbase](//couchbase.com)
-  - [CouchDB](//couchdb.apache.org/)
-  - [CockroachDB](//www.cockroachlabs.com/)
+  - [CouchDB](//couchdb.apache.org)
+  - [CockroachDB](//www.cockroachlabs.com) <-- first case
   - [GunDB](//gundb.github.io)
-  - [Impala](//impala.apache.org/)
+  - [Impala](//impala.apache.org)
   - [InfluxDB](//docs.influxdata.com/influxdb)
   - [MariaDB](//mariadb.org)
   - [OrientDB](//orientdb.com)
-  - [PostgreXL](//www.postgres-xl.org/)
+  - [PostgreSQL](//www.postgresql.org) <-- first case
+  - [PostgreXL](//www.postgres-xl.org) <-- first case
   - [Riak](//docs.basho.com/riak)
-  - [ScyllaDB](//www.scylladb.com)
-- Review which queuing service we're gonna use ([NSQ](//nsq.io), [Redis](//redis.io)), requirement: must support persistence
+  - [ScyllaDB](//www.scylladb.com) <-- second case
+- Review which queuing service we're gonna use ([NATS](//nats.io)), requirement: must support persistence
 - Add [ExampleXxx function](//blog.golang.org/examples), getting started and more documentation 
 - Create example API App
 - Add graceful restart (zero downtime deployment): [grace](//github.com/facebookgo/grace) or [endless](//github.com/fvbock/endless)

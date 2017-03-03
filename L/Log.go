@@ -3,6 +3,7 @@ package L
 // Logging support package
 
 import (
+	"bufio"
 	"fmt"
 	"github.com/fatih/color"
 	"github.com/kokizzu/gotro/I"
@@ -10,7 +11,9 @@ import (
 	"github.com/op/go-logging"
 	"os"
 	"runtime"
+	"strconv"
 	"strings"
+	"time"
 )
 
 var LOG *logging.Logger
@@ -18,6 +21,11 @@ var LOG *logging.Logger
 var FILE_PATH string
 var GO_PATH string
 var GO_ROOT string
+
+var NUM_CPU float64
+var CPU_STAT2, CPU_STAT4, CPU_STAT5, LAST_STAT7 int64
+var CPU_PERCENT, RAM_PERCENT float64
+var LAST_CPU_CALL, LAST_RAM_CALL int64
 
 // initialize logger
 func init() {
@@ -32,6 +40,71 @@ func init() {
 	)
 	formatter := logging.NewBackendFormatter(backend, format)
 	logging.SetBackend(formatter)
+
+	NUM_CPU = float64(runtime.NumCPU())
+	PercentCPU()
+}
+
+// get CPU usage percentage
+//  L.PercentCPU()
+func PercentCPU() float64 {
+	last_cpu_call := time.Now().Unix()
+	if last_cpu_call <= LAST_CPU_CALL {
+		return CPU_PERCENT
+	}
+	LAST_CPU_CALL = last_cpu_call
+	fs, err := os.Open("/proc/stat") // usage
+	if err != nil {
+		return -1
+	}
+	defer fs.Close()
+	scanner := bufio.NewScanner(fs)
+	if !scanner.Scan() {
+		return -1
+	}
+	cpu_stat := strings.Fields(scanner.Text())
+	if len(cpu_stat) < 7 {
+		return -1
+	}
+	l7, _ := strconv.ParseInt(cpu_stat[7], 10, 64)
+	if l7 > LAST_STAT7 {
+		s13, _ := strconv.ParseInt(cpu_stat[2-1], 10, 64)
+		s15, _ := strconv.ParseInt(cpu_stat[4-1], 10, 64)
+		s16, _ := strconv.ParseInt(cpu_stat[5-1], 10, 64)
+		percent := float64(s13-CPU_STAT2+s15-CPU_STAT4) * 100 / float64(s13-CPU_STAT2+s15-CPU_STAT4+s16-CPU_STAT5) / float64(l7-LAST_STAT7)
+		CPU_PERCENT = percent
+		LAST_STAT7 = l7
+		CPU_STAT2 = s13
+		CPU_STAT4 = s15
+		CPU_STAT5 = s16
+	}
+	return CPU_PERCENT
+}
+
+// get RAM usage percentage
+//  L.PercentRAM()
+func PercentRAM() float64 {
+	last_ram_call := time.Now().Unix()
+	if last_ram_call <= LAST_RAM_CALL {
+		return RAM_PERCENT
+	}
+	LAST_RAM_CALL = last_ram_call
+	fs, err := os.Open(`/proc/meminfo`) // usage
+	if err != nil {
+		return -1
+	}
+	defer fs.Close()
+	scanner := bufio.NewScanner(fs)
+	var ram [3]float64
+	for x := 0; x < 3; x++ {
+		if !scanner.Scan() {
+			return -1
+		}
+		cols := strings.Fields(scanner.Text())
+		ram[x], _ = strconv.ParseFloat(cols[1], 64)
+	}
+	RAM_PERCENT = (1 - ram[2]/ram[0]) * 100
+	return RAM_PERCENT
 }
 
 // get a stacktrace as string
