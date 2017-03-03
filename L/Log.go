@@ -233,3 +233,15 @@ func LogTrack(start time.Time, name string) float64 {
 	LOG.Noticef(prefix+"%s "+suffix, name)
 	return elapsed
 }
+
+var DEBUG bool
+
+// trace a function call
+func Trace() {
+	if !DEBUG {
+		return
+	}
+	pc, file, line, _ := runtime.Caller(1)
+	str := ` [TRACE] ` + file[len(FILE_PATH):] + `:` + I.ToStr(line) + `: ` + runtime.FuncForPC(pc).Name() + ` `
+	fmt.Println(str)
+}

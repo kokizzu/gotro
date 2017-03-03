@@ -4,7 +4,7 @@ GotRo is abbreviation of `Gotong Royong`. the meaning in `Indonesia`: "do it tog
 This Framework is rewrite of [gokil](gitlab.com/kokizzu/gokil), that previously use [fasthttp](//github.com/julienschmidt/httprouter) but now rewritten using [fasthttprouter](github.com/buaazp/fasthttprouter)
 
 ## Design Goal
-- As similar as possible to Elixir's Phoenix Framework
+- As similar as possible to Gokil
 - Opinionated (choose the best dependency), for example by default uses int64 and float64
 - 1-letter supporting package so we short common function, such as: `I.ToS(1234)` to convert `int64` to `string`)
   - A - Array
@@ -17,7 +17,7 @@ This Framework is rewrite of [gokil](gitlab.com/kokizzu/gokil), that previously 
   - I - Integer
   - S - String
   - T - Time (and Date)
-  - W - Web (the "framework")
+  - W - Web (the "framework") **STATUS**: under development 5% (2017-03-03)
   - X - Anything (aka `interface{}`)
   - Z - Z-Template Engine, that has syntax similar to ruby string interpolation `#{foo}` or any other that javascript friendly `{/* foo */}`, `[/* bar */]`, `/*! bar */`
 - Comment and examples on each type and function, so it can be viewed using godoc, something like: `godoc github.com/kokizzu/gotro/A`
@@ -38,7 +38,6 @@ These dependencies automatically installed when you run `go get`
 ## TODO
 
 - Add httprouter to `W`, add logging, add panic handling (stacktrace censoring), add session loading
-- List most of Phoenix features and add it to `W`
 - [Review](//goo.gl/tBkfse) which databases we must support primarily for `D` (drop ones that hard to install), that can be silver bullet for extreme cases (high-write: sharding/partitioning and multi-master replication or auto-failover; full-text-search) 
   - [ArangoDB](//www.arangodb.com)
   - [Cassandra](//cassandra.apache.org) <-- second case
