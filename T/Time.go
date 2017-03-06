@@ -177,12 +177,12 @@ func UnixNanoAfter(d time.Duration) int64 {
 	return time.Now().Add(d).UnixNano()
 }
 
-// get current unix
+// get current unix (second) as integer
 func Epoch() int64 {
 	return time.Now().Unix()
 }
 
-// get current unix
+// get current unix (second) as string
 func EpochStr() string {
 	return I.ToS(time.Now().Unix())
 }

@@ -5,6 +5,7 @@ import (
 	"errors"
 	"github.com/jmoiron/sqlx"
 	"github.com/kokizzu/gotro/A"
+	"github.com/kokizzu/gotro/D"
 	"github.com/kokizzu/gotro/I"
 	"github.com/kokizzu/gotro/L"
 	"github.com/kokizzu/gotro/M"
@@ -688,7 +689,7 @@ func (db *RDBMS) DoRestore(actor int64, table string, id int64) (ok bool) {
 }
 
 // execute delete (is_deleted = true)
-func (db *RDBMS) DoDelete2(actor int64, table string, id int64, lambda func(base Record) string, ajax W.Ajax) bool {
+func (db *RDBMS) DoDelete2(actor int64, table string, id int64, lambda func(base D.Record) string, ajax W.Ajax) bool {
 	base := db.QBase(table, id)
 	err_msg := lambda(&base)
 	if err_msg == `` {
@@ -699,7 +700,7 @@ func (db *RDBMS) DoDelete2(actor int64, table string, id int64, lambda func(base
 }
 
 // execute delete (is_deleted = false)
-func (db *RDBMS) DoRestore2(actor int64, table string, id int64, lambda func(base Record) string, ajax W.Ajax) bool {
+func (db *RDBMS) DoRestore2(actor int64, table string, id int64, lambda func(base D.Record) string, ajax W.Ajax) bool {
 	base := db.QBase(table, id)
 	err_msg := lambda(&base)
 	if err_msg == `` {
@@ -740,7 +741,7 @@ func (db *RDBMS) ViewExists(viewname string) bool {
 
 // 2015-12-04 Kiz: replacement for JsonLine
 // lambda should return empty string if it's correct row
-func (db *RDBMS) JsonRow(table string, id int64, lambda func(rec Record) string) W.Ajax {
+func (db *RDBMS) JsonRow(table string, id int64, lambda func(rec D.Record) string) W.Ajax {
 	base := db.QBase(table, id)
 	err_msg := lambda(&base)
 	if err_msg == `` {

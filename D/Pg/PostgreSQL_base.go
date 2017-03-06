@@ -76,36 +76,45 @@ func (b *Base) Restore(actor int64) bool {
 }
 
 // get string from Data
-func (b *Base) Get_Str(key string) string {
+func (b *Base) GetMSX(key string) M.SX {
+	return b.XData.GetMSX(key)
+}
+
+// get string from Data
+func (b *Base) GetStr(key string) string {
 	return b.XData.GetStr(key)
 }
 
 // get boolean from Data
-func (b *Base) Get_Bool(key string) bool {
+func (b *Base) GetBool(key string) bool {
 	return b.XData.GetBool(key)
 }
 
 // get int64 from Data
-func (b *Base) Get_Int(key string) int64 {
+func (b *Base) GetInt(key string) int64 {
 	return b.XData.GetInt(key)
 }
 
 // get []interface{} from Data
-func (b *Base) Get_Arr(key string) []interface{} {
+func (b *Base) GetArr(key string) []interface{} {
 	return X.ToArr(b.XData[key])
 }
 
 // get float64 from Data
-func (b *Base) Get_Float(key string) float64 {
+func (b *Base) GetFloat(key string) float64 {
 	return b.XData.GetFloat(key)
 }
 
 // get id
-func (b *Base) Get_Id() int64 {
+func (b *Base) GetId() int64 {
 	return b.Id
 }
 
 // get unique id
-func (b *Base) Get_UniqueId() string {
+func (b *Base) GetUniqueId() string {
 	return b.UniqueId.String
+}
+
+func (b *Base) SetVal(key string, val interface{}) {
+	b.XData[key] = val
 }

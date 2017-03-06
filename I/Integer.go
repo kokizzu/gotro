@@ -27,6 +27,26 @@ func IfElse(b bool, yes, no int64) int64 {
 	return no
 }
 
+// simplified ternary operator (bool ? val1==0 : val2), returns second argument, if val1 (first arg) is zero, returns val2 if not
+//  I.IfZero(0,3) // 3
+//  I.IfZero(4,3) // 4
+func IfZero(val1, val2 int64) int64 {
+	if val1 == 0 {
+		return val2
+	}
+	return val1
+}
+
+// simplified ternary operator (bool ? val1==0 : val2), returns second argument, if val1 (first arg) is zero, returns val2 if not
+//  I.IsZero(0,3) // 3
+//  I.IsZero(4,3) // 4
+func IsZero(val1, val2 int) int {
+	if val1 == 0 {
+		return val2
+	}
+	return val1
+}
+
 // convert int64 to string
 //  I.ToS(int64(1234)) // `1234`
 func ToS(num int64) string {

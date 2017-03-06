@@ -8,6 +8,7 @@ import (
 	// https://jmoiron.github.io/sqlx/
 	// https://github.com/jmoiron/sqlx
 	// https://sourcegraph.com/github.com/jmoiron/sqlx
+	"gitlab.com/kokizzu/gokil/D"
 )
 
 func rowsAffected(rs sql.Result) int64 {
@@ -25,6 +26,8 @@ var ZI func(int64) string
 var ZLIKE func(string) string
 var ZS func(string) string
 
+var DEBUG bool
+
 func init() {
 	Z = S.Z
 	ZZ = S.ZZ
@@ -32,16 +35,5 @@ func init() {
 	ZI = S.ZI
 	ZLIKE = S.ZLIKE
 	ZS = S.ZS
-}
-
-var DEBUG bool
-
-type Record interface {
-	Get_Str(string) string
-	Get_Float(string) float64
-	Get_Int(string) int64
-	Get_Arr(string) []interface{}
-	Get_Bool(string) bool
-	Get_Id() int64
-	Get_UniqueId() string
+	DEBUG = D.DEBUG
 }

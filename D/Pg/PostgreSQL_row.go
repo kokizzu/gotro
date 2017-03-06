@@ -351,13 +351,13 @@ func (mp *Row) Get_UniqueId() string {
 
 // set time from Posts to Row
 // unset when string is whitespace
-func (mp *Row) SetUnsetTime(key string) string {
+func (mp *Row) SetUnsetClock(key string) string {
 	val := mp.Posts.GetStr(key)
-	return mp.SetUnsetValTime(key, val)
+	return mp.SetUnsetValClock(key, val)
 }
 
 // set time hh:mm
-func (mp *Row) SetUnsetValTime(key string, val string) string {
+func (mp *Row) SetUnsetValClock(key string, val string) string {
 	//	L.Describe(key, val)
 	if val != `` {
 		val = S.Trim(val)
@@ -388,17 +388,6 @@ func (mp *Row) SetUnsetValTime(key string, val string) string {
 		mp.Row[key] = val
 	}
 	return X.ToS(mp.Row[key])
-}
-
-// set dates from Posts to Row
-func (mp *Row) SetDates(key string) {
-	// TODO: validate this
-	val := mp.Posts.GetStr(key)
-	if val != `` {
-		val = S.XSS(val)
-		mp.LogIt(key, val)
-		mp.Row[key] = val
-	}
 }
 
 // set int64 from Posts to Row

@@ -1,6 +1,7 @@
 package Sq
 
 import (
+	"github.com/kokizzu/gotro/M"
 	_ "github.com/mutecomm/go-sqlcipher"
 )
 
@@ -18,3 +19,60 @@ func NewSqConn(filename, password string) *RDBMS {
 	return db
 }
 */
+
+type SqliteSession struct {
+}
+
+func (sess *SqliteSession) Del(key string) {
+	// TODO: continue this
+}
+
+func (sess *SqliteSession) Expiry(key string) int64 {
+	// TODO: continue this
+	return 0
+}
+
+func (sess *SqliteSession) FadeStr(key, val string, sec int64) {
+	// TODO: continue this
+}
+
+func (sess *SqliteSession) FadeInt(key string, val int64, sec int64) {
+	// TODO: continue this
+}
+
+func (sess *SqliteSession) FadeMSX(key string, val M.SX, sec int64) {
+	// TODO: continue this
+}
+
+func (sess *SqliteSession) GetStr(key string) string {
+	// TODO: continue this
+	return ``
+}
+
+func (sess *SqliteSession) GetInt(key string) int64 {
+	// TODO: continue this
+	return 0
+}
+
+func (sess *SqliteSession) GetMSX(key string) M.SX {
+	// TODO: continue this
+	res := M.SX{}
+	return res
+}
+
+func (sess *SqliteSession) Inc(key string) int64 {
+	// TODO: continue this
+	return 0
+}
+
+func (sess *SqliteSession) SetStr(key, val string) {
+	// TODO: continue this
+}
+
+func (sess *SqliteSession) SetInt(key string, val int64) {
+	// TODO: continue this
+}
+
+func (sess *SqliteSession) SetMSX(key string, val M.SX) {
+	// TODO: continue this
+}
