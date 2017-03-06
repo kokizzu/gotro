@@ -8,9 +8,10 @@ import (
 
 	"crypto/sha256"
 	"encoding/base64"
+	"regexp"
+
 	"github.com/kokizzu/gotro/I"
 	"github.com/kokizzu/gotro/L"
-	"regexp"
 )
 
 // check whether the input string (first arg) starts with a certain character (second arg) or not.
@@ -38,6 +39,15 @@ func Contains(str, substr string) bool {
 //  S.Equals(`komputer`,`komputer`)) // bool(true)
 //  S.Equals(`komputer`,`Komputer`)) // bool(false)
 func Equals(strFirst, strSecond string) bool {
+	return strFirst == strSecond
+}
+
+// compare two input string (first arg) equal with ignoring case another input string (second arg).
+//  S.EqualsIgnoreCase(`komputer`,`komputer`)) // bool(true)
+//  S.EqualsIgnoreCase(`komputer`,`Komputer`)) // bool(true)
+func EqualsIgnoreCase(strFirst, strSecond string) bool {
+	strFirst = ToLower(strFirst)
+	strSecond = ToLower(strSecond)
 	return strFirst == strSecond
 }
 
