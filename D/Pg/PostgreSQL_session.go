@@ -26,7 +26,7 @@ func NewPostgreSession(conn *RDBMS, table string) *PostgreSession {
 	return sess
 }
 
-func (sess *PostgreSession) Del(key string) {
+func (sess PostgreSession) Del(key string) {
 	sess.Pool.DoTransaction(func(tx *Tx) string {
 		dm := tx.QBaseUniq(sess.Table, key)
 		if dm.Id < 1 || dm.IsDeleted {
@@ -37,7 +37,7 @@ func (sess *PostgreSession) Del(key string) {
 	})
 }
 
-func (sess *PostgreSession) Expiry(key string) int64 {
+func (sess PostgreSession) Expiry(key string) int64 {
 	dm := sess.Pool.QBaseUniq(sess.Table, key)
 	if dm.Id < 1 || dm.IsDeleted {
 		return 0
@@ -49,7 +49,7 @@ func (sess *PostgreSession) Expiry(key string) int64 {
 	return expired_at - T.Epoch()
 }
 
-func (sess *PostgreSession) FadeVal(key string, val interface{}, sec int64) {
+func (sess PostgreSession) FadeVal(key string, val interface{}, sec int64) {
 	sess.Pool.DoTransaction(func(tx *Tx) string {
 		dm := tx.QBaseUniq(sess.Table, key)
 		dm.SetVal(SESSION_VALUE_KEY, val)
@@ -59,19 +59,19 @@ func (sess *PostgreSession) FadeVal(key string, val interface{}, sec int64) {
 	})
 }
 
-func (sess *PostgreSession) FadeStr(key, val string, sec int64) {
+func (sess PostgreSession) FadeStr(key, val string, sec int64) {
 	sess.FadeVal(key, val, sec)
 }
 
-func (sess *PostgreSession) FadeInt(key string, val int64, sec int64) {
+func (sess PostgreSession) FadeInt(key string, val int64, sec int64) {
 	sess.FadeVal(key, val, sec)
 }
 
-func (sess *PostgreSession) FadeMSX(key string, val M.SX, sec int64) {
+func (sess PostgreSession) FadeMSX(key string, val M.SX, sec int64) {
 	sess.FadeVal(key, val, sec)
 }
 
-func (sess *PostgreSession) GetStr(key string) string {
+func (sess PostgreSession) GetStr(key string) string {
 	dm := sess.Pool.QBaseUniq(sess.Table, key)
 	if dm.Id < 1 || dm.IsDeleted || dm.XData == nil {
 		return ``
@@ -79,7 +79,7 @@ func (sess *PostgreSession) GetStr(key string) string {
 	return dm.GetStr(SESSION_VALUE_KEY)
 }
 
-func (sess *PostgreSession) GetInt(key string) int64 {
+func (sess PostgreSession) GetInt(key string) int64 {
 	dm := sess.Pool.QBaseUniq(sess.Table, key)
 	if dm.Id < 1 || dm.IsDeleted || dm.XData == nil {
 		return 0
@@ -87,7 +87,7 @@ func (sess *PostgreSession) GetInt(key string) int64 {
 	return dm.GetInt(SESSION_VALUE_KEY)
 }
 
-func (sess *PostgreSession) GetMSX(key string) M.SX {
+func (sess PostgreSession) GetMSX(key string) M.SX {
 	dm := sess.Pool.QBaseUniq(sess.Table, key)
 	if dm.Id < 1 || dm.IsDeleted || dm.XData == nil {
 		return M.SX{}
@@ -95,7 +95,7 @@ func (sess *PostgreSession) GetMSX(key string) M.SX {
 	return dm.GetMSX(SESSION_VALUE_KEY)
 }
 
-func (sess *PostgreSession) Inc(key string) (ival int64) {
+func (sess PostgreSession) Inc(key string) (ival int64) {
 	k2 := ZZ(SESSION_VALUE_KEY)
 	k1 := Z(SESSION_VALUE_KEY)
 	table := ZZ(sess.Table)
@@ -119,7 +119,7 @@ func (sess *PostgreSession) Inc(key string) (ival int64) {
 	return ival
 }
 
-func (sess *PostgreSession) SetVal(key string, val interface{}) {
+func (sess PostgreSession) SetVal(key string, val interface{}) {
 	sess.Pool.DoTransaction(func(tx *Tx) string {
 		dm := tx.QBaseUniq(sess.Table, key)
 		dm.SetVal(SESSION_VALUE_KEY, val)
@@ -128,14 +128,14 @@ func (sess *PostgreSession) SetVal(key string, val interface{}) {
 	})
 }
 
-func (sess *PostgreSession) SetStr(key, val string) {
+func (sess PostgreSession) SetStr(key, val string) {
 	sess.SetVal(key, val)
 }
 
-func (sess *PostgreSession) SetInt(key string, val int64) {
+func (sess PostgreSession) SetInt(key string, val int64) {
 	sess.SetVal(key, val)
 }
 
-func (sess *PostgreSession) SetMSX(key string, val M.SX) {
+func (sess PostgreSession) SetMSX(key string, val M.SX) {
 	sess.SetVal(key, val)
 }

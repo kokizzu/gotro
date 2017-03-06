@@ -53,7 +53,7 @@ func NewAerosSession(host string, port int, namespace, bucket string) *AerosSess
 	}
 }
 
-func (sess *AerosSession) Key(key string) *aero.Key {
+func (sess AerosSession) Key(key string) *aero.Key {
 	asKey, err := aero.NewKey(sess.Namespace, sess.Bucket, key)
 	if L.IsError(err, `Failed to create compute digest key `+sess.Bucket+` `+key) {
 		return nil
@@ -61,14 +61,14 @@ func (sess *AerosSession) Key(key string) *aero.Key {
 	return asKey
 }
 
-func (sess *AerosSession) Del(key string) {
+func (sess AerosSession) Del(key string) {
 	if askey := sess.Key(key); askey != nil {
 		_, err := sess.Pool.Delete(nil, askey)
 		L.IsError(err, `Error deleting CACHE `+askey.String())
 	}
 }
 
-func (sess *AerosSession) Expiry(key string) int64 {
+func (sess AerosSession) Expiry(key string) int64 {
 	if askey := sess.Key(key); askey != nil {
 		rec, err := sess.Pool.GetHeader(nil, askey)
 		if err == nil && rec != nil {
@@ -78,7 +78,7 @@ func (sess *AerosSession) Expiry(key string) int64 {
 	return 0
 }
 
-func (sess *AerosSession) FadeStr(key, val string, sec int64) {
+func (sess AerosSession) FadeStr(key, val string, sec int64) {
 	if asKey := sess.Key(key); asKey != nil {
 		policy := PolicyByTtl(sec)
 		err := sess.Pool.Put(policy, asKey, aero.BinMap{
@@ -88,15 +88,15 @@ func (sess *AerosSession) FadeStr(key, val string, sec int64) {
 	}
 }
 
-func (sess *AerosSession) FadeInt(key string, val int64, sec int64) {
+func (sess AerosSession) FadeInt(key string, val int64, sec int64) {
 	sess.FadeStr(key, I.ToS(val), sec)
 }
 
-func (sess *AerosSession) FadeMSX(key string, val M.SX, sec int64) {
+func (sess AerosSession) FadeMSX(key string, val M.SX, sec int64) {
 	sess.FadeStr(key, M.ToJson(val), sec)
 }
 
-func (sess *AerosSession) GetStr(key string) string {
+func (sess AerosSession) GetStr(key string) string {
 	if asKey := sess.Key(key); asKey != nil {
 		rec, err := sess.Pool.Get(nil, asKey)
 		if !L.IsError(err, `Error getting CACHE `+asKey.String()) {
@@ -106,7 +106,7 @@ func (sess *AerosSession) GetStr(key string) string {
 	return ``
 }
 
-func (sess *AerosSession) GetInt(key string) int64 {
+func (sess AerosSession) GetInt(key string) int64 {
 	val := sess.GetStr(key)
 	if val == `` {
 		return 0
@@ -114,7 +114,7 @@ func (sess *AerosSession) GetInt(key string) int64 {
 	return S.ToI(val)
 }
 
-func (sess *AerosSession) GetMSX(key string) M.SX {
+func (sess AerosSession) GetMSX(key string) M.SX {
 	val := sess.GetStr(key)
 	if val == `` {
 		return M.SX{}
@@ -122,7 +122,7 @@ func (sess *AerosSession) GetMSX(key string) M.SX {
 	return S.JsonToMap(val)
 }
 
-func (sess *AerosSession) Inc(key string) int64 {
+func (sess AerosSession) Inc(key string) int64 {
 	if askey := sess.Key(key); askey != nil {
 		ops := []*aero.Operation{
 			aero.AddOp(aero.NewBin(`value`, 1)), // add the value of the bin to the existing value
@@ -136,7 +136,7 @@ func (sess *AerosSession) Inc(key string) int64 {
 	return 0
 }
 
-func (sess *AerosSession) SetStr(key, val string) {
+func (sess AerosSession) SetStr(key, val string) {
 	if asKey := sess.Key(key); asKey != nil {
 		err := sess.Pool.Put(nil, asKey, aero.BinMap{
 			`value`: val,
@@ -145,10 +145,10 @@ func (sess *AerosSession) SetStr(key, val string) {
 	}
 }
 
-func (sess *AerosSession) SetInt(key string, val int64) {
+func (sess AerosSession) SetInt(key string, val int64) {
 	sess.SetStr(key, I.ToS(val))
 }
 
-func (sess *AerosSession) SetMSX(key string, val M.SX) {
+func (sess AerosSession) SetMSX(key string, val M.SX) {
 	sess.SetStr(key, M.ToJson(val))
 }

@@ -2,6 +2,7 @@ package W
 
 import (
 	"github.com/kokizzu/gotro/M"
+	"gitlab.com/kokizzu/gokil/S"
 	"time"
 )
 
@@ -21,7 +22,7 @@ type SessionConnector interface {
 	// get integer
 	GetInt(key string) int64
 	// get string
-	GetJson(key string) M.SX
+	GetMSX(key string) M.SX
 	// increment
 	Inc(key string) int64
 	// set string
@@ -29,11 +30,14 @@ type SessionConnector interface {
 	// set integer
 	SetInt(key string, val int64)
 	// set json
-	SetJson(key string, val M.SX)
+	SetMSX(key string, val M.SX)
 }
 
+var SESS_KEY = `SK`
+var EXPIRE_NS time.Duration
+var RENEW_NS time.Duration
+
 type Session struct {
-	Conn      *SessionConnector
 	UserId    int64
 	AppId     int64
 	Level     M.SX
@@ -60,7 +64,9 @@ func (s *Session) Touch() {
 	// TODO: update ttl
 }
 
-func InitSession(expire_ns, renew_ns time.Duration) {
-	// TODO: continue this
-
+func InitSession(sess_key string, expire_ns, renew_ns time.Duration, conn SessionConnector) {
+	SESS_KEY = S.IfEmpty(sess_key, SESS_KEY)
+	EXPIRE_NS = expire_ns
+	RENEW_NS = renew_ns
+	Sessions = conn
 }

@@ -11,12 +11,14 @@ import (
 var strPost = []byte(`POST`)
 
 type Context struct {
-	fasthttp.RequestCtx
+	*fasthttp.RequestCtx
 	Session *Session
 	Title   string
 	Engine  *Engine
 	Params  *Params
 	Buffer  bytes.Buffer
+	Route   string
+	Actions []Action
 }
 
 // check if request method is POST
@@ -92,9 +94,12 @@ func (ctx *Context) ServeError(code int64) {
 	// TODO: copy from W.ServeError
 }
 
+// call next filter or action/handler
 func (ctx *Context) Next() Action {
-	// TODO: continue this
-	return func(ctx *Context) {
-
+	if ctx.Actions == nil || len(ctx.Actions) == 0 {
+		panic(`action-chain unavailable`)
 	}
+	action := ctx.Actions[0]
+	ctx.Actions = ctx.Actions[1:]
+	return action
 }
