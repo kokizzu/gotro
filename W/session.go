@@ -2,7 +2,9 @@ package W
 
 import (
 	"github.com/kokizzu/gotro/M"
-	"gitlab.com/kokizzu/gokil/S"
+	"github.com/kokizzu/gotro/S"
+	"github.com/kokizzu/gotro/T"
+	"github.com/valyala/fasthttp"
 	"time"
 )
 
@@ -34,39 +36,98 @@ type SessionConnector interface {
 }
 
 var SESS_KEY = `SK`
-var EXPIRE_NS time.Duration
-var RENEW_NS time.Duration
+var EXPIRE_SEC int64
+var RENEW_SEC int64
+
+const NS2SEC = 1000 * 1000 * 1000
 
 type Session struct {
-	UserId    int64
-	AppId     int64
-	Level     M.SX
-	Email     string
 	UserAgent string
 	IpAddr    string
-	// TODO: continue this
+	Key       string
+	M.SX
+	Changed bool
 }
 
 func (s *Session) Logout() {
-	// TODO: continue this
+	Sessions.Del(s.Key)
+	s.Key = ``
+	s.SX = M.SX{}
+	s.Changed = true
 }
 
-func (s *Session) Login(id int64, email string) {
-	// TODO: continue this
+func (s *Session) RandomKey() {
+	for {
+		s.Key = s.StateCSRF() + S.RandomCB63(8)
+		if Sessions.GetStr(s.Key) == `` {
+			break // no collision
+		}
+	}
+	s.Changed = true
+}
+
+func (s *Session) Login(val M.SX) {
+	if s.Key == `` {
+		s.RandomKey()
+	}
+	val[`ip_addr`] = s.IpAddr
+	val[`user_agent`] = s.UserAgent
+	val[`login_at`] = T.Epoch()
+	s.SX = val
+	Sessions.FadeMSX(s.Key, val, EXPIRE_SEC)
+}
+
+// should be called after receiving request
+func (s *Session) Load(ctx *Context) {
+	r := ctx.RequestCtx
+	h := r.Request.Header
+	s.UserAgent = string(h.UserAgent())
+	s.IpAddr = r.RemoteAddr().String()
+	cookie := string(h.Cookie(SESS_KEY))
+	if cookie == `` {
+		s.SX = M.SX{}
+	} else if !S.StartsWith(cookie, s.StateCSRF()) {
+		s.Logout() // possible incorrect cookie stealing
+	} else {
+		s.Key = cookie
+		s.SX = Sessions.GetMSX(s.Key)
+		if len(s.SX) == 0 {
+			s.Logout() // possible expired cookie
+		}
+	}
+}
+
+// should be called before writing response
+func (s *Session) Save(ctx *Context) {
+	if s.Changed {
+		rem := Sessions.Expiry(s.Key)
+		expiration := time.Now().Add(time.Second * time.Duration(rem))
+		cookie := &fasthttp.Cookie{}
+		cookie.SetKey(SESS_KEY)
+		cookie.SetValue(s.Key)
+		cookie.SetExpire(expiration)
+		ctx.Response.Header.SetCookie(cookie)
+	}
 }
 
 func (s *Session) StateCSRF() string {
-	// TODO: continue this
-	return ``
+	return S.HashPassword(s.UserAgent) + `|`
 }
 
 func (s *Session) Touch() {
-	// TODO: update ttl
+	if s.Key == `` {
+		return
+	}
+	if Sessions.Expiry(s.Key) < RENEW_SEC {
+		s.SX[`renew_at`] = T.Epoch()
+		s.Changed = true
+		Sessions.FadeMSX(s.Key, s.SX, EXPIRE_SEC)
+	}
 }
 
 func InitSession(sess_key string, expire_ns, renew_ns time.Duration, conn SessionConnector) {
 	SESS_KEY = S.IfEmpty(sess_key, SESS_KEY)
-	EXPIRE_NS = expire_ns
-	RENEW_NS = renew_ns
+	EXPIRE_SEC = int64(expire_ns / NS2SEC)
+	RENEW_SEC = int64(renew_ns / NS2SEC)
 	Sessions = conn
 }
