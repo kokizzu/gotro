@@ -3,6 +3,7 @@ package W
 import (
 	"errors"
 	"fmt"
+	"github.com/davecgh/go-spew/spew"
 	"github.com/fatih/color"
 	"github.com/kokizzu/gotro/L"
 	"github.com/kokizzu/gotro/S"
@@ -21,11 +22,17 @@ func PanicFilter(ctx *Context) {
 			L.LOG.Errorf(err_str)
 			str := L.StackTrace(2)
 			L.LOG.Criticalf("StackTrace: %s", str)
-			// TODO: continue this
-			//ctx.Abort(500, ctx.Engine.DebugMode, err2)
-			if !ctx.Engine.DebugMode {
-				// ctx.Engine.SendDebugMail(ctx.RequestDebugStr() + "\n\n" + err_str)
+			ctx.Title += ` (error)`
+			detail := ``
+			if ctx.Engine.DebugMode {
+				detail = spew.Sdump(err) + string(L.StackTrace(3))
+			} else {
+				ref_code := `EREF:` + S.RandomCB63(4)
+				L.LOG.Notice(ref_code) // no need to print stack trace, should be handled by PanicFilter
+				detail = `Detailed error message not available on production mode, error reference code for webmaster: ` + ref_code
+				ctx.Engine.SendDebugMail(ctx.RequestDebugStr() + S.WebBR + S.WebBR + err_str + S.WebBR + detail)
 			}
+			ctx.Error(500, detail)
 		}
 	}()
 	ctx.Next()(ctx)

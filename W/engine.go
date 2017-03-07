@@ -10,6 +10,7 @@ import (
 	"github.com/kokizzu/gotro/M"
 	"github.com/kokizzu/gotro/S"
 	"github.com/kokizzu/gotro/T"
+	"github.com/kokizzu/gotro/Z"
 	"github.com/tdewolff/minify"
 	"github.com/tdewolff/minify/css"
 	"github.com/tdewolff/minify/js"
@@ -266,6 +267,26 @@ func checkRequiredFile(errors []string, path, label, default_content string) []s
 	return errors
 }
 
+func (engine *Engine) LoadLayout() {
+	tc, err := Z.ParseFile(engine.DebugMode, engine.DebugMode, engine.BaseDir+VIEWS_SUBDIR+`layout.html`)
+	L.PanicIf(err, `Layout template not found`)
+	engine.ViewCache.Set(`layout`, tc)
+}
+
+func (engine *Engine) Template(key string) *Z.TemplateChain {
+	cache := engine.ViewCache.Get(key)
+	var tc *Z.TemplateChain
+	var ok bool
+	tc, ok = cache.(*Z.TemplateChain)
+	if cache == nil || tc == nil || !ok {
+		var err error
+		tc, err = Z.ParseFile(engine.DebugMode, engine.DebugMode, engine.BaseDir+VIEWS_SUBDIR+key+`.html`)
+		L.PanicIf(err, `Layout template not found`)
+		engine.ViewCache.Set(key, tc)
+	}
+	return tc
+}
+
 func NewEngine(debugMode, multiApp bool, projectName, baseDir string) *Engine {
 	errors := []string{}
 	errors = checkMailers(errors)
@@ -301,7 +322,8 @@ func NewEngine(debugMode, multiApp bool, projectName, baseDir string) *Engine {
 	}
 	engine.Router.HandleMethodNotAllowed = false
 	engine.Router.NotFound = fs.NewRequestHandler()
-	//engine.LoadLayout()
+
+	engine.LoadLayout()
 
 	// initialize routes handlers
 	for url, handler := range Routes {
@@ -313,8 +335,15 @@ func NewEngine(debugMode, multiApp bool, projectName, baseDir string) *Engine {
 					Route:      url,
 					Actions:    append([]Action{LogFilter, PanicFilter, SessionFilter}, Filters...),
 				}
+				if n_ctx.IsAjax() {
+					n_ctx.ContentType = `application/json`
+					n_ctx.NoLayout = true
+				} else {
+					n_ctx.ContentType = `text/html`
+				}
 				n_ctx.Actions = append(n_ctx.Actions, handler)
 				n_ctx.Next()(n_ctx)
+				n_ctx.Finish()
 			}
 		})(url, handler)
 		engine.Router.GET(`/`+url, hFun)
@@ -330,4 +359,15 @@ func NewEngine(debugMode, multiApp bool, projectName, baseDir string) *Engine {
 		L.Describe(engine.GlobalAny)
 	}
 	return engine
+}
+
+// debug info
+func (ctx *Context) RequestDebugStr() string {
+	return ctx.Session.IpAddr + S.WebBR +
+		ctx.Session.UserAgent + S.WebBR +
+		ctx.Title + S.WebBR +
+		T.DateTimeStr() + S.WebBR +
+		S.IfElse(ctx.IsAjax(), `POST`, `GET`) + ` ` + S.IfEmpty(string(ctx.Path()), `/`) + S.WebBR +
+		`Session: ` + ctx.Session.String() + S.WebBR +
+		ctx.Posts().String() + S.WebBR + S.WebBR
 }

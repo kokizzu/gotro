@@ -30,7 +30,7 @@ var TIMETRACK_MIN_DURATION float64
 
 var BgRed, BgGreen (func(format string, a ...interface{}) string)
 
-const BR2 = "\n<br/>"
+const WebBR = "\n<br/>"
 
 // initialize logger
 func init() {
@@ -210,7 +210,7 @@ func PanicIf(err error, msg string, args ...interface{}) {
 	stt := StackTrace(3)
 	res := pretty.Formatter(err)
 	LOG.Criticalf("%# v\n    StackTrace: %s", res, stt)
-	panic(fmt.Errorf(err.Error()+BR2+fmt.Sprintf("%# v"+BR2+"    StackTrace: %s", res, stt)+BR2+strf+strf2+BR2+msg, args...))
+	panic(fmt.Errorf(err.Error()+WebBR+fmt.Sprintf("%# v"+WebBR+"    StackTrace: %s", res, stt)+WebBR+strf+strf2+WebBR+msg, args...))
 }
 
 // return elapsed time in ms, show 1st level, returns in ms

@@ -14,15 +14,23 @@ var Filters []Action
 var PUBLIC_SUBDIR = `public/`
 var VIEWS_SUBDIR = `views/`
 
+var Errors = map[int]string{
+	0:   `Unknown Error`,
+	500: `Internal Server Error`,
+	404: `Page Not Found`,
+	403: `Forbidden`,
+	503: `Server is Overloaded`,
+}
+
 var DEFAULT_FILEDIR_PERM = os.FileMode(0755)
 
-// locals: error_code, error_msg, project_name, requested_path, webmaster
+// locals: error_code, error_title, error_detail, project_name, requested_path, webmaster
 const ERROR_DEFAULT_CONTENT = `
 <div style="text-align: center">
 	<div style="display: inline-block;">
 		<div class="ui message">
 			<div class="header">
-				Error #{error_code}: #{error_msg}
+				Error #{error_code}: #{error_title}
 			</div>
 		</div>
 		<div class="ui grid" id="vm">
@@ -32,6 +40,9 @@ const ERROR_DEFAULT_CONTENT = `
 				<div class="ui success message">
 					<div class="header">
 						#{requested_path}
+					</div>
+					<div class="detail">
+						#{error_detail}
 					</div>
 				</div>
 				<div class="ui negative message">

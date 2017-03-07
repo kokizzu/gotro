@@ -59,4 +59,4 @@ These dependencies automatically installed when you run `go get`
 - Add graceful restart (zero downtime deployment): [grace](//github.com/facebookgo/grace) or [endless](//github.com/fvbock/endless)
 - Write a book for about [Advanced Programming](//goo.gl/X4BIlM), [Database Systems](//goo.gl/uR8iVB) and [Web Programming](//goo.gl/Bl3fPE) that includes this framework
 - Add Catch NotFound (rewrite the Response.Body) if no route and static file found
-- 
+- Check why the performance worse than httprouter for `siege -b`

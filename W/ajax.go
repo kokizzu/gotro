@@ -3,6 +3,7 @@ package W
 import (
 	"github.com/kokizzu/gotro/L"
 	"github.com/kokizzu/gotro/M"
+	"github.com/kokizzu/gotro/S"
 )
 
 ////////// Ajax
@@ -29,7 +30,7 @@ func (json Ajax) Info(msg string) {
 		str = ``
 	}
 	if len(str) > 0 {
-		str += "\n<br/>"
+		str += S.WebBR
 	}
 	str += msg
 	json.SX[`info`] = str

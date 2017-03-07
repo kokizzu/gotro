@@ -89,7 +89,7 @@ func ToDateTimeStr(t time.Time) string {
 
 // current iso date and time
 //  T.ToDateTimeStr(time.Now()) // "2016-03-17 10:07:50"
-func DateTimeStr(t time.Time) string {
+func DateTimeStr() string {
 	return time.Now().Format(YMD_HMS)
 }
 

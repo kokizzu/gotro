@@ -15,6 +15,8 @@ import (
 	"github.com/yosuke-furukawa/json5/encoding/json5"
 )
 
+const WebBR = "\n<br/>"
+
 // check whether the input string (first arg) starts with a certain character (second arg) or not.
 //  S.StartsWith(`adakah`,`ad`) // bool(true)
 //  S.StartsWith(`adakah`,`bad`) // bool(false)

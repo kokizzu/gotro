@@ -159,9 +159,9 @@ func (mp *Row) UpsertRow() int64 {
 		return new_id
 	}
 	if new_rec {
-		mp.Ajax.Info(`Created new ` + label + " with: \n<br/>" + mp.Log)
+		mp.Ajax.Info(`Created new ` + label + " with: " + S.WebBR + mp.Log)
 	} else {
-		mp.Ajax.Info(`Updated ` + label + " with: \n<br/>" + mp.Log)
+		mp.Ajax.Info(`Updated ` + label + " with: " + S.WebBR + mp.Log)
 	}
 	mp.Ajax.Set(`id`, new_id)
 	return new_id
@@ -216,9 +216,9 @@ func (mp *Row) IndateRow() int64 {
 		return new_id
 	}
 	if new_rec {
-		mp.Ajax.Info(`Created new ` + label + " with: \n<br/>" + mp.Log)
+		mp.Ajax.Info(`Created new ` + label + " with: " + S.WebBR + mp.Log)
 	} else {
-		mp.Ajax.Info(`Updated ` + label + " with: \n<br/>" + mp.Log)
+		mp.Ajax.Info(`Updated ` + label + " with: " + S.WebBR + mp.Log)
 	}
 	mp.Ajax.Set(`id`, new_id)
 	return new_id
@@ -230,11 +230,11 @@ func (mp *Row) LogIt(key string, val interface{}) {
 	newv := X.ToS(val)
 	new_label := ZZ(newv)
 	if mp.Id == 0 {
-		mp.Log += key_label + ` = ` + new_label + "\n<br/>"
+		mp.Log += key_label + ` = ` + new_label + S.WebBR
 	} else {
 		oldv := X.ToS(mp.Row[key])
 		if oldv != newv {
-			mp.Log += key_label + `  from ` + ZZ(oldv) + ` to ` + new_label + "\n<br/>"
+			mp.Log += key_label + `  from ` + ZZ(oldv) + ` to ` + new_label + S.WebBR
 		}
 	}
 }
@@ -245,7 +245,7 @@ func (mp *Row) Set_UniqueId(val string) {
 		key_label := ZZ(`unique_id`)
 		new_label := ZZ(val)
 		if val != mp.UniqueId {
-			mp.Log += key_label + ` = ` + new_label + "\n<br/>"
+			mp.Log += key_label + ` = ` + new_label + S.WebBR
 			mp.UniqueId = S.Trim(val)
 		}
 	}
@@ -256,7 +256,7 @@ func (mp *Row) Set_UniqueId(val string) {
 func (mp *Row) Restore() {
 	if mp.Id > 0 {
 		if mp.Tx.DoRestore(mp.DbActor, mp.Table, mp.Id) {
-			mp.Log += "record restored\n<br/>"
+			mp.Log += "record restored" + S.WebBR
 		}
 	}
 }
@@ -265,7 +265,7 @@ func (mp *Row) Restore() {
 func (mp *Row) Delete() {
 	if mp.Id > 0 {
 		if mp.Tx.DoDelete(mp.DbActor, mp.Table, mp.Id) {
-			mp.Log += "record deleted\n<br/>"
+			mp.Log += "record deleted" + S.WebBR
 		}
 	}
 }
@@ -426,7 +426,7 @@ func (mp *Row) SetBool(key string) bool {
 func (mp *Row) Unset(key string) {
 	oldv, exists := mp.Row[key]
 	if exists {
-		mp.Log += ZZ(key) + ` removed, previously ` + ZZ(X.ToS(oldv)) + "\n<br/>"
+		mp.Log += ZZ(key) + ` removed, previously ` + ZZ(X.ToS(oldv)) + S.WebBR
 		delete(mp.Row, key)
 	}
 }
@@ -444,7 +444,7 @@ func (mp *Row) SetUnsetIntVal(key string, val int64) int64 {
 // set user password, skip logging
 func (mp *Row) Set_UserPassword(pass string) {
 	if pass != `` {
-		mp.Log += ZZ(`password`) + ` changed` + "\n<br/>"
+		mp.Log += ZZ(`password`) + ` changed` + S.WebBR
 		mp.Row[`password`] = S.HashPassword(pass)
 		mp.Row[`last_reset_password_at`] = T.Epoch()
 	}
