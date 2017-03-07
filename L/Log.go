@@ -28,6 +28,8 @@ var CPU_PERCENT, RAM_PERCENT float64
 var LAST_CPU_CALL, LAST_RAM_CALL int64
 var TIMETRACK_MIN_DURATION float64
 
+var BgRed, BgGreen (func(format string, a ...interface{}) string)
+
 const BR2 = "\n<br/>"
 
 // initialize logger
@@ -48,6 +50,9 @@ func init() {
 
 	NUM_CPU = float64(runtime.NumCPU())
 	PercentCPU()
+
+	BgGreen = color.New(color.BgGreen).SprintfFunc()
+	BgRed = color.New(color.BgRed).SprintfFunc()
 }
 
 // get CPU usage percentage

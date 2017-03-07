@@ -25,3 +25,8 @@
 debian-binary
 D/src
 D/pkg
+
+public/lib.js
+public/lib.css
+public/mod.js
+public/mod.css

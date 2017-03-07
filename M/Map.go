@@ -95,6 +95,36 @@ func (hash SS) SortedKeys() []string {
 	return res
 }
 
+// get pretty printed values
+func (hash SS) Pretty(sep string) string {
+	keys := hash.SortedKeys()
+	buff := bytes.Buffer{}
+	for idx, key := range keys {
+		buff.WriteString(key)
+		buff.WriteRune(' ')
+		buff.WriteString(hash[key])
+		if idx > 0 {
+			buff.WriteString(sep)
+		}
+	}
+	return buff.String()
+}
+
+// get pretty printed values with filter values
+func (hash SS) PrettyFunc(sep string, fun func(string, string) string) string {
+	keys := hash.SortedKeys()
+	buff := bytes.Buffer{}
+	for _, key := range keys {
+		buff.WriteString(key)
+		buff.WriteRune(' ')
+		buff.WriteString(fun(key, hash[key]))
+		if buff.Len() > 0 {
+			buff.WriteString(sep)
+		}
+	}
+	return buff.String()
+}
+
 // get concatenated string keys
 //  m := M.SB{`tes`:true,`coba`:true,`lah`:true}
 //  m.KeysConcat(`,`) // `coba,lah,tes`
@@ -116,6 +146,20 @@ func (hash SB) KeysConcat(with string) string {
 //  m := M.SS{`tes`:true,`coba`:false,`lah`:false}
 //  m.SortedKeys() // []string{`coba`,`lah`,`tes`}
 func (hash SB) SortedKeys() []string {
+	res := make([]string, len(hash))
+	idx := 0
+	for k := range hash {
+		res[idx] = k
+		idx++
+	}
+	sort.Strings(res)
+	return res
+}
+
+// get sorted keys
+//  m := M.SX{`tes`:1,`coba`:12.4,`lah`:false}
+//  m.SortedKeys() // []string{`coba`,`lah`,`tes`}
+func (hash SX) SortedKeys() []string {
 	res := make([]string, len(hash))
 	idx := 0
 	for k := range hash {
@@ -583,6 +627,21 @@ func (json SX) GetIntArr(key string) []int64 {
 	}
 }
 
+// get int64 from from map
+func (hash SS) GetInt(key string) int64 {
+	return S.ToI(hash[key])
+}
+
+// get float64 type from map
+func (hash SS) GetFloat(key string) float64 {
+	return S.ToF(hash[key])
+}
+
+// get string type from map
+func (hash SS) GetStr(key string) string {
+	return hash[key]
+}
+
 // get array of string keys
 //  m :=  M.SS{`satu`:`1`,`dua`:`2`}
 //  m.Keys() // []string{"satu", "dua"}
@@ -670,4 +729,19 @@ func ToJson(hash map[string]interface{}) string {
 // set key with any value
 func (hash SX) Set(key string, val interface{}) {
 	hash[key] = val
+}
+
+// get pretty printed values
+func (hash SX) Pretty(sep string) string {
+	keys := hash.SortedKeys()
+	buff := bytes.Buffer{}
+	for idx, key := range keys {
+		buff.WriteString(key)
+		buff.WriteRune(' ')
+		buff.WriteString(fmt.Sprintf("%#v", hash[key]))
+		if idx > 0 {
+			buff.WriteString(sep)
+		}
+	}
+	return buff.String()
 }

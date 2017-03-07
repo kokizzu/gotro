@@ -125,6 +125,13 @@ func (s *Session) Touch() {
 	}
 }
 
+func (s *Session) String() string {
+	if len(s.SX) == 0 {
+		return ``
+	}
+	return s.SX.Pretty(` | `)
+}
+
 func InitSession(sess_key string, expire_ns, renew_ns time.Duration, conn SessionConnector) {
 	SESS_KEY = S.IfEmpty(sess_key, SESS_KEY)
 	EXPIRE_SEC = int64(expire_ns / NS2SEC)

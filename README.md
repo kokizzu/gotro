@@ -17,7 +17,7 @@ This Framework is rewrite of [gokil](gitlab.com/kokizzu/gokil), that previously 
   - I - Integer
   - S - String
   - T - Time (and Date)
-  - W - Web (the "framework") **STATUS**: under development 5% (2017-03-03)
+  - W - Web (the "framework") **STATUS**: under development 15% (2017-03-07)
   - X - Anything (aka `interface{}`)
   - Z - Z-Template Engine, that has syntax similar to ruby string interpolation `#{foo}` or any other that javascript friendly `{/* foo */}`, `[/* bar */]`, `/*! bar */`
 - Comment and examples on each type and function, so it can be viewed using godoc, something like: `godoc github.com/kokizzu/gotro/A`
@@ -58,3 +58,5 @@ These dependencies automatically installed when you run `go get`
 - Create example API App
 - Add graceful restart (zero downtime deployment): [grace](//github.com/facebookgo/grace) or [endless](//github.com/fvbock/endless)
 - Write a book for about [Advanced Programming](//goo.gl/X4BIlM), [Database Systems](//goo.gl/uR8iVB) and [Web Programming](//goo.gl/Bl3fPE) that includes this framework
+- Add Catch NotFound (rewrite the Response.Body) if no route and static file found
+- 

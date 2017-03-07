@@ -12,6 +12,7 @@ import (
 
 	"github.com/kokizzu/gotro/I"
 	"github.com/kokizzu/gotro/L"
+	"github.com/yosuke-furukawa/json5/encoding/json5"
 )
 
 // check whether the input string (first arg) starts with a certain character (second arg) or not.
@@ -207,6 +208,31 @@ func JsonToArr(str string) (res []interface{}) {
 	err := json.Unmarshal([]byte(str), &res)
 	L.IsError(err, str)
 	return
+}
+
+// convert JSON object to []string, silently print and return empty slice of interface if failed
+//  json_str := `["123","456",789]`
+//  arr := S.JsonToStrArr(json_str)
+func JsonToStrArr(str string) (res []string) {
+	res = []string{}
+	err := json5.Unmarshal([]byte(str), &res)
+	L.IsError(err, str)
+	return
+}
+
+// convert JSON object to []int64, silently print and return empty slice of interface if failed
+//  json_str := `[1,2,['test'],'a']`
+//  arr := S.JsonToArr(json_str)
+func JsonToIntArr(str string) (res []int64) {
+	res = []int64{}
+	err := json5.Unmarshal([]byte(str), &res)
+	L.IsError(err, str)
+	return
+}
+
+// repeat string
+func Repeat(str string, count int) string {
+	return strings.Repeat(str, count)
 }
 
 // convert JSON object to map[string]interface{} with check
