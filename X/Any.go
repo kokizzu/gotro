@@ -58,6 +58,14 @@ func ToI(any interface{}) int64 {
 			return 1
 		}
 		return 0
+	case []byte:
+		if val, err := strconv.ParseInt(string(v), 10, 64); err == nil {
+			return val
+		}
+		if val, err := strconv.ParseFloat(string(v), 64); err == nil {
+			return int64(val)
+		}
+		L.Describe(`Can't convert to int64`, any)
 	case string:
 		if val, err := strconv.ParseInt(v, 10, 64); err == nil {
 			return val
@@ -111,6 +119,11 @@ func ToF(any interface{}) float64 {
 			return 1
 		}
 		return 0
+	case []byte:
+		if val, err := strconv.ParseFloat(string(v), 64); err == nil {
+			return val
+		}
+		L.Describe(`Can't convert to float64`, any)
 	case string:
 		if val, err := strconv.ParseFloat(v, 64); err == nil {
 			return val
@@ -133,7 +146,7 @@ func ToS(any interface{}) string {
 	if val, ok := any.(string); ok {
 		return val
 	}
-	if val, ok := any.([]uint8); ok {
+	if val, ok := any.([]byte); ok {
 		return string(val)
 	}
 	switch v := any.(type) {

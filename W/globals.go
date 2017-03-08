@@ -26,14 +26,14 @@ var DEFAULT_FILEDIR_PERM = os.FileMode(0755)
 
 // locals: error_code, error_title, error_detail, project_name, requested_path, webmaster
 const ERROR_DEFAULT_CONTENT = `
-<div style="text-align: center">
+<div class="pusher" id="vm"  style="text-align: center">
 	<div style="display: inline-block;">
 		<div class="ui message">
 			<div class="header">
 				Error #{error_code}: #{error_title}
 			</div>
 		</div>
-		<div class="ui grid" id="vm">
+		<div class="ui grid">
 			<div class="ui sixteen wide centered column active" style="min-height: 200px">
 				<div class="eight wide centered column">
 				</div>
@@ -51,12 +51,11 @@ const ERROR_DEFAULT_CONTENT = `
 							try again. Use your browser's <b>Back</b> button to navigate to the page you have previously come from</p>
 						<p id="err404" style="display:none">The page you requested could not be found, either contact the #{webmaster} or try again. Use your
 							browser's <b>Back</b> button to navigate to the page you have previously come from</p>
-						<button class="ui blue button" onclick="window.history.back()">
 						<p id="err" style="display:none">There is a possible programming mistake on this page, either contact the #{webmaster} or try again. Use
 							your browser's <b>Back</b> button to navigate to the page you have previously come from</p>
-						<p id="err503">Server is overloaded, please wait 2 minutes then try again by clicking your browser's <b>Refresh</b>
+						<p id="err503" style="display:none">Server is overloaded, please wait 2 minutes then try again by clicking your browser's <b>Refresh</b>
 							button (F5/Ctrl+R)</p>
-						<button>
+						<button class="ui blue button" onclick="window.history.back()">
 							<i class="glyphicon glyphicon-arrow-left"></i> Take Me Back
 						</button>
 						<button class="ui orange button" onclick="window.location='/'">
@@ -65,7 +64,7 @@ const ERROR_DEFAULT_CONTENT = `
 					</div>
 				</div>
 				<script>
-					var code = '#{err_code}';
+					var code = '#{error_code}';
 					if( code != '404' && code != '403' && code != '503' ) code = '';
 					document.getElementById('err'+code).style.display = 'block'
 				</script>
@@ -74,7 +73,7 @@ const ERROR_DEFAULT_CONTENT = `
 		<hr/>
 		<div class="ui message">
 			<div class="header">
-				&copy; <script>document.write(new Date().getYear())</script> #{project_name}
+				&copy; <script>document.write(new Date().getFullYear())</script> #{project_name}
 			</div>
 		</div>
 	</div>
@@ -90,6 +89,7 @@ const LAYOUT_DEFAULT_CONTENT = `
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<title>#{title} | #{project_name}</title>
+	<!--
 	<meta name="apple-mobile-web-app-capable" content="yes">
 	<meta name="apple-mobile-web-app-status-bar-style" content="black">
 	<link rel="apple-touch-icon" sizes="57x57" href="/apple-icon-57x57.png">
@@ -105,9 +105,12 @@ const LAYOUT_DEFAULT_CONTENT = `
 	<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
 	<link rel="icon" type="image/png" sizes="96x96" href="/favicon-96x96.png">
 	<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+	-->
 	<link rel="manifest" href="/manifest.json">
+	<!--
 	<meta name="msapplication-TileColor" content="#ffffff">
-	<meta name="msapplication-TileImage" content="/ms-icon-144x144.png">
+	<meta name="msapplication-TileImage" content="/ms-icon-144x144.png"> 
+	-->
 	<meta name="theme-color" content="#ffffff">
 </head>
 <body onload="_loaded()" style="width:100%; height: 100%; overflow-x: visible">

@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"github.com/kokizzu/gotro/L"
 	"github.com/kokizzu/gotro/M"
+	"github.com/kokizzu/gotro/S"
 	"github.com/kokizzu/gotro/X"
 	"github.com/valyala/fasthttp"
 )
@@ -43,7 +44,7 @@ func (ctx *Context) IsAjax() bool {
 
 // get requested host
 func (ctx *Context) Host() string {
-	return string(ctx.RequestCtx.Host())
+	return `http` + S.If(ctx.RequestCtx.IsTLS(), `s`) + `://` + string(ctx.RequestCtx.Host())
 }
 
 // append bytes
@@ -92,7 +93,7 @@ func (ctx *Context) Finish() {
 			`is_superadmin`: ctx.IsWebMaster(),
 			`debug_mode`:    ctx.Engine.DebugMode,
 		})
-		fmt.Fprint(ctx, buff)
+		fmt.Fprint(ctx, buff.String())
 	}
 }
 
@@ -139,4 +140,9 @@ func (ctx *Context) Error(code int, info string) {
 		`error_title`:    Errors[code],
 		`error_detail`:   info,
 	})
+}
+
+// get parsed ?a=b&c=d, this is different from Param*() func
+func (ctx *Context) QueryParams() *QueryParams {
+	return &QueryParams{ctx.RequestCtx.QueryArgs()}
 }
