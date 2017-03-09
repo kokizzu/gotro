@@ -82,7 +82,7 @@ func (ctx *Context) PartialNoDebug(path string, locals M.SX) string {
 func (ctx *Context) Finish() {
 	ctx.SetContentType(ctx.ContentType)
 	if ctx.NoLayout {
-		fmt.Fprint(ctx, ctx.Buffer)
+		fmt.Fprint(ctx, ctx.Buffer.String())
 	} else {
 		buff := bytes.Buffer{}
 		ctx.Engine.Template(`layout`).Render(&buff, M.SX{
