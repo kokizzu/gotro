@@ -1,0 +1,19 @@
+<p>Welcome to Gotro</p>
+<p>What's your name?</p>
+<div>
+	<input id="name" type="text" name="name" />
+	<button type="button" onClick="submit()">Submit</button>
+</div>
+
+<script>
+	function submit() {
+		var d = { name: $('#name').val() };
+		$('#name').val('');
+		$.post(`/`, d, function(res) {
+			alert("Hello " + res.name);
+		}).fail(function(xhr, textStatus, errorThrown ) {
+			self.loading -= 1;
+			alert(textStatus + '\n' + xhr.status);
+		})
+	}
+</script>

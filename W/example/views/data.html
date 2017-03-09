@@ -1,0 +1,10 @@
+<p>Data</p>
+<ul id="data">
+	
+</ul>
+<script>
+	var data = #{data};
+	for (var key in data) {
+		$('#data').append('<li><b>' + key + ' : ' + data[key] + '</b></li>')
+	}
+</script>
