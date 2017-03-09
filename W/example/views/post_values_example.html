@@ -1,0 +1,17 @@
+<h1>Post Values Example</h1>
+<div>
+	<input id="value" type="text" name="value" />
+	<button type="button" onClick="send()">Send</button>
+</div>
+
+<script>
+	function send() {
+		var d = { value: $('#value').val() };
+		$('#value').val('');
+		$.post(`/post_values_example`, d, function(res) {
+			alert("Value: " + res['value']);
+		}).fail(function(xhr, textStatus, errorThrown ) {
+			alert(textStatus + '\n' + xhr.status);
+		});
+	}
+</script>
