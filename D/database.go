@@ -10,8 +10,6 @@ type Record interface {
 	GetInt(string) int64
 	GetArr(string) []interface{}
 	GetBool(string) bool
-	GetId() int64
-	GetUniqueId() string
 }
 
 var Z func(string) string

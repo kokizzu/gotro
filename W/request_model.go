@@ -5,13 +5,13 @@ import (
 )
 
 type RequestModel struct {
-	Id      int64
+	Id      string
 	Uniq    string
-	AppId   int64
+	AppId   string
 	Posts   *Posts
 	Ajax    Ajax
-	DbActor int64
-	Actor   int64
+	DbActor string
+	Actor   string
 	Level   M.SX
 	Ctx     *Context
 	Ok      bool
@@ -22,7 +22,7 @@ func (rm *RequestModel) IsAjax() bool {
 	return rm.Ctx.IsAjax()
 }
 
-func NewRequestModel_ById_ByDbActor_ByAjax(id, db_actor int64, ajax Ajax) *RequestModel {
+func NewRequestModel_ById_ByDbActor_ByAjax(id, db_actor string, ajax Ajax) *RequestModel {
 	if ajax.SX == nil {
 		ajax = NewAjax()
 	}
@@ -33,7 +33,7 @@ func NewRequestModel_ById_ByDbActor_ByAjax(id, db_actor int64, ajax Ajax) *Reque
 	}
 }
 
-func NewRequestModel_ByUniq_ByDbActor_ByAjax(uniq_id string, db_actor int64, ajax Ajax) *RequestModel {
+func NewRequestModel_ByUniq_ByDbActor_ByAjax(uniq_id string, db_actor string, ajax Ajax) *RequestModel {
 	if ajax.SX == nil {
 		ajax = NewAjax()
 	}

@@ -1,12 +1,15 @@
-package My
+package Sc
 
 import (
 	"bytes"
 	"errors"
-	_ "github.com/go-sql-driver/mysql"
-	"github.com/jmoiron/sqlx"
+	"github.com/go-lang-plugin-org/go-lang-idea-plugin/testData/mockSdk-1.1.2/src/pkg/fmt"
+	"github.com/gocassa/gocassa"
+	"github.com/gocql/gocql"
+	_ "github.com/gocql/gocql"
 	"github.com/kokizzu/gotro/A"
 	"github.com/kokizzu/gotro/D"
+	"github.com/kokizzu/gotro/I"
 	"github.com/kokizzu/gotro/L"
 	"github.com/kokizzu/gotro/M"
 	"github.com/kokizzu/gotro/S"
@@ -15,22 +18,29 @@ import (
 	"time"
 )
 
-// TODO: change postgresql specific tables (pg_indexes) and trigger (InitTrigger) syntax to mysql's
+// TODO: change postgresql specific tables (pg_indexes) and trigger (InitTrigger) syntax to scylladb's
 
 // wrapper for GO's sql.DB
 type RDBMS struct {
 	Name    string
-	Adapter *sqlx.DB
+	Adapter gocassa.KeySpace
+	Cluster *gocql.ClusterConfig
 }
 
 // create new postgresql connection to localhost
 func NewConn(user, pass, ip, db string) *RDBMS {
-	opt := user + `:` + pass + `@` + ip + `/` + db
-	conn := sqlx.MustConnect(`mysql`, opt)
-	name := `my::` + opt
+	conn, err := gocassa.ConnectToKeySpace(db, []string{ip}, user, pass)
+	L.PanicIf(err, `Failed connect to keyspace`)
+	clust := gocql.NewCluster(ip)
+	clust.Authenticator = gocql.PasswordAuthenticator{
+		Username: user,
+		Password: pass,
+	}
+	clust.Keyspace = db
 	return &RDBMS{
-		Name:    name,
+		Name:    `sc://` + user + `:` + pass + `@` + ip + `/` + db,
 		Adapter: conn,
+		Cluster: clust,
 	}
 }
 
@@ -136,8 +146,8 @@ CREATE TABLE IF NOT EXISTS ` + name + ` (
 		modified_at__index := name + `__modified_at__index`
 		unique_patern__index := name + `__unique__patern__index`
 		query_count_index := `SELECT COUNT(*) FROM pg_indexes WHERE indexname = `
-		ra, _ := tx.DoExec(query).RowsAffected()
-		if ra > 0 {
+		err := tx.DoExec(query)
+		if err == nil {
 			query = query_count_index + Z(is_deleted__index)
 			if tx.QInt(query) == 0 {
 				query = `CREATE INDEX ` + name + `__is_deleted__index ON ` + name + `(is_deleted);`
@@ -168,7 +178,8 @@ CREATE TABLE IF NOT EXISTS ` + name + ` (
 		}
 		tx.DoExec(query)
 		// logs
-		if name == `users` { // TODO: tambahkan record ke access_log ketika login, renew session, logout
+		if name == `users` {
+			// TODO: tambahkan record ke access_log ketika login, renew session, logout
 			query = `
 CREATE TABLE IF NOT EXISTS access_logs (
 	id BIGSERIAL PRIMARY KEY,
@@ -216,35 +227,32 @@ CREATE TABLE IF NOT EXISTS _log_` + name + ` (
 
 }
 
-// query any number of columns, returns array of slice (to be exported directly to json, not for processing)
-func (db *RDBMS) QArray(query string, params ...interface{}) A.X {
-	rows := db.QAll(query)
-	res := A.X{}
-	defer rows.Close()
-	for rows.Next() {
-		res = append(res, rows.ScanSlice())
-	}
-	return res
+// reset sequence, to be called after TRUNCATE TABLE tablename
+func (db *RDBMS) FixSerialSequence(table string) {
+	db.DoTransaction(func(tx *Tx) string {
+		next := tx.QInt(`SELECT COALESCE(MAX(id)+1,1) FROM ` + table)
+		tx.DoExec(`ALTER SEQUENCE ` + table + `_id_seq RESTART WITH ` + I.ToS(next))
+		return ``
+	})
 }
+
+//// query any number of columns, returns array of slice (to be exported directly to json, not for processing)
+//func (db *RDBMS) QArray(query string, params ...interface{}) A.X {
+//	// not implemented, far too inefficient with current gocql
+//}
 
 // query any number of columns, returns first line of line
 func (db *RDBMS) QFirstMap(query string, params ...interface{}) M.SX {
 	rows := db.QAll(query)
 	defer rows.Close()
-	for rows.Next() {
-		return rows.ScanMap()
-	}
-	return M.SX{}
+	return rows.ScanMap()
 }
 
 // query any number of columns, returns first line of line
 func (db *RDBMS) QFirstArray(query string, params ...interface{}) A.X {
 	rows := db.QAll(query)
 	defer rows.Close()
-	for rows.Next() {
-		return rows.ScanSlice()
-	}
-	return A.X{}
+	return rows.CurrentSlice()
 }
 
 // query any number of columns, returns array of slice (to be exported directly to json, not for processing)
@@ -252,8 +260,12 @@ func (db *RDBMS) QMapArray(query string, params ...interface{}) A.MSX {
 	rows := db.QAll(query)
 	res := A.MSX{}
 	defer rows.Close()
-	for rows.Next() {
-		res = append(res, rows.ScanMap())
+	for {
+		m := rows.ScanMap()
+		if len(m) == 0 {
+			break
+		}
+		res = append(res, m)
 	}
 	return res
 }
@@ -264,10 +276,11 @@ func (db *RDBMS) QTsv(header, query string, params ...interface{}) bytes.Buffer 
 	res.WriteString(header)
 	rows := db.QAll(query)
 	defer rows.Close()
-	for rows.Next() {
-		row := rows.ScanSlice()
-		for k := range row {
-			res.WriteString(X.ToS(row[k]))
+	all := rows.GetAMSX()
+	col := rows.ResultSet.Columns()
+	for _, row := range all {
+		for _, k := range col {
+			res.WriteString(X.ToS(row[k.Name]))
 			res.WriteRune('\t')
 		}
 		res.WriteRune('\n')
@@ -275,33 +288,17 @@ func (db *RDBMS) QTsv(header, query string, params ...interface{}) bytes.Buffer 
 	return res
 }
 
-// query any number of columns, returns map of string, array (to be exported directly to json, not for processing)
-// the key_idx will be converted to string and taken as key
-func (db *RDBMS) QStrIdxArrMap(key_idx int64, query string, params ...interface{}) M.SAX {
-	rows := db.QAll(query)
-	res := M.SAX{}
-	defer rows.Close()
-	for rows.Next() {
-		row := rows.ScanSlice()
-		key_str := X.ToS(row[key_idx])
-		res[key_str] = row
-	}
-	return res
-}
+//// query any number of columns, returns map of string, array (to be exported directly to json, not for processing)
+//// the key_idx will be converted to string and taken as key
+//func (db *RDBMS) QStrIdxArrMap(key_idx int64, query string, params ...interface{}) M.SAX {
+//	// not implemented, far too inefficient with current gocql
+//}
 
-// query any number of columns, returns map of string, array (to be exported directly to json, not for processing)
-// the first index will be converted to string and taken as key
-func (db *RDBMS) QStrShiftArrMap(query string, params ...interface{}) M.SAX {
-	rows := db.QAll(query)
-	res := M.SAX{}
-	defer rows.Close()
-	for rows.Next() {
-		row := rows.ScanSlice()
-		key_str := X.ToS(row[0])
-		res[key_str] = row[1:]
-	}
-	return res
-}
+//// query any number of columns, returns map of string, array (to be exported directly to json, not for processing)
+//// the first index will be converted to string and taken as key
+//func (db *RDBMS) QStrShiftArrMap(query string, params ...interface{}) M.SAX {
+//	// not implemented, far too inefficient with current gocql
+//}
 
 // query any number of columns, returns map of string, map (to be exported directly to json, not for processing)
 // the key_idx will be converted to string and taken as key
@@ -309,8 +306,8 @@ func (db *RDBMS) QStrMapMap(key_idx string, query string, params ...interface{})
 	rows := db.QAll(query)
 	res := M.SX{}
 	defer rows.Close()
-	for rows.Next() {
-		row := rows.ScanMap()
+	all := rows.GetAMSX()
+	for _, row := range all {
 		key_str := X.ToS(row[key_idx])
 		res[key_str] = row
 	}
@@ -323,10 +320,9 @@ func (db *RDBMS) QIntIntMap(query string, params ...interface{}) M.II {
 	res := M.II{}
 	rows := db.QAll(query, params...)
 	defer rows.Close()
-	for rows.Next() {
-		key := int64(0)
-		val := key
-		rows.Scan(&key, &val)
+	key := int64(0)
+	val := key
+	for rows.Scan(&key, &val) {
 		res[key] = val
 	}
 	return res
@@ -338,10 +334,9 @@ func (db *RDBMS) QIntStrMap(query string, params ...interface{}) M.IS {
 	res := M.IS{}
 	rows := db.QAll(query, params...)
 	defer rows.Close()
-	for rows.Next() {
-		key := int64(0)
-		val := ``
-		rows.Scan(&key, &val)
+	key := int64(0)
+	val := ``
+	for rows.Scan(&key, &val) {
 		res[key] = val
 	}
 	return res
@@ -354,8 +349,7 @@ func (db *RDBMS) QStrBoolMap(query string, params ...interface{}) M.SB {
 	rows := db.QAll(query, params...)
 	defer rows.Close()
 	key := ``
-	for rows.Next() {
-		rows.Scan(&key)
+	for rows.Scan(&key) {
 		res[key] = true
 	}
 	return res
@@ -367,8 +361,7 @@ func (db *RDBMS) QIntBoolMap(query string, params ...interface{}) M.IB {
 	rows := db.QAll(query, params...)
 	defer rows.Close()
 	key := int64(0)
-	for rows.Next() {
-		rows.Scan(&key)
+	for rows.Scan(&key) {
 		res[key] = true
 	}
 	return res
@@ -379,36 +372,27 @@ func (db *RDBMS) QStrStrMap(query string, params ...interface{}) M.SS {
 	res := M.SS{}
 	rows := db.QAll(query, params...)
 	defer rows.Close()
-	for rows.Next() {
-		key := ``
-		val := ``
-		rows.Scan(&key, &val)
+	key := ``
+	val := ``
+	for rows.Scan(&key, &val) {
 		res[key] = val
 	}
 	return res
 }
 
-// query 1+N columns of string-[]any as map
-func (db *RDBMS) QStrArrMap(query string, params ...interface{}) M.SAX {
-	res := M.SAX{}
-	rows := db.QAll(query, params...)
-	defer rows.Close()
-	for rows.Next() {
-		row := rows.ScanSlice()
-		res[X.ToS(row[0])] = row[1:]
-	}
-	return res
-}
+//// query 1+N columns of string-[]any as map
+//func (db *RDBMS) QStrArrMap(query string, params ...interface{}) M.SAX {
+//	// not implemented, far too inefficient with current gocql
+//}
 
 // query 2 colums of string-integer as map
 func (db *RDBMS) QStrIntMap(query string, params ...interface{}) M.SI {
 	res := M.SI{}
 	rows := db.QAll(query, params...)
 	defer rows.Close()
-	for rows.Next() {
-		key := ``
-		val := int64(0)
-		rows.Scan(&key, &val)
+	key := ``
+	val := int64(0)
+	for rows.Scan(&key, &val) {
 		res[key] = val
 	}
 	return res
@@ -419,9 +403,8 @@ func (db *RDBMS) QIntCountMap(query string, params ...interface{}) M.II {
 	res := M.II{}
 	rows := db.QAll(query, params...)
 	defer rows.Close()
-	for rows.Next() {
-		val := int64(0)
-		rows.Scan(&val)
+	val := int64(0)
+	for rows.Scan(&val) {
 		res[val] += 1
 	}
 	return res
@@ -434,9 +417,8 @@ func (db *RDBMS) QStrCountMap(query string, params ...interface{}) M.SI {
 	res := M.SI{}
 	rows := db.QAll(query, params...)
 	defer rows.Close()
-	for rows.Next() {
-		val := ``
-		rows.Scan(&val)
+	val := ``
+	for rows.Scan(&val) {
 		res[val] += 1
 	}
 	return res
@@ -447,9 +429,8 @@ func (db *RDBMS) QIntArr(query string, params ...interface{}) []int64 {
 	res := []int64{}
 	rows := db.QAll(query, params...)
 	defer rows.Close()
-	for rows.Next() {
-		val := int64(0)
-		rows.Scan(&val)
+	val := int64(0)
+	for rows.Scan(&val) {
 		res = append(res, val)
 	}
 	return res
@@ -471,9 +452,8 @@ func (db *RDBMS) QStrArr(query string, params ...interface{}) []string {
 	res := []string{}
 	rows := db.QAll(query, params...)
 	defer rows.Close()
-	for rows.Next() {
-		val := ``
-		rows.Scan(&val)
+	val := ``
+	for rows.Scan(&val) {
 		res = append(res, val)
 	}
 	return res
@@ -485,10 +465,10 @@ func (db *RDBMS) QAll(query string, params ...interface{}) (rows Records) {
 	if DEBUG {
 		start = time.Now()
 	}
-	var err error
-	rs, err := db.Adapter.Queryx(query, params...)
-	L.PanicIf(err, `failed to QAll: %s %# v`, query, params)
-	rows = Records{rs, query, params}
+	db.DoTransaction(func(tx *Tx) string {
+		rows = tx.QAll(query, params...)
+		return ``
+	})
 	if DEBUG {
 		L.LogTrack(start, query)
 	}
@@ -497,22 +477,20 @@ func (db *RDBMS) QAll(query string, params ...interface{}) (rows Records) {
 
 // execute a select single value query, convert to string
 func (db *RDBMS) QStr(query string, params ...interface{}) (dest string) {
-	err := db.Adapter.Get(&dest, query, params...)
-	L.PanicIf(err, `failed to QStr: %s %# v`, query, params)
-	return
-}
-
-// check if unique exists
-func (db *RDBMS) QId(table, key string) (id int64) {
 	db.DoTransaction(func(tx *Tx) string {
-		id = tx.QId(table, key)
+		dest = tx.QStr(query, params...)
 		return ``
 	})
 	return
 }
 
+//// check if unique exists
+//func (db *RDBMS) QId(table, key string) (id int64) {
+//	// not implemented: no unique constraint on scylladb
+//}
+
 // check if id exists
-func (db *RDBMS) QExists(table string, id int64) (ex bool) {
+func (db *RDBMS) QExists(table string, id string) (ex bool) {
 	db.DoTransaction(func(tx *Tx) string {
 		ex = tx.QExists(table, id)
 		return ``
@@ -520,14 +498,10 @@ func (db *RDBMS) QExists(table string, id int64) (ex bool) {
 	return
 }
 
-// get unique_id from id
-func (db *RDBMS) QUniq(table string, key int64) (uniq string) {
-	db.DoTransaction(func(tx *Tx) string {
-		uniq = tx.QUniq(table, key)
-		return ``
-	})
-	return
-}
+//// get unique_id from id
+//func (db *RDBMS) QUniq(table string, key int64) (uniq string) {
+//	// not implemented: useless id is unique_id, and there are no additional unique constraint on scylladb
+//}
 
 // execute a select pair query, convert to int64 and string
 func (db *RDBMS) QIntStr(query string, params ...interface{}) (i int64, s string) {
@@ -560,15 +534,19 @@ func (db *RDBMS) QStrStr(query string, params ...interface{}) (s string, ss stri
 
 // execute a select single value query, convert to int64
 func (db *RDBMS) QBool(query string, params ...interface{}) (dest bool) {
-	err := db.Adapter.Get(&dest, query, params...)
-	L.PanicIf(err, `failed to QBool: %s %# v`, query, params)
+	db.DoTransaction(func(tx *Tx) string {
+		dest = tx.QBool(query, params...)
+		return ``
+	})
 	return
 }
 
 // execute a select single value query, convert to int64
 func (db *RDBMS) QInt(query string, params ...interface{}) (dest int64) {
-	err := db.Adapter.Get(&dest, query, params...)
-	L.PanicIf(err, `failed to QInt: %s %# v`, query, params)
+	db.DoTransaction(func(tx *Tx) string {
+		dest = tx.QInt(query, params...)
+		return ``
+	})
 	return
 }
 
@@ -579,19 +557,23 @@ SELECT COUNT(*)
 FROM (
 	` + query + `
 ) count_sq0`
-	err := db.Adapter.Get(&dest, query)
-	L.PanicIf(err, `failed to QCount: %s`, query)
+	db.DoTransaction(func(tx *Tx) string {
+		dest = tx.QInt(query)
+		return ``
+	})
 	return
 }
 
 func (db *RDBMS) QFloat(query string, params ...interface{}) (dest float64) {
-	err := db.Adapter.Get(&dest, query, params...)
-	L.PanicIf(err, `failed to QFloat: %s %# v`, query, params)
+	db.DoTransaction(func(tx *Tx) string {
+		dest = tx.QFloat(query)
+		return ``
+	})
 	return
 }
 
 // fetch a row to as Base struct
-func (db *RDBMS) QBase(table string, id int64) (base Base) {
+func (db *RDBMS) QBase(table string, id string) (base Base) {
 	db.DoTransaction(func(tx *Tx) string {
 		base = tx.QBase(table, id)
 		base.Connection = db
@@ -600,46 +582,40 @@ func (db *RDBMS) QBase(table string, id int64) (base Base) {
 	return
 }
 
-// fetch a row to Base struct by unique_id
-func (db *RDBMS) QBaseUniq(table, uid string) (base Base) {
-	db.DoTransaction(func(tx *Tx) string {
-		base = tx.QBaseUniq(table, uid)
-		base.Connection = db
-		return ``
-	})
-	return
-}
+//// fetch a row to Base struct by unique_id
+//func (db *RDBMS) QBaseUniq(table, uid string) (base Base) {
+//	// not implemented: no unique constraint on scylladb
+//}
 
 // generate insert command and execute it
-func (db *RDBMS) DoInsert(actor int64, table string, kvparams M.SX) (id int64) {
+func (db *RDBMS) DoInsert(actor string, table string, kvparams M.SX) (ok bool) {
 	db.DoTransaction(func(tx *Tx) string {
-		id = tx.DoInsert(actor, table, kvparams)
+		ok = tx.DoInsert(actor, table, kvparams)
 		return ``
 	})
 	return
 }
 
 // generate insert or update command and execute it
-func (db *RDBMS) DoUpsert(actor int64, table string, kvparams M.SX) (id int64) {
-	id = 0
+func (db *RDBMS) DoUpsert(actor string, table string, kvparams M.SX) (ok bool) {
 	db.DoTransaction(func(tx *Tx) string {
-		id = tx.DoUpsert(actor, table, kvparams)
+		ok = tx.DoUpsert(actor, table, kvparams)
 		return ``
 	})
 	return
 }
 
 // generate update command and execute it
-func (db *RDBMS) DoUpdate(actor int64, table string, id int64, kvparams M.SX) (ra int64) {
+func (db *RDBMS) DoUpdate(actor string, table string, kvparams M.SX) (ok bool) {
 	db.DoTransaction(func(tx *Tx) string {
-		ra = tx.DoUpdate(actor, table, id, kvparams)
+		ok = tx.DoUpdate(actor, table, kvparams)
 		return ``
 	})
 	return
 }
 
 // delete base table
-func (db *RDBMS) DoDelete(actor int64, table string, id int64) (ok bool) {
+func (db *RDBMS) DoDelete(actor string, table string, id string) (ok bool) {
 	db.DoTransaction(func(tx *Tx) string {
 		ok = tx.DoDelete(actor, table, id)
 		return ``
@@ -648,7 +624,7 @@ func (db *RDBMS) DoDelete(actor int64, table string, id int64) (ok bool) {
 }
 
 // delete or restore
-func (db *RDBMS) DoWipeUnwipe(a string, actor int64, table string, id int64) bool {
+func (db *RDBMS) DoWipeUnwipe(a string, actor string, table string, id string) bool {
 	if a == `save` || a == `` {
 		return false
 	}
@@ -668,7 +644,7 @@ func (db *RDBMS) DoWipeUnwipe(a string, actor int64, table string, id int64) boo
 }
 
 // restore base table
-func (db *RDBMS) DoRestore(actor int64, table string, id int64) (ok bool) {
+func (db *RDBMS) DoRestore(actor string, table string, id string) (ok bool) {
 	db.DoTransaction(func(tx *Tx) string {
 		ok = tx.DoRestore(actor, table, id)
 		return ``
@@ -677,7 +653,7 @@ func (db *RDBMS) DoRestore(actor int64, table string, id int64) (ok bool) {
 }
 
 // execute delete (is_deleted = true)
-func (db *RDBMS) DoDelete2(actor int64, table string, id int64, lambda func(base D.Record) string, ajax W.Ajax) bool {
+func (db *RDBMS) DoDelete2(actor string, table string, id string, lambda func(base D.Record) string, ajax W.Ajax) bool {
 	base := db.QBase(table, id)
 	err_msg := lambda(&base)
 	if err_msg == `` {
@@ -688,7 +664,7 @@ func (db *RDBMS) DoDelete2(actor int64, table string, id int64, lambda func(base
 }
 
 // execute delete (is_deleted = false)
-func (db *RDBMS) DoRestore2(actor int64, table string, id int64, lambda func(base D.Record) string, ajax W.Ajax) bool {
+func (db *RDBMS) DoRestore2(actor string, table string, id string, lambda func(base D.Record) string, ajax W.Ajax) bool {
 	base := db.QBase(table, id)
 	err_msg := lambda(&base)
 	if err_msg == `` {
@@ -698,28 +674,25 @@ func (db *RDBMS) DoRestore2(actor int64, table string, id int64, lambda func(bas
 	return false
 }
 
-// begin, commit transaction and rollback automatically when there are error
-func (db *RDBMS) DoTransaction(lambda func(tx *Tx) string) {
-	tx := db.Adapter.MustBegin()
-	ok := ``
+// get connection from pool but does not rollback automatically when there are error
+func (db *RDBMS) DoTransaction(lambda func(tx *Tx) string) (ok string) {
+	tx, err := db.Cluster.CreateSession()
+	L.PanicIf(err, `Failed to create session to keyspace`)
 	defer func() {
 		str := recover()
+		tx.Close()
 		if str != nil {
-			// rollback when error
-			err := tx.Rollback()
-			L.PanicIf(errors.New(`transaction error`), `failed to end transaction %# v / %# v`, str, err)
+			L.PanicIf(errors.New(`transaction error`), `failed to end transaction %# v`, str)
 			return
 		}
-		if ok == `` {
-			// commit when empty string or nil
-			err := tx.Commit()
-			L.PanicIf(err, `failed to commit transaction`)
+		if ok != `` {
+			L.PanicIf(fmt.Errorf("%v", str), `query executed but has error`)
 			return
 		}
 		L.Describe(ok)
-		tx.Rollback() // rollback when there is a string
 	}()
 	ok = lambda(&Tx{tx})
+	return
 }
 
 func (db *RDBMS) ViewExists(viewname string) bool {
@@ -729,12 +702,12 @@ func (db *RDBMS) ViewExists(viewname string) bool {
 
 // 2015-12-04 Kiz: replacement for JsonLine
 // lambda should return empty string if it's correct row
-func (db *RDBMS) JsonRow(table string, id int64, lambda func(rec D.Record) string) W.Ajax {
+func (db *RDBMS) JsonRow(table string, id string, lambda func(rec D.Record) string) W.Ajax {
 	base := db.QBase(table, id)
 	err_msg := lambda(&base)
 	if err_msg == `` {
 		ajax := base.XData
-		ajax.Set(`unique_id`, base.UniqueId.String)
+		ajax.Set(`id`, base.Id)
 		ajax.Set(`is_deleted`, base.IsDeleted)
 		return W.Ajax{ajax}
 	} else {

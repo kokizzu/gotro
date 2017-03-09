@@ -39,6 +39,7 @@ func (tx *Tx) QIntStrMap(query string, params ...interface{}) M.IS {
 		key := int64(0)
 		val := ``
 		rows.Scan(&key, &val)
+		res[key] = val
 	}
 	return res
 }

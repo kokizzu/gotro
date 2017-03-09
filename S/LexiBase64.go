@@ -7,13 +7,23 @@ import (
 
 const i2c_cb63 = `-0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz`
 
+const MaxStrLenCB63 = 11
+
 var c2i_cb63 map[rune]int64
+var ModCB63 []uint64
 
 func init() {
 	c2i_cb63 = map[rune]int64{}
 	for i, ch := range i2c_cb63 {
 		c2i_cb63[ch] = int64(i)
 	}
+	ModCB63 = []uint64{0}
+	mod := uint64(1)
+	for i := 1; i < MaxStrLenCB63; i++ {
+		mod *= 64
+		ModCB63 = append(ModCB63, mod)
+	}
+	ModCB63 = append(ModCB63, 9223372036854775808)
 }
 
 // convert integer to custom base-63 encoding that lexicographically correct, positive integer only
@@ -58,11 +68,11 @@ func DecodeCB63(str string) (int64, bool) {
 	return res, true
 }
 
-// random CB63 n-times, the result is n*11 bytes
+// random CB63 n-times, the result is n*MaxStrLenCB63 bytes
 func RandomCB63(len int64) string {
 	res := ``
 	for z := int64(0); z < len; z++ {
-		res += EncodeCB63(rand.Int63(), 11)
+		res += EncodeCB63(rand.Int63(), MaxStrLenCB63)
 	}
 	return res
 }

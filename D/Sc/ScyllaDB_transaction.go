@@ -1,19 +1,18 @@
-package My
+package Sc
 
 import (
-	"database/sql"
-	"github.com/jmoiron/sqlx"
-	"github.com/kokizzu/gotro/I"
+	"github.com/gocql/gocql"
 	"github.com/kokizzu/gotro/L"
 	"github.com/kokizzu/gotro/M"
 	"github.com/kokizzu/gotro/S"
+	"github.com/kokizzu/gotro/T"
 	"github.com/kokizzu/gotro/W"
 	"github.com/kokizzu/gotro/X"
 	"time"
 )
 
 type Tx struct {
-	Trans *sqlx.Tx
+	Trans *gocql.Session
 }
 
 // query 2 colums of integer-integer as map
@@ -21,10 +20,9 @@ func (tx *Tx) QIntIntMap(query string, params ...interface{}) M.II {
 	res := M.II{}
 	rows := tx.QAll(query, params...)
 	defer rows.Close()
-	for rows.Next() {
-		key := int64(0)
-		val := key
-		rows.Scan(&key, &val)
+	key := int64(0)
+	val := key
+	for rows.Scan(&key, &val) {
 		res[key] = val
 	}
 	return res
@@ -35,10 +33,9 @@ func (tx *Tx) QIntStrMap(query string, params ...interface{}) M.IS {
 	res := M.IS{}
 	rows := tx.QAll(query, params...)
 	defer rows.Close()
-	for rows.Next() {
-		key := int64(0)
-		val := ``
-		rows.Scan(&key, &val)
+	key := int64(0)
+	val := ``
+	for rows.Scan(&key, &val) {
 		res[key] = val
 	}
 	return res
@@ -51,8 +48,7 @@ func (tx *Tx) QStrBoolMap(query string, params ...interface{}) M.SB {
 	rows := tx.QAll(query, params...)
 	defer rows.Close()
 	key := ``
-	for rows.Next() {
-		rows.Scan(&key)
+	for rows.Scan(&key) {
 		res[key] = true
 	}
 	return res
@@ -64,8 +60,7 @@ func (tx *Tx) QIntBoolMap(query string, params ...interface{}) M.IB {
 	rows := tx.QAll(query, params...)
 	defer rows.Close()
 	key := int64(0)
-	for rows.Next() {
-		rows.Scan(&key)
+	for rows.Scan(&key) {
 		res[key] = true
 	}
 	return res
@@ -76,36 +71,27 @@ func (tx *Tx) QStrStrMap(query string, params ...interface{}) M.SS {
 	res := M.SS{}
 	rows := tx.QAll(query, params...)
 	defer rows.Close()
-	for rows.Next() {
-		key := ``
-		val := ``
-		rows.Scan(&key, &val)
+	key := ``
+	val := ``
+	for rows.Scan(&key, &val) {
 		res[key] = val
 	}
 	return res
 }
 
-// query 1+N colums of string-[]any as map
-func (tx *Tx) QStrArrMap(query string, params ...interface{}) M.SAX {
-	res := M.SAX{}
-	rows := tx.QAll(query, params...)
-	defer rows.Close()
-	for rows.Next() {
-		row := rows.ScanSlice()
-		res[X.ToS(row[0])] = row[1:]
-	}
-	return res
-}
+//// query 1+N colums of string-[]any as map
+//func (tx *Tx) QStrArrMap(query string, params ...interface{}) M.SAX {
+//	// not implemented, far too inefficient with current gocql
+//}
 
 // query 2 colums of string-integer as map
 func (tx *Tx) QStrIntMap(query string, params ...interface{}) M.SI {
 	res := M.SI{}
 	rows := tx.QAll(query, params...)
 	defer rows.Close()
-	for rows.Next() {
-		key := ``
-		val := int64(0)
-		rows.Scan(&key, &val)
+	key := ``
+	val := int64(0)
+	for rows.Scan(&key, &val) {
 		res[key] = val
 	}
 	return res
@@ -116,9 +102,8 @@ func (tx *Tx) QIntCountMap(query string, params ...interface{}) M.II {
 	res := M.II{}
 	rows := tx.QAll(query, params...)
 	defer rows.Close()
-	for rows.Next() {
-		val := int64(0)
-		rows.Scan(&val)
+	val := int64(0)
+	for rows.Scan(&val) {
 		res[val] += 1
 	}
 	return res
@@ -129,9 +114,8 @@ func (tx *Tx) QStrCountMap(query string, params ...interface{}) M.SI {
 	res := M.SI{}
 	rows := tx.QAll(query, params...)
 	defer rows.Close()
-	for rows.Next() {
-		val := ``
-		rows.Scan(&val)
+	val := ``
+	for rows.Scan(&val) {
 		res[val] += 1
 	}
 	return res
@@ -142,9 +126,8 @@ func (tx *Tx) QIntArr(query string, params ...interface{}) []int64 {
 	res := []int64{}
 	rows := tx.QAll(query, params...)
 	defer rows.Close()
-	for rows.Next() {
-		val := int64(0)
-		rows.Scan(&val)
+	val := int64(0)
+	for rows.Scan(&val) {
 		res = append(res, val)
 	}
 	return res
@@ -166,9 +149,8 @@ func (tx *Tx) QStrArr(query string, params ...interface{}) []string {
 	res := []string{}
 	rows := tx.QAll(query, params...)
 	defer rows.Close()
-	for rows.Next() {
-		val := ``
-		rows.Scan(&val)
+	val := ``
+	for rows.Scan(&val) {
 		res = append(res, val)
 	}
 	return res
@@ -180,10 +162,8 @@ func (tx *Tx) QAll(query string, params ...interface{}) (rows Records) {
 	if DEBUG {
 		start = time.Now()
 	}
-	var err error
-	rs, err := tx.Trans.Queryx(query, params...)
-	L.PanicIf(err, `failed to QAll: %s %# v`, query, params)
-	rows = Records{rs, query, params}
+	ite := tx.Trans.Query(query, params...).Iter()
+	rows = Records{ite, query, params}
 	if DEBUG {
 		L.TimeTrack(start, query)
 	}
@@ -192,56 +172,42 @@ func (tx *Tx) QAll(query string, params ...interface{}) (rows Records) {
 
 // execute a select single value query, convert to string
 func (tx *Tx) QStr(query string, params ...interface{}) (dest string) {
-	err := tx.Trans.Get(&dest, query, params...)
-	L.PanicIf(err, `failed to QStr: %s %# v`, query, params)
+	rows := tx.QAll(query, params...)
+	defer rows.Close()
+	L.CheckIf(rows.Scan(&dest), `failed to Tx.QStr: %s %# v`, query, params)
 	return
 }
 
-// check non-zero if unique exists
-func (tx *Tx) QId(table, uniq string) (id int64) {
-	uniq = Z(uniq)
-	query := `SELECT COUNT(*) FROM ` + table + ` WHERE unique_id = ` + uniq
-	id = tx.QInt(query)
-	if id == 0 {
-		return
-	}
-	query = `SELECT id FROM ` + table + ` WHERE unique_id = ` + uniq
-	id = tx.QInt(query)
+// execute a select single value query, convert to bool
+func (tx *Tx) QBool(query string, params ...interface{}) (dest bool) {
+	rows := tx.QAll(query, params...)
+	defer rows.Close()
+	L.CheckIf(rows.Scan(&dest), `failed to Tx.QBool: %s %# v`, query, params)
 	return
 }
+
+//// check non-zero if unique exists
+//func (tx *Tx) QId(table, id string) (id int64) {
+//	// not implemented: no unique constraint on scylladb
+//}
 
 // check if id exists
-func (tx *Tx) QExists(table string, id int64) bool {
-	id_str := I.ToS(id)
-	query := `SELECT COUNT(*) FROM ` + table + ` WHERE id = ` + id_str
+func (tx *Tx) QExists(table string, id string) bool {
+	query := `SELECT COUNT(*) FROM ` + table + ` WHERE id = ` + Z(id)
 	count := tx.QInt(query)
-	if count == 0 {
-		return false
-	}
-	return true
+	return count == 1
 }
 
-// return non-empty string if id exists
-func (tx *Tx) QUniq(table string, id int64) (uniq string) {
-	id_str := I.ToS(id)
-	query := `SELECT COUNT(*) FROM ` + table + ` WHERE id = ` + id_str
-	count := tx.QInt(query)
-	if count == 0 {
-		return
-	}
-	query = `SELECT unique_id FROM ` + table + ` WHERE id = ` + id_str
-	uniq = tx.QStr(query)
-	return
-}
+//// return non-empty string if id exists
+//func (tx *Tx) QUniq(table string, id string) (uniq string) {
+//	// not implemented: useless id is unique_id, and there are no additional unique constraint on scylladb
+//}
 
 // execute a select pair value query, convert to int64 and string
 func (tx *Tx) QIntStr(query string, params ...interface{}) (i int64, s string) {
 	rows := tx.QAll(query, params...)
 	defer rows.Close()
-	for rows.Next() {
-		rows.Scan(&i, &s)
-		return
-	}
+	rows.Scan(&i, &s)
 	return
 }
 
@@ -249,10 +215,7 @@ func (tx *Tx) QIntStr(query string, params ...interface{}) (i int64, s string) {
 func (tx *Tx) QStrInt(query string, params ...interface{}) (s string, i int64) {
 	rows := tx.QAll(query, params...)
 	defer rows.Close()
-	for rows.Next() {
-		rows.Scan(&s, &i)
-		return
-	}
+	rows.Scan(&s, &i)
 	return
 }
 
@@ -260,159 +223,111 @@ func (tx *Tx) QStrInt(query string, params ...interface{}) (s string, i int64) {
 func (tx *Tx) QStrStr(query string, params ...interface{}) (s string, ss string) {
 	rows := tx.QAll(query, params...)
 	defer rows.Close()
-	for rows.Next() {
-		rows.Scan(&s, &ss)
-		return
-	}
+	rows.Scan(&s, &ss)
 	return
 }
 
 // execute a select single value query, convert to int64
 func (tx *Tx) QInt(query string, params ...interface{}) (dest int64) {
-	err := tx.Trans.Get(&dest, query, params...)
-	L.PanicIf(err, `failed to QInt: %s %# v`, query, params)
+	rows := tx.QAll(query, params...)
+	defer rows.Close()
+	L.CheckIf(rows.Scan(&dest), `failed to Tx.QInt: %s %# v`, query, params)
 	return
 }
 
 func (tx *Tx) QFloat(query string, params ...interface{}) (dest float64) {
-	err := tx.Trans.Get(&dest, query, params...)
-	L.PanicIf(err, `failed to QFloat: %s %# v`, query, params)
+	rows := tx.QAll(query, params...)
+	defer rows.Close()
+	L.CheckIf(rows.Scan(&dest), `failed to Tx.QFloat: %s %# v`, query, params)
 	return
 }
 
 // fetch a row to as Base struct
-func (tx *Tx) QBase(table string, id int64) (base Base) {
-	query := `SELECT * FROM ` + S.ZZ(table) + ` WHERE id = ` + I.ToS(id)
+func (tx *Tx) QBase(table string, id string) (base Base) {
+	query := `SELECT * FROM ` + S.ZZ(table) + ` WHERE id = ` + Z(id)
 	rows := tx.QAll(query)
 	defer rows.Close()
-	if rows.Next() {
-		rows.ScanStruct(&base)
-		base.DataToMap()
+	res := rows.ScanMap()
+	if len(res) > 0 {
+		base.FromMap(res)
 	}
 	base.Table = table
 	return
 }
 
-// fetch a row to Base struct by unique_id
-func (tx *Tx) QBaseUniq(table, uid string) (base Base) {
-	query := `SELECT * FROM ` + ZZ(table) + ` WHERE unique_id = ` + Z(uid)
-	rows := tx.QAll(query)
-	defer rows.Close()
-	if rows.Next() {
-		rows.ScanStruct(&base)
-		base.DataToMap()
-	}
-	return
-}
+//// fetch a row to Base struct by unique_id
+//func (tx *Tx) QBaseUniq(table, uid string) (base Base) {
+//	// not implemented: no unique constraint on scylladb
+//}
 
 // execute anything that doesn't need LastInsertId or RowsAffected
-func (tx *Tx) DoExec(query string, params ...interface{}) sql.Result {
-	res, err := tx.Trans.Exec(query, params...)
+func (tx *Tx) DoExec(query string, params ...interface{}) error {
+	err := tx.Trans.Query(query, params...).Exec()
 	L.PanicIf(err, query)
-	return res
+	return err
 }
 
 // generate insert command and execute it
-func (tx *Tx) DoInsert(actor int64, table string, kvparams M.SX) (id int64) {
-	uniq, ok := kvparams[`unique_id`].(string)
-	id = tx.QId(table, uniq)
-	if ok && id > 0 {
-		// already exists, cancel insert
-		id = 0
-		return
-	}
-	id = tx.DoForcedInsert(actor, table, kvparams)
-	return
+func (tx *Tx) DoInsert(actor string, table string, kvparams M.SX) (ok bool) {
+	return tx.DoForcedInsert(actor, table, kvparams)
 }
 
 // do insert without checking
-func (tx *Tx) DoForcedInsert(actor int64, table string, kvparams M.SX) (id int64) {
+func (tx *Tx) DoForcedInsert(actor string, table string, kvparams M.SX) bool {
 	kvparams[`created_by`] = actor
+	kvparams[`created_at`] = T.UnixNano()
+	kvparams[`id`] = NextId()
 	query, params := GenInsert(table, kvparams)
-	//L.Describe(query, params)
-	rows := tx.QAll(query, params...)
-	defer rows.Close()
-	if rows.Next() {
-		rows.Scan(&id)
-	} else {
-		L.PanicIf(rows.Err(), `failed to insert on %s: %s; %# v`, table, query, params)
-	}
-	return
+	return nil != tx.DoExec(query, params...)
 }
 
 // generate insert or update command and execute it
-func (tx *Tx) DoUpsert(actor int64, table string, kvparams M.SX) (id int64) {
-	id, ok := kvparams[`id`].(int64)
-	exists := false
-	if ok && id > 0 {
-		exists = tx.QExists(table, id)
-	} else {
-		uniq, ok := kvparams[`unique_id`].(string)
-		id = tx.QId(table, uniq)
-		exists = (ok && id > 0)
-	}
+func (tx *Tx) DoUpsert(actor string, table string, kvparams M.SX) (ok bool) {
+	exists := tx.QExists(table, kvparams.GetStr(`id`))
 	if exists {
-		// update
-		tx.DoUpdate(actor, table, id, kvparams)
+		ok = tx.DoUpdate(actor, table, kvparams)
 	} else {
-		// insert
-		if id == 0 {
-			delete(kvparams, `id`)
+		ok = tx.DoForcedInsert(actor, table, kvparams)
+		if !ok {
+			kvparams[`id`] = ``
 		}
-		id = tx.DoForcedInsert(actor, table, kvparams)
 	}
 	return
 }
 
 // generate update command and execute it
-func (tx *Tx) DoUpdate(actor int64, table string, id int64, kvparams M.SX) (ra int64) {
-	if id > 0 {
+func (tx *Tx) DoUpdate(actor string, table string, kvparams M.SX) bool {
+	id := kvparams.GetStr(`id`)
+	if id != `` {
 		kvparams[`updated_by`] = actor
+		kvparams[`updated_at`] = T.UnixNano()
 		query, params := GenUpdateId(table, id, kvparams)
-		rs := tx.DoExec(query, params...)
-		ra, _ = rs.RowsAffected()
-		return
+		return nil != tx.DoExec(query, params...)
 	}
-	// when id not given, find the id first
-	uniq, ok := kvparams[`unique_id`].(string)
-	if !ok {
-		// doesn't exists, cancel update
-		ra = 0
-		return
-	}
-	id = tx.QId(table, uniq)
-	if id == 0 {
-		// doesn't exists, cancel update
-		ra = 0
-		return
-	}
-	return tx.DoUpdate(actor, table, id, kvparams) // try again with given ID
+	panic(`tx.DoUpdate missing id`)
+	return false
 }
 
 // execute delete (is_deleted = true)
-func (tx *Tx) DoDelete(actor int64, table string, id int64) bool {
+func (tx *Tx) DoDelete(actor string, table string, id string) bool {
 	kvparams := M.SX{}
 	kvparams[`is_deleted`] = true
 	kvparams[`deleted_by`] = actor
 	query, params := GenUpdateId(table, id, kvparams)
-	rs := tx.DoExec(query, params...)
-	ra, _ := rs.RowsAffected()
-	return ra > 0
+	return tx.DoExec(query, params...) == nil
 }
 
 // execute delete (is_deleted = false)
-func (tx *Tx) DoRestore(actor int64, table string, id int64) bool {
+func (tx *Tx) DoRestore(actor string, table string, id string) bool {
 	kvparams := M.SX{}
 	kvparams[`is_deleted`] = false
 	kvparams[`restored_by`] = actor
 	query, params := GenUpdateId(table, id, kvparams)
-	rs := tx.DoExec(query, params...)
-	ra, _ := rs.RowsAffected()
-	return ra > 0
+	return tx.DoExec(query, params...) == nil
 }
 
 // delete or restore
-func (tx *Tx) DoWipeUnwipe(a string, actor int64, table string, id int64) bool {
+func (tx *Tx) DoWipeUnwipe(a string, actor string, table string, id string) bool {
 	if a == `save` || a == `` {
 		return false
 	}
@@ -432,7 +347,7 @@ func (tx *Tx) DoWipeUnwipe(a string, actor int64, table string, id int64) bool {
 }
 
 // execute delete (is_deleted = true)
-func (tx *Tx) DoDelete2(actor int64, table string, id int64, lambda func(base *Base) string, ajax W.Ajax) bool {
+func (tx *Tx) DoDelete2(actor string, table string, id string, lambda func(base *Base) string, ajax W.Ajax) bool {
 	base := tx.QBase(table, id)
 	err_msg := lambda(&base)
 	if err_msg == `` {
@@ -443,7 +358,7 @@ func (tx *Tx) DoDelete2(actor int64, table string, id int64, lambda func(base *B
 }
 
 // execute delete (is_deleted = false)
-func (tx *Tx) DoRestore2(actor int64, table string, id int64, lambda func(base *Base) string, ajax W.Ajax) bool {
+func (tx *Tx) DoRestore2(actor string, table string, id string, lambda func(base *Base) string, ajax W.Ajax) bool {
 	base := tx.QBase(table, id)
 	err_msg := lambda(&base)
 	if err_msg == `` {
@@ -454,37 +369,21 @@ func (tx *Tx) DoRestore2(actor int64, table string, id int64, lambda func(base *
 }
 
 // fetch json data as map
-func (tx *Tx) DataJsonMap(table string, id int64) M.SX {
+func (tx *Tx) DataJsonMap(table string, id string) M.SX {
 	res := M.SX{}
-	if id <= 0 {
+	if id == `` {
 		return res
 	}
-	query := `SELECT data FROM ` + table + ` WHERE id = ` + I.ToS(id)
+	query := `SELECT data FROM ` + table + ` WHERE id = ` + Z(id)
 	rows := tx.QAll(query)
-	str := ``
 	defer rows.Close()
-	if rows.Next() {
-		rows.Scan(&str)
-		res = S.JsonToMap(str)
-	}
-	return res
+	return rows.ScanMap()
 }
 
-// fecth json data as map by unique id
-func (tx *Tx) DataJsonMapUniq(table, unique_id string) (res M.SX, id int64) {
-	res = M.SX{}
-	id = 0
-	if unique_id == `` {
-		return
-	}
-	query := `SELECT data, id FROM ` + table + ` WHERE unique_id = ` + Z(unique_id)
-	rows := tx.QAll(query)
-	str := ``
-	defer rows.Close()
-	if rows.Next() {
-		rows.Scan(&str, &id)
-		res = S.JsonToMap(str)
-	}
+// fecth json data and id (if exists)
+func (tx *Tx) DataJsonMapUniq(table, unique_id string) (res M.SX, id string) {
+	res = tx.QFirstMap(`SELECT * FROM ` + table + ` WHERE id = ` + Z(unique_id))
+	id = X.ToS(res[`id`])
 	return
 }
 
@@ -492,8 +391,5 @@ func (tx *Tx) DataJsonMapUniq(table, unique_id string) (res M.SX, id int64) {
 func (db *Tx) QFirstMap(query string, params ...interface{}) M.SX {
 	rows := db.QAll(query)
 	defer rows.Close()
-	for rows.Next() {
-		return rows.ScanMap()
-	}
-	return M.SX{}
+	return rows.ScanMap()
 }

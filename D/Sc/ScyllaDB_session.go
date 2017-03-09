@@ -1,7 +1,6 @@
 package Sc
 
 import (
-	_ "github.com/gocql/gocql"
 	"github.com/kokizzu/gotro/M"
 )
 

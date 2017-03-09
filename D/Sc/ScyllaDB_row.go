@@ -1,4 +1,4 @@
-package My
+package Sc
 
 import (
 	"github.com/kokizzu/gotro/I"
@@ -23,11 +23,10 @@ type Row struct {
 	Ajax     W.Ajax
 	ReqModel *W.RequestModel
 	Table    string
-	Id       int64
+	Id       string
 	Tx       *Tx
-	DbActor  int64
+	DbActor  string
 	Log      string
-	UniqueId string // set when you want to update it
 }
 
 // convert Row to JSON string
@@ -37,192 +36,122 @@ func (mp *Row) ToJson() string {
 
 // fetch model to be edited
 func NewRow(tx *Tx, table string, rm *W.RequestModel) *Row {
-	id := S.ToI(rm.Id)
-	data := tx.DataJsonMap(table, id)
-	return &Row{data, rm.Posts, rm.Ajax, rm, table, id, tx, S.ToI(rm.DbActor), ``, ``}
+	data := tx.DataJsonMap(table, rm.Id)
+	return &Row{data, rm.Posts, rm.Ajax, rm, table, rm.Id, tx, rm.DbActor, ``}
 }
 
-// fetch model to be edited from unique
-func NewRowUniq(tx *Tx, table string, unique_id string, rm *W.RequestModel) *Row {
-	data, id := tx.DataJsonMapUniq(table, unique_id)
-	new_uniq := unique_id
-	if id == 0 {
-		new_uniq = ``
-	}
-	res := &Row{data, rm.Posts, rm.Ajax, rm, table, id, tx, S.ToI(rm.DbActor), ``, new_uniq}
-	if id == 0 {
-		res.Set_UniqueId(unique_id)
-	}
-	return res
-}
+//// fetch model to be edited from unique
+//func NewRowUniq(tx *Tx, table string, unique_id string, rm *W.RequestModel) *Row {
+//	// not implemented: no unique id on scylladb
+//}
 
 // insert row
-func (mp *Row) InsertRow() int64 {
+func (mp *Row) InsertRow() bool {
 	if mp.Ajax.HasError() {
 		// ignore saving
 		mp.Ajax.Info(`no record inserted..`)
-		mp.Ajax.Set(`id`, mp.Id)
-		return mp.Id
+		mp.Ajax.Set(`id`, ``)
+		return false
 	}
-	data_str := mp.ToJson()
-	params := M.SX{`data`: data_str}
-	if mp.UniqueId != `` {
-		params[`unique_id`] = mp.UniqueId
+	label := mp.Table + `'s row ID:`
+	if !mp.Tx.DoInsert(mp.DbActor, mp.Table, mp.Row) {
+		mp.Ajax.Error(`Failed insert ` + label)
+		L.Describe(mp.DbActor, mp.Row, mp.Id, mp.Log, mp.Table)
+		return false
 	}
-	new_id := mp.Tx.DoInsert(mp.DbActor, mp.Table, params)
-	label := mp.Table + `'s row ID:` + I.ToS(new_id)
-	if new_id < 1 {
-		mp.Ajax.Error(`Failed saving ` + label)
-		L.Describe(mp.DbActor, mp.Row, mp.Id, mp.Log, mp.Table, mp.UniqueId)
-		mp.Ajax.Set(`id`, new_id)
-		return new_id
-	}
-	mp.Id = new_id
+	mp.Id = mp.Row.GetStr(`id`)
+	label += mp.Id
 	mp.Ajax.Info(`Created new ` + label + " with: \n" + mp.Log)
-	mp.Ajax.Set(`id`, new_id)
-	return new_id
+	mp.Ajax.Set(`id`, mp.Id)
+	return true
 }
 
 // update row
-func (mp *Row) UpdateRow() int64 {
+func (mp *Row) UpdateRow() bool {
+	mp.Ajax.Set(`id`, mp.Id)
 	if mp.Ajax.HasError() {
 		// ignore saving
 		mp.Ajax.Info(`no record updated..`)
-		mp.Ajax.Set(`id`, mp.Id)
-		return mp.Id
+		return false
 	}
-	label := mp.Table + `'s row ID:` + I.ToS(mp.Id)
+	label := mp.Table + `'s row ID:` + mp.Id
 	if mp.Log == `` {
 		mp.Ajax.Info(`No changes detected ` + label)
-		//L.Describe(mp)
-		mp.Ajax.Set(`id`, mp.Id)
-		return mp.Id
+		return true
 	}
-	data_str := mp.ToJson()
-	params := M.SX{`data`: data_str}
-	if mp.UniqueId != `` {
-		params[`unique_id`] = mp.UniqueId
-	}
-	new_id := mp.Tx.DoUpdate(mp.DbActor, mp.Table, mp.Id, params)
-	if new_id < 1 {
-		mp.Ajax.Error(`Failed saving ` + label)
-		L.Describe(mp.Table, mp.Id, mp.UniqueId, mp.Log, mp.Row)
-		mp.Ajax.Set(`id`, new_id)
-		return new_id
+	if !mp.Tx.DoUpdate(mp.DbActor, mp.Table, mp.Row) {
+		mp.Ajax.Error(`Failed update ` + label)
+		L.Describe(mp.DbActor, mp.Row, mp.Id, mp.Log, mp.Table)
+		return false
 	}
 	mp.Ajax.Info(`Updated ` + label + " with: \n" + mp.Log)
-	mp.Ajax.Set(`id`, new_id)
-	return new_id
+	return true
 }
 
 // insert or update row, if uniq ada
-func (mp *Row) UpsertRow() int64 {
+func (mp *Row) UpsertRow() bool {
+	mp.Ajax.Set(`id`, mp.Id)
 	if mp.Ajax.HasError() {
 		// ignore saving
 		mp.Ajax.Info(`no record upserted..`)
-		mp.Ajax.Set(`id`, mp.Id)
-		return mp.Id
+		return false
 	}
-	new_rec := mp.Id == 0
-	label := mp.Table + `'s row ID:`
-	if !new_rec {
-		label += I.ToS(mp.Id)
-		if mp.Log == `` {
-			mp.Ajax.Info(`No changes detected ` + label)
-			//L.Describe(mp)
-			mp.Ajax.Set(`id`, mp.Id)
-			return mp.Id
-		}
+	new_rec := mp.Id == ``
+	label := mp.Table + `'s row ID:` + mp.Id
+	if mp.Log == `` {
+		mp.Ajax.Info(`No fields/changes detected ` + label)
+		return true
 	}
-	data_str := mp.ToJson()
-	params := M.SX{`data`: data_str}
-	if mp.Id > 0 {
-		params[`id`] = mp.Id
-	}
-	if mp.UniqueId != `` {
-		params[`unique_id`] = mp.UniqueId
-	}
-	new_id := mp.Tx.DoUpsert(mp.DbActor, mp.Table, params)
-	if new_rec {
-		label += I.ToS(new_id)
-	}
-	if new_id < 1 {
-		mp.Ajax.Error(`Failed saving ` + label)
-		L.Describe(mp)
-		mp.Ajax.Set(`id`, new_id)
-		return new_id
-	} else {
-		mp.Id = new_id
-	}
-	if new_rec && mp.Log == `` {
-		mp.Ajax.Info(`Saved new ` + label + ` with empty data`)
-		mp.Ajax.Set(`id`, new_id)
-		return new_id
+	if !mp.Tx.DoUpsert(mp.DbActor, mp.Table, mp.Row) {
+		mp.Ajax.Error(`Failed upsert ` + label)
+		L.Describe(mp.DbActor, mp.Row, mp.Id, mp.Log, mp.Table)
+		return false
 	}
 	if new_rec {
+		mp.Id = mp.Row.GetStr(`id`)
+		label += mp.Id
 		mp.Ajax.Info(`Created new ` + label + " with: " + S.WebBR + mp.Log)
 	} else {
 		mp.Ajax.Info(`Updated ` + label + " with: " + S.WebBR + mp.Log)
 	}
-	mp.Ajax.Set(`id`, new_id)
-	return new_id
+	mp.Ajax.Set(`id`, mp.Id)
+	return true
 }
 
 // insert or update row, insert if not exists even when uinque_id exists (error)
-func (mp *Row) IndateRow() int64 {
+func (mp *Row) IndateRow() bool {
+	mp.Ajax.Set(`id`, mp.Id)
 	if mp.Ajax.HasError() {
 		// ignore saving
-		mp.Ajax.Info(`no record upserted..`)
-		return mp.Id
+		mp.Ajax.Info(`no record indated..`)
+		return false
 	}
-	new_rec := mp.Id == 0
-	label := mp.Table + `'s row ID:`
-	if !new_rec {
-		label += I.ToS(mp.Id)
-		if mp.Log == `` {
-			mp.Ajax.Info(`No changes detected ` + label)
-			//L.Describe(mp)
-			mp.Ajax.Set(`id`, mp.Id)
-			return mp.Id
-		}
+	new_rec := mp.Id == ``
+	label := mp.Table + `'s row ID:` + mp.Id
+	if mp.Log == `` {
+		mp.Ajax.Info(`No fields/changes detected ` + label)
+		return true
 	}
-	data_str := mp.ToJson()
-	params := M.SX{`data`: data_str}
-	if mp.Id > 0 {
-		params[`id`] = mp.Id
-	}
-	if mp.UniqueId != `` {
-		params[`unique_id`] = mp.UniqueId
-	}
-	new_id := int64(0)
-	if mp.Id == 0 {
-		new_id = mp.Tx.DoForcedInsert(mp.DbActor, mp.Table, params)
+	var ok bool
+	if new_rec {
+		ok = mp.Tx.DoForcedInsert(mp.DbActor, mp.Table, mp.Row)
 	} else {
-		new_id = mp.Tx.DoUpsert(mp.DbActor, mp.Table, params)
+		ok = mp.Tx.DoUpsert(mp.DbActor, mp.Table, mp.Row)
+	}
+	if !ok {
+		mp.Ajax.Error(`Failed indate ` + label)
+		L.Describe(mp.DbActor, mp.Row, mp.Id, mp.Log, mp.Table)
+		return false
 	}
 	if new_rec {
-		label += I.ToS(new_id)
-	}
-	if new_id < 1 {
-		mp.Ajax.Error(`Failed saving ` + label)
-		L.Describe(mp)
-		mp.Ajax.Set(`id`, new_id)
-		return new_id
-	} else {
-		mp.Id = new_id
-	}
-	if new_rec && mp.Log == `` {
-		mp.Ajax.Info(`Saved new ` + label + ` with empty data`)
-		mp.Ajax.Set(`id`, new_id)
-		return new_id
-	}
-	if new_rec {
+		mp.Id = mp.Row.GetStr(`id`)
+		label += mp.Id
 		mp.Ajax.Info(`Created new ` + label + " with: " + S.WebBR + mp.Log)
 	} else {
 		mp.Ajax.Info(`Updated ` + label + " with: " + S.WebBR + mp.Log)
 	}
-	mp.Ajax.Set(`id`, new_id)
-	return new_id
+	mp.Ajax.Set(`id`, mp.Id)
+	return true
 }
 
 // log the changes
@@ -230,7 +159,7 @@ func (mp *Row) LogIt(key string, val interface{}) {
 	key_label := ZZ(key)
 	newv := X.ToS(val)
 	new_label := ZZ(newv)
-	if mp.Id == 0 {
+	if mp.Id == `` {
 		mp.Log += key_label + ` = ` + new_label + S.WebBR
 	} else {
 		oldv := X.ToS(mp.Row[key])
@@ -240,22 +169,14 @@ func (mp *Row) LogIt(key string, val interface{}) {
 	}
 }
 
-// set unique id
-func (mp *Row) Set_UniqueId(val string) {
-	if val != `` {
-		key_label := ZZ(`unique_id`)
-		new_label := ZZ(val)
-		if val != mp.UniqueId {
-			mp.Log += key_label + ` = ` + new_label + S.WebBR
-			mp.UniqueId = S.Trim(val)
-		}
-	}
-	// TODO: unset unique id?
-}
+//// set unique id, equal to id
+//func (mp *Row) Set_UniqueId(val string) {
+//	// not implemented: since there are no unique id on scylladb
+//}
 
 // undelete
 func (mp *Row) Restore() {
-	if mp.Id > 0 {
+	if mp.Id != `` {
 		if mp.Tx.DoRestore(mp.DbActor, mp.Table, mp.Id) {
 			mp.Log += "record restored" + S.WebBR
 		}
@@ -264,7 +185,7 @@ func (mp *Row) Restore() {
 
 // delete
 func (mp *Row) Delete() {
-	if mp.Id > 0 {
+	if mp.Id != `` {
 		if mp.Tx.DoDelete(mp.DbActor, mp.Table, mp.Id) {
 			mp.Log += "record deleted" + S.WebBR
 		}
@@ -341,14 +262,14 @@ func (mp *Row) Get_Float(key string) float64 {
 }
 
 // get id
-func (mp *Row) Get_Id() int64 {
+func (mp *Row) Get_Id() string {
 	return mp.Id
 }
 
-// get unique id
-func (mp *Row) Get_UniqueId() string {
-	return mp.UniqueId
-}
+//// get unique id
+//func (mp *Row) Get_UniqueId() string {
+//	// not implemented: no unique constraint on scylladb
+//}
 
 // set time from Posts to Row
 // unset when string is whitespace
@@ -555,7 +476,7 @@ func (mp *Row) Set_UserEmails_ByTable(emails string, table string) (ok bool) {
 			if val == `` {
 				continue
 			}
-			lkey, rkey, id_str := Z(key), Z(val), ZI(mp.Id)
+			lkey, rkey, id_str := Z(key), Z(val), Z(mp.Id)
 			query := `SELECT COALESCE((SELECT id FROM ` + ZZ(table) + ` WHERE data->>` + lkey + ` = ` + rkey + ` AND id <> ` + id_str + ` AND is_deleted = false LIMIT 1),0)`
 			dup_id := mp.Tx.QInt(query)
 			if dup_id == 0 {

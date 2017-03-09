@@ -2,8 +2,6 @@ package S
 
 import (
 	"testing"
-
-	"github.com/stretchr/testify/assert"
 )
 
 // Testing positive case function EqualsIgnoreCase //
@@ -13,7 +11,9 @@ func TestPositiveEqualsIgnoreCaseFunc(t *testing.T) {
 
 	result := EqualsIgnoreCase(firstInput, secondInput)
 
-	assert.Equal(t, true, result, "Result should return true, but actual get "+result)
+	if !result {
+		t.Errorf(`%s %s should equal`, firstInput, secondInput)
+	}
 }
 
 // Testing negative case function EqualsIgnoreCase //
@@ -23,5 +23,7 @@ func TestNegativeEqualsIgnoreCaseFunc(t *testing.T) {
 
 	result := EqualsIgnoreCase(firstInput, secondInput)
 
-	assert.Equal(t, false, result, "Result should return false, but actual get "+result)
+	if result {
+		t.Error(`%s %s should not equal`, firstInput, secondInput)
+	}
 }

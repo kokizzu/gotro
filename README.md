@@ -17,7 +17,7 @@ This Framework is rewrite of [gokil](//gitlab.com/kokizzu/gokil), that previousl
   - I - Integer
   - S - String
   - T - Time (and Date)
-  - W - Web (the "framework") **STATUS**: usable since 2017-03-08
+  - W - Web (the "framework") **STATUS**: usable since 2017-03-08, see `W/example/` 
   - X - Anything (aka `interface{}`)
   - Z - Z-Template Engine, that has syntax similar to ruby string interpolation `#{foo}` or any other that javascript friendly `{/* foo */}`, `[/* bar */]`, `/*! bar */`
 - Comment and examples on each type and function, so it can be viewed using godoc, something like: `godoc github.com/kokizzu/gotro/A`
@@ -55,7 +55,7 @@ gopkg.in/redis.v5
 
 ## TODO
 
-- fix mysql adapter so it becomes usable (currently copied from Postgres'), probably wait until mysql has indexable json column
+- fix mysql adapter so it becomes usable (currently copied from Postgres'), probably wait until mysql has indexable json column, or do alters like scylladb and sqlite
 - possibly refactor move cachedquery, records, etc to D package since nothing different about them, wait for cassandra version
 - [Review](//goo.gl/tBkfse) which databases we must support primarily for `D` (drop ones that hard to install), that can be silver bullet for extreme cases (high-write: sharding/partitioning and multi-master replication or auto-failover; full-text-search) 
   - [ArangoDB](//www.arangodb.com)

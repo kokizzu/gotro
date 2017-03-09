@@ -1,8 +1,6 @@
 package Pg
 
 import (
-	"database/sql"
-	"github.com/kokizzu/gotro/L"
 	"github.com/kokizzu/gotro/S"
 	// TODO: replace with faster one `github.com/jackc/pgx/stdlib`, see https://github.com/jackc/pgx/issues/81
 	// https://jmoiron.github.io/sqlx/
@@ -10,14 +8,6 @@ import (
 	// https://sourcegraph.com/github.com/jmoiron/sqlx
 	"github.com/kokizzu/gotro/D"
 )
-
-func rowsAffected(rs sql.Result) int64 {
-	ra, err := rs.RowsAffected()
-	if L.IsError(err, `failed to get rows affected`, ra) {
-		return 0
-	}
-	return ra
-}
 
 var Z func(string) string
 var ZZ func(string) string
