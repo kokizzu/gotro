@@ -8,7 +8,7 @@ import (
 	// https://jmoiron.github.io/sqlx/
 	// https://github.com/jmoiron/sqlx
 	// https://sourcegraph.com/github.com/jmoiron/sqlx
-	"gitlab.com/kokizzu/gokil/D"
+	"github.com/kokizzu/gotro/D"
 )
 
 func rowsAffected(rs sql.Result) int64 {
@@ -39,54 +39,6 @@ func init() {
 }
 
 const SQL_FUNCTIONS = `
--- trigger 
--- 2017-067-25 Prayogo
-CREATE OR REPLACE FUNCTION timestamp_changer() RETURNS trigger AS $$
-DECLARE  
-  changed BOOLEAN  := FALSE;  
-  log_table TEXT := quote_ident('_log_' || TG_TABLE_NAME);  
-  info TEXT := '';   
-  mod_time TIMESTAMP := CURRENT_TIMESTAMP;   
-  actor BIGINT;   
-  query TEXT := '';  
-BEGIN    
-  IF (OLD.unique_id <> NEW.unique_id) THEN   
-    NEW.updated_at := mod_time;  
-    actor := NEW.updated_by;  
-    changed := TRUE;    
-    IF info <> '' THEN info := info || chr(10); END IF;  
-    info := info || 'unique' || E'\t' || OLD.unique_id || E'\t' || NEW.unique_id;   
-  END IF;   
-  IF (OLD.is_deleted = TRUE) AND (NEW.is_deleted = FALSE) THEN    
-    NEW.restored_at := mod_time;    
-    actor := NEW.restored_by;    
-    IF info <> '' THEN info := info || chr(10); END IF;  
-    info := info || 'restore';   
-    changed := TRUE;    
-  END IF;   
-  IF (OLD.is_deleted = FALSE) AND (NEW.is_deleted = TRUE) THEN    
-    NEW.deleted_at := mod_time;  
-    actor := NEW.deleted_by;  
-    IF info <> '' THEN info := info || chr(10); END IF;  
-    info := info || 'delete';    
-    changed := TRUE;    
-  END IF;   
-  IF (OLD.data <> NEW.data) THEN    
-    NEW.updated_at := mod_time;  
-    IF info <> '' THEN info := info || chr(10); END IF;  
-    info := info || 'update';    
-    query := 'INSERT INTO ' || log_table || '( record_id, user_id, date, info, data_before, data_after )' || ' VALUES(' || OLD.id || ',' || NEW.updated_by || ',' || quote_literal(mod_time) || ',' || quote_literal(info) || ',' || quote_literal(NEW.data) || ',' || quote_literal(OLD.data) || ')';
-    EXECUTE query;   
-    changed := TRUE;    
-  ELSEIF changed THEN   
-    query := 'INSERT INTO ' || log_table || '( record_id, user_id, date, info )' || ' VALUES(' || OLD.id || ',' || actor || ',' || quote_literal(mod_time) || ',' || quote_literal(info) || ')';
-    EXECUTE query;   
-  END IF;   
-  IF changed THEN NEW.modified_at := mod_time; END IF;   
-  RETURN NEW;  
-END;
-$$ language plpgsql;
-
 -- merge json
 -- 2015-02-26 Prayogo
 CREATE OR REPLACE FUNCTION jsonb_merge(JSONB, JSONB)
@@ -164,24 +116,6 @@ END;
 END
 $$ LANGUAGE plpgsql;
 
--- convert integer to letter code for class in feeder/epsbed
--- 2016-01-22 Prayogo
-CREATE OR REPLACE FUNCTION to_code(bigint) returns text
-AS $$
-DECLARE
-	ov BIGINT;
-	nv TEXT;
-BEGIN
-	ov := $1;
-	nv := '';
-	WHILE ov > 0 LOOP
-		nv := nv || chr( (65+ov % 26)::INT );
-		ov := ov / 26;
-	END LOOP;
-	RETURN nv;
-END
-	$$ LANGUAGE plpgsql;
-
 -- calculate distance between 2 positions based on lat & long
 CREATE OR REPLACE FUNCTION distance(lat1 float, long1 float, lat2 float, long2 float) RETURNS float AS $$
 DECLARE
@@ -225,6 +159,7 @@ STRICT
 LANGUAGE plpgsql IMMUTABLE;`
 
 func InitFunctions(conn *RDBMS) {
+	conn.InitTrigger()
 	conn.DoTransaction(func(tx *Tx) string {
 		tx.DoExec(SQL_FUNCTIONS)
 		return ``

@@ -2,9 +2,9 @@ package W
 
 import (
 	"github.com/jordan-wright/email"
-	"gitlab.com/kokizzu/gokil/A"
-	"gitlab.com/kokizzu/gokil/I"
-	"gitlab.com/kokizzu/gokil/L"
+	"github.com/kokizzu/gotro/A"
+	"github.com/kokizzu/gotro/I"
+	"github.com/kokizzu/gotro/L"
 	"net/smtp"
 )
 

@@ -1,12 +1,16 @@
 package Sc
 
-import "github.com/kokizzu/gotro/M"
+import (
+	_ "github.com/gocql/gocql"
+	"github.com/kokizzu/gotro/M"
+)
 
 type ScyllaSession struct {
 }
 
 func (sess ScyllaSession) Expiry(key string) int64 {
 	// TODO: continue this
+
 	return 0
 }
 

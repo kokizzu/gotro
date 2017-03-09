@@ -5,6 +5,8 @@ import (
 	_ "github.com/mutecomm/go-sqlcipher"
 )
 
+// see: https://www.sqlite.org/json1.html
+
 /*
 
 // create new sqlite database

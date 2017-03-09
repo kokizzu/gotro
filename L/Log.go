@@ -10,6 +10,7 @@ import (
 	"github.com/kr/pretty"
 	"github.com/op/go-logging"
 	"os"
+	"os/exec"
 	"runtime"
 	"strconv"
 	"strings"
@@ -249,4 +250,35 @@ func Trace() {
 	pc, file, line, _ := runtime.Caller(1)
 	str := ` [TRACE] ` + file[len(FILE_PATH):] + `:` + I.ToStr(line) + `: ` + runtime.FuncForPC(pc).Name() + ` `
 	fmt.Println(str)
+}
+
+// execute command and return output
+func RunCmd(cmd string, args ...string) (output []byte) {
+	var err error
+	fullcmd := `RunCmd: ` + cmd + ` `
+	if len(args) > 0 {
+		fullcmd += `'` + strings.Join(args, `' '`) + `' `
+	}
+	Describe(fullcmd)
+	output, err = exec.Command(cmd, args...).CombinedOutput()
+	if err != nil {
+		out_str := string(output)
+		Describe(fullcmd, err)
+		output = []byte(err.Error())
+		fmt.Println(out_str)
+	}
+	return
+}
+
+// run cmd and pipe to stdout
+func PipeRunCmd(cmd string, args ...string) error {
+	fullcmd := `RunCmd: ` + cmd + ` `
+	if len(args) > 0 {
+		fullcmd += `'` + strings.Join(args, `' '`) + `' `
+	}
+	Describe(fullcmd)
+	exe := exec.Command(cmd, args...)
+	exe.Stdout = os.Stdout
+	exe.Stderr = os.Stderr
+	return exe.Run()
 }

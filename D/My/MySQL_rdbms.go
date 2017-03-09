@@ -1,8 +1,9 @@
-package Pg
+package My
 
 import (
 	"bytes"
 	"errors"
+	_ "github.com/go-sql-driver/mysql"
 	"github.com/jmoiron/sqlx"
 	"github.com/kokizzu/gotro/A"
 	"github.com/kokizzu/gotro/D"
@@ -15,8 +16,7 @@ import (
 	"time"
 )
 
-///////////
-// RDBMS
+// TODO: change postgresql specific tables (pg_indexes) and trigger (InitTrigger) syntax to mysql's
 
 // wrapper for GO's sql.DB
 type RDBMS struct {
@@ -25,12 +25,10 @@ type RDBMS struct {
 }
 
 // create new postgresql connection to localhost
-func NewConn(user, db string) *RDBMS {
-	opt := `user=` + user + ` dbname=` + db + ` sslmode=disable`
-	conn := sqlx.MustConnect(`postgres`, opt)
-	//conn.DB.SetMaxIdleConns(1)  // according to http://jmoiron.github.io/sqlx/#connectionPool
-	conn.DB.SetMaxOpenConns(61) // TODO: change this according to postgresql.conf -3
-	name := `pg::` + user + `@/` + db
+func NewConn(user, pass, ip, db string) *RDBMS {
+	opt := user + `:` + pass + `@` + ip + `/` + db
+	conn := sqlx.MustConnect(`mysql`, opt)
+	name := `my::` + opt
 	return &RDBMS{
 		Name:    name,
 		Adapter: conn,
@@ -121,19 +119,19 @@ func (db *RDBMS) CreateBaseTable(name string) {
 	db.DoTransaction(func(tx *Tx) string {
 		query := `
 CREATE TABLE IF NOT EXISTS ` + name + ` (
-	id BIGSERIAL PRIMARY KEY,
+	id PRIMARY KEY NOT NULL AUTO_INCREMENT,
 	unique_id VARCHAR(120) UNIQUE,
-	created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-	updated_at TIMESTAMP WITH TIME ZONE,
-	deleted_at TIMESTAMP WITH TIME ZONE,
-	restored_at TIMESTAMP WITH TIME ZONE,
-	modified_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+	created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+	updated_at TIMESTAMP,
+	deleted_at TIMESTAMP,
+	restored_at TIMESTAMP,
+	modified_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 	created_by BIGINT,
 	updated_by BIGINT,
 	deleted_by BIGINT,
 	restored_by BIGINT,
 	is_deleted BOOLEAN DEFAULT FALSE,
-	data JSONB
+	data JSON
 );`
 		is_deleted__index := name + `__is_deleted__index`
 		modified_at__index := name + `__modified_at__index`
