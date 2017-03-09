@@ -12,6 +12,7 @@ import (
 	"runtime"
 	"strings"
 	"time"
+	"math/rand"
 )
 
 var VERSION string
@@ -24,44 +25,81 @@ var ASSETS = [][2]string{
 	{`js`, `jquery`},
 }
 
-var HANDLERS = map[string]W.Action{
-	``:            Home,
-	`hello/:name`: Hello,
-	`data`:        Data,
+var ROUTERS = map[string]W.Action{
+	``: LoginExample,
+	`login_example`: LoginExample,
+	`logout_example`: LogoutExample,
+	`post_values_example`:            PostValuesExample,
+	`named_params_example/:value`: NamedParamsExample,
+	`query_string_example`:        QueryStringExample,
 }
 
 var WEBMASTER_EMAILS = M.SS{
 	`test@test.com`: `Test`,
 }
 
-func Home(ctx *W.Context) {
+func LoginExample(ctx *W.Context) {
+	user_id := ctx.Session.GetInt(`user_id`)
 	if ctx.IsAjax() {
-		name := ctx.Posts().GetStr(`name`)
 		ajax := W.Ajax{M.SX{`is_success`: true}}
-		ajax.Set(`name`, name)
+		username := ctx.Posts().GetStr(`username`)
+		password := ctx.Posts().GetStr(`password`)
+		if username != password {
+			ajax.Set(`is_success`, false)
+			ajax.Error(`301 Wrong username or password; username is case sensitive`)
+			ctx.AppendJson(ajax)
+			return
+		}
+		id := rand.Intn(1000)
+		ctx.Session.Login(M.SX{
+			`username`:   username,
+			`user_id`: id,
+			`level`:   M.SX{},
+		})
+		ajax.Set(`logged`, id)
 		ctx.AppendJson(ajax)
 		return
 	}
-	ctx.Render(`home`, M.SX{
-		`title`: `Home`,
+	ctx.Render(`login_example`, M.SX{
+		`title`: `Login Example`,
+		`user_id`: user_id,
 	})
 }
 
-func Hello(ctx *W.Context) {
-	ctx.Render(`hello`, M.SX{
-		`title`: `Hello`,
-		`name`:  ctx.ParamStr(`name`),
+func LogoutExample(ctx *W.Context) {
+	ajax := W.Ajax{M.SX{`is_success`: true}}
+	ctx.Session.Logout()
+	ctx.AppendJson(ajax)
+}
+
+func PostValuesExample(ctx *W.Context) {
+	if ctx.IsAjax() {
+		ajax := W.Ajax{M.SX{`is_success`: true}}
+		value := ctx.Posts().GetStr(`value`)
+		ajax.Set(`value`, value)
+		ctx.AppendJson(ajax)
+		return
+	}
+	ctx.Render(`post_values_example`, M.SX{
+		`title`: `Post Values Example`,
 	})
 }
 
-func Data(ctx *W.Context) {
+func NamedParamsExample(ctx *W.Context) {
+	ctx.Render(`named_params_example`, M.SX{
+		`title`: `Named Params Example`,
+		`value`:  ctx.ParamStr(`value`),
+	})
+}
+
+func QueryStringExample(ctx *W.Context) {
 	params := ctx.QueryParams()
 	data := M.SX{}
 	params.VisitAll(func(key, value []byte) {
 		data.Set(X.ToS(key), X.ToS(value))
 	})
-	ctx.Render(`data`, M.SX{
-		`title`: `Data`,
+	ctx.Render(`query_string_example`, M.SX{
+		`title`: `Query String Example`,
 		`data`:  data,
 	})
 }
@@ -120,7 +158,7 @@ func main() {
 	}
 	W.Assets = ASSETS
 	W.Webmasters = WEBMASTER_EMAILS
-	W.Routes = HANDLERS
+	W.Routes = ROUTERS
 	W.Filters = []W.Action{AuthFilter}
 	runtime.GOMAXPROCS(int(L.NUM_CPU))
 	// web engine
