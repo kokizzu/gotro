@@ -4,7 +4,7 @@ import (
 	"github.com/kokizzu/gotro/I"
 	"github.com/kokizzu/gotro/L"
 	"github.com/kokizzu/gotro/M"
-	"gitlab.com/kokizzu/gokil/S"
+	"github.com/kokizzu/gotro/S"
 	"gopkg.in/redis.v5"
 	"time"
 )

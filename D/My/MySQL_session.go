@@ -1,4 +1,4 @@
-package Pg
+package My
 
 import (
 	"github.com/kokizzu/gotro/I"
@@ -8,25 +8,27 @@ import (
 	"time"
 )
 
+// TODO: modify postgresql's insert into to mysql's version
+
 var SESSION_DBACTOR_ID = int64(1)
 var SESSION_VALUE_KEY = `value`
 var SESSION_EXPIRY_KEY = `expired_at`
 
-type PostgreSession struct {
+type MysqlSession struct {
 	Pool  *RDBMS
 	Table string
 }
 
-func NewSession(conn *RDBMS, table string) *PostgreSession {
-	sess := &PostgreSession{
+func NewSession(conn *RDBMS, table string) *MysqlSession {
+	sess := &MysqlSession{
 		Pool:  conn,
 		Table: table,
 	}
-	sess.Pool.CreateBaseTable(table)
+	//sess.Pool.CreateBaseTable(table)
 	return sess
 }
 
-func (sess PostgreSession) Del(key string) {
+func (sess MysqlSession) Del(key string) {
 	sess.Pool.DoTransaction(func(tx *Tx) string {
 		dm := tx.QBaseUniq(sess.Table, key)
 		if dm.Id < 1 || dm.IsDeleted {
@@ -37,7 +39,7 @@ func (sess PostgreSession) Del(key string) {
 	})
 }
 
-func (sess PostgreSession) Expiry(key string) int64 {
+func (sess MysqlSession) Expiry(key string) int64 {
 	dm := sess.Pool.QBaseUniq(sess.Table, key)
 	if dm.Id < 1 || dm.IsDeleted {
 		return 0
@@ -49,7 +51,7 @@ func (sess PostgreSession) Expiry(key string) int64 {
 	return expired_at - T.Epoch()
 }
 
-func (sess PostgreSession) FadeVal(key string, val interface{}, sec int64) {
+func (sess MysqlSession) FadeVal(key string, val interface{}, sec int64) {
 	sess.Pool.DoTransaction(func(tx *Tx) string {
 		dm := tx.QBaseUniq(sess.Table, key)
 		dm.SetVal(SESSION_VALUE_KEY, val)
@@ -58,20 +60,19 @@ func (sess PostgreSession) FadeVal(key string, val interface{}, sec int64) {
 		return ``
 	})
 }
-
-func (sess PostgreSession) FadeStr(key, val string, sec int64) {
+func (sess MysqlSession) FadeStr(key, val string, sec int64) {
 	sess.FadeVal(key, val, sec)
 }
 
-func (sess PostgreSession) FadeInt(key string, val int64, sec int64) {
+func (sess MysqlSession) FadeInt(key string, val int64, sec int64) {
 	sess.FadeVal(key, val, sec)
 }
 
-func (sess PostgreSession) FadeMSX(key string, val M.SX, sec int64) {
+func (sess MysqlSession) FadeMSX(key string, val M.SX, sec int64) {
 	sess.FadeVal(key, val, sec)
 }
 
-func (sess PostgreSession) GetStr(key string) string {
+func (sess MysqlSession) GetStr(key string) string {
 	dm := sess.Pool.QBaseUniq(sess.Table, key)
 	if dm.Id < 1 || dm.IsDeleted || dm.XData == nil {
 		return ``
@@ -79,7 +80,7 @@ func (sess PostgreSession) GetStr(key string) string {
 	return dm.GetStr(SESSION_VALUE_KEY)
 }
 
-func (sess PostgreSession) GetInt(key string) int64 {
+func (sess MysqlSession) GetInt(key string) int64 {
 	dm := sess.Pool.QBaseUniq(sess.Table, key)
 	if dm.Id < 1 || dm.IsDeleted || dm.XData == nil {
 		return 0
@@ -87,7 +88,7 @@ func (sess PostgreSession) GetInt(key string) int64 {
 	return dm.GetInt(SESSION_VALUE_KEY)
 }
 
-func (sess PostgreSession) GetMSX(key string) M.SX {
+func (sess MysqlSession) GetMSX(key string) M.SX {
 	dm := sess.Pool.QBaseUniq(sess.Table, key)
 	if dm.Id < 1 || dm.IsDeleted || dm.XData == nil {
 		return M.SX{}
@@ -95,7 +96,7 @@ func (sess PostgreSession) GetMSX(key string) M.SX {
 	return dm.GetMSX(SESSION_VALUE_KEY)
 }
 
-func (sess PostgreSession) Inc(key string) (ival int64) {
+func (sess MysqlSession) Inc(key string) (ival int64) {
 	k2 := ZZ(SESSION_VALUE_KEY)
 	k1 := Z(SESSION_VALUE_KEY)
 	table := ZZ(sess.Table)
@@ -119,7 +120,7 @@ func (sess PostgreSession) Inc(key string) (ival int64) {
 	return ival
 }
 
-func (sess PostgreSession) SetVal(key string, val interface{}) {
+func (sess MysqlSession) SetVal(key string, val interface{}) {
 	sess.Pool.DoTransaction(func(tx *Tx) string {
 		dm := tx.QBaseUniq(sess.Table, key)
 		dm.SetVal(SESSION_VALUE_KEY, val)
@@ -127,15 +128,14 @@ func (sess PostgreSession) SetVal(key string, val interface{}) {
 		return ``
 	})
 }
-
-func (sess PostgreSession) SetStr(key, val string) {
+func (sess MysqlSession) SetStr(key, val string) {
 	sess.SetVal(key, val)
 }
 
-func (sess PostgreSession) SetInt(key string, val int64) {
+func (sess MysqlSession) SetInt(key string, val int64) {
 	sess.SetVal(key, val)
 }
 
-func (sess PostgreSession) SetMSX(key string, val M.SX) {
+func (sess MysqlSession) SetMSX(key string, val M.SX) {
 	sess.SetVal(key, val)
 }

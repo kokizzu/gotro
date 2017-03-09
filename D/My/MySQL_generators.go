@@ -1,10 +1,12 @@
-package Pg
+package My
 
 import (
 	"bytes"
 	"github.com/kokizzu/gotro/I"
 	"github.com/kokizzu/gotro/M"
 )
+
+// TODO: this is copy pasted from Pg version, change json functions (json_object_agg, jsonb_each) to match mysql version
 
 // generate insert, requires table name and field-value params
 func GenInsert(table string, kvparams M.SX) (string, []interface{}) {

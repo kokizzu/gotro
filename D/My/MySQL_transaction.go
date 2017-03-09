@@ -1,4 +1,4 @@
-package Pg
+package My
 
 import (
 	"database/sql"
