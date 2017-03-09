@@ -25,17 +25,17 @@ var ASSETS = [][2]string{
 }
 
 var HANDLERS = map[string]W.Action{
-	``: Home,
+	``:            Home,
 	`hello/:name`: Hello,
-	`data`: Data,
+	`data`:        Data,
 }
 
 var WEBMASTER_EMAILS = M.SS{
-	`test@test.com`:  `Test`,
+	`test@test.com`: `Test`,
 }
 
 func Home(ctx *W.Context) {
-	if (ctx.IsAjax()) {
+	if ctx.IsAjax() {
 		name := ctx.Posts().GetStr(`name`)
 		ajax := W.Ajax{M.SX{`is_success`: true}}
 		ajax.Set(`name`, name)
@@ -50,7 +50,7 @@ func Home(ctx *W.Context) {
 func Hello(ctx *W.Context) {
 	ctx.Render(`hello`, M.SX{
 		`title`: `Hello`,
-		`name`: ctx.ParamStr(`name`),
+		`name`:  ctx.ParamStr(`name`),
 	})
 }
 
@@ -62,7 +62,7 @@ func Data(ctx *W.Context) {
 	})
 	ctx.Render(`data`, M.SX{
 		`title`: `Data`,
-		`data`: data,
+		`data`:  data,
 	})
 }
 
