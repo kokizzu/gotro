@@ -1,7 +1,9 @@
 package A
 
 import (
+	"bytes"
 	"encoding/json"
+	"github.com/kokizzu/gotro/I"
 	"github.com/kokizzu/gotro/L"
 	"strings"
 )
@@ -35,4 +37,19 @@ func ToJson(arr []interface{}) string {
 //  A.StrJoin(m1,`-`) // satu-dua
 func StrJoin(arr []string, sep string) string {
 	return strings.Join(arr, sep)
+}
+
+// combine int64s in the array of int64 with the chosen string separator
+//  m1:= []int64{123,456}
+//  A.IntJoin(m1,`-`) // 123-456
+func IntJoin(arr []int64, sep string) string {
+	buf := bytes.Buffer{}
+	len := len(arr) - 1
+	for idx, v := range arr {
+		buf.WriteString(I.ToS(v))
+		if idx < len {
+			buf.WriteString(sep)
+		}
+	}
+	return buf.String()
 }

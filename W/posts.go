@@ -3,7 +3,6 @@ package W
 import (
 	"github.com/kokizzu/gotro/M"
 	"github.com/kokizzu/gotro/S"
-	"github.com/kokizzu/gotro/X"
 	"github.com/valyala/fasthttp"
 )
 
@@ -12,16 +11,21 @@ type Posts struct {
 	M.SS
 }
 
-func (p *Posts) GetJsonMap(key string) (res M.SX) {
-	return S.JsonToMap(X.ToS(res[key]))
+func (p *Posts) GetJsonMap(key string) M.SX {
+	return S.JsonToMap(p.GetStr(key))
+}
+
+func (p *Posts) IsSet(key string) bool {
+	_, ok := p.SS[key]
+	return ok
 }
 
 func (p *Posts) GetJsonStrArr(key string) []string {
-	return S.JsonToStrArr(key)
+	return S.JsonToStrArr(p.GetStr(key))
 }
 
 func (p *Posts) GetJsonIntArr(key string) []int64 {
-	return S.JsonToIntArr(key)
+	return S.JsonToIntArr(p.GetStr(key))
 }
 
 func (p *Posts) FromContext(ctx *Context) {

@@ -316,27 +316,27 @@ func (mp *Row) SetIntlPhone(key string) string {
 }
 
 // get string from Row
-func (mp *Row) Get_Str(key string) string {
+func (mp *Row) GetStr(key string) string {
 	return X.ToS(mp.Row[key])
 }
 
 // get boolean from Row
-func (mp *Row) Get_Bool(key string) bool {
+func (mp *Row) GetBool(key string) bool {
 	return X.ToBool(mp.Row[key])
 }
 
 // get int64 from Row
-func (mp *Row) Get_Int(key string) int64 {
+func (mp *Row) GetInt(key string) int64 {
 	return X.ToI(mp.Row[key])
 }
 
 // get []interface{} from Row
-func (mp *Row) Get_Arr(key string) []interface{} {
+func (mp *Row) GetAX(key string) []interface{} {
 	return X.ToArr(mp.Row[key])
 }
 
 // get float64 from Row
-func (mp *Row) Get_Float(key string) float64 {
+func (mp *Row) GetFloat(key string) float64 {
 	return X.ToF(mp.Row[key])
 }
 
@@ -568,4 +568,17 @@ func (mp *Row) Set_UserEmails_ByTable(emails string, table string) (ok bool) {
 		}
 	}
 	return
+}
+
+// set Row type with check
+func (mp *Row) SetType(val string) string {
+	// error check
+	if mp.Id > 0 {
+		old_type := mp.Row.GetStr(`type`)
+		if !(old_type == `` || old_type == val) {
+			return mp.Ajax.Error(`Invalid record type, trying to overwrite a ` + Z(old_type) + ` record to ` + Z(val) + `, this should not be happened, please contact Site Administrator`)
+		}
+	}
+	mp.SetVal(`type`, val)
+	return ``
 }

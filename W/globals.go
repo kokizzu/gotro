@@ -13,6 +13,22 @@ var Assets [][2]string // []{{`js css /js /css`,`filename`}, ...}
 var Filters []Action
 var PUBLIC_SUBDIR = `public/`
 var VIEWS_SUBDIR = `views/`
+var MIME2EXT = map[string]string{
+	`application/pdf`: `pdf`,
+	`image/png`:       `png`,
+	`image/jpeg`:      `jpg`,
+	`application/zip`: `zip`, // any open document format (odf) are also zip
+	// supported by youtube
+	`video/x-flv`:     `flv`,
+	`video/mp4`:       `mp4`,
+	`video/quicktime`: `mov`,
+	`video/x-msvideo`: `avi`,
+	`video/x-ms-wmv`:  `wmv`,
+	`video/webm`:      `webm`,
+	`video/3gpp`:      `3gp`,
+	`video/mp2p`:      `mpegps`,
+	`video/mp1s`:      `mpegps`,
+}
 
 var Errors = map[int]string{
 	0:   `Unknown Error`,

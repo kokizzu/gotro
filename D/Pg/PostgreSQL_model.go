@@ -235,7 +235,7 @@ func NewQueryParams(posts *W.Posts, model *TableModel) *QueryParams {
 	}
 }
 
-func (qp *QueryParams) ToMap(ajax M.SX) {
+func (qp *QueryParams) ToMap(ajax W.Ajax) {
 	ajax.Set(`rows`, qp.Rows)
 	ajax.Set(`count`, qp.Count)
 	ajax.Set(`offset`, qp.Offset)

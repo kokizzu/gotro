@@ -5,6 +5,14 @@ import (
 	"github.com/kokizzu/gotro/I"
 )
 
+// TODO: find out how backspace \b null \0 character processed on common SQL
+
+// remove newline for commenting quote
+func ZC(str string) string {
+	str = Replace(str, "\n", ` `)
+	return `-- ` + str
+}
+
 // add single quote in the beginning and the end of string.
 //  S.Q(`coba`) // `'coba'`
 //  S.Q(`123`)  // `'123'`

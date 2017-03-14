@@ -7,8 +7,12 @@ import (
 	"github.com/kokizzu/gotro/L"
 	"github.com/kokizzu/gotro/M"
 	"github.com/kokizzu/gotro/S"
+	"github.com/kokizzu/gotro/T"
 	"github.com/kokizzu/gotro/X"
 	"github.com/valyala/fasthttp"
+	"mime/multipart"
+	"net/http"
+	"path/filepath"
 )
 
 var strPost = []byte(`POST`)
@@ -63,8 +67,8 @@ func (ctx *Context) AppendString(txt string) {
 }
 
 // append json
-func (ctx *Context) AppendJson(any Ajax) {
-	buf, err := json.Marshal(any.SX)
+func (ctx *Context) AppendJson(any M.SX) {
+	buf, err := json.Marshal(any)
 	L.IsError(err, `error converting to json`)
 	ctx.Buffer.Write(buf)
 }
@@ -145,4 +149,56 @@ func (ctx *Context) Error(code int, info string) {
 // get parsed ?a=b&c=d, this is different from Param*() func
 func (ctx *Context) QueryParams() *QueryParams {
 	return &QueryParams{ctx.RequestCtx.QueryArgs()}
+}
+
+// request URL
+func (ctx *Context) RequestURL() string {
+	return string(ctx.RequestURI())
+}
+
+// uploaded file
+func (ctx *Context) UploadedFile(id string) (fileName, ext, contentType string, reader multipart.File) {
+	fh, err := ctx.RequestCtx.FormFile(id)
+	if L.IsError(err, `Parameter multipart.FileHeader missing:`+id) {
+		ext = err.Error()
+		return
+	}
+	buff := make([]byte, 512)
+	reader, err = fh.Open()
+	if L.IsError(err, `Opening multipart.FileHeader: `+id) {
+		return
+	}
+	_, err = reader.Read(buff)
+	if L.IsError(err, `Reading first 512-byte multipart.FileHeader.Reader: `+id) {
+		ext = err.Error()
+		reader.Close()
+		return
+	}
+	contentType = http.DetectContentType(buff) // do not trust header.Get(`content-type`)[0]
+	reader.Seek(0, 0)
+	fileName = fh.Filename
+	if fileName == `` {
+		fileName = `tmp`
+	}
+	ext = filepath.Ext(fileName)
+	ext = S.ToLower(ext)
+	return
+}
+
+// debug info
+func (ctx *Context) RequestDebugStr() string {
+	return ctx.Session.IpAddr + S.WebBR +
+		ctx.Session.UserAgent + S.WebBR +
+		ctx.Title + S.WebBR +
+		T.DateTimeStr() + S.WebBR +
+		S.IfElse(ctx.IsAjax(), `POST`, `GET`) + ` ` + S.IfEmpty(string(ctx.Path()), `/`) + S.WebBR +
+		`Session: ` + ctx.Session.String() + S.WebBR +
+		ctx.Posts().String() + S.WebBR + S.WebBR
+}
+
+// non debug info
+func (ctx *Context) RequestHtmlStr() string {
+	return `Request Path: ` + ctx.RequestURL() + S.WebBR +
+		`Server Time: ` + T.DateTimeStr() + S.WebBR +
+		`Session: ` + ctx.Session.String() + S.WebBR
 }

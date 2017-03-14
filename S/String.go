@@ -10,9 +10,11 @@ import (
 	"encoding/base64"
 	"regexp"
 
+	"bytes"
 	"github.com/kokizzu/gotro/I"
 	"github.com/kokizzu/gotro/L"
 	"github.com/yosuke-furukawa/json5/encoding/json5"
+	"math/rand"
 )
 
 const WebBR = "\n<br/>"
@@ -304,4 +306,80 @@ var re_non_phone = regexp.MustCompile(`[^-+\d,]+`)
 // remove invalid characters of a phone number
 func ValidatePhone(str string) string {
 	return re_non_phone.ReplaceAllString(str, ``)
+}
+
+// create a random password
+func RandomPassword(strlen int64) string {
+	const chars = "abcdefghijkmnopqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ123456789" // l and I removed
+	result := make([]byte, strlen)
+	for i := int64(0); i < strlen; i++ {
+		result[i] = chars[rand.Intn(len(chars))]
+	}
+	return string(result)
+}
+
+// split to substrings with maximum n characters
+func SplitN(str string, n int) []string {
+	if len(str) < n {
+		return []string{str}
+	}
+	sub := ``
+	subs := []string{}
+	runes := bytes.Runes([]byte(str))
+	l := len(runes)
+	for i, r := range runes {
+		sub = sub + string(r)
+		if (i+1)%n == 0 {
+			subs = append(subs, sub)
+			sub = ``
+		} else if (i + 1) == l {
+			subs = append(subs, sub)
+		}
+	}
+	return subs
+}
+
+// substring before first `substr`
+func LeftOf(str, substr string) string {
+	len := strings.Index(str, substr)
+	if len < 0 {
+		return str
+	}
+	return str[:len]
+}
+
+// substring after first `substr`
+func RightOf(str, substr string) string {
+	pos := strings.Index(str, substr)
+	if pos < 0 {
+		return str
+	}
+	return str[pos+len(substr):]
+}
+
+// substring before last `substr`
+func LeftOfLast(str, substr string) string {
+	len := strings.LastIndex(str, substr)
+	if len < 0 {
+		return str
+	}
+	return str[:len]
+}
+
+// substring after last `substr`
+func RightOfLast(str, substr string) string {
+	pos := strings.LastIndex(str, substr)
+	if pos < 0 {
+		return str
+	}
+	return str[pos+len(substr):]
+}
+
+// remove last n character, not UTF-8 friendly
+func RemoveLastN(str string, n int) string {
+	m := len(str)
+	if n >= m {
+		return ``
+	}
+	return str[0 : m-3]
 }

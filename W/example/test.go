@@ -8,11 +8,11 @@ import (
 	"github.com/kokizzu/gotro/M"
 	"github.com/kokizzu/gotro/W"
 	"github.com/kokizzu/gotro/X"
+	"math/rand"
 	"os"
 	"runtime"
 	"strings"
 	"time"
-	"math/rand"
 )
 
 var VERSION string
@@ -26,10 +26,10 @@ var ASSETS = [][2]string{
 }
 
 var ROUTERS = map[string]W.Action{
-	``: LoginExample,
-	`login_example`: LoginExample,
-	`logout_example`: LogoutExample,
-	`post_values_example`:            PostValuesExample,
+	``:                            LoginExample,
+	`login_example`:               LoginExample,
+	`logout_example`:              LogoutExample,
+	`post_values_example`:         PostValuesExample,
 	`named_params_example/:value`: NamedParamsExample,
 	`query_string_example`:        QueryStringExample,
 }
@@ -52,16 +52,16 @@ func LoginExample(ctx *W.Context) {
 		}
 		id := rand.Intn(1000)
 		ctx.Session.Login(M.SX{
-			`username`:   username,
-			`user_id`: id,
-			`level`:   M.SX{},
+			`username`: username,
+			`user_id`:  id,
+			`level`:    M.SX{},
 		})
 		ajax.Set(`logged`, id)
 		ctx.AppendJson(ajax)
 		return
 	}
 	ctx.Render(`login_example`, M.SX{
-		`title`: `Login Example`,
+		`title`:   `Login Example`,
 		`user_id`: user_id,
 	})
 }
@@ -88,7 +88,7 @@ func PostValuesExample(ctx *W.Context) {
 func NamedParamsExample(ctx *W.Context) {
 	ctx.Render(`named_params_example`, M.SX{
 		`title`: `Named Params Example`,
-		`value`:  ctx.ParamStr(`value`),
+		`value`: ctx.ParamStr(`value`),
 	})
 }
 

@@ -37,7 +37,8 @@ type Engine struct {
 	// project_name
 	Name string
 	// location of the project, will be concatenated with VIEWS_SUBDIR, PUBLIC_SUBDIR
-	BaseDir string
+	BaseDir   string
+	PublicDir string
 	// server creation time
 	CreatedAt time.Time
 	// assets <script and <link as string
@@ -359,15 +360,4 @@ func NewEngine(debugMode, multiApp bool, projectName, baseDir string) *Engine {
 		L.Describe(engine.GlobalAny)
 	}
 	return engine
-}
-
-// debug info
-func (ctx *Context) RequestDebugStr() string {
-	return ctx.Session.IpAddr + S.WebBR +
-		ctx.Session.UserAgent + S.WebBR +
-		ctx.Title + S.WebBR +
-		T.DateTimeStr() + S.WebBR +
-		S.IfElse(ctx.IsAjax(), `POST`, `GET`) + ` ` + S.IfEmpty(string(ctx.Path()), `/`) + S.WebBR +
-		`Session: ` + ctx.Session.String() + S.WebBR +
-		ctx.Posts().String() + S.WebBR + S.WebBR
 }

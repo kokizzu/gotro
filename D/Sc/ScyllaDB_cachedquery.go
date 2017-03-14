@@ -174,6 +174,22 @@ func RamGetMIS(ram_key, query string) (M.IS, bool) {
 	return v, ok
 }
 
+// MAP[STRING]STRING
+// only set when not yet being set, preventing double write and double delete
+func RamSetMSS(bucket, key, query string, val M.SS, sec int64) M.SS {
+	RamSet_ByBucket_ByRamKey_ByQuery(bucket, key, query, val, sec)
+	return val
+}
+
+func RamGetMSS(ram_key, query string) (M.SS, bool) {
+	val := RamGet_ByRamKey_ByQuery(ram_key, query)
+	if val == nil {
+		return M.SS{}, false
+	}
+	v, ok := val.(M.SS)
+	return v, ok
+}
+
 // FLOAT64
 // only set when not yet being set, preventing double write and double delete
 func RamSetFloat(bucket, key, query string, val float64, sec int64) float64 {
@@ -311,7 +327,7 @@ func (conn *RDBMS) CQStrMapMap(bucket, ram_key, index, query string) M.SX {
 }
 
 // query and cache []int64 for TTL seconds
-func (conn *RDBMS) CQIntArray(bucket, ram_key, query string) []int64 {
+func (conn *RDBMS) CQIntArr(bucket, ram_key, query string) []int64 {
 	if val, ok := RamGetAI(ram_key, query); ok {
 		return val
 	}
@@ -326,4 +342,13 @@ func (conn *RDBMS) CQIntStrMap(bucket, ram_key, query string) map[int64]string {
 	}
 	val := conn.QIntStrMap(query)
 	return RamSetMIS(bucket, ram_key, query, val, TTL)
+}
+
+// query and cache map[string]string for TTL seconds
+func (conn *RDBMS) CQStrStrMap(bucket, ram_key, query string) map[string]string {
+	if val, ok := RamGetMSS(ram_key, query); ok {
+		return val
+	}
+	val := conn.QStrStrMap(query)
+	return RamSetMSS(bucket, ram_key, query, val, TTL)
 }
