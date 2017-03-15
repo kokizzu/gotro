@@ -55,7 +55,6 @@ func (s *Session) Logout() {
 	s.Key = ``
 	s.SX = M.SX{}
 	s.Changed = true
-	L.Print(`LOGOUT`, s.Key)
 }
 
 func (s *Session) RandomKey() {
@@ -76,6 +75,7 @@ func (s *Session) Login(val M.SX) {
 	val[`user_agent`] = s.UserAgent
 	val[`login_at`] = T.Epoch()
 	s.SX = val
+	s.Changed = true
 	L.Print(`LOGIN`, s.Key, val)
 	Sessions.FadeMSX(s.Key, val, EXPIRE_SEC)
 }
@@ -94,20 +94,25 @@ func (s *Session) Load(ctx *Context) {
 	} else {
 		s.Key = cookie
 		s.SX = Sessions.GetMSX(s.Key)
+		//L.Print(`Session.Load`, s.Key,s.SX)
 		if len(s.SX) == 0 {
-			s.Logout() // possible expired cookie
+			s.Logout() // possible using expired cookie
 		}
 	}
 }
 
 // should be called before writing response
 func (s *Session) Save(ctx *Context) {
+	//L.Print(`Session.Save?`, s.Changed)
 	if s.Changed {
 		rem := Sessions.Expiry(s.Key)
 		expiration := time.Now().Add(time.Second * time.Duration(rem))
+		//L.Print(`Session.Save`, rem, expiration, s.Key)
 		cookie := &fasthttp.Cookie{}
 		cookie.SetKey(SESS_KEY)
 		cookie.SetValue(s.Key)
+		cookie.SetPath(`/`)
+		cookie.SetDomain(`.` + string(ctx.Request.Header.Host()))
 		cookie.SetExpire(expiration)
 		ctx.Response.Header.SetCookie(cookie)
 	}
