@@ -194,7 +194,7 @@ func Print(any ...interface{}) {
 	_, file, line, _ := runtime.Caller(1)
 	str := color.CyanString(file[len(FILE_PATH):] + `:` + I.ToStr(line) + `: `)
 	LOG.Info(strings.Replace(str, `%`, `%%`, -1))
-	fmt.Println(any...)
+	LOG.Debug(any...)
 }
 
 // print error message and exit program

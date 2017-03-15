@@ -23,7 +23,6 @@ var CACHE cmap.CMap      // cache real storage
 const TTL = 4
 
 func init() {
-	DEBUG = true
 	CACHE_INV = cmap.New()
 	CACHE_BORN = cmap.New()
 	CACHE_TTL = cmap.New()

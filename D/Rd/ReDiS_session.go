@@ -46,11 +46,11 @@ func (sess RedisSession) FadeStr(key, val string, sec int64) {
 }
 
 func (sess RedisSession) FadeInt(key string, val int64, sec int64) {
-	sess.FadeStr(sess.Prefix+key, I.ToS(val), sec)
+	sess.FadeStr(key, I.ToS(val), sec)
 }
 
 func (sess RedisSession) FadeMSX(key string, val M.SX, sec int64) {
-	sess.FadeStr(sess.Prefix+key, M.ToJson(val), sec)
+	sess.FadeStr(key, M.ToJson(val), sec)
 }
 
 func (sess RedisSession) GetStr(key string) string {
@@ -62,11 +62,11 @@ func (sess RedisSession) GetStr(key string) string {
 }
 
 func (sess RedisSession) GetInt(key string) int64 {
-	return S.ToI(sess.GetStr(sess.Prefix + key))
+	return S.ToI(sess.GetStr(key))
 }
 
 func (sess RedisSession) GetMSX(key string) M.SX {
-	return S.JsonToMap(sess.GetStr(sess.Prefix + key))
+	return S.JsonToMap(sess.GetStr(key))
 }
 
 func (sess RedisSession) Inc(key string) int64 {
@@ -81,9 +81,9 @@ func (sess RedisSession) SetStr(key, val string) {
 }
 
 func (sess RedisSession) SetInt(key string, val int64) {
-	sess.SetStr(sess.Prefix+key, I.ToS(val))
+	sess.SetStr(key, I.ToS(val))
 }
 
 func (sess RedisSession) SetMSX(key string, val M.SX) {
-	sess.SetStr(sess.Prefix+key, M.ToJson(val))
+	sess.SetStr(key, M.ToJson(val))
 }

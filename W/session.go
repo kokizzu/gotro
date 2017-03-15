@@ -1,6 +1,7 @@
 package W
 
 import (
+	"github.com/kokizzu/gotro/L"
 	"github.com/kokizzu/gotro/M"
 	"github.com/kokizzu/gotro/S"
 	"github.com/kokizzu/gotro/T"
@@ -54,6 +55,7 @@ func (s *Session) Logout() {
 	s.Key = ``
 	s.SX = M.SX{}
 	s.Changed = true
+	L.Print(`LOGOUT`, s.Key)
 }
 
 func (s *Session) RandomKey() {
@@ -74,6 +76,7 @@ func (s *Session) Login(val M.SX) {
 	val[`user_agent`] = s.UserAgent
 	val[`login_at`] = T.Epoch()
 	s.SX = val
+	L.Print(`LOGIN`, s.Key, val)
 	Sessions.FadeMSX(s.Key, val, EXPIRE_SEC)
 }
 
@@ -132,9 +135,10 @@ func (s *Session) String() string {
 	return s.SX.Pretty(` | `)
 }
 
-func InitSession(sess_key string, expire_ns, renew_ns time.Duration, conn SessionConnector) {
+func InitSession(sess_key string, expire_ns, renew_ns time.Duration, conn SessionConnector, glob SessionConnector) {
 	SESS_KEY = S.IfEmpty(sess_key, SESS_KEY)
 	EXPIRE_SEC = int64(expire_ns / NS2SEC)
 	RENEW_SEC = int64(renew_ns / NS2SEC)
 	Sessions = conn
+	Globals = conn
 }
