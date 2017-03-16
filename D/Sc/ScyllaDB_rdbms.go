@@ -139,8 +139,7 @@ CREATE TABLE IF NOT EXISTS ` + name + ` (
 	updated_by BIGINT,
 	deleted_by BIGINT,
 	restored_by BIGINT,
-	is_deleted BOOLEAN DEFAULT FALSE,
-	data JSON
+	is_deleted BOOLEAN DEFAULT FALSE
 );`
 		is_deleted__index := name + `__is_deleted__index`
 		modified_at__index := name + `__modified_at__index`
@@ -178,20 +177,6 @@ CREATE TABLE IF NOT EXISTS ` + name + ` (
 		}
 		tx.DoExec(query)
 		// logs
-		if name == `users` {
-			// TODO: tambahkan record ke access_log ketika login, renew session, logout
-			query = `
-CREATE TABLE IF NOT EXISTS access_logs (
-	id BIGSERIAL PRIMARY KEY,
-	user_id BIGINT REFERENCES users(id),
-	log_count BIGINT,
-	session VARCHAR(256),
-	ip_address VARCHAR(256),
-	logs TEXT,
-	CONSTRAINT unique__user_id__logs UNIQUE(user_id,session)
-);`
-			tx.DoExec(query)
-		}
 		query = `
 CREATE TABLE IF NOT EXISTS _log_` + name + ` (
 	id BIGSERIAL PRIMARY KEY,
