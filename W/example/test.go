@@ -47,7 +47,7 @@ func LoginExample(ctx *W.Context) {
 		if username != password {
 			ajax.Set(`is_success`, false)
 			ajax.Error(`301 Wrong username or password; username is case sensitive`)
-			ctx.AppendJson(ajax)
+			ctx.AppendJson(ajax.SX)
 			return
 		}
 		id := rand.Intn(1000)
@@ -57,7 +57,7 @@ func LoginExample(ctx *W.Context) {
 			`level`:    M.SX{},
 		})
 		ajax.Set(`logged`, id)
-		ctx.AppendJson(ajax)
+		ctx.AppendJson(ajax.SX)
 		return
 	}
 	ctx.Render(`login_example`, M.SX{
@@ -69,7 +69,7 @@ func LoginExample(ctx *W.Context) {
 func LogoutExample(ctx *W.Context) {
 	ajax := W.Ajax{M.SX{`is_success`: true}}
 	ctx.Session.Logout()
-	ctx.AppendJson(ajax)
+	ctx.AppendJson(ajax.SX)
 }
 
 func PostValuesExample(ctx *W.Context) {
@@ -77,7 +77,7 @@ func PostValuesExample(ctx *W.Context) {
 		ajax := W.Ajax{M.SX{`is_success`: true}}
 		value := ctx.Posts().GetStr(`value`)
 		ajax.Set(`value`, value)
-		ctx.AppendJson(ajax)
+		ctx.AppendJson(ajax.SX)
 		return
 	}
 	ctx.Render(`post_values_example`, M.SX{
@@ -146,7 +146,7 @@ func init() {
 
 func main() {
 	redis_conn := Rd.NewRedisSession(``, ``, 9, `session::`)
-	W.InitSession(`Test`, 2*24*time.Hour, 1*24*time.Hour, *redis_conn)
+	W.InitSession(`Test`, 2*24*time.Hour, 1*24*time.Hour, *redis_conn, *redis_conn)
 	W.Mailers = map[string]*W.SmtpConfig{
 		``: {
 			Name:     `Mailer Daemon`,
