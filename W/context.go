@@ -108,7 +108,7 @@ func (ctx *Context) FirstPath() string {
 	if first_slash < 0 {
 		return string(uri[1:])
 	}
-	return string(uri[1:first_slash])
+	return string(uri[1 : first_slash+1])
 }
 
 func (ctx *Context) IsWebMaster() bool {

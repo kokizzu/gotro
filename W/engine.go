@@ -109,6 +109,7 @@ func (engine *Engine) MinifyAssets() {
 		}
 		engine.Assets = res.String()
 	} else {
+		dir := engine.BaseDir + PUBLIC_SUBDIR
 		m := map[string]*minify.M{}
 		r := map[string]*bytes.Buffer{}
 		f := func(key, mime string, mini minify.MinifierFunc) {
@@ -137,7 +138,7 @@ func (engine *Engine) MinifyAssets() {
 				L.LOG.Notice(`Unknown resource format ` + ext[0] + ` ` + ext[1])
 				continue
 			}
-			dat, err := ioutil.ReadFile(path)
+			dat, err := ioutil.ReadFile(dir + path)
 			if L.IsError(err, `failed read asset: `+path) {
 				continue
 			}
@@ -150,7 +151,7 @@ func (engine *Engine) MinifyAssets() {
 		}
 		// please add these files to your gitignore
 		for _, fname := range []string{`lib.css`, `mod.css`, `lib.js`, `mod.js`} {
-			ioutil.WriteFile(engine.BaseDir+PUBLIC_SUBDIR+fname, r[fname].Bytes(), DEFAULT_FILEDIR_PERM)
+			ioutil.WriteFile(dir+fname, r[fname].Bytes(), DEFAULT_FILEDIR_PERM)
 			if S.EndsWith(fname, `.js`) {
 				engine.Assets += `<script type='text/javascript' src='/` + fname + `' ></script>`
 			} else {
