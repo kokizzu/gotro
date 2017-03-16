@@ -1,7 +1,7 @@
 # GotRo
 
 GotRo is abbreviation of `Gotong Royong`. the meaning in `Indonesia`: "do it together", "mutual cooperation". 
-This Framework is rewrite of [gokil](//gitlab.com/kokizzu/gokil), that previously use [fasthttp](//github.com/julienschmidt/httprouter) but now rewritten using [fasthttprouter](//github.com/buaazp/fasthttprouter)
+This Framework is rewrite of [gokil](//gitlab.com/kokizzu/gokil), that previously use [httprouter](//github.com/julienschmidt/httprouter) but now rewritten using [fasthttprouter](//github.com/buaazp/fasthttprouter)
 
 ## Design Goal
 - As similar as possible to Gokil

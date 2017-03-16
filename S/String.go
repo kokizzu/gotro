@@ -164,8 +164,8 @@ func Coalesce(strs ...string) string {
 //  S.ToI(`1234`) // 1234
 //  S.ToI(`1a`) // 0
 func ToI(str string) int64 {
-	val, err := strconv.ParseInt(str, 10, 64)
-	L.IsError(err, str)
+	val, _ := strconv.ParseInt(str, 10, 64)
+	//L.IsError(err, str)
 	return val
 }
 
@@ -181,8 +181,8 @@ func AsI(str string) (int64, bool) {
 //  S.ToF(`1234.5`) // 1234.5
 //  S.ToF(`1a`) // 0.0
 func ToF(str string) float64 {
-	val, err := strconv.ParseFloat(str, 64)
-	L.IsError(err, str)
+	val, _ := strconv.ParseFloat(str, 64)
+	//L.IsError(err, str)
 	return val
 }
 

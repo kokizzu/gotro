@@ -94,6 +94,12 @@ func (tm *TableModel) Select() string {
 				continue
 			}
 			switch field.Key {
+			case `id`:
+				query := `id::TEXT "id"`
+				queries = append(queries, query)
+				tm.Fields[idx].SqlColPos = pos
+				pos += 1
+				continue
 			case `created_at`, `modified_at`, `updated_at`, `deleted_at`, `restored_at`:
 				tm.Fields[idx].Label = S.ToTitle(S.Replace(field.Key, `_`, ` `))
 				tm.Fields[idx].Type = `datetime`
