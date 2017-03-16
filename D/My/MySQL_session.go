@@ -24,7 +24,7 @@ func NewSession(conn *RDBMS, table string) *MysqlSession {
 		Pool:  conn,
 		Table: table,
 	}
-	//sess.Pool.CreateBaseTable(table)
+	sess.Pool.CreateBaseTable(table)
 	return sess
 }
 
@@ -99,7 +99,7 @@ func (sess MysqlSession) GetMSX(key string) M.SX {
 func (sess MysqlSession) Inc(key string) (ival int64) {
 	k2 := ZZ(SESSION_VALUE_KEY)
 	k1 := Z(SESSION_VALUE_KEY)
-	table := ZZ(sess.Table)
+	table := sess.Table
 	uniq := Z(key)
 	sess.Pool.DoTransaction(func(tx *Tx) string {
 		res := tx.DoExec(`

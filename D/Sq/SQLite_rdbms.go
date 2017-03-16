@@ -1,9 +1,8 @@
-package My
+package Sq
 
 import (
 	"bytes"
 	"errors"
-	_ "github.com/go-sql-driver/mysql"
 	"github.com/jmoiron/sqlx"
 	"github.com/kokizzu/gotro/A"
 	"github.com/kokizzu/gotro/D"
@@ -12,8 +11,8 @@ import (
 	"github.com/kokizzu/gotro/S"
 	"github.com/kokizzu/gotro/W"
 	"github.com/kokizzu/gotro/X"
+	_ "github.com/mattn/go-sqlite3"
 	"time"
-	"strings"
 )
 
 // wrapper for GO's sql.DB
@@ -22,13 +21,13 @@ type RDBMS struct {
 	Adapter *sqlx.DB
 }
 
-// create new mysql connection to localhost
-func NewConn(user, pass, ip, db string) *RDBMS {
-	opt := user + `:` + pass + `@` + ip + `/` + db
-	conn := sqlx.MustConnect(`mysql`, opt)
-	name := `my::` + opt
+// create new sqlite connection to localhost
+func NewConn(filename, password string) *RDBMS {
+	conn := sqlx.MustConnect(`sqlite3`, `file:`+filename)
+	conn.MustExec(`PRAGMA key = ` + Z(password))
+	conn.MustExec(`PRAGMA cipher_page_size = 4096`)
 	return &RDBMS{
-		Name:    name,
+		Name:    `sq::` + filename,
 		Adapter: conn,
 	}
 }
@@ -117,7 +116,7 @@ func (db *RDBMS) CreateBaseTable(name string) {
 	db.DoTransaction(func(tx *Tx) string {
 		query := `
 CREATE TABLE IF NOT EXISTS ` + name + ` (
-	id BIGINT PRIMARY KEY NOT NULL AUTO_INCREMENT,
+	id BIGINT PRIMARY KEY NOT NULL,
 	unique_id VARCHAR(120) UNIQUE,
 	created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 	updated_at TIMESTAMP,
@@ -128,13 +127,13 @@ CREATE TABLE IF NOT EXISTS ` + name + ` (
 	updated_by BIGINT,
 	deleted_by BIGINT,
 	restored_by BIGINT,
-	is_deleted BOOLEAN DEFAULT FALSE
+	is_deleted BOOLEAN DEFAULT FALSE,
+	data JSON
 );`
 		is_deleted__index := name + `__is_deleted__index`
 		modified_at__index := name + `__modified_at__index`
 		unique_patern__index := name + `__unique__patern__index`
-		db_name := strings.Split(db.Name, `/`)[1]
-		query_count_index := `SELECT COUNT(*) FROM information_schema.statistics WHERE table_schema = ` + Z(db_name) + ` AND index_name = `
+		query_count_index := `SELECT COUNT(*) FROM sqlite_master WHERE type='index' AND name = `
 		ra, _ := tx.DoExec(query).RowsAffected()
 		if ra > 0 {
 			query = query_count_index + Z(is_deleted__index)
@@ -159,18 +158,18 @@ CREATE TABLE IF NOT EXISTS ` + name + ` (
 			}
 		}
 		trig_name := name + `__timestamp_changer`
-		query = `SELECT COUNT(*) FROM information_schema.triggers WHERE trigger_schema = ` + Z(db_name) + ` AND trigger_name = ` + Z(trig_name)
+		query = `SELECT COUNT(*) FROM sqlite_master WHERE type='trigger' AND name = ` + Z(trig_name)
 		if tx.QInt(query) == 0 {
-			query = `DROP TRIGGER IF EXISTS ` + db_name + `.` + trig_name
+			query = `DROP TRIGGER IF EXISTS ` + trig_name
 			tx.DoExec(query)
-			query = `CREATE TRIGGER ` + trig_name + ` BEFORE UPDATE ON ` + name + ` FOR EACH ROW CALL timestamp_changer();`
+			query = `CREATE TRIGGER ` + trig_name + ` BEFORE UPDATE ON ` + name + ` FOR EACH ROW BEGIN SELECT timestamp_changer(); END;`
 		}
 		tx.DoExec(query)
 		// logs
 		if name == `users` { // TODO: tambahkan record ke access_log ketika login, renew session, logout
 			query = `
 CREATE TABLE IF NOT EXISTS access_logs (
-	id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT UNIQUE PRIMARY KEY,
+	id BIGSERIAL PRIMARY KEY,
 	user_id BIGINT REFERENCES users(id),
 	log_count BIGINT,
 	session VARCHAR(256),
@@ -182,11 +181,13 @@ CREATE TABLE IF NOT EXISTS access_logs (
 		}
 		query = `
 CREATE TABLE IF NOT EXISTS _log_` + name + ` (
-	id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT UNIQUE PRIMARY KEY,
+	id BIGSERIAL PRIMARY KEY,
 	record_id BIGINT REFERENCES ` + name + `(id) ON UPDATE CASCADE,
 	user_id BIGINT REFERENCES users(id),
 	date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-	info TEXT
+	info TEXT,
+	data_before JSONB NULL,
+	data_after JSONB NULL
 );`
 		tx.DoExec(query)
 		idx_name := `_log_` + name + `__record_id__idx`
@@ -720,7 +721,7 @@ func (db *RDBMS) DoTransaction(lambda func(tx *Tx) string) {
 }
 
 func (db *RDBMS) ViewExists(viewname string) bool {
-	query := `SELECT COALESCE((SELECT COUNT(*) FROM information_schema.views WHERE table_name = ` + Z(viewname) + `),0)`
+	query := `SELECT COALESCE((SELECT COUNT(*) FROM sqlite_master WHERE type='view' AND name = ` + Z(viewname) + `),0)`
 	return db.QInt(query) > 0
 }
 
