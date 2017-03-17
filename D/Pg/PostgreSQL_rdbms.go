@@ -168,8 +168,8 @@ CREATE TABLE IF NOT EXISTS ` + name + ` (
 			query = `DROP TRIGGER IF EXISTS ` + trig_name + ` ON ` + name
 			tx.DoExec(query)
 			query = `CREATE TRIGGER ` + trig_name + ` BEFORE UPDATE ON ` + name + ` FOR EACH ROW EXECUTE PROCEDURE timestamp_changer();`
+			tx.DoExec(query)
 		}
-		tx.DoExec(query)
 		// logs
 		if name == `users` { // TODO: tambahkan record ke access_log ketika login, renew session, logout
 			query = `
