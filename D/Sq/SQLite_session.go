@@ -20,6 +20,7 @@ func NewSession(conn *RDBMS, table string) *SqliteSession {
 		Pool:  conn,
 		Table: table,
 	}
+	InitFunctions(sess.Pool)
 	sess.Pool.CreateBaseTable(table)
 	return sess
 }
