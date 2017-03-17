@@ -38,12 +38,17 @@ var WEBMASTER_EMAILS = M.SS{
 	`test@test.com`: `Test`,
 }
 
+func AjaxResponse() W.Ajax {
+	return W.Ajax{SX: M.SX{`is_success`: true}}
+}
+
 func LoginExample(ctx *W.Context) {
 	user_id := ctx.Session.GetInt(`user_id`)
 	if ctx.IsAjax() {
-		ajax := W.Ajax{M.SX{`is_success`: true}}
-		username := ctx.Posts().GetStr(`username`)
-		password := ctx.Posts().GetStr(`password`)
+		ajax := AjaxResponse()
+		posts := ctx.Posts()
+		username := posts.GetStr(`username`)
+		password := posts.GetStr(`password`)
 		if username != password {
 			ajax.Set(`is_success`, false)
 			ajax.Error(`301 Wrong username or password; username is case sensitive`)
@@ -67,14 +72,15 @@ func LoginExample(ctx *W.Context) {
 }
 
 func LogoutExample(ctx *W.Context) {
-	ajax := W.Ajax{M.SX{`is_success`: true}}
+	ajax := AjaxResponse()
 	ctx.Session.Logout()
 	ctx.AppendJson(ajax.SX)
 }
 
+// this function handles posted form values
 func PostValuesExample(ctx *W.Context) {
 	if ctx.IsAjax() {
-		ajax := W.Ajax{M.SX{`is_success`: true}}
+		ajax := AjaxResponse()
 		value := ctx.Posts().GetStr(`value`)
 		ajax.Set(`value`, value)
 		ctx.AppendJson(ajax.SX)
@@ -85,6 +91,7 @@ func PostValuesExample(ctx *W.Context) {
 	})
 }
 
+// this function handles /named_params_example/foo
 func NamedParamsExample(ctx *W.Context) {
 	ctx.Render(`named_params_example`, M.SX{
 		`title`: `Named Params Example`,
@@ -92,8 +99,11 @@ func NamedParamsExample(ctx *W.Context) {
 	})
 }
 
+// this function handles /query_string_example?something=a&something_else=123
 func QueryStringExample(ctx *W.Context) {
 	params := ctx.QueryParams()
+	//params.GetStr(`something`)
+	//params.GetInt(`something_else`)
 	data := M.SX{}
 	params.VisitAll(func(key, value []byte) {
 		data.Set(X.ToS(key), X.ToS(value))
@@ -105,7 +115,6 @@ func QueryStringExample(ctx *W.Context) {
 }
 
 const PROJECT_NAME = `Gotro Example`
-const DOMAIN = `localhost`
 
 // filter the page that may or may may not be accessed
 func AuthFilter(ctx *W.Context) {
@@ -113,6 +122,8 @@ func AuthFilter(ctx *W.Context) {
 	handled := false
 	if ctx.Session.GetInt(`user_id`) > 0 {
 		// logged in
+	} else {
+		// you can block the page for non-logged-in users here (handled=true)
 	}
 	ctx.Session.Touch()
 	if !handled {
@@ -160,7 +171,6 @@ func main() {
 	W.Webmasters = WEBMASTER_EMAILS
 	W.Routes = ROUTERS
 	W.Filters = []W.Action{AuthFilter}
-	runtime.GOMAXPROCS(int(L.NUM_CPU))
 	// web engine
 	server := W.NewEngine(DEBUG_MODE, false, PROJECT_NAME+VERSION, ROOT_DIR)
 	server.StartServer(LISTEN_ADDR)

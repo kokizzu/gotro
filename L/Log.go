@@ -133,7 +133,10 @@ func StackTrace(start int) string {
 		if strings.HasPrefix(name, `runtime.`) || strings.HasPrefix(name, `github.com/kokizzu/gotro/L.`) {
 			continue
 		}
-		str += "\n\t" + file[len(FILE_PATH):] + `:` + I.ToStr(line) + `  ` + name
+		if len(file) > len(FILE_PATH) {
+			file = file[len(FILE_PATH):]
+		}
+		str += "\n\t" + file + `:` + I.ToStr(line) + `  ` + name
 	}
 	return str
 }

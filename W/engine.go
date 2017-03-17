@@ -52,7 +52,7 @@ func (engine *Engine) SendDebugMail(message string) {
 	if mailer == nil {
 		return
 	}
-	message = `<pre>` + S.Replace(message, "\n", `<br/>`) + `</pre>`
+	message = `<pre>` + message + `</pre>`
 	subject := engine.Name
 	if engine.DebugMode {
 		subject += ` DEBUG ` + T.DateStr()
