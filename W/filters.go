@@ -5,14 +5,35 @@ import (
 	"fmt"
 	"github.com/davecgh/go-spew/spew"
 	"github.com/fatih/color"
+	"github.com/kokizzu/gotro/I"
 	"github.com/kokizzu/gotro/L"
 	"github.com/kokizzu/gotro/S"
+	"runtime"
 	"time"
 )
 
 func PanicFilter(ctx *Context) {
 	defer func() {
-		if err := recover(); err != nil {
+		err := recover()
+		defer func() {
+			if err2 := recover(); err2 != nil {
+				L.Print(`!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!`)
+				L.Print(`Nested Error on PanicFilter (should not be happening)`)
+				L.Describe(err)
+				L.Describe(err2)
+				start := 0
+				for {
+					pc, file, line, ok := runtime.Caller(start)
+					if !ok {
+						break
+					}
+					name := runtime.FuncForPC(pc).Name()
+					start += 1
+					L.Print("\t" + file + `:` + I.ToStr(line) + `  ` + name)
+				}
+			}
+		}()
+		if err != nil {
 			//L.Panic(errors.New(`Internal Server Error`), ``, err)
 			err2, ok := err.(error)
 			if !ok {
@@ -40,6 +61,10 @@ func PanicFilter(ctx *Context) {
 
 func LogFilter(ctx *Context) {
 	start := time.Now()
+	url := string(ctx.RequestCtx.RequestURI())
+	if ctx.Engine.DebugMode {
+		L.LOG.Notice(url, ctx.Posts().String())
+	}
 	ctx.Next()(ctx)
 	L.Trace()
 	var codeStr string
@@ -62,7 +87,6 @@ func LogFilter(ctx *Context) {
 		ones = `micro`
 	}
 	referrer := ctx.RequestCtx.Referer()
-	url := ctx.RequestCtx.RequestURI()
 	msg := fmt.Sprintf(`[%s] %7d %7.2f %5s | %4s %-40s | %-40s | %15s | %s || %s`,
 		codeStr,
 		ctx.Buffer.Len(),

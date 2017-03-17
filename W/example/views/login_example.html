@@ -9,16 +9,22 @@
 
 <div id="logout" style="display:none">
 	<h3>Hello, user-#{user_id}</h3>
+	<a href="/named_params_example/foo">see named params</a> <br/>
+	<a href="/post_values_example">see post values</a> <br/>
+	<a href="/query_string_example?something=a&something_else=123">see query string</a> <br/>
+	<hr/>
 	<button type="submit" onclick="logout()">Logout</button>
 </div>
 
 <script>
-	var user_id = #{user_id};
+	var user_id = '#{user_id}';
 	function login() {
-		var d = { username: $('#username').val(), password: $('#password').val() };
-		$('#username').val('');
-		$('#password').val('');
-		$.post(`/login_example`, d, function(res) {
+		var usr = $('#username');
+		var pwd = $('#password');
+		var d = { username: usr.val(), password: pwd.val() };
+		usr.val('');
+		pwd.val('');
+		$.post('/login_example', d, function(res) {
 			if (res && res.errors && res.errors.length > 0) {
 				alert(res.errors);
 			} else {
@@ -31,7 +37,7 @@
 	}
 	function logout() {
 		var d = {};
-		$.post(`/logout_example`, d, function(res) {
+		$.post('/logout_example', d, function(res) {
 			if (res && res.errors && res.errors.length > 0) {
 				alert(res.errors);
 			} else {

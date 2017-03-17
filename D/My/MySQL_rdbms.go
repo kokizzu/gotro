@@ -12,8 +12,8 @@ import (
 	"github.com/kokizzu/gotro/S"
 	"github.com/kokizzu/gotro/W"
 	"github.com/kokizzu/gotro/X"
-	"time"
 	"strings"
+	"time"
 )
 
 // wrapper for GO's sql.DB
@@ -167,19 +167,6 @@ CREATE TABLE IF NOT EXISTS ` + name + ` (
 		}
 		tx.DoExec(query)
 		// logs
-		if name == `users` { // TODO: tambahkan record ke access_log ketika login, renew session, logout
-			query = `
-CREATE TABLE IF NOT EXISTS access_logs (
-	id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT UNIQUE PRIMARY KEY,
-	user_id BIGINT REFERENCES users(id),
-	log_count BIGINT,
-	session VARCHAR(256),
-	ip_address VARCHAR(256),
-	logs TEXT,
-	CONSTRAINT unique__user_id__logs UNIQUE(user_id,session)
-);`
-			tx.DoExec(query)
-		}
 		query = `
 CREATE TABLE IF NOT EXISTS _log_` + name + ` (
 	id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT UNIQUE PRIMARY KEY,

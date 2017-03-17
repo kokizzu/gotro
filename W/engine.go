@@ -2,6 +2,7 @@ package W
 
 import (
 	"bytes"
+	"fmt"
 	"github.com/OneOfOne/cmap"
 	"github.com/buaazp/fasthttprouter"
 	"github.com/kokizzu/gotro/A"
@@ -52,7 +53,7 @@ func (engine *Engine) SendDebugMail(message string) {
 	if mailer == nil {
 		return
 	}
-	message = `<pre>` + S.Replace(message, "\n", `<br/>`) + `</pre>`
+	message = `<pre>` + message + `</pre>`
 	subject := engine.Name
 	if engine.DebugMode {
 		subject += ` DEBUG ` + T.DateStr()
@@ -360,5 +361,16 @@ func NewEngine(debugMode, multiApp bool, projectName, baseDir string) *Engine {
 	if len(engine.GlobalAny) > 0 {
 		L.Describe(engine.GlobalAny)
 	}
+
+	// debug
+	engine.Router.PanicHandler = func(ctx *fasthttp.RequestCtx, panic interface{}) {
+		ref := `REF#` + S.RandomCB63(2)
+		L.LOG.Criticalf(`%# v`, panic)
+		L.LOG.Debug(ref)
+		L.LOG.Debug(L.StackTrace(0))
+		ctx.SetStatusCode(504)
+		fmt.Fprint(ctx, `{"error":"Final Defense Block `+ref+`","is_success":false}`)
+	}
+
 	return engine
 }

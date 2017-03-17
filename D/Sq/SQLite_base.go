@@ -2,15 +2,15 @@ package Sq
 
 import (
 	"database/sql"
+	"database/sql/driver"
 	"github.com/kokizzu/gotro/M"
 	"github.com/kokizzu/gotro/S"
 	"github.com/kokizzu/gotro/X"
 	"time"
-	"database/sql/driver"
 )
 
 type NullTime struct {
-	Time time.Time
+	Time  time.Time
 	Valid bool // Valid is true if Time is not NULL
 }
 
@@ -34,11 +34,11 @@ type Base struct {
 	Table      string
 	Connection *RDBMS
 	UniqueId   sql.NullString `db:"unique_id"`
-	CreatedAt  NullTime `db:"created_at"`
-	UpdatedAt  NullTime `db:"updated_at"`
-	DeletedAt  NullTime `db:"deleted_at"`
-	RestoredAt NullTime `db:"restored_at"`
-	ModifiedAt NullTime `db:"modified_at"`
+	CreatedAt  NullTime       `db:"created_at"`
+	UpdatedAt  NullTime       `db:"updated_at"`
+	DeletedAt  NullTime       `db:"deleted_at"`
+	RestoredAt NullTime       `db:"restored_at"`
+	ModifiedAt NullTime       `db:"modified_at"`
 	CreatedBy  sql.NullInt64  `db:"created_by"`
 	UpdatedBy  sql.NullInt64  `db:"updated_by"`
 	DeletedBy  sql.NullInt64  `db:"deleted_by"`
