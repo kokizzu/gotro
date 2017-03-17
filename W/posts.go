@@ -34,6 +34,12 @@ func (p *Posts) FromContext(ctx *Context) {
 	p.Args.VisitAll(func(k, v []byte) {
 		p.SS[string(k)] = string(v)
 	})
+	mf, err := ctx.RequestCtx.MultipartForm()
+	if err == nil {
+		for k, v := range mf.Value {
+			p.SS[k] = v[0]
+		}
+	}
 }
 
 // censor the password string, also when length is too long
