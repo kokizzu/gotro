@@ -12,7 +12,7 @@ func main() {
 	pg_conn := Pg.NewConn(`gotro_example`, `gotro_example`)
 	
 	// Create Table
-	pg_conn.CreateBaseTable(`users`)
+	pg_conn.CreateBaseTable(`users`, `users`)
 	
 	// Insert 3 rows
 	fmt.Println("---Insert three rows---")

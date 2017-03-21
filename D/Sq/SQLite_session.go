@@ -15,13 +15,13 @@ type SqliteSession struct {
 	Table string
 }
 
-func NewSession(conn *RDBMS, table string) *SqliteSession {
+func NewSession(conn *RDBMS, table, users_table string) *SqliteSession {
 	sess := &SqliteSession{
 		Pool:  conn,
 		Table: table,
 	}
 	InitFunctions(sess.Pool)
-	sess.Pool.CreateBaseTable(table)
+	sess.Pool.CreateBaseTable(table, users_table)
 	return sess
 }
 

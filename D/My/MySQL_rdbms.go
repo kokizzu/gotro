@@ -113,7 +113,7 @@ END; $$ LANGUAGE plpgsql;`
 }
 
 // create a base table
-func (db *RDBMS) CreateBaseTable(name string) {
+func (db *RDBMS) CreateBaseTable(name, users_table string) {
 	db.DoTransaction(func(tx *Tx) string {
 		query := `
 CREATE TABLE IF NOT EXISTS ` + name + ` (
@@ -171,7 +171,7 @@ CREATE TABLE IF NOT EXISTS ` + name + ` (
 CREATE TABLE IF NOT EXISTS _log_` + name + ` (
 	id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT UNIQUE PRIMARY KEY,
 	record_id BIGINT REFERENCES ` + name + `(id) ON UPDATE CASCADE,
-	user_id BIGINT REFERENCES users(id),
+	user_id BIGINT REFERENCES ` + users_table + `(id),
 	date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 	info TEXT
 );`
