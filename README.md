@@ -39,7 +39,6 @@ These dependencies automatically installed when you run `go get` (checked using 
 github.com/OneOfOne/cmap 
 github.com/aerospike/aerospike-client-go 
 github.com/buaazp/fasthttprouter 
-github.com/davecgh/go-spew/spew 
 github.com/fatih/color 
 github.com/go-sql-driver/mysql 
 github.com/jmoiron/sqlx  
@@ -63,6 +62,7 @@ gopkg.in/redis.v5
   - [Couchbase](//couchbase.com)
   - [CouchDB](//couchdb.apache.org)
   - [CockroachDB](//www.cockroachlabs.com) <-- high-read
+  - [CrateDB](//www.crate.io) <-- high-write
   - [GunDB](//gundb.github.io)
   - [Impala](//impala.apache.org)
   - [InfluxDB](//docs.influxdata.com/influxdb)

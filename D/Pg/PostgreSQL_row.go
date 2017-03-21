@@ -79,7 +79,7 @@ func (mp *Row) InsertRow() int64 {
 	}
 	mp.Id = new_id
 	mp.Ajax.Info(`Created new ` + label + " with: \n" + mp.Log)
-	mp.Ajax.Set(`id`, new_id)
+	mp.Ajax.Set(`id`, I.ToS(new_id))
 	return new_id
 }
 
@@ -111,7 +111,7 @@ func (mp *Row) UpdateRow() int64 {
 		return new_id
 	}
 	mp.Ajax.Info(`Updated ` + label + " with: \n" + mp.Log)
-	mp.Ajax.Set(`id`, new_id)
+	mp.Ajax.Set(`id`, I.ToS(new_id))
 	return new_id
 }
 
@@ -164,7 +164,7 @@ func (mp *Row) UpsertRow() int64 {
 	} else {
 		mp.Ajax.Info(`Updated ` + label + " with: " + S.WebBR + mp.Log)
 	}
-	mp.Ajax.Set(`id`, new_id)
+	mp.Ajax.Set(`id`, I.ToS(new_id))
 	return new_id
 }
 
@@ -221,7 +221,7 @@ func (mp *Row) IndateRow() int64 {
 	} else {
 		mp.Ajax.Info(`Updated ` + label + " with: " + S.WebBR + mp.Log)
 	}
-	mp.Ajax.Set(`id`, new_id)
+	mp.Ajax.Set(`id`, I.ToS(new_id))
 	return new_id
 }
 
