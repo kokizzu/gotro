@@ -9,6 +9,7 @@ import (
 	"github.com/kokizzu/gotro/S"
 	"github.com/kokizzu/gotro/T"
 	"github.com/kokizzu/gotro/X"
+	"github.com/kr/pretty"
 	"github.com/valyala/fasthttp"
 	"mime/multipart"
 	"net/http"
@@ -68,6 +69,9 @@ func (ctx *Context) AppendString(txt string) {
 
 // append json
 func (ctx *Context) AppendJson(any M.SX) {
+	if ctx.Engine.DebugMode {
+		fmt.Printf("%# v", pretty.Formatter(any))
+	}
 	buf, err := json.Marshal(any)
 	L.IsError(err, `error converting to json`)
 	ctx.Buffer.Write(buf)

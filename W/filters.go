@@ -3,7 +3,6 @@ package W
 import (
 	"errors"
 	"fmt"
-	"github.com/davecgh/go-spew/spew"
 	"github.com/fatih/color"
 	"github.com/kokizzu/gotro/I"
 	"github.com/kokizzu/gotro/L"
@@ -46,7 +45,7 @@ func PanicFilter(ctx *Context) {
 			ctx.Title += ` (error)`
 			detail := ``
 			if ctx.Engine.DebugMode {
-				detail = spew.Sdump(err) + string(L.StackTrace(3))
+				detail = err_str + string(L.StackTrace(3))
 			} else {
 				ref_code := `EREF:` + S.RandomCB63(4)
 				L.LOG.Notice(ref_code) // no need to print stack trace, should be handled by PanicFilter
