@@ -64,8 +64,7 @@ func (mp *Row) InsertRow() int64 {
 		mp.Ajax.Set(`id`, mp.Id)
 		return mp.Id
 	}
-	data_str := mp.ToJson()
-	params := M.SX{`data`: data_str}
+	params := mp.Row
 	if mp.UniqueId != `` {
 		params[`unique_id`] = mp.UniqueId
 	}
@@ -98,8 +97,7 @@ func (mp *Row) UpdateRow() int64 {
 		mp.Ajax.Set(`id`, mp.Id)
 		return mp.Id
 	}
-	data_str := mp.ToJson()
-	params := M.SX{`data`: data_str}
+	params := mp.Row
 	if mp.UniqueId != `` {
 		params[`unique_id`] = mp.UniqueId
 	}
@@ -134,8 +132,7 @@ func (mp *Row) UpsertRow() int64 {
 			return mp.Id
 		}
 	}
-	data_str := mp.ToJson()
-	params := M.SX{`data`: data_str}
+	params := mp.Row
 	if mp.Id > 0 {
 		params[`id`] = mp.Id
 	}
@@ -186,8 +183,7 @@ func (mp *Row) IndateRow() int64 {
 			return mp.Id
 		}
 	}
-	data_str := mp.ToJson()
-	params := M.SX{`data`: data_str}
+	params := mp.Row
 	if mp.Id > 0 {
 		params[`id`] = mp.Id
 	}

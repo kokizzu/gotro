@@ -27,7 +27,7 @@ func GenInsert(table string, kvparams M.SX) (string, []interface{}) {
 		if z > 1 {
 			query.WriteString(`, `)
 		}
-		query.WriteString(`$` + I.ToStr(z))
+		query.WriteString(`?`)
 	}
 	query.WriteString(` ) RETURNING id`)
 	return query.String(), params
@@ -56,7 +56,7 @@ func GenUpdateWhere(table, where string, kvparams M.SX) (string, []interface{}) 
 		if len > 1 {
 			query.WriteString(`, `)
 		}
-		query.WriteString(key + ` = $` + I.ToStr(len))
+		query.WriteString(key + ` = ?`)
 		params = append(params, val)
 		len++
 	}

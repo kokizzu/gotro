@@ -22,6 +22,7 @@ func NewSession(conn *RDBMS, table string) *PostgreSession {
 		Pool:  conn,
 		Table: table,
 	}
+	InitFunctions(sess.Pool)
 	sess.Pool.CreateBaseTable(table)
 	return sess
 }
