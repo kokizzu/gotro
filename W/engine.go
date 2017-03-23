@@ -187,7 +187,7 @@ func checkMailers(errors []string) []string {
 }
 
 func checkSessions(errors []string) []string {
-	if Sessions == nil {
+	if Sessions == nil || Globals == nil {
 		errors = append(errors, `W.Sessions not initialized, please call W.InitSession`)
 	}
 	return errors
