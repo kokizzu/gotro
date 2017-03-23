@@ -19,13 +19,13 @@ type MysqlSession struct {
 	Table string
 }
 
-func NewSession(conn *RDBMS, table string) *MysqlSession {
+func NewSession(conn *RDBMS, table, users_table string) *MysqlSession {
 	sess := &MysqlSession{
 		Pool:  conn,
 		Table: table,
 	}
 	InitFunctions(sess.Pool)
-	sess.Pool.CreateBaseTable(table)
+	sess.Pool.CreateBaseTable(table, users_table)
 	return sess
 }
 

@@ -17,13 +17,13 @@ type PostgreSession struct {
 	Table string
 }
 
-func NewSession(conn *RDBMS, table string) *PostgreSession {
+func NewSession(conn *RDBMS, table, users_table string) *PostgreSession {
 	sess := &PostgreSession{
 		Pool:  conn,
 		Table: table,
 	}
 	InitFunctions(sess.Pool)
-	sess.Pool.CreateBaseTable(table)
+	sess.Pool.CreateBaseTable(table, users_table)
 	return sess
 }
 
