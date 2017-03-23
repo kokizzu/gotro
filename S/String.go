@@ -199,6 +199,9 @@ func AsF(str string) (float64, bool) {
 //  map1 := S.JsonToMap(json_str)
 func JsonToMap(str string) (res map[string]interface{}) {
 	res = map[string]interface{}{}
+	if len(str) == 0 {
+		return
+	}
 	err := json.Unmarshal([]byte(str), &res)
 	L.IsError(err, str)
 	return
@@ -209,6 +212,9 @@ func JsonToMap(str string) (res map[string]interface{}) {
 //  arr := S.JsonToArr(json_str)
 func JsonToArr(str string) (res []interface{}) {
 	res = []interface{}{}
+	if len(str) == 0 {
+		return
+	}
 	err := json.Unmarshal([]byte(str), &res)
 	L.IsError(err, str)
 	return
@@ -219,6 +225,9 @@ func JsonToArr(str string) (res []interface{}) {
 //  arr := S.JsonToStrArr(json_str)
 func JsonToStrArr(str string) (res []string) {
 	res = []string{}
+	if len(str) == 0 {
+		return
+	}
 	err := json5.Unmarshal([]byte(str), &res)
 	L.IsError(err, str)
 	return
@@ -229,6 +238,9 @@ func JsonToStrArr(str string) (res []string) {
 //  arr := S.JsonToArr(json_str)
 func JsonToIntArr(str string) (res []int64) {
 	res = []int64{}
+	if len(str) == 0 {
+		return
+	}
 	err := json5.Unmarshal([]byte(str), &res)
 	L.IsError(err, str)
 	return
