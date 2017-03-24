@@ -61,8 +61,9 @@ func PanicFilter(ctx *Context) {
 func LogFilter(ctx *Context) {
 	start := time.Now()
 	url := string(ctx.RequestCtx.RequestURI())
+	method := string(ctx.RequestCtx.Method())
 	if ctx.Engine.DebugMode {
-		L.LOG.Notice(url, ctx.Posts().String())
+		L.LOG.Notice(method, url, ctx.Posts().String())
 	}
 	ctx.Next()(ctx)
 	L.Trace()
@@ -91,7 +92,7 @@ func LogFilter(ctx *Context) {
 		ctx.Buffer.Len(),
 		elapsed,
 		ones,
-		ctx.RequestCtx.Method(),
+		method,
 		url,
 		referrer,
 		ctx.Session.IpAddr,

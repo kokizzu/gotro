@@ -522,7 +522,7 @@ func (mp *Row) Set_UserEmails(emails string) (ok bool) {
 func (mp *Row) Set_UserEmails_ByTable(emails string, table string) (ok bool) {
 	ok = true
 	if emails != `` {
-		emails = S.Z(emails)
+		emails = S.XSS(emails)
 		emails = S.ToLower(emails)
 		orig := M.SS{}
 		orig[`office_mail`] = ``

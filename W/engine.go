@@ -284,7 +284,7 @@ func (engine *Engine) Template(key string) *Z.TemplateChain {
 	if cache == nil || tc == nil || !ok {
 		var err error
 		tc, err = Z.ParseFile(engine.DebugMode, engine.DebugMode, engine.BaseDir+VIEWS_SUBDIR+key+`.html`)
-		L.PanicIf(err, `Layout template not found`)
+		L.PanicIf(err, `Layout template not found: `+key)
 		engine.ViewCache.Set(key, tc)
 	}
 	return tc

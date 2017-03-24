@@ -33,9 +33,9 @@ type TemplateChain struct {
 	PrintDebug  bool
 }
 
-func (t TemplateChain) Describe() {
+func (t TemplateChain) Print() {
 	for k, v := range t.Parts {
-		L.Describe(k, string(v))
+		L.Print(k, string(v))
 	}
 }
 
@@ -68,14 +68,14 @@ func (t *TemplateChain) Render(target *bytes.Buffer, values M.SX) {
 			}
 		}
 		if len(not_used_arr) > 0 {
-			L.Describe(`Unused template parameter on `+t.Filename, not_used_arr)
+			L.Print(`Unused template parameter on `+t.Filename, not_used_arr)
 		}
 		not_found_arr := []string{}
 		for key := range not_found {
 			not_found_arr = append(not_found_arr, key)
 		}
 		if len(not_found_arr) > 0 {
-			L.Describe(`Template parameter not found on `+t.Filename, not_found_arr)
+			L.Print(`Template parameter not found on `+t.Filename, not_found_arr)
 		}
 	}
 	target.Write(t.Parts[len(t.Parts)-1])
@@ -94,7 +94,7 @@ func (t *TemplateChain) Reload() (*TemplateChain, error) {
 	// check for changes
 	info, err := os.Stat(dup.Filename)
 	errinfo := `failed to stat the template`
-	//	L.Describe(t.Filename, err)
+	//L.Print(t.Filename, err)
 	if L.IsError(err, errinfo, dup.Filename) {
 		dup.Parts = [][]byte{[]byte(errinfo)}
 		return &dup, errors.New(errinfo)
@@ -116,7 +116,7 @@ func (t *TemplateChain) Reload() (*TemplateChain, error) {
 	// clear parts
 	dup.Parts = [][]byte{}
 	dup.Keys = []string{}
-	//	L.Describe(`start parsing`, t.Filename)
+	//L.Print(`start parsing`, t.Filename)
 	// split into Parts and Keys
 	start := 0
 	p := 0
@@ -126,9 +126,11 @@ func (t *TemplateChain) Reload() (*TemplateChain, error) {
 		ch := bs[p]
 		// example: var y = '#{key}'
 		// example: var y = '#{ key }'
-		if ch == '#' { // start with #{
+		if ch == '#' {
+			// start with #{
 			if ch1 := bs[p+1]; ch1 == '{' {
-				for z := p + 2; z < len(bs); z += 1 { // find the }
+				for z := p + 2; z < len(bs); z += 1 {
+					// find the }
 					if ec := bs[z]; ec == '}' {
 						key = string(bs[p+2 : z])
 						end = z + 1
@@ -136,14 +138,16 @@ func (t *TemplateChain) Reload() (*TemplateChain, error) {
 					}
 				}
 			}
-		} else if ch == '/' { // start with `/*!`
+		} else if ch == '/' {
+			// start with `/*!`
 			// example: var y {
 			//   /*! key */
 			//   /*!key*/
 			// }
 			if ch1 := bs[p+1]; ch1 == '*' {
 				if ch2 := bs[p+2]; ch2 == '!' {
-					for z := p + 3; z < len(bs)-1; z += 1 { // find the `*/`
+					for z := p + 3; z < len(bs)-1; z += 1 {
+						// find the `*/`
 						if ec := bs[z]; ec == '*' {
 							if ec1 := bs[z+1]; ec1 == '/' {
 								key = string(bs[p+3 : z])
@@ -154,15 +158,18 @@ func (t *TemplateChain) Reload() (*TemplateChain, error) {
 					}
 				}
 			}
-		} else if ch == '{' { // start with {
+		} else if ch == '{' {
+			// start with {
 			// example: var y = {/* key */}
 			// example: var y = {/* key */ }
 			// example: var y = {/*key*/}
 			// example: var y = {/*key*/ }
 			ch1 := bs[p+1]
-			if ch1 == '/' { // start with `{/*`
+			if ch1 == '/' {
+				// start with `{/*`
 				if ch2 := bs[p+2]; ch2 == '*' {
-					for z := p + 3; z < len(bs)-2; z += 1 { // find the `*/}`
+					for z := p + 3; z < len(bs)-2; z += 1 {
+						// find the `*/}`
 						if ec := bs[z]; ec == '*' {
 							if ec1 := bs[z+1]; ec1 == '/' {
 								ec2 := bs[z+2]
@@ -185,10 +192,12 @@ func (t *TemplateChain) Reload() (*TemplateChain, error) {
 				// example: var y = { /* key */}
 				// example: var y = { /*key*/ }
 				// example: var y = { /*key*/}
-			} else if ch1 == ' ' { // start with `{ /*`
+			} else if ch1 == ' ' {
+				// start with `{ /*`
 				if ch2 := bs[p+2]; ch2 == '/' {
 					if ch3 := bs[p+3]; ch3 == '*' {
-						for z := p + 4; z < len(bs)-3; z += 1 { // find the `*/ }`
+						for z := p + 4; z < len(bs)-3; z += 1 {
+							// find the `*/ }`
 							if ec := bs[z]; ec == '*' {
 								if ec1 := bs[z+1]; ec1 == '/' {
 									ec2 := bs[z+2]
@@ -209,15 +218,18 @@ func (t *TemplateChain) Reload() (*TemplateChain, error) {
 					}
 				}
 			}
-		} else if ch == '[' { // start with [
+		} else if ch == '[' {
+			// start with [
 			// example: var y = [/* key */]
 			// example: var y = [/* key */ ]
 			// example: var y = [/*key*/]
 			// example: var y = [/*key*/ ]
 			ch1 := bs[p+1]
-			if ch1 == '/' { // start with `[/*`
+			if ch1 == '/' {
+				// start with `[/*`
 				if ch2 := bs[p+2]; ch2 == '*' {
-					for z := p + 3; z < len(bs)-2; z += 1 { // find the `*/]`
+					for z := p + 3; z < len(bs)-2; z += 1 {
+						// find the `*/]`
 						if ec := bs[z]; ec == '*' {
 							if ec1 := bs[z+1]; ec1 == '/' {
 								ec2 := bs[z+2]
@@ -240,10 +252,12 @@ func (t *TemplateChain) Reload() (*TemplateChain, error) {
 				// example: var y = [ /* key */]
 				// example: var y = [ /*key*/ ]
 				// example: var y = [ /*key*/]
-			} else if ch1 == ' ' { // start with `[ /*`
+			} else if ch1 == ' ' {
+				// start with `[ /*`
 				if ch2 := bs[p+2]; ch2 == '/' {
 					if ch3 := bs[p+3]; ch3 == '*' {
-						for z := p + 4; z < len(bs)-3; z += 1 { // find the `*/ ]`
+						for z := p + 4; z < len(bs)-3; z += 1 {
+							// find the `*/ ]`
 							if ec := bs[z]; ec == '*' {
 								if ec1 := bs[z+1]; ec1 == '/' {
 									ec2 := bs[z+2]
@@ -266,8 +280,8 @@ func (t *TemplateChain) Reload() (*TemplateChain, error) {
 			}
 		}
 		if end > 0 {
-			//			L.Describe(`part`, string(bs[start:p]))
-			//			L.Describe(`key`, string(key))
+			//L.Print(`part`, string(bs[start:p]))
+			//L.Print(`key`, string(key))
 			dup.Parts = append(dup.Parts, bs[start:p])
 			// trim whitespace before and after key
 			dup.Keys = append(dup.Keys, S.Trim(key))
@@ -278,13 +292,13 @@ func (t *TemplateChain) Reload() (*TemplateChain, error) {
 		}
 	}
 	if len(dup.Parts) == 0 {
-		//		L.Describe(`part (all) not shown`, len(bs[:]))
+		//L.Print(`part (all) not shown`, len(bs[:]))
 		dup.Parts = append(dup.Parts, bs[:])
 	} else {
-		//		L.Describe(`part`, string(bs[start:]))
+		//L.Print(`part`, string(bs[start:]))
 		dup.Parts = append(dup.Parts, bs[start:])
 	}
-	//	L.Describe(`end parsing`, t.Filename, len(t.Parts), len(t.Keys))
+	//L.Print(`end parsing`, t.Filename, len(dup.Parts), len(dup.Keys), info.Size())
 	return &dup, nil
 }
 
