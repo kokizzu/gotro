@@ -95,7 +95,7 @@ func (tm *TableModel) Select() string {
 			}
 			switch field.Key {
 			case `id`:
-				query := `id::TEXT "id"`
+				query := `x1.id::TEXT "id"`
 				queries = append(queries, query)
 				tm.Fields[idx].SqlColPos = pos
 				pos += 1

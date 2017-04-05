@@ -6,7 +6,7 @@ This Framework is rewrite of [gokil](//gitlab.com/kokizzu/gokil), that previousl
 ## Design Goal
 - As similar as possible to Gokil
 - Opinionated (choose the best dependency), for example by default uses int64 and float64
-- 1-letter supporting package so we short common function, such as: `I.ToS(1234)` to convert `int64` to `string`)
+- 1-letter supporting package so we only need to write a short common function, such as: `I.ToS(1234)` to convert `int64` to `string`)
   - A - Array
   - B - Boolean
   - C - Character (or Rune)
@@ -56,7 +56,7 @@ gopkg.in/redis.v5
 
 - fix mysql adapter so it becomes usable (currently copied from Postgres'), probably wait until mysql has indexable json column, or do alters like scylladb and sqlite
 - possibly refactor move cachedquery, records, etc to D package since nothing different about them, wait for cassandra version
-- [Review](//goo.gl/tBkfse) which databases we must support primarily for `D` (drop ones that hard to install), that can be silver bullet for extreme cases (high-write: sharding/partitioning and multi-master replication or auto-failover; full-text-search) 
+- [Review](//goo.gl/tBkfse) which databases we must support primarily for `D`, that can be silver bullet for extreme cases (high-write: sharding/partitioning and multi-master replication or auto-failover; full-text-search) 
   - [ArangoDB](//www.arangodb.com)
   - [Cassandra](//cassandra.apache.org) <-- high-write
   - [Couchbase](//couchbase.com)
@@ -79,4 +79,3 @@ gopkg.in/redis.v5
 - Add graceful restart (zero downtime deployment): [grace](//github.com/facebookgo/grace) or [endless](//github.com/fvbock/endless)
 - Write a book for about [Advanced Programming](//goo.gl/X4BIlM), [Database Systems](//goo.gl/uR8iVB) and [Web Programming](//goo.gl/Bl3fPE) that includes this framework
 - Add Catch NotFound (rewrite the Response.Body) if no route and static file found
-- Check why the performance worse than httprouter for `siege -b`

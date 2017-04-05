@@ -316,6 +316,7 @@ func NewEngine(debugMode, multiApp bool, projectName, baseDir string) *Engine {
 		ViewCache:       cmap.New(),
 		WebMasterAnchor: `<a href='mailto:` + Webmasters.KeysConcat(`,`) + `'>webmasters</a>`,
 	}
+
 	// handle static files
 	fs := &fasthttp.FS{
 		Root:               baseDir + PUBLIC_SUBDIR,
