@@ -480,3 +480,25 @@ func ToJson(any interface{}) string {
 	L.IsError(err, `X.ToJson failed`, any)
 	return string(res)
 }
+
+func ToAX(any interface{}) A.X {
+	if any == nil {
+		return A.X{}
+	}
+	val, ok := any.([]interface{})
+	if L.CheckIf(!ok, `Can't convert to A.X`, any) {
+		return A.X{}
+	}
+	return val
+}
+
+func ToMSX(any interface{}) M.SX {
+	if any == nil {
+		return M.SX{}
+	}
+	val, ok := any.(map[string]interface{})
+	if L.CheckIf(!ok, `Can't convert to M.SX`, any) {
+		return M.SX{}
+	}
+	return val
+}
