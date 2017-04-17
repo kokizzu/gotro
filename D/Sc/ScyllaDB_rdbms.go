@@ -129,7 +129,7 @@ func (db *RDBMS) CreateBaseTable(name string) {
 		query := `
 CREATE TABLE IF NOT EXISTS ` + name + ` (
 	id PRIMARY KEY NOT NULL AUTO_INCREMENT,
-	unique_id VARCHAR(120) UNIQUE,
+	unique_id VARCHAR(4096) UNIQUE,
 	created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 	updated_at TIMESTAMP,
 	deleted_at TIMESTAMP,

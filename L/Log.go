@@ -205,6 +205,9 @@ func PanicIf(err error, msg string, args ...interface{}) {
 	if err == nil {
 		return
 	}
+	if err.Error() == `sql: no rows in result set` {
+		return
+	}
 	pc, file, line, _ := runtime.Caller(1)
 	strf := file[len(FILE_PATH):] + `:` + I.ToStr(line) + `: `
 	str := color.MagentaString(strf)

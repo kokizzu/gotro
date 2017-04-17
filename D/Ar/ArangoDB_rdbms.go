@@ -20,17 +20,17 @@ type RDBMS struct {
 type Doc struct {
 	ara.Document
 	UniqueId   float64 `db:"unique_id"`
-	CreatedAt  float64    `db:"created_at"`
-	UpdatedAt  float64    `db:"updated_at"`
-	DeletedAt  float64    `db:"deleted_at"`
-	RestoredAt float64    `db:"restored_at"`
-	ModifiedAt float64    `db:"modified_at"`
-	CreatedBy  int64  `db:"created_by"`
-	UpdatedBy  int64  `db:"updated_by"`
-	DeletedBy  int64  `db:"deleted_by"`
-	RestoredBy int64  `db:"restored_by"`
-	IsDeleted  bool           `db:"is_deleted"`
-	DataStr    string         `db:"data"` // json object
+	CreatedAt  float64 `db:"created_at"`
+	UpdatedAt  float64 `db:"updated_at"`
+	DeletedAt  float64 `db:"deleted_at"`
+	RestoredAt float64 `db:"restored_at"`
+	ModifiedAt float64 `db:"modified_at"`
+	CreatedBy  int64   `db:"created_by"`
+	UpdatedBy  int64   `db:"updated_by"`
+	DeletedBy  int64   `db:"deleted_by"`
+	RestoredBy int64   `db:"restored_by"`
+	IsDeleted  bool    `db:"is_deleted"`
+	DataStr    string  `db:"data"` // json object
 	XData      M.SX
 }
 
@@ -55,7 +55,7 @@ func (db *RDBMS) CreateBaseTable(name string) {
 		db.Adapter.CreateCollection(collectionOptions)
 	}
 	if !db.Adapter.ColExist(`_log_` + name) {
-		collectionOptions := ara.NewCollectionOptions(`_log_` + name, true)
+		collectionOptions := ara.NewCollectionOptions(`_log_`+name, true)
 		db.Adapter.CreateCollection(collectionOptions)
 	}
 }
@@ -64,7 +64,7 @@ func (db *RDBMS) CreateBaseTable(name string) {
 func (db *RDBMS) QArray(query string, params ...interface{}) A.X {
 	rows := db.QAll(query)
 	res := A.X{}
-	for _, row := range(rows.Cursor.Result) {
+	for _, row := range rows.Cursor.Result {
 		res = append(res, row)
 	}
 	return res
@@ -92,11 +92,12 @@ func (db *RDBMS) QFirstArray(query string, params ...interface{}) A.X {
 func (db *RDBMS) QMapArray(query string, params ...interface{}) A.MSX {
 	rows := db.QAll(query)
 	res := A.MSX{}
-	for _, row := range(rows.Cursor.Result) {
+	for _, row := range rows.Cursor.Result {
 		res = append(res, X.ToMSX(row))
 	}
 	return res
 }
+
 /*
 // query to tsv file
 func (db *RDBMS) QTsv(header, query string, params ...interface{}) bytes.Buffer {
@@ -458,7 +459,7 @@ func (db *RDBMS) QBaseUniq(table, uid string) (base Base) {
 func (db *RDBMS) DoInsert(actor int64, table string, kvparams M.SX) (key string) {
 	kvparams[`created_by`] = actor
 	query, _ := GenInsert(table, kvparams)
-	q := ara.NewQuery(query )
+	q := ara.NewQuery(query)
 	L.Print(query)
 	cursor, err := db.Adapter.Execute(q)
 	L.PanicIf(err, `failed to DoInsert`)

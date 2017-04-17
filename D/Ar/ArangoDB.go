@@ -1,8 +1,8 @@
 package Ar
 
 import (
-	"github.com/kokizzu/gotro/S"
 	"github.com/kokizzu/gotro/D"
+	"github.com/kokizzu/gotro/S"
 )
 
 var Z func(string) string

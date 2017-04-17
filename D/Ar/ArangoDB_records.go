@@ -5,7 +5,7 @@ import (
 )
 
 type Records struct {
-	Cursor   *ara.Cursor
+	Cursor      *ara.Cursor
 	Query       string
 	QueryParams []interface{}
 }

@@ -122,7 +122,7 @@ func (db *RDBMS) CreateBaseTable(name, users_table string) {
 		query := `
 CREATE TABLE IF NOT EXISTS ` + name + ` (
 	id BIGSERIAL PRIMARY KEY,
-	unique_id VARCHAR(120) UNIQUE,
+	unique_id VARCHAR(4096) UNIQUE,
 	created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
 	updated_at TIMESTAMP WITH TIME ZONE,
 	deleted_at TIMESTAMP WITH TIME ZONE,
