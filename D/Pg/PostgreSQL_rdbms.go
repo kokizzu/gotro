@@ -100,7 +100,7 @@ BEGIN
 		NEW.updated_at := mod_time;
 		IF info <> '' THEN info := info || chr(10); END IF;
 		info := info || 'update';
-		query := 'INSERT INTO ' || log_table || '( record_id, user_id, date, info, data_before, data_after )' || ' VALUES(' || OLD.id || ',' || NEW.updated_by || ',' || quote_literal(mod_time) || ',' || quote_literal(info) || ',' || quote_literal(NEW.data) || ',' || quote_literal(OLD.data) || ')';
+		query := 'INSERT INTO ' || log_table || '( record_id, user_id, date, info, data_after, data_before )' || ' VALUES(' || OLD.id || ',' || NEW.updated_by || ',' || quote_literal(mod_time) || ',' || quote_literal(info) || ',' || quote_literal(NEW.data) || ',' || quote_literal(OLD.data) || ')';
 		EXECUTE query;
 		changed := TRUE;
 	ELSEIF changed THEN
