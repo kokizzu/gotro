@@ -220,6 +220,19 @@ func JsonToArr(str string) (res []interface{}) {
 	return
 }
 
+// convert JSON object to []map[string]interface{}, silently print and return empty slice of interface if failed
+//  json_str := `[{"x":"foo"},{"y":"bar"}]`
+//  arr := S.JsonToObjArr(json_str)
+func JsonToObjArr(str string) (res []map[string]interface{}) {
+	res = []map[string]interface{}{}
+	if len(str) == 0 {
+		return
+	}
+	err := json.Unmarshal([]byte(str), &res)
+	L.IsError(err, str)
+	return
+}
+
 // convert JSON object to []string, silently print and return empty slice of interface if failed
 //  json_str := `["123","456",789]`
 //  arr := S.JsonToStrArr(json_str)

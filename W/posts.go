@@ -24,6 +24,10 @@ func (p *Posts) GetJsonStrArr(key string) []string {
 	return S.JsonToStrArr(p.GetStr(key))
 }
 
+func (p *Posts) GetJsonObjArr(key string) []map[string]interface{} {
+	return S.JsonToObjArr(p.GetStr(key))
+}
+
 func (p *Posts) GetJsonIntArr(key string) []int64 {
 	return S.JsonToIntArr(p.GetStr(key))
 }
