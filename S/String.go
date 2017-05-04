@@ -382,6 +382,14 @@ func RightOf(str, substr string) string {
 	return str[pos+len(substr):]
 }
 
+// substring at most n characters
+func LeftN(str string, n int) string {
+	if len(str) < n {
+		return str
+	}
+	return str[:n] + `...`
+}
+
 // substring before last `substr`
 func LeftOfLast(str, substr string) string {
 	len := strings.LastIndex(str, substr)
