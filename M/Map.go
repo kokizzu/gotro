@@ -735,13 +735,11 @@ func (hash SX) Set(key string, val interface{}) {
 func (hash SX) Pretty(sep string) string {
 	keys := hash.SortedKeys()
 	buff := bytes.Buffer{}
-	for idx, key := range keys {
+	for _, key := range keys {
 		buff.WriteString(key)
 		buff.WriteRune(' ')
 		buff.WriteString(fmt.Sprintf("%+v", hash[key]))
-		if idx > 0 {
-			buff.WriteString(sep)
-		}
+		buff.WriteString(sep)
 	}
 	return buff.String()
 }

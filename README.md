@@ -24,7 +24,7 @@ This Framework is rewrite of [gokil](//gitlab.com/kokizzu/gokil), that previousl
 
 ## Benchmark
 
-Benchmarked using [hay](//github.com/rakyll/hey) `-c 255 -n 255000 http://localhost:3001` on i7-4720HQ [gokil](//github.com/kokizzu/gotro) almost 2x faster than [gokil](//gitlab.com/kokizzu/gokil) (23k rps vs 12k rps, thanks to `fasthttp`),
+Benchmarked using [hay](//github.com/rakyll/hey) `-c 255 -n 255000 http://localhost:3001` on i7-4720HQ [gotro](//github.com/kokizzu/gotro) almost 2x faster than [gokil](//gitlab.com/kokizzu/gokil) (23k rps vs 12k rps, thanks to `fasthttp`),
 this already includes session loading and template rendering (real-life use case, but with template auto-reloading which should be faster on production mode).
 
 ## Usage
@@ -52,11 +52,17 @@ github.com/yosuke-furukawa/json5/encoding/json5
 gopkg.in/redis.v5 
 ```
 
+## Contributors
+
+- Dikaimin Simon
+- Dimas Yudha P
+
 ## TODO
 
 - fix mysql adapter so it becomes usable (currently copied from Postgres'), probably wait until mysql has indexable json column, or do alters like scylladb and sqlite
 - possibly refactor move cachedquery, records, etc to D package since nothing different about them, wait for cassandra version
 - [Review](//goo.gl/tBkfse) which databases we must support primarily for `D`, that can be silver bullet for extreme cases (high-write: sharding/partitioning and multi-master replication or auto-failover; full-text-search) 
+  - [ActorDB](//www.actordb.com) <-- high-write
   - [ArangoDB](//www.arangodb.com)
   - [Cassandra](//cassandra.apache.org) <-- high-write
   - [Couchbase](//couchbase.com)

@@ -73,8 +73,6 @@ func (s *Session) Login(val M.SX) {
 	if s.Key == `` {
 		s.RandomKey()
 	}
-	val[`ip_addr`] = s.IpAddr
-	val[`user_agent`] = s.UserAgent
 	val[`login_at`] = T.Epoch()
 	s.SX = val
 	s.Changed = true

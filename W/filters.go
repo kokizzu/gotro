@@ -87,7 +87,7 @@ func LogFilter(ctx *Context) {
 		ones = `micro`
 	}
 	referrer := ctx.RequestCtx.Referer()
-	msg := fmt.Sprintf(`[%s] %7d %7.2f %5s | %4s %-40s | %-40s | %15s | %s || %s`,
+	msg := fmt.Sprintf(`[%s] %7d %7.2f %5s | %4s %-40s | %-40s | %15s | %s | %s | %s`,
 		codeStr,
 		ctx.Buffer.Len(),
 		elapsed,
@@ -96,6 +96,7 @@ func LogFilter(ctx *Context) {
 		url,
 		referrer,
 		ctx.Session.IpAddr,
+		ctx.Session.UserAgent,
 		ctx.Session.String(),
 		ctx.Posts().String(),
 	)

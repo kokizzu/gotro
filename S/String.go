@@ -270,7 +270,7 @@ func Repeat(str string, count int) string {
 func JsonAsMap(str string) (res map[string]interface{}, ok bool) {
 	res = map[string]interface{}{}
 	err := json.Unmarshal([]byte(str), &res)
-	ok = err != nil
+	ok = err == nil
 	return
 }
 
@@ -280,7 +280,37 @@ func JsonAsMap(str string) (res map[string]interface{}, ok bool) {
 func JsonAsArr(str string) (res []interface{}, ok bool) {
 	res = []interface{}{}
 	err := json.Unmarshal([]byte(str), &res)
-	ok = err != nil
+	ok = err == nil
+	return
+}
+
+// convert JSON object to []string with check
+//  json_str := `["a","b","c"]`
+//  arr, ok := S.JsonAsStrArr(json_str)
+func JsonAsStrArr(str string) (res []string, ok bool) {
+	res = []string{}
+	err := json.Unmarshal([]byte(str), &res)
+	ok = err == nil
+	return
+}
+
+// convert JSON object to []int64 with check
+//  json_str := `[1,2,3]`
+//  arr, ok := S.JsonAsIntArr(json_str)
+func JsonAsIntArr(str string) (res []int64, ok bool) {
+	res = []int64{}
+	err := json.Unmarshal([]byte(str), &res)
+	ok = err == nil
+	return
+}
+
+// convert JSON object to []float64 with check
+//  json_str := `[1,2,3]`
+//  arr, ok := S.JsonAsFloatArr(json_str)
+func JsonAsFloatArr(str string) (res []float64, ok bool) {
+	res = []float64{}
+	err := json.Unmarshal([]byte(str), &res)
+	ok = err == nil
 	return
 }
 
