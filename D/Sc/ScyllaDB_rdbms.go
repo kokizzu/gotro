@@ -25,6 +25,7 @@ type RDBMS struct {
 	Name    string
 	Adapter gocassa.KeySpace
 	Cluster *gocql.ClusterConfig
+	Session *gocql.Session
 }
 
 // create new postgresql connection to localhost
@@ -32,15 +33,24 @@ func NewConn(user, pass, ip, db string) *RDBMS {
 	conn, err := gocassa.ConnectToKeySpace(db, []string{ip}, user, pass)
 	L.PanicIf(err, `Failed connect to keyspace`)
 	clust := gocql.NewCluster(ip)
-	clust.Authenticator = gocql.PasswordAuthenticator{
-		Username: user,
-		Password: pass,
+	clust.RetryPolicy = &gocql.SimpleRetryPolicy{NumRetries: 3}
+	clust.Timeout = 8 * time.Second
+	clust.ConnectTimeout = 15 * time.Second
+	clust.Keyspace = db
+	if user != `` {
+		clust.Authenticator = gocql.PasswordAuthenticator{
+			Username: user,
+			Password: pass,
+		}
 	}
 	clust.Keyspace = db
+	sess, err := clust.CreateSession()
+	L.PanicIf(err, `Failed create session Sc`)
 	return &RDBMS{
 		Name:    `sc://` + user + `:` + pass + `@` + ip + `/` + db,
 		Adapter: conn,
 		Cluster: clust,
+		Session: sess,
 	}
 }
 
@@ -69,66 +79,15 @@ func (db *RDBMS) RenameBaseTable(oldname, newname string) {
 	})
 }
 
-// init trigger
-func (db *RDBMS) InitTrigger() {
-	// auto update timestamp trigger
-	query := `
-CREATE OR REPLACE FUNCTION timestamp_changer() RETURNS trigger AS $$
-DECLARE
-	changed BOOLEAN  := FALSE;
-	log_table TEXT := quote_ident('_log_' || TG_TABLE_NAME);
-	info TEXT := '';
-	mod_time TIMESTAMP := CURRENT_TIMESTAMP;
-	actor BIGINT;
-	query TEXT := '';
-BEGIN
-	IF (OLD.unique_id <> NEW.unique_id) THEN
-		NEW.updated_at := mod_time;
-		actor := NEW.updated_by;
-		changed := TRUE;
-		IF info <> '' THEN info := info || chr(10); END IF;
-		info := info || 'unique' || E'\t' || OLD.unique_id || E'\t' || NEW.unique_id;
-	END IF;
-	IF (OLD.is_deleted = TRUE) AND (NEW.is_deleted = FALSE) THEN
-		NEW.restored_at := mod_time;
-		actor := NEW.restored_by;
-		IF info <> '' THEN info := info || chr(10); END IF;
-		info := info || 'restore';
-		changed := TRUE;
-	END IF;
-	IF (OLD.is_deleted = FALSE) AND (NEW.is_deleted = TRUE) THEN
-		NEW.deleted_at := mod_time;
-		actor := NEW.deleted_by;
-		IF info <> '' THEN info := info || chr(10); END IF;
-		info := info || 'delete';
-		changed := TRUE;
-	END IF;
-	IF (OLD.data <> NEW.data) THEN
-		NEW.updated_at := mod_time;
-		IF info <> '' THEN info := info || chr(10); END IF;
-		info := info || 'update';
-		query := 'INSERT INTO ' || log_table || '( record_id, user_id, date, info, data_after, data_before )' || ' VALUES(' || OLD.id || ',' || NEW.updated_by || ',' || quote_literal(mod_time) || ',' || quote_literal(info) || ',' || quote_literal(NEW.data) || ',' || quote_literal(OLD.data) || ')';
-		EXECUTE query;
-		changed := TRUE;
-	ELSEIF changed THEN
-		query := 'INSERT INTO ' || log_table || '( record_id, user_id, date, info )' || ' VALUES(' || OLD.id || ',' || actor || ',' || quote_literal(mod_time) || ',' || quote_literal(info) || ')';
-		EXECUTE query;
-	END IF;
-	IF changed THEN NEW.modified_at := mod_time; END IF;
-	RETURN NEW;
-END; $$ LANGUAGE plpgsql;`
-	db.DoTransaction(func(tx *Tx) string {
-		tx.DoExec(query)
-		return ``
-	})
-}
+// init trigger: not supported
+//func (db *RDBMS) InitTrigger() {}
 
 // create a base table
 func (db *RDBMS) CreateBaseTable(name string) {
 	db.DoTransaction(func(tx *Tx) string {
 		query := `
 CREATE TABLE IF NOT EXISTS ` + name + ` (
-	id PRIMARY KEY NOT NULL AUTO_INCREMENT,
+	id PRIMARY KEY NOT NULL,
 	unique_id VARCHAR(4096) UNIQUE,
 	created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 	updated_at TIMESTAMP,
@@ -141,40 +100,33 @@ CREATE TABLE IF NOT EXISTS ` + name + ` (
 	restored_by BIGINT,
 	is_deleted BOOLEAN DEFAULT FALSE
 );`
-		is_deleted__index := name + `__is_deleted__index`
-		modified_at__index := name + `__modified_at__index`
-		unique_patern__index := name + `__unique__patern__index`
-		query_count_index := `SELECT COUNT(*) FROM pg_indexes WHERE indexname = `
-		err := tx.DoExec(query)
-		if err == nil {
-			query = query_count_index + Z(is_deleted__index)
-			if tx.QInt(query) == 0 {
-				query = `CREATE INDEX ` + name + `__is_deleted__index ON ` + name + `(is_deleted);`
-				tx.DoExec(query)
-			}
-			query = query_count_index + Z(modified_at__index)
-			if tx.QInt(query) == 0 {
-				query = `CREATE INDEX ` + name + `__modified_at__index ON ` + name + `(modified_at);`
-				tx.DoExec(query)
-			}
-			query = query_count_index + Z(unique_patern__index)
-			if tx.QInt(query) == 0 {
-				query = `CREATE INDEX ` + name + `__unique__pattern ON ` + name + ` (unique_id varchar_pattern_ops);`
-				tx.DoExec(query)
-			}
-			query = query_count_index + Z(name)
-			if tx.QInt(query) == 0 {
-				query = `CREATE INDEX ON ` + name + ` USING GIN(data)`
-				tx.DoExec(query)
-			}
-		}
-		trig_name := name + `__timestamp_changer`
-		query = `SELECT COUNT(*) FROM pg_trigger WHERE tgname = ` + Z(trig_name)
-		if tx.QInt(query) == 0 {
-			query = `DROP TRIGGER IF EXISTS ` + trig_name + ` ON ` + name
-			tx.DoExec(query)
-			query = `CREATE TRIGGER ` + trig_name + ` BEFORE UPDATE ON ` + name + ` FOR EACH ROW EXECUTE PROCEDURE timestamp_changer();`
-		}
+		//is_deleted__index := name + `__is_deleted__index`
+		//modified_at__index := name + `__modified_at__index`
+		//unique_patern__index := name + `__unique__patern__index`
+		//query_count_index := `SELECT COUNT(*) FROM pg_indexes WHERE indexname = `
+		//err := tx.DoExec(query)
+		//if err == nil {
+		//	query = query_count_index + Z(is_deleted__index)
+		//	if tx.QInt(query) == 0 {
+		//		query = `CREATE INDEX ` + name + `__is_deleted__index ON ` + name + `(is_deleted);`
+		//		tx.DoExec(query)
+		//	}
+		//	query = query_count_index + Z(modified_at__index)
+		//	if tx.QInt(query) == 0 {
+		//		query = `CREATE INDEX ` + name + `__modified_at__index ON ` + name + `(modified_at);`
+		//		tx.DoExec(query)
+		//	}
+		//	query = query_count_index + Z(unique_patern__index)
+		//	if tx.QInt(query) == 0 {
+		//		query = `CREATE INDEX ` + name + `__unique__pattern ON ` + name + ` (unique_id varchar_pattern_ops);`
+		//		tx.DoExec(query)
+		//	}
+		//	query = query_count_index + Z(name)
+		//	if tx.QInt(query) == 0 {
+		//		query = `CREATE INDEX ON ` + name + ` USING GIN(data)`
+		//		tx.DoExec(query)
+		//	}
+		//}
 		tx.DoExec(query)
 		// logs
 		query = `
@@ -188,25 +140,25 @@ CREATE TABLE IF NOT EXISTS _log_` + name + ` (
 	data_after JSONB NULL
 );`
 		tx.DoExec(query)
-		idx_name := `_log_` + name + `__record_id__idx`
-		query = query_count_index + Z(idx_name)
-		if tx.QInt(query) == 0 {
-			query = `CREATE INDEX	` + idx_name + ` ON 	_log_` + name + `	(record_id);`
-			tx.DoExec(query)
-		}
-
-		idx_name = `_log_` + name + `__date__idx`
-		query = query_count_index + Z(idx_name)
-		if tx.QInt(query) == 0 {
-			query = `CREATE INDEX	` + idx_name + ` ON 	_log_` + name + `	(date);`
-			tx.DoExec(query)
-		}
-		idx_name = `_log_` + name + `__user_id__idx`
-		query = query_count_index + Z(idx_name)
-		if tx.QInt(query) == 0 {
-			query = `CREATE INDEX	` + idx_name + ` ON 	_log_` + name + `	(user_id);`
-			tx.DoExec(query)
-		}
+		//idx_name := `_log_` + name + `__record_id__idx`
+		//query = query_count_index + Z(idx_name)
+		//if tx.QInt(query) == 0 {
+		//	query = `CREATE INDEX	` + idx_name + ` ON 	_log_` + name + `	(record_id);`
+		//	tx.DoExec(query)
+		//}
+		//
+		//idx_name = `_log_` + name + `__date__idx`
+		//query = query_count_index + Z(idx_name)
+		//if tx.QInt(query) == 0 {
+		//	query = `CREATE INDEX	` + idx_name + ` ON 	_log_` + name + `	(date);`
+		//	tx.DoExec(query)
+		//}
+		//idx_name = `_log_` + name + `__user_id__idx`
+		//query = query_count_index + Z(idx_name)
+		//if tx.QInt(query) == 0 {
+		//	query = `CREATE INDEX	` + idx_name + ` ON 	_log_` + name + `	(user_id);`
+		//	tx.DoExec(query)
+		//}
 		return ``
 	})
 

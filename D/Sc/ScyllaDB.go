@@ -32,7 +32,7 @@ const SQL_FUNCTIONS = `
 `
 
 func InitFunctions(conn *RDBMS) {
-	conn.InitTrigger()
+	//conn.InitTrigger()
 	conn.DoTransaction(func(tx *Tx) string {
 		tx.DoExec(SQL_FUNCTIONS)
 		return ``

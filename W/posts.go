@@ -11,6 +11,11 @@ type Posts struct {
 	M.SS
 }
 
+func (p *Posts) GetBool(key string) bool {
+	val := p.SS[key]
+	return !(val == `` || val == `0` || val == `f` || val == `false`)
+}
+
 func (p *Posts) GetJsonMap(key string) M.SX {
 	return S.JsonToMap(p.GetStr(key))
 }
