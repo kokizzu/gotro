@@ -1,16 +1,25 @@
 package S
 
 import (
+	"fmt"
+	"github.com/kokizzu/gotro/A"
 	"github.com/kokizzu/gotro/B"
 	"github.com/kokizzu/gotro/I"
+	"runtime"
 )
 
 // TODO: find out how backspace \b null \0 character processed on common SQL
 
-// remove newline for commenting quote
-func ZC(str string) string {
+// trace function, location of the caller code, replacement for ZC
+func ZT(strs ...string) string {
+	pc := make([]uintptr, 10) // at least 1 entry needed
+	runtime.Callers(2, pc)
+	f := runtime.FuncForPC(pc[0])
+	file, line := f.FileLine(pc[0])
+	str := A.StrJoin(strs, `|`)
 	str = Replace(str, "\n", ` `)
-	return `-- ` + str
+	str = Replace(str, `\n`, ` `)
+	return `-- ` + fmt.Sprintf("%s:%d %s|%s", file, line, f.Name(), str)
 }
 
 // add single quote in the beginning and the end of string.
