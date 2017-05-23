@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"errors"
 	"github.com/go-lang-plugin-org/go-lang-idea-plugin/testData/mockSdk-1.1.2/src/pkg/fmt"
-	"github.com/gocassa/gocassa"
 	"github.com/gocql/gocql"
 	_ "github.com/gocql/gocql"
 	"github.com/kokizzu/gotro/A"
@@ -23,15 +22,13 @@ import (
 // wrapper for GO's sql.DB
 type RDBMS struct {
 	Name    string
-	Adapter gocassa.KeySpace
 	Cluster *gocql.ClusterConfig
 	Session *gocql.Session
 }
 
-// create new postgresql connection to localhost
+// create new scylla connection to localhost
+// CREATE KEYSPACE "replace_this" WITH REPLICATION = { 'class' : 'SimpleStrategy', 'replication_factor' : 1 };
 func NewConn(user, pass, ip, db string) *RDBMS {
-	conn, err := gocassa.ConnectToKeySpace(db, []string{ip}, user, pass)
-	L.PanicIf(err, `Failed connect to keyspace`)
 	clust := gocql.NewCluster(ip)
 	clust.RetryPolicy = &gocql.SimpleRetryPolicy{NumRetries: 3}
 	clust.Timeout = 8 * time.Second
@@ -43,12 +40,10 @@ func NewConn(user, pass, ip, db string) *RDBMS {
 			Password: pass,
 		}
 	}
-	clust.Keyspace = db
 	sess, err := clust.CreateSession()
 	L.PanicIf(err, `Failed create session Sc`)
 	return &RDBMS{
 		Name:    `sc://` + user + `:` + pass + `@` + ip + `/` + db,
-		Adapter: conn,
 		Cluster: clust,
 		Session: sess,
 	}

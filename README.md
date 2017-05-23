@@ -74,7 +74,7 @@ gopkg.in/redis.v5
   - [InfluxDB](//docs.influxdata.com/influxdb)
   - [MariaDB](//mariadb.org) <-- high-read
   - [OrientDB](//orientdb.com)
-  - [PostgreSQL](//www.postgresql.org) <-- high-read
+  - [PostgreSQL](//www.postgresql.org) <-- high-read [**STATUS**: done]
   - [PostgreXL](//www.postgres-xl.org) <-- high-write
   - [Riak](//docs.basho.com/riak)
   - [ScyllaDB](//www.scylladb.com) <-- high-write

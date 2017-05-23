@@ -53,13 +53,24 @@ func ZI(num int64) string {
 
 // double quote a json string
 //  hai := `{'test':123,"bla":[1,2,3,4]}`
-//  S.ZJ(hai) // "{'test':123,\"bla\":[1,2,3,4]}"
-func ZJ(str string) string {
+//  S.ZJJ(hai) // "{'test':123,\"bla\":[1,2,3,4]}"
+func ZJJ(str string) string {
 	str = Replace(str, `\`, `\\`)
 	str = Replace(str, "\r", `\r`)
 	str = Replace(str, "\n", `\n`)
 	str = Replace(str, `"`, `\"`)
 	return `"` + str + `"`
+}
+
+// single quote a json string
+//  hai := `{'test':123,"bla":[1,2,3,4]}`
+//  S.ZJ(hai) // "{'test':123,\"bla\":[1,2,3,4]}"
+func ZJ(str string) string {
+	str = Replace(str, `\`, `\\`)
+	str = Replace(str, "\r", `\r`)
+	str = Replace(str, "\n", `\n`)
+	str = Replace(str, `'`, `\'`)
+	return `'` + str + `'`
 }
 
 // trim, replace <, >, ', " and gives single quote

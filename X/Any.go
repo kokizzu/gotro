@@ -413,9 +413,9 @@ func ToJson5(any interface{}) string {
 	case bytes.Buffer: // return as is
 		return orig.String()
 	case string:
-		return S.ZJ(orig)
+		return S.ZJJ(orig)
 	case []byte:
-		return S.ZJ(string(orig))
+		return S.ZJJ(string(orig))
 	case int, int64, int32:
 		return I.ToS(any.(int64))
 	case float32, float64:

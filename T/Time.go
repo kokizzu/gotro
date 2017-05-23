@@ -191,3 +191,8 @@ func EpochStr() string {
 func EpochAfter(d time.Duration) int64 {
 	return time.Now().Add(d).Unix()
 }
+
+// get current unix time added with a duration
+func EpochAfterStr(d time.Duration) string {
+	return I.ToS(time.Now().Add(d).Unix())
+}

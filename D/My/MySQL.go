@@ -17,7 +17,7 @@ var DEBUG bool
 func init() {
 	Z = S.Z
 	ZZ = S.ZZ
-	ZJ = S.ZJ
+	ZJ = S.ZJJ
 	ZI = S.ZI
 	ZLIKE = S.ZLIKE
 	ZS = S.ZS
