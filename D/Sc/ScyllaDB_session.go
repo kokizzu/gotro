@@ -2,6 +2,7 @@ package Sc
 
 import (
 	"github.com/gocql/gocql"
+	"github.com/kokizzu/gotro/C"
 	"github.com/kokizzu/gotro/I"
 	"github.com/kokizzu/gotro/L"
 	"github.com/kokizzu/gotro/M"
@@ -26,6 +27,14 @@ type ScyllaSession struct {
 	Session *gocql.Session
 }
 
+func intStrOf(val string) string {
+	int_val := `0`
+	if val != `` && C.IsDigit(val[0]) {
+		int_val = I.ToS(S.ToI(val))
+	}
+	return int_val
+}
+
 // CREATE KEYSPACE "replace_this" WITH REPLICATION = { 'class' : 'SimpleStrategy', 'replication_factor' : 1 };
 // note that INSERT and UPDATE in C*/Scylla is an UPSERT
 func NewScyllaSession(ip, keyspace, prefix, user, pass string) *ScyllaSession {
@@ -46,7 +55,7 @@ func NewScyllaSession(ip, keyspace, prefix, user, pass string) *ScyllaSession {
 	ksm, err := sess.KeyspaceMetadata(keyspace)
 	L.PanicIf(err, `Failed retrieve meta`)
 	if ksm.Tables[TABLE] == nil {
-		err = sess.Query(`CREATE TABLE ` + TABLE + ` ("type" TEXT, "key" TEXT, "value" TEXT, "expired_at" BIGINT, PRIMARY KEY("type","key"))`).Exec()
+		err = sess.Query(`CREATE TABLE ` + TABLE + ` ("type" TEXT, "key" TEXT, "inv_value" BIGINT, "value" TEXT, "expired_at" BIGINT, PRIMARY KEY("type","key"))`).Exec()
 		L.PanicIf(err, `Failed create session table`)
 	}
 	return &ScyllaSession{
@@ -72,7 +81,8 @@ func (sess ScyllaSession) Expiry(key string) int64 {
 }
 
 func (sess ScyllaSession) fadeStr(key, val string, sec int64) {
-	cql := `UPDATE ` + TABLE + ` USING TTL ` + I.ToS(sec) + ` SET "value" = ` + val + `, "expired_at" = ` + T.EpochAfterStr(time.Second*time.Duration(sec)) + sess.Where(key)
+	int_val := intStrOf(val)
+	cql := `UPDATE ` + TABLE + ` USING TTL ` + I.ToS(sec) + ` SET "value" = ` + val + `, "int_value" = ` + int_val + `, "expired_at" = ` + T.EpochAfterStr(time.Second*time.Duration(sec)) + sess.Where(key)
 	err := sess.Session.Query(cql).Exec()
 	L.IsError(err, cql)
 }
@@ -95,11 +105,16 @@ func (sess ScyllaSession) FadeMSX(key string, val M.SX, sec int64) {
 func (sess ScyllaSession) GetStr(key string) string {
 	// L.Print(`GetStr`)
 	res := M.SX{}
-	cql := `SELECT "value" FROM ` + TABLE + sess.Where(key)
+	cql := `SELECT "int_value","value" FROM ` + TABLE + sess.Where(key)
 	iter := sess.Session.Query(cql).Iter()
 	defer iter.Close()
 	iter.MapScan(res)
-	return res.GetStr(`value`)
+	int_val := res.GetStr(`int_value`)
+	val := res.GetStr(`value`)
+	if int_val == `` || int_val == `0` {
+		return val
+	}
+	return int_val
 }
 
 func (sess ScyllaSession) GetInt(key string) int64 {
@@ -113,9 +128,14 @@ func (sess ScyllaSession) GetMSX(key string) M.SX {
 }
 
 func (sess ScyllaSession) Inc(key string) int64 {
-	//cql := `UPDATE value FROM ` + TABLE +  sess.Where(key)
-	// TODO: continue this, find how to convert text to bigint and vice versa
-	// http://stackoverflow.com/questions/44109822/how-to-convert-cassandra-scylladb-text-to-bigint-and-vice-versa
+	// workaround, since no data type conversion supported: http://stackoverflow.com/questions/44109822/how-to-convert-cassandra-scylladb-text-to-bigint-and-vice-versa
+	cql := `UPDATE ` + TABLE + ` SET int_value = int_value+1 ` + sess.Where(key)
+	err := sess.Session.Query(cql).Exec()
+	L.IsError(err, cql)
+	int_val := sess.GetStr(key)
+	cql = `UPDATE ` + TABLE + ` SET value = ` + int_val + ` ` + sess.Where(key) + ` IF int_value = ` + int_val
+	err = sess.Session.Query(cql).Exec()
+	L.IsError(err, cql)
 	return 0
 }
 
@@ -124,7 +144,8 @@ func (sess ScyllaSession) Where(key string) string {
 }
 
 func (sess ScyllaSession) setStr(key, val string) {
-	cql := `UPDATE ` + TABLE + ` SET "value" = ` + val + sess.Where(key)
+	int_val := intStrOf(val)
+	cql := `UPDATE ` + TABLE + ` SET "value" = ` + val + `, "int_value" = ` + int_val + sess.Where(key)
 	err := sess.Session.Query(cql).Exec()
 	L.IsError(err, cql)
 }
