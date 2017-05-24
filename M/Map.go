@@ -156,6 +156,32 @@ func (hash SB) SortedKeys() []string {
 	return res
 }
 
+// convert to json string, silently print error if failed
+func (hash SB) ToJson() string {
+	str, err := json.Marshal(hash)
+	L.IsError(err, `M.ToJson failed`, hash)
+	return string(str)
+}
+
+// convert to pretty json string, silently print error if failed
+func (hash SB) ToJsonPretty() string {
+	str, err := json.MarshalIndent(hash, ``, `  `)
+	L.IsError(err, `M.ToJsonPretty failed`, hash)
+	return string(str)
+}
+
+// convert to json string with check
+func (hash SB) IntoJson() (string, bool) {
+	str, err := json.Marshal(hash)
+	return string(str), err != nil
+}
+
+// convert to pretty json string with check
+func (hash SB) IntoJsonPretty() (string, bool) {
+	str, err := json.MarshalIndent(hash, ``, `  `)
+	return string(str), err != nil
+}
+
 // get sorted keys
 //  m := M.SX{`tes`:1,`coba`:12.4,`lah`:false}
 //  m.SortedKeys() // []string{`coba`,`lah`,`tes`}
