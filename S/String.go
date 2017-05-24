@@ -68,6 +68,24 @@ func Trim(str string) string {
 	return strings.TrimSpace(str)
 }
 
+// remove chars from beginning and end
+//  S.TrimChars(`aoaaffoa`,`ao`) // `ff`
+func TrimChars(str, chars string) string {
+	return strings.Trim(str, chars)
+}
+
+// get first index of
+// S.IndexOf(`abcdcd`,`c) // 2, -1 if not exists
+func IndexOf(str, sub string) int {
+	return strings.Index(str, sub)
+}
+
+// get last index of
+//  S.LastIndexOf(`abcdcd`,`c`) // 4, -1 if not exists
+func LastIndexOf(str, sub string) int {
+	return strings.LastIndex(str, sub)
+}
+
 // replace all substring with another substring
 //  S.Replace(`bisa`,`is`,`us`) // `busa`
 func Replace(haystack, needle, gold string) string {
@@ -315,9 +333,14 @@ func JsonAsFloatArr(str string) (res []float64, ok bool) {
 }
 
 // split a string (first arg) by characters (second arg) into array of strings (output).
-//  S.Split(`biiiissssa`,`i`) // output []string{"b", "", "", "", "ssssa"}
+//  S.Split(`biiiissssa`,func(ch rune) bool { return ch == `i` }) // output []string{"b", "", "", "", "ssssa"}
 func Split(str, sep string) []string {
 	return strings.Split(str, sep)
+}
+
+// split a string (first arg) based on a function
+func SplitFunc(str string, fun func(rune) bool) []string {
+	return strings.FieldsFunc(str, fun)
 }
 
 // append padStr to left until length is lenStr
