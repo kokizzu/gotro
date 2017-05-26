@@ -1,12 +1,10 @@
 <h1>Login Example</h1>
-
 <div id="login" style="display:none">
 	<h5>hint: input the same value for username and password to login</h5>
-	<input id="username" type="text" name="username" placeholder="username" />
-	<input id="password" type="password" name="password" placeholder="password" />
+	<input id="username" type="text" name="username" placeholder="username"/>
+	<input id="password" type="password" name="password" placeholder="password"/>
 	<button type="submit" onclick="login()">Login</button>
 </div>
-
 <div id="logout" style="display:none">
 	<h3>Hello, user-#{user_id}</h3>
 	<a href="/named_params_example/foo">see named params</a> <br/>
@@ -15,40 +13,39 @@
 	<hr/>
 	<button type="submit" onclick="logout()">Logout</button>
 </div>
-
 <script>
 	var user_id = '#{user_id}';
 	function login() {
-		var usr = $('#username');
-		var pwd = $('#password');
-		var d = { username: usr.val(), password: pwd.val() };
-		usr.val('');
-		pwd.val('');
-		$.post('/login_example', d, function(res) {
-			if (res && res.errors && res.errors.length > 0) {
-				alert(res.errors);
+		var usr = $( '#username' );
+		var pwd = $( '#password' );
+		var d = { username: usr.val(), password: pwd.val(), a: 'login' };
+		usr.val( '' );
+		pwd.val( '' );
+		$.post( '', d, function( res ) {
+			if( res && res.errors && res.errors.length>0 ) {
+				alert( res.errors );
 			} else {
-				console.log('Login successful!');
+				alert( 'Login successful!' );
 				window.location.reload( true );
 			}
-		}).fail(function(xhr, textStatus, errorThrown ) {
-			alert(textStatus + '\n' + xhr.status);
-		});
+		} ).fail( function( xhr, textStatus, errorThrown ) {
+			alert( textStatus + '\n' + xhr.status );
+		} );
 	}
 	function logout() {
-		var d = {};
-		$.post('/logout_example', d, function(res) {
-			if (res && res.errors && res.errors.length > 0) {
-				alert(res.errors);
+		var d = { a: 'logout' };
+		$.post( '', d, function( res ) {
+			if( res && res.errors && res.errors.length>0 ) {
+				alert( res.errors );
 			} else {
-				console.log('Logout successful!');
+				alert( 'Logout successful!' );
 				window.location.reload( true );
 			}
-		}).fail(function(xhr, textStatus, errorThrown ) {
-			alert(textStatus + '\n' + xhr.status);
-		});
+		} ).fail( function( xhr, textStatus, errorThrown ) {
+			alert( textStatus + '\n' + xhr.status );
+		} );
 	}
-	$(document).ready(function() {
-		$('#' + (user_id ? 'logout' : 'login')).show();
-	});
+	$( document ).ready( function() {
+		$( '#' + (user_id ? 'logout' : 'login') ).show();
+	} );
 </script>

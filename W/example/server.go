@@ -28,7 +28,6 @@ var ASSETS = [][2]string{
 var ROUTERS = map[string]W.Action{
 	``:                            LoginExample,
 	`login_example`:               LoginExample,
-	`logout_example`:              LogoutExample,
 	`post_values_example`:         PostValuesExample,
 	`named_params_example/:value`: NamedParamsExample,
 	`query_string_example`:        QueryStringExample,
@@ -43,25 +42,34 @@ func AjaxResponse() W.Ajax {
 }
 
 func LoginExample(ctx *W.Context) {
-	user_id := ctx.Session.GetInt(`user_id`)
+	user_id := ctx.Session.GetStr(`user_id`)
 	if ctx.IsAjax() {
 		ajax := AjaxResponse()
 		posts := ctx.Posts()
-		username := posts.GetStr(`username`)
-		password := posts.GetStr(`password`)
-		if username != password {
-			ajax.Set(`is_success`, false)
-			ajax.Error(`301 Wrong username or password; username is case sensitive`)
-			ctx.AppendJson(ajax.SX)
-			return
+		a := posts.GetStr(`a`)
+		switch a {
+		case `login`:
+			username := posts.GetStr(`username`)
+			password := posts.GetStr(`password`)
+			if username != password {
+				ajax.Set(`is_success`, false)
+				ajax.Error(`301 Wrong username or password; username is case sensitive`)
+				ctx.AppendJson(ajax.SX)
+				return
+			}
+			id := X.ToS(rand.Intn(1000))
+			ctx.Session.Login(M.SX{
+				`username`: username,
+				`user_id`:  id,
+				`level`:    M.SX{},
+			})
+			L.Describe(ctx.Session)
+			ajax.Set(`logged`, id)
+		case `logout`:
+			ctx.Session.Logout()
+		default:
+			ajax.Error(`Unknown action`)
 		}
-		id := rand.Intn(1000)
-		ctx.Session.Login(M.SX{
-			`username`: username,
-			`user_id`:  id,
-			`level`:    M.SX{},
-		})
-		ajax.Set(`logged`, id)
 		ctx.AppendJson(ajax.SX)
 		return
 	}
@@ -69,12 +77,6 @@ func LoginExample(ctx *W.Context) {
 		`title`:   `Login Example`,
 		`user_id`: user_id,
 	})
-}
-
-func LogoutExample(ctx *W.Context) {
-	ajax := AjaxResponse()
-	ctx.Session.Logout()
-	ctx.AppendJson(ajax.SX)
 }
 
 // this function handles posted form values
@@ -120,7 +122,7 @@ const PROJECT_NAME = `Gotro Example`
 func AuthFilter(ctx *W.Context) {
 	L.Trace()
 	handled := false
-	if ctx.Session.GetInt(`user_id`) > 0 {
+	if ctx.Session.GetStr(`user_id`) > `` {
 		// logged in
 	} else {
 		// you can block the page for non-logged-in users here (handled=true)
@@ -157,7 +159,8 @@ func init() {
 
 func main() {
 	redis_conn := Rd.NewRedisSession(``, ``, 9, `session::`)
-	W.InitSession(`Test`, 2*24*time.Hour, 1*24*time.Hour, *redis_conn, *redis_conn)
+	global_conn := Rd.NewRedisSession(``, ``, 10, `session::`)
+	W.InitSession(`Aaa`, 2*24*time.Hour, 1*24*time.Hour, *redis_conn, *global_conn)
 	W.Mailers = map[string]*W.SmtpConfig{
 		``: {
 			Name:     `Mailer Daemon`,

@@ -113,7 +113,6 @@ func (s *Session) Save(ctx *Context) {
 		cookie.SetKey(SESS_KEY)
 		cookie.SetValue(s.Key)
 		cookie.SetPath(`/`)
-		cookie.SetDomain(`.` + string(ctx.Request.Header.Host()))
 		cookie.SetExpire(expiration)
 		ctx.Response.Header.SetCookie(cookie)
 	}
