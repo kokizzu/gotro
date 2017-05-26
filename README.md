@@ -1,7 +1,7 @@
 # GotRo
 
 GotRo is abbreviation of `Gotong Royong`. the meaning in `Indonesia`: "do it together", "mutual cooperation". 
-This Framework is rewrite of [gokil](//gitlab.com/kokizzu/gokil), that previously use [httprouter](//github.com/julienschmidt/httprouter) but now rewritten using [fasthttprouter](//github.com/buaazp/fasthttprouter)
+This Framework is rewrite of [gokil](//gitlab.com/kokizzu/gokil), that previously use [httprouter](//github.com/julienschmidt/httprouter) but now rewritten using [fasthttprouter](//github.com/buaazp/fasthttprouter). For tutorial, read [this blog post](//kokizzu.blogspot.com/2017/05/gotro-framework.html).
 
 ## Design Goal
 - As similar as possible to Gokil
@@ -21,6 +21,19 @@ This Framework is rewrite of [gokil](//gitlab.com/kokizzu/gokil), that previousl
   - X - Anything (aka `interface{}`)
   - Z - Z-Template Engine, that has syntax similar to ruby string interpolation `#{foo}` or any other that javascript friendly `{/* foo */}`, `[/* bar */]`, `/*! bar */`
 - Comment and examples on each type and function, so it can be viewed using godoc, something like: `godoc github.com/kokizzu/gotro/A`
+
+## Status
+
+Usable session adapter:
+  - Redis
+  - ScyllaDB
+  - PostgreSQL
+  - AreoSpike
+  
+Usable database adapter:
+  - PostgreSQL
+  
+Other than above, you must use officially provided database adapter from respective vendors.
 
 ## Benchmark
 
@@ -83,5 +96,5 @@ gopkg.in/redis.v5
 - Add [ExampleXxx function](//blog.golang.org/examples), getting started and more documentation 
 - Create example API App
 - Add graceful restart (zero downtime deployment): [grace](//github.com/facebookgo/grace) or [endless](//github.com/fvbock/endless)
-- Write a book for about [Advanced Programming](//goo.gl/X4BIlM), [Database Systems](//goo.gl/uR8iVB) and [Web Programming](//goo.gl/Bl3fPE) that includes this framework
+- Write a book (or blog) about [Advanced Programming](//goo.gl/X4BIlM), [Database Systems](//goo.gl/uR8iVB) and [Web Programming](//goo.gl/Bl3fPE) that includes this framework
 - Add Catch NotFound (rewrite the Response.Body) if no route and static file found

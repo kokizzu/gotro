@@ -395,9 +395,15 @@ func (mp *Row) SetUnsetValClock(key string, val string) string {
 func (mp *Row) SetInt(key string) int64 {
 	val := mp.Posts.GetStr(key)
 	if val != `` {
-		mp.LogIt(key, val)
-		val := mp.Posts.GetInt(key)
-		mp.Row[key] = val
+		ival := int64(0)
+		if S.ToLower(val) == `now` {
+			// special case for date
+			ival = T.Epoch()
+		} else {
+			ival = mp.Posts.GetInt(key)
+		}
+		mp.LogIt(key, ival)
+		mp.Row[key] = ival
 	}
 	return X.ToI(mp.Row[key])
 }
@@ -406,9 +412,15 @@ func (mp *Row) SetInt(key string) int64 {
 func (mp *Row) SetFloat(key string) float64 {
 	val := mp.Posts.GetStr(key)
 	if val != `` {
-		mp.LogIt(key, val)
-		val := mp.Posts.GetFloat(key)
-		mp.Row[key] = val
+		fval := float64(0)
+		if S.ToLower(val) == `now` {
+			// special case for date
+			fval = float64(T.Epoch())
+		} else {
+			fval = mp.Posts.GetFloat(key)
+		}
+		mp.LogIt(key, fval)
+		mp.Row[key] = fval
 	}
 	return X.ToF(mp.Row[key])
 }

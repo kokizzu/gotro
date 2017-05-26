@@ -20,7 +20,7 @@ var CACHE_TTL cmap.CMap  // cache invalidate time
 var CACHE_BORN cmap.CMap // cache born time
 var CACHE cmap.CMap      // cache real storage
 
-const TTL = 4
+const TTL = 3
 
 func init() {
 	CACHE_INV = cmap.New()
@@ -36,6 +36,9 @@ func RamDel_ByQuery(ram_key, query string) {
 func RamGlobalEvict_ByAjax_ByBucket(ajax W.Ajax, bucket string) {
 	if !ajax.HasError() {
 		CACHE_INV.Set(bucket, T.UnixNano())
+		if DEBUG {
+			L.Print(`RamGlobalEvict_ByAjax_ByBucket: ` + bucket)
+		}
 	}
 }
 

@@ -17,7 +17,7 @@ import (
 
 var VERSION string
 var DEBUG_MODE = (VERSION == ``)
-var LISTEN_ADDR = `:9090`
+var LISTEN_ADDR = `:3001`
 var ROOT_DIR string
 
 var ASSETS = [][2]string{
