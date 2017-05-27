@@ -2,6 +2,8 @@ package D
 
 import (
 	"github.com/kokizzu/gotro/S"
+	_ "github.com/kokizzu/gotro/D/Rd"
+	_ "github.com/kokizzu/gotro/D/Pg"
 )
 
 type Record interface {
