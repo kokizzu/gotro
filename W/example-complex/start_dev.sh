@@ -23,4 +23,4 @@ if [ -z "$gin" ]; then
 	gin=$GOPATH/bin/gin
 fi
 echo 'starting gin..'
-$gin -i -a 3001 -p 3000 -b debug
+$gin -i -a 3001 -p 3000 -b CHANGEME
