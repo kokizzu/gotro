@@ -13,13 +13,13 @@ import (
 	"github.com/kokizzu/gotro/S"
 	"github.com/kokizzu/gotro/T"
 	"github.com/kokizzu/gotro/W"
+	"github.com/kokizzu/gotro/W/example-complex/model"
+	"github.com/kokizzu/gotro/W/example-complex/model/mResponse"
 	"github.com/kokizzu/gotro/W/example-complex/model/mUsers"
 	"github.com/kokizzu/gotro/X"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/google"
 	"io/ioutil"
-	"luwes/sql"
-	"luwes/sql/nResponse"
 	"net/http"
 	"net/url"
 )
@@ -67,12 +67,12 @@ func fetchJson(url string) (W.Ajax, error) {
 	ajax := W.NewAjax()
 	L.Print(url)
 	resp, err := http.Get(url)
-	if ajax.ErrorIf(err, sql.ERR_201_FAILED_OAUTH_EXCHANGE) {
+	if ajax.ErrorIf(err, model.ERR_201_FAILED_OAUTH_EXCHANGE) {
 		return ajax, err
 	}
 	defer resp.Body.Close()
 	body, err := ioutil.ReadAll(resp.Body)
-	if ajax.ErrorIf(err, sql.ERR_201_FAILED_OAUTH_EXCHANGE) {
+	if ajax.ErrorIf(err, model.ERR_201_FAILED_OAUTH_EXCHANGE) {
 		return ajax, err
 	}
 	body_str := string(body)
@@ -132,7 +132,7 @@ func RetrieveGoogleUserInfo(provider *oauth2.Config, access_token *oauth2.Token)
 // 2016-11-23 Prayogo
 func (f *fbConfig) AuthCodeURL(state string) string {
 	url2, err := url.Parse(`https://www.facebook.com/v2.8/dialog/oauth`)
-	L.PanicIf(err, sql.ERR_201_FAILED_OAUTH_EXCHANGE)
+	L.PanicIf(err, model.ERR_201_FAILED_OAUTH_EXCHANGE)
 	parameters := url.Values{}
 	parameters.Add(`display`, `page`)
 	parameters.Add(`client_id`, f.ClientID)
@@ -141,7 +141,7 @@ func (f *fbConfig) AuthCodeURL(state string) string {
 	parameters.Add(`state`, state)
 	url2.RawQuery = parameters.Encode()
 	url1, err := url.Parse(`https://www.facebook.com/login.php`)
-	L.PanicIf(err, sql.ERR_201_FAILED_OAUTH_EXCHANGE)
+	L.PanicIf(err, model.ERR_201_FAILED_OAUTH_EXCHANGE)
 	parameters = url.Values{}
 	parameters.Add(`skip_api_login`, `1`)
 	parameters.Add(`api_key`, f.ClientID)
@@ -197,7 +197,7 @@ func init() {
 				`user_relationships`,
 				`user_website`,
 				`email`,
-				//www.facebook.com/dialog/oauth?display=page&client_id=365761640428516&redirect_uri=https%3A%2F%2Fluweswatersensor.com%2Flogin%2Fverify%2Ffb&scope=user_about_me,user_birthday,user_education_history,user_hometown,user_location,user_religion_politics,user_relationships,user_website,email
+				//www.facebook.com/dialog/oauth?display=page&client_id=365761640428516&redirect_uri=https%3A%2F%CHANGEME.com%2Flogin%2Fverify%2Ffb&scope=user_about_me,user_birthday,user_education_history,user_hometown,user_location,user_religion_politics,user_relationships,user_website,email
 			},
 		}
 	}
@@ -257,7 +257,7 @@ func CheckFacebookAccountKit(phone, code string, ajax W.Ajax) (is_phone bool, js
 	var err error
 	json2, err := fetchJson(token_exchange_url)
 	if err != nil {
-		ajax.Error(sql.ERR_207_FB_AK_TOKEN_EXCHANGE_ERROR + err.Error())
+		ajax.Error(model.ERR_207_FB_AK_TOKEN_EXCHANGE_ERROR + err.Error())
 		L.Describe(ajax)
 		return
 	}
@@ -271,7 +271,7 @@ func CheckFacebookAccountKit(phone, code string, ajax W.Ajax) (is_phone bool, js
 	me_endpoint_url := FB_AK_USER_ENDPOINT + `?access_token=` + user_access_token
 	json3, err := fetchJson(me_endpoint_url)
 	if err != nil {
-		ajax.Error(sql.ERR_208_FB_AK_USER_INFO_ERROR + err.Error())
+		ajax.Error(model.ERR_208_FB_AK_USER_INFO_ERROR + err.Error())
 		return
 	}
 	L.Describe(`json3`, json3)
@@ -300,7 +300,7 @@ func CheckFacebookAccountKit(phone, code string, ajax W.Ajax) (is_phone bool, js
 }
 
 func API_All_Logout(ctx *W.Context) {
-	ajax := nResponse.NewAjax()
+	ajax := mResponse.MewAjaxResponse()
 	user_id := ctx.Session.GetInt(`user_id`)
 	if user_id > 0 && !ctx.IsWebMaster() {
 		// TODO: update last login
@@ -313,7 +313,7 @@ func API_All_Login(ctx *W.Context) {
 	posts := ctx.Posts()
 	ident := posts.GetStr(`email`) // or phone
 	pass := posts.GetStr(`pass`)
-	ajax := nResponse.NewAjax()
+	ajax := mResponse.MewAjaxResponse()
 	is_phone, json := CheckFacebookAccountKit(ident, pass, ajax)
 	if ajax.HasError() {
 		ctx.AppendJson(ajax.SX)
@@ -338,7 +338,7 @@ func API_All_Login(ctx *W.Context) {
 		ajax.Set(`logged`, id)
 	}
 	if !logged {
-		ajax.Error(sql.ERR_301_WRONG_USERNAME_OR_PASSWORD)
+		ajax.Error(model.ERR_301_WRONG_USERNAME_OR_PASSWORD)
 		T.RandomSleep()
 	}
 	ctx.AppendJson(ajax.SX)
@@ -346,7 +346,7 @@ func API_All_Login(ctx *W.Context) {
 }
 
 func API_All_VerifyOAuth(ctx *W.Context) {
-	rm := nResponse.Prepare(ctx, `Verify OAuth`, false)
+	rm := mResponse.PrepareVars(ctx, `Verify OAuth`)
 	_ = rm
 	params := ctx.QueryParams()
 
@@ -354,7 +354,7 @@ func API_All_VerifyOAuth(ctx *W.Context) {
 	ncsrf := params.GetStr(`state`)
 	var err error
 	if ncsrf != csrf {
-		err = errors.New(sql.ERR_306_CSRF_STATE + ncsrf + ` <> ` + csrf)
+		err = errors.New(model.ERR_306_CSRF_STATE + ncsrf + ` <> ` + csrf)
 	} else {
 		var json W.Ajax
 		source := ``
@@ -363,20 +363,20 @@ func API_All_VerifyOAuth(ctx *W.Context) {
 		case `fb`:
 			f_provider := GetFBOAuth(ctx)
 			if f_provider == nil {
-				err = errors.New(sql.ERR_206_MISSING_OAUTH_PROVIDER)
+				err = errors.New(model.ERR_206_MISSING_OAUTH_PROVIDER)
 				break
 			}
 			json, err = f_provider.ExchangeInfo(params.GetStr(`code`))
 			// example: { "name": "Kiswono Prayogo", "email": "kiswono@gmail.com", "gender":  "male", "picture": { "data": { "is_silhouette": false, "url": "https://",}, }, "id": "561039484102125" }
 			if err != nil {
-				err = errors.New(sql.ERR_201_FAILED_OAUTH_EXCHANGE + err.Error())
+				err = errors.New(model.ERR_201_FAILED_OAUTH_EXCHANGE + err.Error())
 				break
 			}
 			L.Print(params)
 			email := json.GetStr(`email`)
 			id = mUsers.FindID_ByEmail(email)
 			if id == 0 {
-				err = errors.New(sql.ERR_305_EMAIL_NOT_REGISTERED + email)
+				err = errors.New(model.ERR_305_EMAIL_NOT_REGISTERED + email)
 				break
 			}
 			mUsers.UpdateLastLogin(id)
@@ -389,19 +389,19 @@ func API_All_VerifyOAuth(ctx *W.Context) {
 		default:
 			g_provider := GetGPlusOAuth(ctx)
 			if g_provider == nil {
-				err = errors.New(sql.ERR_206_MISSING_OAUTH_PROVIDER)
+				err = errors.New(model.ERR_206_MISSING_OAUTH_PROVIDER)
 				break
 			}
 			json, err = GPlusExchangeInfo(g_provider, params)
 			// example: {"email":"","email_verified":true,"family_name":"","gender":"","given_name":"","locale":"en-GB","name":"","picture":"http://","profile":"http://","sub":"number"};
 			if err != nil {
-				err = errors.New(sql.ERR_201_FAILED_OAUTH_EXCHANGE + err.Error())
+				err = errors.New(model.ERR_201_FAILED_OAUTH_EXCHANGE + err.Error())
 				break
 			}
 			email := json.GetStr(`email`)
 			id = mUsers.FindID_ByEmail(email)
 			if id == 0 {
-				err = errors.New(sql.ERR_305_EMAIL_NOT_REGISTERED + email)
+				err = errors.New(model.ERR_305_EMAIL_NOT_REGISTERED + email)
 				break
 			}
 			mUsers.UpdateLastLogin(id)
@@ -431,11 +431,11 @@ func API_All_LoginReset(ctx *W.Context) {
 	posts := ctx.Posts()
 	email := posts.GetStr(`email`)
 	pass := posts.GetStr(`pass`)
-	ajax := nResponse.NewAjax()
+	ajax := mResponse.MewAjaxResponse()
 	key := ctx.ParamStr(`key`)
 	id := W.Sessions.GetStr(`reset-link:` + key)
 	if id == `` || id == `0` {
-		ajax.Error(sql.ERR_004_INVALID_RESET_LINK)
+		ajax.Error(model.ERR_004_INVALID_RESET_LINK)
 		ctx.AppendJson(ajax.SX)
 		T.RandomSleep()
 		return
@@ -443,13 +443,13 @@ func API_All_LoginReset(ctx *W.Context) {
 	e_id := int64(0)
 	e_id = mUsers.FindID_ByEmail(email)
 	if e_id == 0 {
-		ajax.Error(sql.ERR_005_INVALID_RESET_EMAIL)
+		ajax.Error(model.ERR_005_INVALID_RESET_EMAIL)
 		ctx.AppendJson(ajax.SX)
 		T.RandomSleep()
 		return
 	}
 	if I.ToS(e_id) != id {
-		ajax.Error(sql.ERR_006_INVALID_RESET_ASSOC)
+		ajax.Error(model.ERR_006_INVALID_RESET_ASSOC)
 		ctx.AppendJson(ajax.SX)
 		T.RandomSleep()
 		return
@@ -473,11 +473,11 @@ func API_All_LoginForgot(ctx *W.Context) {
 	posts := ctx.Posts()
 	ident := posts.GetStr(`ident`)
 	email := posts.GetStr(`email`)
-	ajax := nResponse.NewAjax()
+	ajax := mResponse.MewAjaxResponse()
 	id := int64(0)
 	id = mUsers.FindID_ByCompactName_ByEmail(ident, email)
 	if id == 0 {
-		ajax.Error(sql.ERR_302_NAME_EMAIL_COMBINATION_NOT_FOUND)
+		ajax.Error(model.ERR_302_NAME_EMAIL_COMBINATION_NOT_FOUND)
 		ctx.AppendJson(ajax.SX)
 		T.RandomSleep()
 		return
@@ -486,7 +486,7 @@ func API_All_LoginForgot(ctx *W.Context) {
 	ttl := W.Sessions.Expiry(key)
 	ttl_str := I.ToS(ttl)
 	if ttl > 0 {
-		ajax.Error(sql.ERR_303_TOO_SOON_RESET + ttl_str + `s`)
+		ajax.Error(model.ERR_303_TOO_SOON_RESET + ttl_str + `s`)
 		ctx.AppendJson(ajax.SX)
 		T.RandomSleep()
 		return
@@ -515,7 +515,7 @@ If you've received this mail in error, it's likely that another user entered you
 		ajax.Info(`A reset password link has been sent to all of your registered e-mails, please check your e-mails to reset your password. ` + validity)
 		mUsers.UpdateLastForgotPassword(id)
 	} else {
-		ajax.Error(sql.ERR_304_FAILED_SEND_RESET_EMAIL + sql.SUPPORT_EMAIL) // TODO: replace hardcoded when finance done
+		ajax.Error(model.ERR_304_FAILED_SEND_RESET_EMAIL + model.SUPPORT_EMAIL) // TODO: replace hardcoded when finance done
 	}
 	ctx.AppendJson(ajax.SX)
 }

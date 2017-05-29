@@ -248,7 +248,7 @@ func explore_router() {
 	}
 	defer fo.Close()
 	w := bufio.NewWriter(fo)
-	w.WriteString(`<!DOCTYPE html><html><head><title>Billions' API Docs</title><style>
+	w.WriteString(`<!DOCTYPE html><html><head><title>CHANGEME' API Docs</title><style>
 body {font-family: sans-serif}
 b {color: blue; padding-left: 4px}
 p {margin: 0}
@@ -260,7 +260,7 @@ span.comment {color: brown}
 </style></head>`)
 
 	w.WriteString(`<body>`)
-	w.WriteString(`<h1>Billions API Documentation</h1>`)
+	w.WriteString(`<h1>CHANGEME API Documentation</h1>`)
 	w.WriteString(`<h2 id="toc">Table of Contents</h2>`)
 
 	domain_route_handler_params := map[string]map[string]HandleParams{}

@@ -4,12 +4,12 @@ import (
 	"github.com/kokizzu/gotro/D/Pg"
 	"github.com/kokizzu/gotro/M"
 	"github.com/kokizzu/gotro/W"
-	"github.com/kokizzu/gotro/W/example-complex/handler"
+	"github.com/kokizzu/gotro/W/example-complex/model/mResponse"
 	"github.com/kokizzu/gotro/W/example-complex/model/mUsers"
 )
 
 func Users(ctx *W.Context) {
-	rm := handler.PrepareVars(ctx, `Users`)
+	rm := mResponse.PrepareVars(ctx, `Users`)
 	if !rm.Ok {
 		return
 	}

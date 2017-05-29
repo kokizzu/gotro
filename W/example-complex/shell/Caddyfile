@@ -1,5 +1,5 @@
 CHANGEME, http://CHANGEME {
-        root /home/billions/web/public
+        root /home/CHANGEME/web/public
         proxy / 127.0.0.1:8083 {
                 header_upstream Host {host}
                 header_upstream X-Real-IP {remote}

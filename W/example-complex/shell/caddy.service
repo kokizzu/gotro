@@ -8,14 +8,14 @@ Wants=network-online.target systemd-networkd-wait-online.service
 Restart=on-failure
 
 ; User and group the process will run as.
-User=billions
+User=CHANGEME
 Group=users
 
 ; Letsencrypt-issued certificates will be written to this directory.
-Environment=HOME=/home/billions/.caddy
+Environment=HOME=/home/CHANGEME/.caddy
 
 ; Always set "-root" to something safe in case it gets forgotten in the Caddyfile.
-ExecStart=/usr/bin/caddy -log stdout -agree=true -conf=/home/billions/web/Caddyfile -root=/home/billions/web/public
+ExecStart=/usr/bin/caddy -log stdout -agree=true -conf=/home/CHANGEME/web/Caddyfile -root=/home/CHANGEME/web/public
 ExecReload=/bin/kill -USR1 $MAINPID
 
 ; Limit the number of file descriptors; see `man systemd.exec` for more limit settings.
@@ -33,7 +33,7 @@ LimitNPROC=65536
 ProtectSystem=full
 ; … except /etc/ssl/caddy, because we want Letsencrypt-certificates there.
 ;   This merely retains r/w access rights, it does not add any new. Must still be writable on the host!
-ReadWriteDirectories=/home/billions/.caddy
+ReadWriteDirectories=/home/CHANGEME/.caddy
 
 ; The following additional security directives only work with systemd v229 or later.
 ; They further retrict privileges that can be gained by caddy. Uncomment if you like.
