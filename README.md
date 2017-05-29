@@ -17,7 +17,7 @@ This Framework is rewrite of [gokil](//gitlab.com/kokizzu/gokil), that previousl
   - I - Integer
   - S - String
   - T - Time (and Date)
-  - W - Web (the "framework") **STATUS**: usable since 2017-03-08, see `W/example/` 
+  - W - Web (the "framework") **STATUS**: usable since 2017-03-08, see `W/example-simplified/` and `W/example-complex/`
   - X - Anything (aka `interface{}`)
   - Z - Z-Template Engine, that has syntax similar to ruby string interpolation `#{foo}` or any other that javascript friendly `{/* foo */}`, `[/* bar */]`, `/*! bar */`
 - Comment and examples on each type and function, so it can be viewed using godoc, something like: `godoc github.com/kokizzu/gotro/A`
@@ -87,14 +87,12 @@ gopkg.in/redis.v5
   - [InfluxDB](//docs.influxdata.com/influxdb)
   - [MariaDB](//mariadb.org) <-- high-read
   - [OrientDB](//orientdb.com)
-  - [PostgreSQL](//www.postgresql.org) <-- high-read [**STATUS**: done]
   - [PostgreXL](//www.postgres-xl.org) <-- high-write
   - [Riak](//docs.basho.com/riak)
   - [ScyllaDB](//www.scylladb.com) <-- high-write
   - [TiDB](//github.com/pingcap/tidb) <-- high-write
 - Review which queuing service we're gonna use ([NATS](//nats.io)), requirement: must support persistence
 - Add [ExampleXxx function](//blog.golang.org/examples), getting started and more documentation 
-- Create example API App
 - Add graceful restart (zero downtime deployment): [grace](//github.com/facebookgo/grace) or [endless](//github.com/fvbock/endless)
 - Write a book (or blog) about [Advanced Programming](//goo.gl/X4BIlM), [Database Systems](//goo.gl/uR8iVB) and [Web Programming](//goo.gl/Bl3fPE) that includes this framework
-- Add Catch NotFound (rewrite the Response.Body) if no route and static file found
+- Add Catch NotFound (rewrite the `Response.Body`) if no route and static file found
