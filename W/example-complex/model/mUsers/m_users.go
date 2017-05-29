@@ -8,6 +8,7 @@ import (
 	"github.com/kokizzu/gotro/S"
 	"github.com/kokizzu/gotro/T"
 	"github.com/kokizzu/gotro/W"
+	"github.com/kokizzu/gotro/W/example-complex/model"
 )
 
 const TABLE = `users`
