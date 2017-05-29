@@ -1,0 +1,65 @@
+<div style="text-align: center">
+	<div style="display: inline-block;">
+		<div class="ui message">
+			<div class="header">
+				Logged in Using #{source} Credentials
+			</div>
+		</div>
+		<div class="ui grid" id="vm">
+			<div class="ui sixteen wide centered column active" style="min-height: 200px">
+				<div class="eight wide centered column" v-if="user_id">
+					<div class="ui label" v-for="(v,k) in data">
+						{{k}}
+						<div class="detail">{{v}}</div>
+					</div>
+					<div class="ui field equal width">
+						<input class="ui button yellow" type="button" value="Continue to Site" @click="next_event"/>
+					</div>
+				</div>
+				<div class="ui success message">
+					<div class="header">
+						Redirect Automatically in {{second}}.
+					</div>
+				</div>
+				<div class="ui negative message" v-if="!user_id">
+					<div class="header">
+						This e-mail not associated to any account on this site, please contact #{webmaster}.
+					</div>
+					<p>#{error}</p>
+				</div>
+			</div>
+		</div>
+		<div class="ui message">
+			<div class="header">
+				&copy; 2017 Luwes
+			</div>
+		</div>
+	</div>
+</div>
+<script>
+	Vue.directive( 'focus', {
+		inserted: function( el ) {
+			el.focus()
+		}
+	} );
+	var user_id = +'#{user_id}' || 0;
+	var vm = new Vue( {
+		el: '#vm',
+		data: {
+			data: { /* data */ },
+			user_id: user_id,
+			second: 10,
+			redirect_path: '/'
+		},
+		methods: {
+			next_event: function() {
+				window.location = this.redirect_path;
+			}
+		}
+	} );
+	
+	// auto-redirect
+	setInterval( function() {
+		if( !--vm.second ) vm.next_event();
+	}, 1000 );
+</script>

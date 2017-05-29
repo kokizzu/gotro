@@ -1,0 +1,99 @@
+<div style="text-align: center">
+	<div style="display: inline-block;">
+		<div class="ui message">
+			<div class="header">
+				Reset Password Confirmation Form
+			</div>
+		</div>
+		<div class="ui grid" id="vm">
+			<div class="ui sixteen wide centered column active" :class="{dimmer:loading}" style="min-height: 200px">
+				<div class="ui text loader">
+					<p>Resetting password..</p>
+				</div>
+				<div class="eight wide centered column" v-if="!loading">
+					<div class="ui form">
+						<div class="ui field">
+							<label for="email">E-Mail</label>
+							<input type="text" id='email' v-model="email" @keydown="email_event" v-focus/>
+						</div>
+						<div class="ui field">
+							<label for="pass">New Password</label>
+							<input type="password" id='pass' v-model="pass" @keydown="pass_event"/>
+						</div>
+						<div class="ui field">
+							<label for="pass2">Confirm New Password</label>
+							<input type="password" id='pass2' v-model="pass2" @keydown="pass2_event"/>
+						</div>
+					</div>
+					<div class="ui field equal width">
+						<input class="ui button yellow" type="button" value="Reset Password" @click="reset_pass_event"/>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="ui message">
+			<div class="header">
+				&copy; 2017 Luwes
+			</div>
+		</div>
+	</div>
+</div>
+<script>
+	Vue.directive( 'focus', {
+		inserted: function( el ) {
+			el.focus()
+		}
+	} );
+	var vm = new Vue( {
+		el: '#vm',
+		data: {
+			email: '',
+			pass: '',
+			pass2: '',
+			loading: 0
+		},
+		methods: {
+			email_event: function( e ) {
+				if( H.IsEnter( e ) ) {
+					if( this.email ) $( '#pass' ).focus();
+				}
+				else if( H.IsEscape( e ) ) $( '#pass2' ).focus();
+			},
+			pass_event: function( e ) {
+				if( H.IsEnter( e ) ) {
+					if( this.pass ) $( '#pass2' ).focus();
+				}
+				else if( H.IsEscape( e ) ) $( '#email' ).focus();
+			},
+			pass2_event: function( e ) {
+				if( H.IsEnter( e ) ) {
+					if( !this.ident ) $( '#email' ).focus();
+					else if( !this.pass ) $( '#pass' ).focus();
+					else if( !this.pass2 ) $( '#pass2' ).focus();
+					else this.reset_pass_event();
+				}
+				else if( H.IsEscape( e ) ) $( '#pass2' ).focus();
+			},
+			reset_pass_event: function() {
+				var pass = this.pass;
+				if( pass!=this.pass2 ) {
+					$( '#pass' ).focus();
+					return alert( 'password confirmation does not match' );
+				}
+				var email = this.email;
+				var values = {
+					email: email,
+					pass: pass
+				};
+				this.loading += 1;
+				var self = this;
+				H.Post( values, function( res ) {
+					if( H.HasAjaxErrors( res, 'failed to change password' ) ) return;
+					self.loading -= 1;
+					alert( res.info );
+					window.location = '/';
+				} );
+			}
+		}
+	} );
+</script>
