@@ -48,6 +48,7 @@ type FieldModel struct {
 	Min         string // minimum value
 	Max         string // maximum value
 	SqlColPos   int    // position on SQL Select
+	NotDataCol  bool   // is it data->>'col_name' (default) or .col_name (true), overriden by: id, is_deleted, unique_id, modified_*, created_*, deleted_*, restored_*, updated_* where * = at or by
 }
 
 func (field *FieldModel) SqlColumn() string {
@@ -62,7 +63,11 @@ func (field *FieldModel) SqlColumn() string {
 		if field.CustomQuery != `` {
 			query = field.CustomQuery
 		} else {
-			query = `x1.data->>` + Z(field.Key)
+			if field.NotDataCol {
+				query = `x1.` + field.Key
+			} else {
+				query = `x1.data->>` + Z(field.Key)
+			}
 		}
 		typ := S.IfEmpty(field.SqlType, field.Type)
 		switch typ {
@@ -284,7 +289,12 @@ func (qp *QueryParams) SearchQuery_ByConn(conn *RDBMS) {
 		v_str := X.ToS(val)
 		val_arr := S.Split(v_str, `|`)
 		where_add := []string{}
-		criteria := `(x1.data->>` + Z(key) + `)`
+		criteria := ``
+		if fm.NotDataCol {
+			criteria = `(x1.` + key + `)`
+		} else {
+			criteria = `(x1.data->>` + Z(key) + `)`
+		}
 		if key == `is_deleted` {
 			if v_str == `true` || v_str == `false` {
 				qp.Where += ` AND x1.is_deleted = ` + v_str

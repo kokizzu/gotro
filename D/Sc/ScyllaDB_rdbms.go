@@ -261,7 +261,7 @@ func (db *RDBMS) QIntIntMap(query string, params ...interface{}) M.II {
 }
 
 // query 2 colums of integer-string as map
-// SELECT id, puis_dosenid
+// SELECT id, unique_id
 func (db *RDBMS) QIntStrMap(query string, params ...interface{}) M.IS {
 	res := M.IS{}
 	rows := db.QAll(query, params...)
@@ -275,7 +275,7 @@ func (db *RDBMS) QIntStrMap(query string, params ...interface{}) M.IS {
 }
 
 // query 1 colums of string as map
-// SELECT data->>'puis_dosenid'
+// SELECT unique_id
 func (db *RDBMS) QStrBoolMap(query string, params ...interface{}) M.SB {
 	res := M.SB{}
 	rows := db.QAll(query, params...)

@@ -45,7 +45,7 @@ func (tx *Tx) QIntStrMap(query string, params ...interface{}) M.IS {
 }
 
 // query 1 colums of string as map
-// SELECT data->>'puis_dosenid'
+// SELECT unique_id
 func (tx *Tx) QStrBoolMap(query string, params ...interface{}) M.SB {
 	res := M.SB{}
 	rows := tx.QAll(query, params...)
