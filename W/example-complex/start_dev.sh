@@ -7,7 +7,7 @@ old_owner=`ls -ld $GOROOT/pkg | awk '{print $3}'`
 [ "$old_owner" != `whoami` ] && sudo chown -Rv `whoami` $GOROOT/pkg
 echo 'remove $GOPATH/pkg if go upgraded/downgraded..'
 PKG_OS_ARCH=`go version | cut -d ' ' -f 4 | tr '/' '_'`
-old_version=`strings $GOPATH/pkg/$PKG_OS_ARCH/gitlab.com/kokizzu/gokil/A.a | grep 'go object' | head -n 1 | cut -f 5 -d ' '`
+old_version=`strings $GOPATH/pkg/$PKG_OS_ARCH/github.com/kokizzu/gotro/A.a | grep 'go object' | head -n 1 | cut -f 5 -d ' '`
 cur_version=`go version | cut -f 3 -d ' '`
 [ "$old_version" != "$cur_version" ] && rm -rf $GOPATH/pkg
 if [ "$1" != "skip" ]; then

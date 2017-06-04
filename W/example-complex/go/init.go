@@ -2,10 +2,10 @@ package main
 
 import (
 	"github.com/kokizzu/gotro/D/Pg"
+	"github.com/kokizzu/gotro/L"
 	"github.com/kokizzu/gotro/W"
 	"github.com/kokizzu/gotro/W/example-complex/model"
 	"github.com/kokizzu/gotro/W/example-complex/model/mUsers"
-	"gitlab.com/kokizzu/gokil/L"
 )
 
 func main() {

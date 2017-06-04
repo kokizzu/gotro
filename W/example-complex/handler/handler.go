@@ -1,12 +1,12 @@
 package handler
 
 import (
+	"github.com/kokizzu/gotro/L"
 	"github.com/kokizzu/gotro/M"
 	"github.com/kokizzu/gotro/W"
 	"github.com/kokizzu/gotro/W/example-complex/model"
 	"github.com/kokizzu/gotro/W/example-complex/model/mLogin"
 	"github.com/kokizzu/gotro/W/example-complex/model/mResponse"
-	"gitlab.com/kokizzu/gokil/L"
 )
 
 const NOT_REQUIRED = `not required`
