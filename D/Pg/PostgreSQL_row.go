@@ -305,7 +305,7 @@ func (mp *Row) SetIntlPhone(key string) string {
 	if val != `` {
 		part := S.Split(val, ` `)
 		trim := S.ValidatePhone(val)
-		if val[0] != '+' || len(part) != 2 || len(trim)+1 != len(val) {
+		if val[0] != '+' || len(part) != 2 || trim != val {
 			mp.Ajax.Error(`Invalid international phone format (+xx xxxxxx): ` + val)
 			return ``
 		}

@@ -8,13 +8,13 @@ import (
 
 	"crypto/sha256"
 	"encoding/base64"
-	"regexp"
 
 	"bytes"
 	"github.com/kokizzu/gotro/I"
 	"github.com/kokizzu/gotro/L"
 	"github.com/yosuke-furukawa/json5/encoding/json5"
 	"math/rand"
+	"unicode"
 )
 
 const WebBR = "\n<br/>"
@@ -379,11 +379,14 @@ func ValidateEmail(str string) string {
 	return ``
 }
 
-var re_non_phone = regexp.MustCompile(`[^-+\d,]+`)
-
 // remove invalid characters of a phone number
 func ValidatePhone(str string) string {
-	return re_non_phone.ReplaceAllString(str, ``)
+	return strings.Map(func(r rune) rune {
+		if unicode.IsDigit(r) || r == '+' || r == ' ' || r == '-' {
+			return r
+		}
+		return -1
+	}, str)
 }
 
 // create a random password

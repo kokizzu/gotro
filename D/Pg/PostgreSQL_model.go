@@ -76,7 +76,7 @@ func (field *FieldModel) SqlColumn() string {
 		case `integer`, `bigint`:
 			query = `(` + query + `)::BIGINT`
 		case `bool`:
-			query = `(` + query + ` = 'true')`
+			query = `COALESCE(` + query + ` = 'true',false)`
 		}
 	}
 	return query

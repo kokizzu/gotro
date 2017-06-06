@@ -70,6 +70,8 @@ echo 'Moving executables..' \
 --exclude '.*' \
 --exclude 'public/js/all.js' \
 --exclude 'public/css/all.css' \
+--exclude 'public/js/mod.js' \
+--exclude 'public/css/mod.css' \
 --exclude 'public/js/lib.js' \
 --exclude 'public/css/lib.css' \
 --exclude '_old' \

@@ -65,7 +65,7 @@ func (s *Session) RandomKey() {
 			break // no collision
 		}
 	}
-	L.LOG.Notice(s.Key)
+	//L.LOG.Notice(s.Key)
 	s.Changed = true
 }
 
