@@ -28,17 +28,6 @@ func init() {
 	DEBUG = D.DEBUG
 }
 
-const SQL_FUNCTIONS = `
-`
-
-func InitFunctions(conn *RDBMS) {
-	//conn.InitTrigger()
-	conn.DoTransaction(func(tx *Tx) string {
-		tx.DoExec(SQL_FUNCTIONS)
-		return ``
-	})
-}
-
 const NANOSEC_LEN = S.MaxStrLenCB63
 const ATOMIC_LEN = 3
 const SERVER_LEN = 2

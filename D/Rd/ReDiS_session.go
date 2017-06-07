@@ -1,6 +1,7 @@
 package Rd
 
 import (
+	"github.com/kokizzu/gotro/D"
 	"github.com/kokizzu/gotro/I"
 	"github.com/kokizzu/gotro/L"
 	"github.com/kokizzu/gotro/M"
@@ -15,6 +16,10 @@ const DEFAULT_HOST = `127.0.0.1:6379`
 type RedisSession struct {
 	Pool   *redis.Client
 	Prefix string
+}
+
+func (sess RedisSession) Product() string {
+	return D.REDIS
 }
 
 func NewRedisSession(host, pass string, db_num int, prefix string) *RedisSession {

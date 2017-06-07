@@ -1,6 +1,7 @@
 package Pg
 
 import (
+	"github.com/kokizzu/gotro/D"
 	"github.com/kokizzu/gotro/I"
 	"github.com/kokizzu/gotro/L"
 	"github.com/kokizzu/gotro/M"
@@ -27,6 +28,9 @@ func NewSession(conn *RDBMS, table, users_table string) *PostgreSession {
 	return sess
 }
 
+func (sess PostgreSession) Product() string {
+	return D.POSTGRE
+}
 func (sess PostgreSession) Del(key string) {
 	sess.Pool.DoTransaction(func(tx *Tx) string {
 		dm := tx.QBaseUniq(sess.Table, key)

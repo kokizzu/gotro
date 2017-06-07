@@ -12,6 +12,13 @@ type Record interface {
 	GetBool(string) bool
 }
 
+const REDIS = `Rd`
+const SCYLLA = `Sc`
+const POSTGRE = `Pg`
+const DUMMY = `Du`
+const ARANGO = `Ar`
+const AEROSP = `As`
+
 var Z func(string) string
 var ZZ func(string) string
 var ZJ func(string) string

@@ -3,6 +3,7 @@ package As
 import (
 	"github.com/OneOfOne/cmap"
 	aero "github.com/aerospike/aerospike-client-go"
+	"github.com/kokizzu/gotro/D"
 	"github.com/kokizzu/gotro/I"
 	"github.com/kokizzu/gotro/L"
 	"github.com/kokizzu/gotro/M"
@@ -51,6 +52,9 @@ func NewAerosSession(host string, port int, namespace, bucket string) *AerosSess
 		Namespace: namespace,
 		Bucket:    bucket,
 	}
+}
+func (sess AerosSession) Product() string {
+	return D.AEROSP
 }
 
 func (sess AerosSession) Key(key string) *aero.Key {

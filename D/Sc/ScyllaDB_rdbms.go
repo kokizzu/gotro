@@ -8,7 +8,6 @@ import (
 	_ "github.com/gocql/gocql"
 	"github.com/kokizzu/gotro/A"
 	"github.com/kokizzu/gotro/D"
-	"github.com/kokizzu/gotro/I"
 	"github.com/kokizzu/gotro/L"
 	"github.com/kokizzu/gotro/M"
 	"github.com/kokizzu/gotro/S"
@@ -54,22 +53,6 @@ func (db *RDBMS) RenameBaseTable(oldname, newname string) {
 	db.DoTransaction(func(tx *Tx) string {
 		query := `ALTER TABLE ` + ZZ(oldname) + ` RENAME TO ` + ZZ(newname)
 		tx.DoExec(query)
-		oldtrig := oldname + `__trigger`
-		newtrig := newname + `__trigger`
-		query = `ALTER TRIGGER ` + ZZ(oldtrig) + ` ON ` + ZZ(newname) + ` RENAME TO ` + ZZ(newtrig)
-		tx.DoExec(query)
-		oldseq := oldname + `_id_seq`
-		newseq := newname + `_id_seq`
-		query = `ALTER SEQUENCE ` + ZZ(oldseq) + ` RENAME TO ` + ZZ(newseq)
-		tx.DoExec(query)
-		oldlog := `_log_` + oldname
-		newlog := `_log_` + newname
-		query = `ALTER TABLE ` + ZZ(oldlog) + ` RENAME TO ` + ZZ(newlog)
-		tx.DoExec(query)
-		oldseq = oldlog + `_id_seq`
-		newseq = newlog + `_id_seq`
-		query = `ALTER SEQUENCE ` + ZZ(oldseq) + ` RENAME TO ` + ZZ(newseq)
-		tx.DoExec(query)
 		return ``
 	})
 }
@@ -82,90 +65,25 @@ func (db *RDBMS) CreateBaseTable(name string) {
 	db.DoTransaction(func(tx *Tx) string {
 		query := `
 CREATE TABLE IF NOT EXISTS ` + name + ` (
-	id PRIMARY KEY NOT NULL,
-	unique_id VARCHAR(4096) UNIQUE,
-	created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+	clust TEXT, 
+	id TEXT,
+	created_at TIMESTAMP,
 	updated_at TIMESTAMP,
 	deleted_at TIMESTAMP,
 	restored_at TIMESTAMP,
-	modified_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-	created_by BIGINT,
-	updated_by BIGINT,
-	deleted_by BIGINT,
-	restored_by BIGINT,
-	is_deleted BOOLEAN DEFAULT FALSE
-);`
-		//is_deleted__index := name + `__is_deleted__index`
-		//modified_at__index := name + `__modified_at__index`
-		//unique_patern__index := name + `__unique__patern__index`
-		//query_count_index := `SELECT COUNT(*) FROM pg_indexes WHERE indexname = `
-		//err := tx.DoExec(query)
-		//if err == nil {
-		//	query = query_count_index + Z(is_deleted__index)
-		//	if tx.QInt(query) == 0 {
-		//		query = `CREATE INDEX ` + name + `__is_deleted__index ON ` + name + `(is_deleted);`
-		//		tx.DoExec(query)
-		//	}
-		//	query = query_count_index + Z(modified_at__index)
-		//	if tx.QInt(query) == 0 {
-		//		query = `CREATE INDEX ` + name + `__modified_at__index ON ` + name + `(modified_at);`
-		//		tx.DoExec(query)
-		//	}
-		//	query = query_count_index + Z(unique_patern__index)
-		//	if tx.QInt(query) == 0 {
-		//		query = `CREATE INDEX ` + name + `__unique__pattern ON ` + name + ` (unique_id varchar_pattern_ops);`
-		//		tx.DoExec(query)
-		//	}
-		//	query = query_count_index + Z(name)
-		//	if tx.QInt(query) == 0 {
-		//		query = `CREATE INDEX ON ` + name + ` USING GIN(data)`
-		//		tx.DoExec(query)
-		//	}
-		//}
-		tx.DoExec(query)
-		// logs
-		query = `
-CREATE TABLE IF NOT EXISTS _log_` + name + ` (
-	id BIGSERIAL PRIMARY KEY,
-	record_id BIGINT REFERENCES ` + name + `(id) ON UPDATE CASCADE,
-	user_id BIGINT REFERENCES users(id),
-	date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-	info TEXT,
-	data_before JSONB NULL,
-	data_after JSONB NULL
+	modified_at TIMESTAMP,
+	created_by TEXT,
+	updated_by TEXT,
+	deleted_by TEXT,
+	restored_by TEXT,
+	is_deleted BOOLEAN,
+	data MAP<TEXT,TEXT>,
+	PRIMARY KEY (clust, id)
 );`
 		tx.DoExec(query)
-		//idx_name := `_log_` + name + `__record_id__idx`
-		//query = query_count_index + Z(idx_name)
-		//if tx.QInt(query) == 0 {
-		//	query = `CREATE INDEX	` + idx_name + ` ON 	_log_` + name + `	(record_id);`
-		//	tx.DoExec(query)
-		//}
-		//
-		//idx_name = `_log_` + name + `__date__idx`
-		//query = query_count_index + Z(idx_name)
-		//if tx.QInt(query) == 0 {
-		//	query = `CREATE INDEX	` + idx_name + ` ON 	_log_` + name + `	(date);`
-		//	tx.DoExec(query)
-		//}
-		//idx_name = `_log_` + name + `__user_id__idx`
-		//query = query_count_index + Z(idx_name)
-		//if tx.QInt(query) == 0 {
-		//	query = `CREATE INDEX	` + idx_name + ` ON 	_log_` + name + `	(user_id);`
-		//	tx.DoExec(query)
-		//}
 		return ``
 	})
 
-}
-
-// reset sequence, to be called after TRUNCATE TABLE tablename
-func (db *RDBMS) FixSerialSequence(table string) {
-	db.DoTransaction(func(tx *Tx) string {
-		next := tx.QInt(`SELECT COALESCE(MAX(id)+1,1) FROM ` + table)
-		tx.DoExec(`ALTER SEQUENCE ` + table + `_id_seq RESTART WITH ` + I.ToS(next))
-		return ``
-	})
 }
 
 //// query any number of columns, returns array of slice (to be exported directly to json, not for processing)
@@ -405,6 +323,13 @@ func (db *RDBMS) QAll(query string, params ...interface{}) (rows Records) {
 		L.LogTrack(start, query)
 	}
 	return
+}
+
+// execute query, since scylladb doesn't have transaction
+func (db *RDBMS) DoExec(query string, params ...interface{}) error {
+	err := db.Session.Query(query, params...).Exec()
+	L.PanicIf(err, query)
+	return err
 }
 
 // execute a select single value query, convert to string

@@ -35,6 +35,8 @@ type SessionConnector interface {
 	SetInt(key string, val int64)
 	// set json
 	SetMSX(key string, val M.SX)
+	// get product name, eg: Pg, Sc, My, Rd
+	Product() string
 }
 
 var SESS_KEY = `SK`
