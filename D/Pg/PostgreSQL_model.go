@@ -331,7 +331,7 @@ func (qp *QueryParams) SearchQuery_ByConn(conn *RDBMS) {
 				continue
 			}
 			where_add = append(where_add, criteria)
-		case `integer`, `float2`, `date`, `datetime`:
+		case `integer`, `float`, `float2`, `date`, `datetime`:
 			for _, str := range val_arr {
 				str = S.Trim(str)
 				if str == `` {
