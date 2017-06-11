@@ -159,6 +159,11 @@ func (sess ScyllaSession) SetMSX(key string, val M.SX) {
 	sess.setStr(key, S.ZJ(val.ToJson()))
 }
 
+func (sess ScyllaSession) SetMSS(key string, val M.SS) {
+	// L.Print(`SetMSX`)
+	sess.setStr(key, val.ToScylla())
+}
+
 func (sess ScyllaSession) Del(key string) {
 	// L.Print(`Del`)
 	now := T.EpochStr()

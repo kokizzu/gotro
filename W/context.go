@@ -31,6 +31,11 @@ type Context struct {
 	ContentType string
 }
 
+// protocol
+func (ctx *Context) Proto() string {
+	return `http` + S.If(ctx.RequestCtx.IsTLS(), `s`) + `://`
+}
+
 // get url parameter as string
 func (ctx *Context) ParamStr(key string) string {
 	return X.ToS(ctx.RequestCtx.UserValue(key))
@@ -49,7 +54,7 @@ func (ctx *Context) IsAjax() bool {
 
 // get requested host
 func (ctx *Context) Host() string {
-	return `http` + S.If(ctx.RequestCtx.IsTLS(), `s`) + `://` + string(ctx.RequestCtx.Host())
+	return ctx.Proto() + string(ctx.RequestCtx.Host())
 }
 
 // append bytes

@@ -19,6 +19,7 @@ func InitOfficeMail(suffix string) {
 // primary table model
 type Row struct {
 	Row      M.SX
+	NonData  M.SX
 	Posts    *W.Posts
 	Ajax     W.Ajax
 	ReqModel *W.RequestModel
@@ -39,7 +40,13 @@ func (mp *Row) ToJson() string {
 func NewRow(tx *Tx, table string, rm *W.RequestModel) *Row {
 	id := S.ToI(rm.Id)
 	data := tx.DataJsonMap(table, id)
-	return &Row{data, rm.Posts, rm.Ajax, rm, table, id, tx, S.ToI(rm.DbActor), ``, ``}
+	return &Row{data, M.SX{}, rm.Posts, rm.Ajax, rm, table, id, tx, S.ToI(rm.DbActor), ``, ``}
+}
+
+// create empty model
+func NewNonDataRow(tx *Tx, table string, rm *W.RequestModel) *Row {
+	id := S.ToI(rm.Id)
+	return &Row{M.SX{}, M.SX{}, rm.Posts, rm.Ajax, rm, table, id, tx, S.ToI(rm.DbActor), ``, ``}
 }
 
 // fetch model to be edited from unique
@@ -49,7 +56,7 @@ func NewRowUniq(tx *Tx, table string, unique_id string, rm *W.RequestModel) *Row
 	if id == 0 {
 		new_uniq = ``
 	}
-	res := &Row{data, rm.Posts, rm.Ajax, rm, table, id, tx, S.ToI(rm.DbActor), ``, new_uniq}
+	res := &Row{data, M.SX{}, rm.Posts, rm.Ajax, rm, table, id, tx, S.ToI(rm.DbActor), ``, new_uniq}
 	if id == 0 {
 		res.Set_UniqueId(unique_id)
 	}
@@ -64,10 +71,15 @@ func (mp *Row) InsertRow() int64 {
 		mp.Ajax.Set(`id`, mp.Id)
 		return mp.Id
 	}
-	data_str := mp.ToJson()
-	params := M.SX{`data`: data_str}
+	params := M.SX{}
+	if len(mp.Row) > 0 {
+		params[`data`] = mp.ToJson()
+	}
 	if mp.UniqueId != `` {
 		params[`unique_id`] = mp.UniqueId
+	}
+	for k, v := range mp.NonData {
+		params[k] = v
 	}
 	new_id := mp.Tx.DoInsert(mp.DbActor, mp.Table, params)
 	label := mp.Table + `'s row ID:` + I.ToS(new_id)
@@ -98,10 +110,15 @@ func (mp *Row) UpdateRow() int64 {
 		mp.Ajax.Set(`id`, mp.Id)
 		return mp.Id
 	}
-	data_str := mp.ToJson()
-	params := M.SX{`data`: data_str}
+	params := M.SX{}
+	if len(mp.Row) > 0 {
+		params[`data`] = mp.ToJson()
+	}
 	if mp.UniqueId != `` {
 		params[`unique_id`] = mp.UniqueId
+	}
+	for k, v := range mp.NonData {
+		params[k] = v
 	}
 	new_id := mp.Tx.DoUpdate(mp.DbActor, mp.Table, mp.Id, params)
 	if new_id < 1 {
@@ -134,13 +151,18 @@ func (mp *Row) UpsertRow() int64 {
 			return mp.Id
 		}
 	}
-	data_str := mp.ToJson()
-	params := M.SX{`data`: data_str}
+	params := M.SX{}
+	if len(mp.Row) > 0 {
+		params[`data`] = mp.ToJson()
+	}
 	if mp.Id > 0 {
 		params[`id`] = mp.Id
 	}
 	if mp.UniqueId != `` {
 		params[`unique_id`] = mp.UniqueId
+	}
+	for k, v := range mp.NonData {
+		params[k] = v
 	}
 	new_id := mp.Tx.DoUpsert(mp.DbActor, mp.Table, params)
 	if new_rec {
@@ -186,13 +208,18 @@ func (mp *Row) IndateRow() int64 {
 			return mp.Id
 		}
 	}
-	data_str := mp.ToJson()
-	params := M.SX{`data`: data_str}
+	params := M.SX{}
+	if len(mp.Row) > 0 {
+		params[`data`] = mp.ToJson()
+	}
 	if mp.Id > 0 {
 		params[`id`] = mp.Id
 	}
 	if mp.UniqueId != `` {
 		params[`unique_id`] = mp.UniqueId
+	}
+	for k, v := range mp.NonData {
+		params[k] = v
 	}
 	new_id := int64(0)
 	if mp.Id == 0 {
@@ -238,6 +265,14 @@ func (mp *Row) LogIt(key string, val interface{}) {
 			mp.Log += key_label + `  from ` + ZZ(oldv) + ` to ` + new_label + S.WebBR
 		}
 	}
+}
+
+// log the changes
+func (mp *Row) LogNonData(key string, val interface{}) {
+	key_label := ZZ(key)
+	newv := X.ToS(val)
+	new_label := ZZ(newv)
+	mp.Log += key_label + ` = ` + new_label + S.WebBR
 }
 
 // set unique id
@@ -593,4 +628,21 @@ func (mp *Row) SetType(val string) string {
 	}
 	mp.SetVal(`type`, val)
 	return ``
+}
+
+// set raw data
+func (mp *Row) SetNonDataVal(key string, val interface{}) {
+	if val != nil {
+		mp.NonData.Set(key, val)
+		mp.LogNonData(key, val)
+	}
+}
+
+func (mp *Row) SetNonData(key string) {
+	nv := mp.ReqModel.Posts.GetStr(key)
+	if nv != `` {
+		nv = S.Trim(nv)
+		mp.NonData.Set(key, nv)
+		mp.LogNonData(key, nv)
+	}
 }

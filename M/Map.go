@@ -81,6 +81,29 @@ func (hash SS) KeysConcat(with string) string {
 	return res.String()
 }
 
+// convert to scylla based map<text,text>
+func (hash SS) ToScylla() string {
+	res := bytes.Buffer{}
+	res.WriteString(`{`)
+	for k, v := range hash {
+		res.WriteString(`'`)
+		res.WriteString(S.Replace(k, `'`, `&apos;`))
+		res.WriteString(`':'`)
+		res.WriteString(S.Replace(v, `'`, `&apos;`))
+		res.WriteString(`',`)
+	}
+	res.WriteString(`'':''}`)
+	return res.String()
+
+}
+
+// convert to json string, silently print error if failed
+func (hash SS) ToJson() string {
+	str, err := json.Marshal(hash)
+	L.IsError(err, `M.ToJson failed`, hash)
+	return string(str)
+}
+
 // get sorted keys
 //  m := M.SS{`tes`:`tes`,`coba`:`saja`,`lah`:`lah`}
 //  m.SortedKeys() // []string{`coba`,`lah`,`tes`}

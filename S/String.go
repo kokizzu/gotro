@@ -470,5 +470,5 @@ func RemoveLastN(str string, n int) string {
 	if n >= m {
 		return ``
 	}
-	return str[0 : m-3]
+	return str[0 : m-n]
 }

@@ -90,5 +90,8 @@ func (sess RedisSession) SetInt(key string, val int64) {
 }
 
 func (sess RedisSession) SetMSX(key string, val M.SX) {
-	sess.SetStr(key, M.ToJson(val))
+	sess.SetStr(key, val.ToJson())
+}
+func (sess RedisSession) SetMSS(key string, val M.SS) {
+	sess.SetStr(key, val.ToJson())
 }
