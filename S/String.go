@@ -381,12 +381,13 @@ func ValidateEmail(str string) string {
 
 // remove invalid characters of a phone number
 func ValidatePhone(str string) string {
-	return strings.Map(func(r rune) rune {
+	res := strings.Map(func(r rune) rune {
 		if unicode.IsDigit(r) || r == '+' || r == ' ' || r == '-' {
 			return r
 		}
 		return -1
 	}, str)
+	return res
 }
 
 // create a random password

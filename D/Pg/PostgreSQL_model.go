@@ -55,7 +55,11 @@ func (field *FieldModel) SqlColumn() string {
 	query := ``
 	switch field.Key {
 	case `id`, `is_deleted`, `unique_id`:
-		query = `x1.` + field.Key
+		if field.CustomQuery == `` {
+			query = `x1.` + field.Key
+		} else {
+			query = `(` + field.CustomQuery + `)`
+		}
 	case `modified_at`, `created_at`, `deleted_at`, `restored_at`, `updated_at`:
 		field.CustomQuery = `EXTRACT(EPOCH FROM x1.` + field.Key + `)`
 		fallthrough
@@ -290,12 +294,16 @@ func (qp *QueryParams) SearchQuery_ByConn(conn *RDBMS) {
 		val_arr := S.Split(v_str, `|`)
 		where_add := []string{}
 		criteria := ``
-		if fm.NotDataCol {
-			criteria = `(x1.` + key + `)`
+		if fm.CustomQuery != `` {
+			criteria = `(` + fm.CustomQuery + `)`
 		} else {
-			criteria = `(x1.data->>` + Z(key) + `)`
+			if fm.NotDataCol {
+				criteria = `(x1.` + key + `)`
+			} else {
+				criteria = `(x1.data->>` + Z(key) + `)`
+			}
 		}
-		if key == `is_deleted` {
+		if key == `is_deleted` && !fm.NotDataCol {
 			if v_str == `true` || v_str == `false` {
 				qp.Where += ` AND x1.is_deleted = ` + v_str
 			} else {
