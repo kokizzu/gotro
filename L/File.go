@@ -9,21 +9,26 @@ func FileExists(name string) bool {
 
 func CreateFile(path string, content string) bool {
 	var file, err = os.OpenFile(path, os.O_RDWR, 0644)
-	if err != nil {
-		Print(`CreateFile.OpenFile: ` + path + ` | ` + err.Error())
+	if IsError(err, `CreateFile.OpenFile: %s`, path) {
 		return false
 	}
 	defer file.Close()
 
 	_, err = file.WriteString(content)
-	if err != nil {
-		Print(`CreateFile.WriteFile: ` + path + ` | ` + err.Error())
+	if IsError(err, `CreateFile.WriteFile: %s`, path) {
 		return false
 	}
 
 	err = file.Sync()
-	if err != nil {
-		Print(`CreateFile.SyncFile: ` + path + ` | ` + err.Error())
+	if IsError(err, `CreateFile.SyncFile: %s`, path) {
+		return false
+	}
+	return true
+}
+
+func CreateDir(path string) bool {
+	err := os.MkdirAll(path, 0777)
+	if IsError(err, `CreateDir: `+path) {
 		return false
 	}
 	return true
