@@ -8,7 +8,7 @@ func FileExists(name string) bool {
 }
 
 func CreateFile(path string, content string) bool {
-	var file, err = os.OpenFile(path, os.O_RDWR, 0644)
+	var file, err = os.OpenFile(path, os.O_CREATE|os.O_WRONLY|os.O_TRUNC, 0644)
 	if IsError(err, `CreateFile.OpenFile: %s`, path) {
 		return false
 	}
