@@ -39,7 +39,7 @@ type Engine struct {
 	Name string
 	// location of the project, will be concatenated with VIEWS_SUBDIR, PUBLIC_SUBDIR
 	BaseDir   string
-	PublicDir string
+	PublicDir string // with slash
 	// server creation time
 	CreatedAt time.Time
 	// assets <script and <link as string
@@ -308,6 +308,7 @@ func NewEngine(debugMode, multiApp bool, projectName, baseDir string) *Engine {
 		DebugMode:       debugMode,
 		MultiApp:        multiApp,
 		Name:            projectName,
+		PublicDir:       baseDir + PUBLIC_SUBDIR,
 		BaseDir:         baseDir,
 		GlobalStr:       M.SS{},
 		GlobalInt:       M.SI{},
