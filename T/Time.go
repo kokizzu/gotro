@@ -196,3 +196,8 @@ func EpochAfter(d time.Duration) int64 {
 func EpochAfterStr(d time.Duration) string {
 	return I.ToS(time.Now().Add(d).Unix())
 }
+
+// convert unix time to file naming
+func UnixToFile(i int64) string {
+	return time.Unix(i, 0).Format(FILE)
+}

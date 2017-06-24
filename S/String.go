@@ -10,6 +10,7 @@ import (
 	"encoding/base64"
 
 	"bytes"
+	"github.com/kokizzu/gotro/C"
 	"github.com/kokizzu/gotro/I"
 	"github.com/kokizzu/gotro/L"
 	"github.com/yosuke-furukawa/json5/encoding/json5"
@@ -383,6 +384,17 @@ func ValidateEmail(str string) string {
 func ValidatePhone(str string) string {
 	res := strings.Map(func(r rune) rune {
 		if unicode.IsDigit(r) || r == '+' || r == ' ' || r == '-' {
+			return r
+		}
+		return -1
+	}, str)
+	return res
+}
+
+// validate file name
+func ValidateFilename(str string) string {
+	res := strings.Map(func(r rune) rune {
+		if C.IsValidFilename(byte(r)) {
 			return r
 		}
 		return -1
