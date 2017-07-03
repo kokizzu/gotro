@@ -77,7 +77,7 @@ func (field *FieldModel) SqlColumn() string {
 		switch typ {
 		case `float2`, `float`, `datetime`, `date`:
 			query = `(` + query + `)::FLOAT`
-		case `integer`, `bigint`:
+		case `int`, `integer`, `bigint`:
 			query = `(` + query + `)::BIGINT`
 		case `bool`:
 			query = `COALESCE(` + query + ` = 'true',false)`
@@ -274,7 +274,7 @@ func filterCriteriaSuffix_Numeral_ByPrefix(key, typ, str string) string {
 		L.Print(`Ignoring integer/float2: `, key, str)
 		return ``
 	}
-	if typ == `integer` {
+	if typ == `integer` || typ == `int` {
 		return `::BIGINT` + where_or_suffix + I.ToS(S.ToI(str[start_parse:]))
 	} else {
 		return `::FLOAT` + where_or_suffix + F.ToS(S.ToF(str[start_parse:]))
@@ -299,6 +299,8 @@ func (qp *QueryParams) SearchQuery_ByConn(conn *RDBMS) {
 		} else {
 			if fm.NotDataCol {
 				criteria = `(x1.` + key + `)`
+				//} else if fm.Type == `json` {
+				//	criteria = `x1.data->` + Z(key) + `->>`
 			} else {
 				criteria = `(x1.data->>` + Z(key) + `)`
 			}
@@ -339,7 +341,7 @@ func (qp *QueryParams) SearchQuery_ByConn(conn *RDBMS) {
 				continue
 			}
 			where_add = append(where_add, criteria)
-		case `integer`, `float`, `float2`, `date`, `datetime`:
+		case `int`, `integer`, `float`, `float2`, `date`, `datetime`:
 			for _, str := range val_arr {
 				str = S.Trim(str)
 				if str == `` {
@@ -360,6 +362,26 @@ func (qp *QueryParams) SearchQuery_ByConn(conn *RDBMS) {
 					where_add = append(where_add, `(`+A.StrJoin(where2_and, `) AND (`)+`)`)
 				}
 			}
+		//case `json`:
+		//	for _, str := range val_arr { // foo bar|baz
+		//		str = S.Trim(str)
+		//		if str == `` {
+		//			continue
+		//		}
+		//		str2_arr := S.Split(str, ` `) // foo bar
+		//		where2_and := []string{}
+		//		for _, str2 := range str2_arr {
+		//			if str2 == `` {
+		//				continue
+		//			}
+		//			if str2 != `` { // should be: ((data->'col'->>'foo') = 'true' OR (data->'col'->>'foo') = 'true')
+		//				where2_add = append(where2_add, `(` + criteria + Z(str) + `) = ` +Z(`true`) )
+		//			}
+		//		}
+		//		if len(where2_and) > 0 {
+		//			where_add = append(where_add, `(`+A.StrJoin(where2_and, `) OR (`)+`)`)
+		//		}
+		//	} // tetap tercover oleh default case, selain itu juga bisa digunakan untuk untuk text search
 		default:
 			for _, str := range val_arr {
 				str = S.Trim(str)
