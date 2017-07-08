@@ -459,6 +459,14 @@ func LeftN(str string, n int) string {
 	return str[:n] + `...`
 }
 
+// substring at most n characters
+func Left(str string, n int) string {
+	if len(str) < n {
+		return str
+	}
+	return str[:n]
+}
+
 // substring before last `substr`
 func LeftOfLast(str, substr string) string {
 	len := strings.LastIndex(str, substr)
