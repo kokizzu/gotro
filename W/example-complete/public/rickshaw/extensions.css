@@ -1,0 +1,187 @@
+#content div, span, p, td {
+	font-family: Arial, sans-serif;
+}
+#content {
+	width: 1200px;
+}
+#content #chart {
+	display: inline-block;
+}
+#content #chart path {
+	-webkit-transition: opacity 0.2s linear;
+}
+#content #preview {
+	margin-top: 10px;
+}
+#content #legend {
+	display: inline-block;
+	position: relative;
+	left: 8px;
+}
+#content #legend_container {
+	position: absolute;
+	right: 0;
+	bottom: 26px;
+	width: 0;
+}
+#content #chart_container {
+	position: relative;
+	display: inline-block;
+}
+#content #smoother {
+	margin: 0 0 10px 16px;
+	width: 100px;
+}
+#content .rickshaw_graph .detail {
+	left: -1000;
+}
+#content #chart {
+	border: 1px solid #f0f0f0;
+}
+#content #side_panel {
+	padding: 0 20px 20px 0;
+	/*width: 240px;*/
+	display: inline-block;
+	vertical-align: top;
+}
+#content #side_panel section {
+	color: #505050;
+	font-size: 12px;
+}
+#content #side_panel section h6 {
+	margin: 0 0 1em 0;
+	font-size: 12px;
+	font-weight: normal;
+}
+#content #side_panel .ui-slider-horizontal {
+	height: 1px !important;
+	border-color: #e0e0e0;
+	margin-bottom: 10px;
+}
+#content #side_panel .ui-slider-handle {
+	border-color: #a0a0a0;
+	height: 9px !important;
+	width: 9px !important;
+	top: -5px !important;
+	border-radius: 6px;
+	outline: none;
+	cursor: pointer;
+}
+#content #legend {
+	background-color: white;
+	margin-left: 0;
+	padding: 0;
+	left: 0;
+}
+#content #legend .label {
+	color: #404040;
+}
+#content #legend .action {
+	color: black;
+	opacity: 0.5;
+}
+#content #legend ul {
+	padding: 0;
+}
+#content h1 {
+	font-family: Franklin Gothic Medium, UnDotum, Helvetica, Arial;
+	font-weight: normal;
+	font-size: 20px;
+}
+#content section {
+	border: none;
+	border-top: 1px solid #eaeaea;
+	padding: 15px 0;
+}
+#content #smoother {
+	margin: 5px 0 0 10px;
+	width: 90%;
+}
+#content label.disabled {
+	opacity: 0.4;
+}
+#content #renderer_form.toggler {
+	display: inline-block;
+	margin: 0;
+}
+#content #renderer_form.toggler input[type=radio]:checked {
+	outline: 2px solid steelblue;
+}
+#content #renderer_form.toggler input[type=radio] {
+	-moz-appearance: button;
+	background: white;
+	margin: 0 7px;
+	width: 39px;
+	height: 26px;
+	position: absolute;
+}
+#content #renderer_form.toggler label {
+	display: inline-block;
+	padding: 0;
+	width: 39px;
+	padding-top: 27px;
+	text-align: center;
+	font-size: 10px;
+	color: #808080;
+	background-repeat: no-repeat;
+	position: relative;
+	margin: 0 7px;
+	cursor: pointer;
+}
+#content #interpolation_form,
+#content #offset_form {
+	vertical-align: top;
+	display: inline-block;
+	/*width: 45%;*/
+}
+#content #interpolation_form label,
+#content #offset_form label {
+	display: inline-block;
+}
+#content label[for=area] {
+	background: url(/rickshaw/img//om_stack.png);
+}
+#content label[for=line] {
+	background: url(/rickshaw/img//om_lines.png);
+}
+#content label[for=bar] {
+	background: url(/rickshaw/img//om_bar.png);
+}
+#content label[for=scatter] {
+	background: url(/rickshaw/img//om_scatter.png);
+}
+#content #offset_form label,
+#content #interpolation_form label {
+	background-repeat: no-repeat;
+	background-position: 2em center;
+	cursor: pointer;
+	cursor: hand;
+}
+#content #offset_form label span,
+#content #interpolation_form label span {
+	padding-left: 40px;
+}
+#content label[for=stack] {
+	background-image: url(/rickshaw/img//offset_stack.png);
+}
+#content label[for=pct] {
+	background-image: url(/rickshaw/img//offset_pct.png);
+}
+#content label[for=stream] {
+	background-image: url(/rickshaw/img//offset_stream.png);
+}
+#content label[for=value] {
+	background-image: url(/rickshaw/img//offset_value.png);
+}
+#content label[for=cardinal] {
+	background-image: url(/rickshaw/img//interp_cardinal.png);
+}
+#content label[for=linear] {
+	background-image: url(/rickshaw/img//interp_linear.png);
+}
+#content label[for=step] {
+	background-image: url(/rickshaw/img//interp_step.png);
+}
+#content {
+	line-height : 1em;
+}

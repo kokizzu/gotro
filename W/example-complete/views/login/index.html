@@ -1,0 +1,116 @@
+<div style="text-align: center">
+	<div style="display: inline-block;">
+		<div class="ui message">
+			<div class="header">
+				#{title}
+			</div>
+		</div>
+		<div class="ui grid" id="vm">
+			<div class="ui sixteen wide column active" :class="{dimmer:loading}">
+				<div class="sixteen wide column">
+					<img src="/img/logo.png" style="display:block; margin:auto; padding-bottom: 16px"/>
+				</div>
+				<div class="ui text loader"></div>
+				<div class="eight wide centered column">
+					<div class="ui form">
+						<div class="ui field">
+							<label for="user">E-Mail / Phone</label>
+							<div class="ui action input" :class="{disabled:loading}">
+								<input id="user" placeholder="e-mail or phone (format: +62 8xxxxxxx)" v-model="email" v-focus @keydown="email_event"/>
+								<input v-if="is_phone" class="ui button yellow" type="button" value="SMS Login" @click="sms_event"/>
+							</div>
+						</div>
+						<div class="ui field" v-if="!(loading || is_phone)">
+							<label for="pass">Password</label>
+							<div class="ui action input">
+								<input id="pass" type="password" placeholder="password for this site" v-model="pass" @keydown="pass_event"/>
+								<input class="ui button yellow" type="button" value="Password Login" @click="login_event"/>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="sixteen wide centered column" v-if="!loading">
+					<div class="ui form">
+						<div class="ui field equal width" v-if="!(loading || is_phone)">
+							<a class="ui button brown" :href="forgot_url">
+								Forgot Password
+							</a>
+						</div>
+						<div class="ui field" v-if="!!google_url">
+							<label>or login using</label>
+							<a v-if="google_url" id="google" class="ui google plus button" :href="google_url">
+								<i class="google plus icon"></i>
+								Google Account
+							</a>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="ui message">
+			<div class="header">
+				&copy; 2017 example-complete-example-cron
+			</div>
+		</div>
+	</div>
+</div>
+<script>
+	if( window.attachEvent && !window.addEventListener ) { // "bad" IE (<9)
+		if( confirm( 'your browser is too ancient, please reconsider using newer one..' ) ) {
+			$.ajax( {
+				url: '', data: '', success: function() {
+					window.open( 'http://browsehappy.com/' );
+				}, async: false
+			} );
+		}
+	}
+	var vm = new Vue( {
+		el: '#vm',
+		data: {
+			forgot_url: '/login/forgot',
+			login_url: '/login',
+			google_url: '#{google_url}',
+			email: '',
+			pass: '',
+			loading: 0
+		},
+		computed: {
+			is_phone: function() {
+				return (this.email || '').match( /\+\d+ \d+/ )
+			}
+		},
+		methods: {
+			pass_event: function( e ) {
+				if( H.IsEnter( e ) ) {
+					if( this.pass ) this.login_event();
+					else $( '#email' ).focus();
+				}
+			},
+			email_event: function( e ) {
+				if( H.IsEnter( e ) && this.email ) $( '#pass' ).focus();
+			},
+			login_event: function() {
+				var self = this;
+				this.loading += 1;
+				var d = { email: this.email, pass: this.pass };
+				$.post( this.login_url, d, function( res ) {
+					self.loading -= 1;
+					if( res && res.errors && res.errors.length>0 ) {
+						$( '#pass' ).val( '' ).focus();
+						$( '#forgot_detected' ).fadeOut( 500 ).fadeIn( 500 ).fadeOut( 500 ).fadeIn( 500 );
+						return H.GrowlError( res.errors.join( '\n' ) );
+					}
+					if( window.location.hash=='#close' ) {
+						alert( 'logged in successfully' );
+						return window.close();
+					}
+					window.location = '/';
+				} ).fail( function( xhr, textStatus, errorThrown ) {
+					self.loading -= 1;
+					alert( textStatus + '\n' + xhr.status );
+				} );
+			}
+		}
+	} );
+</script>
+

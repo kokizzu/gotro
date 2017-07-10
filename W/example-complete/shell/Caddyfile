@@ -1,0 +1,9 @@
+TODO_CHANGE_DOMAIN, www.TODO_CHANGE_DOMAIN, http://TODO_CHANGE_DOMAIN {
+        root /home/web/site/public
+        proxy / 127.0.0.1:8083 {
+                header_upstream Host {host}
+                header_upstream X-Real-IP {remote}
+                header_upstream X-Forwarded-For {remote}
+                header_upstream X-Forwarded-Proto {scheme}
+        }
+}

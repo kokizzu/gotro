@@ -1,0 +1,54 @@
+<div class="pusher" id="vm" style="text-align: center">
+	<div style="display: inline-block;">
+		<div class="ui message">
+			<div class="header">
+				Error #{error_code}: #{error_title}
+			</div>
+		</div>
+		<div class="ui grid">
+			<div class="ui sixteen wide centered column active" style="min-height: 200px">
+				<div class="eight wide centered column">
+				</div>
+				<div class="ui success message">
+					<div class="header">
+						#{requested_path}
+					</div>
+					<div class="detail">
+						#{error_detail}
+					</div>
+				</div>
+				<div class="ui negative message">
+					<div class="header">
+						<p id="err403" style="display:none">It's forbidden for you to access this page (insufficient privilege), either contact the #{webmaster} or
+							try again. Use your browser's <b>Back</b> button to navigate to the page you have previously come from</p>
+						<p id="err404" style="display:none">The page you requested could not be found, either contact the #{webmaster} or try again. Use your
+							browser's <b>Back</b> button to navigate to the page you have previously come from</p>
+						<p id="err" style="display:none">There is a possible programming mistake on this page, either contact the #{webmaster} or try again. Use
+							your browser's <b>Back</b> button to navigate to the page you have previously come from</p>
+						<p id="err503" style="display:none">Server is overloaded, please wait 2 minutes then try again by clicking your browser's <b>Refresh</b>
+							button (F5/Ctrl+R)</p>
+						<button class="ui blue button" onclick="window.history.back()">
+							<i class="glyphicon glyphicon-arrow-left"></i> Take Me Back
+						</button>
+						<button class="ui orange button" onclick="window.location='/'">
+							<i class="glyphicon glyphicon-home"></i> Take Me Home
+						</button>
+					</div>
+				</div>
+				<script>
+					var code = '#{error_code}';
+					if( code!='404' && code!='403' && code!='503' ) code = '';
+					document.getElementById( 'err' + code ).style.display = 'block'
+				</script>
+			</div>
+		</div>
+		<hr/>
+		<div class="ui message">
+			<div class="header">
+				&copy; 2014-
+				<script>document.write( new Date().getFullYear() )</script>
+				#{project_name}
+			</div>
+		</div>
+	</div>
+</div>
