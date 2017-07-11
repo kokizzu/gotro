@@ -198,14 +198,14 @@ func API_All_Logout(ctx *W.Context) {
 
 func AccessLevel(email string, id int64) M.SX {
 	query := `SELECT COALESCE((
-			SELECT group_id
+			SELECT (data->>'group_id')::BIGINT
 			FROM users 
 			WHERE id = ` + ZI(id) + `
 		),0)`
 	group_id := PG.QInt(query)
 	query2 := `SELECT COALESCE((
-			SELECT name
-			FROM groups
+			SELECT data->>'name'
+			FROM tags
 			WHERE id = ` + ZI(group_id) + `
 		),'')`
 	group := PG.QStr(query2)

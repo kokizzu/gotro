@@ -51,7 +51,6 @@ func Prepare(ctx *W.Context, title string, must_login bool) (rm *W.RequestModel)
 		ctx.Title = title
 		menus := []string{
 			`guest`,
-			`owner`,
 			`superadmin`,
 		}
 		email := ctx.Session.GetStr(`email`)
