@@ -72,7 +72,7 @@ if [ "$fail" == '1' ]; then
 fi
 
 EXECUTABLES=''
-REMOTE_CMD='systemctl restart paling_baik;'
+REMOTE_CMD='systemctl restart TODO_WEBAPP_SERVICE;'
 
 PIDS=''
 

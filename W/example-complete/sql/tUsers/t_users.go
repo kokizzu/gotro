@@ -47,19 +47,6 @@ func init() {
 }
 
 // 2017-05-30 Prayogo
-func FindID_ByPhone(ident string) int64 {
-	query := ZT(ident) + `
-	SELECT COALESCE((
-		SELECT id
-		FROM ` + TABLE + `
-		WHERE is_deleted = false
-			AND phone = ` + Z(ident) + `
-		LIMIT 1
-	),0)`
-	return PG.QInt(query)
-}
-
-// 2017-05-30 Prayogo
 func FindID_ByIdent_ByPass(ident, pass string) int64 {
 	pass = S.HashPassword(pass)
 	query := ZT(ident, pass) + `
@@ -67,8 +54,13 @@ func FindID_ByIdent_ByPass(ident, pass string) int64 {
 		SELECT id
 		FROM ` + TABLE + `
 		WHERE is_deleted = false
-			AND email = ` + Z(ident) + `
-			AND password = ` + Z(pass) + `
+			AND ( 
+				data->>'email' = ` + Z(ident) + `
+				OR data->>'gmail' = ` + Z(ident) + `
+				OR data->>'yahoo' = ` + Z(ident) + `
+				OR data->>'office_mail' = ` + Z(ident) + `
+			)
+			AND data->>'password' = ` + Z(pass) + `
 		LIMIT 1
 	),0)`
 	return PG.QInt(query)
@@ -81,7 +73,12 @@ func FindID_ByEmail(email string) int64 {
 		SELECT id
 		FROM ` + TABLE + `
 		WHERE is_deleted = false
-			AND email = ` + Z(email) + `
+			AND ( 
+				data->>'email' = ` + Z(email) + `
+				OR data->>'gmail' = ` + Z(email) + `
+				OR data->>'yahoo' = ` + Z(email) + `
+				OR data->>'office_mail' = ` + Z(email) + `
+			)
 		LIMIT 1
 	),0)`
 	return PG.QInt(query)
@@ -101,27 +98,21 @@ func FindID_ByCompactName_ByEmail(ident, email string) int64 {
 		SELECT id
 		FROM ` + TABLE + `
 		WHERE is_deleted = false
-			AND email = ` + email + `
+			AND ( 
+				data->>'email' = ` + Z(email) + `
+				OR data->>'gmail' = ` + Z(email) + `
+				OR data->>'yahoo' = ` + Z(email) + `
+				OR data->>'office_mail' = ` + Z(email) + `
+			)
 	),0)`
 	return PG.QInt(query)
-}
-
-// 2017-05-30 Prayogo
-func Name_Emails_ByID(id int64) (string, []string) {
-	ram_key := ZT(I.ToS(id))
-	query := ram_key + `
-SELECT full_name, email
-FROM ` + TABLE + `
-WHERE id = ` + ZI(id)
-	name, mail := PG.QStrStr(query)
-	return name, []string{name + ` <` + mail + `>`}
 }
 
 // 2017-06-04 Haries
 func Search_ByQueryParams(qp *Pg.QueryParams) {
 	qp.RamKey = ZT(qp.Term)
 	if qp.Term != `` {
-		qp.Where += ` AND x1.full_name ILIKE ` + ZLIKE(qp.Term)
+		qp.Where += ` AND (x1.data->>'full_name') ILIKE ` + ZLIKE(qp.Term)
 	}
 	qp.From = `FROM ` + TABLE + ` x1`
 	qp.OrderBy = `x1.id`
@@ -155,12 +146,11 @@ func API_Superadmin_Form(rm *W.RequestModel) {
 func API_Superadmin_SaveDeleteRestore(rm *W.RequestModel) {
 	PG.DoTransaction(func(tx *Pg.Tx) string {
 		dm := Pg.NewNonDataRow(tx, TABLE, rm)
-		dm.SetNonData(`full_name`)
-		dm.SetNonData(`email`)
-		dm.SetNonData(`group_id`)
-		dm.SetNonData(`note`)
-		dm.SetNonData(`phone`)
-		dm.SetNonData(`verified`)
+		dm.SetStr(`full_name`)
+		emails := rm.Posts.GetStr(`emails`)
+		dm.Set_UserEmails(emails)
+		dm.SetStr(`note`)
+		dm.SetStr(`phone`)
 		dm.UpsertRow()
 		if !rm.Ajax.HasError() {
 			dm.WipeUnwipe(rm.Action)

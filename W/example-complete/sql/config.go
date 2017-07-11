@@ -20,7 +20,7 @@ var DOMAIN string
 var PG *Pg.RDBMS
 
 func init() {
-	PG = Pg.NewConn(`geo`, `geo`)
+	PG = Pg.NewConn(`TODO_CHANGE_DB`, `TODO_CHANGE_DB`)
 	W.Mailers = map[string]*W.SmtpConfig{
 		``: {
 			Name:     `Mailer Daemon`,
