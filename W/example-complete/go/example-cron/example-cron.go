@@ -2,12 +2,8 @@ package main
 
 import (
 	"example-complete/sql"
-	"github.com/kokizzu/gotro/I"
 	"github.com/kokizzu/gotro/M"
-	"github.com/kokizzu/gotro/S"
 	"github.com/kokizzu/gotro/W"
-	"github.com/kokizzu/gotro/X"
-	"gitlab.com/kokizzu/gokil/T"
 	"time"
 )
 
@@ -22,14 +18,14 @@ func init() {
 	dead_count = M.SI{}
 }
 
-func CheckUrlAndVideos() {
+func WhatDaemonDo() {
 
 	W.Mailers[``].SendBCC([]string{sql.DEBUGGER_EMAIL, sql.SUPPORT_EMAIL}, `[`+sql.PROJECT_NAME+`] Archive Status`, `
 Dear Administrator,<br/>
 <br/>
 these videos and urls has been archived, <br/>
 <br/>
-CHANGE_ME
+TODO_CHANGE_THIS<br/>
 Best Regards,<br/>
 Automated Software<br/>
 `)
@@ -45,7 +41,7 @@ func main() {
 	last_15minutely_event := now
 	last_hourly_event := now
 	var dur time.Duration
-	CheckUrlAndVideos()
+	WhatDaemonDo()
 	for {
 		//len := sql.QueueLen(mNotifications.REDIS_KEY)
 		//if len == 0 {
@@ -63,7 +59,7 @@ func main() {
 		dur = now.Sub(last_15minutely_event)
 		if dur.Minutes() > 30 {
 			// do something
-			CheckUrlAndVideos()
+			WhatDaemonDo()
 			last_15minutely_event = now
 		}
 		// send public chat notification

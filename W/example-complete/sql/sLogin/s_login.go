@@ -35,8 +35,8 @@ var OAUTH_URLS = []string{
 var GPLUS_OAUTH_PROVIDERS map[string]*oauth2.Config
 var USERINFO_ENDPOINT string
 
-const GPLUS_CLIENTID = `CHANGE_ME.apps.googleusercontent.com`
-const GPLUS_CLIENTSECRET = `CHANGE_ME`
+const GPLUS_CLIENTID = `TODO_CHANGE_THIS.apps.googleusercontent.com`
+const GPLUS_CLIENTSECRET = `TODO_CHANGE_THIS`
 
 const RESET_MINUTE = 20
 

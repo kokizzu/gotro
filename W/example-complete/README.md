@@ -5,7 +5,7 @@
 TODO_CHANGE_DB - db username
 TODO_WEBAPP_SERVICE - the webapp
 TODO_CHANGE_DOMAIN - the domain name
-TODO_CHANGE_THIS - either gmail user or password
+TODO_CHANGE_THIS - either gmail user or password, email sender name, google credentials
 example-complete - the project name (also the $GOPATH/example-complete directory)
 example-cron - the background service
 ```
