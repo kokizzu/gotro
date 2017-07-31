@@ -120,8 +120,6 @@ func (tm *TableModel) Select() string {
 		}
 		query_str = A.StrJoin(queries, "\n, ")
 		SELECT_CACHE.Set(tm.CacheName, query_str)
-	} else if DEBUG {
-		panic(`Warning: CacheName collision for ` + tm.CacheName)
 	}
 	return query_str
 }
@@ -362,26 +360,26 @@ func (qp *QueryParams) SearchQuery_ByConn(conn *RDBMS) {
 					where_add = append(where_add, `(`+A.StrJoin(where2_and, `) AND (`)+`)`)
 				}
 			}
-		//case `json`:
-		//	for _, str := range val_arr { // foo bar|baz
-		//		str = S.Trim(str)
-		//		if str == `` {
-		//			continue
-		//		}
-		//		str2_arr := S.Split(str, ` `) // foo bar
-		//		where2_and := []string{}
-		//		for _, str2 := range str2_arr {
-		//			if str2 == `` {
-		//				continue
-		//			}
-		//			if str2 != `` { // should be: ((data->'col'->>'foo') = 'true' OR (data->'col'->>'foo') = 'true')
-		//				where2_add = append(where2_add, `(` + criteria + Z(str) + `) = ` +Z(`true`) )
-		//			}
-		//		}
-		//		if len(where2_and) > 0 {
-		//			where_add = append(where_add, `(`+A.StrJoin(where2_and, `) OR (`)+`)`)
-		//		}
-		//	} // tetap tercover oleh default case, selain itu juga bisa digunakan untuk untuk text search
+			//case `json`:
+			//	for _, str := range val_arr { // foo bar|baz
+			//		str = S.Trim(str)
+			//		if str == `` {
+			//			continue
+			//		}
+			//		str2_arr := S.Split(str, ` `) // foo bar
+			//		where2_and := []string{}
+			//		for _, str2 := range str2_arr {
+			//			if str2 == `` {
+			//				continue
+			//			}
+			//			if str2 != `` { // should be: ((data->'col'->>'foo') = 'true' OR (data->'col'->>'foo') = 'true')
+			//				where2_add = append(where2_add, `(` + criteria + Z(str) + `) = ` +Z(`true`) )
+			//			}
+			//		}
+			//		if len(where2_and) > 0 {
+			//			where_add = append(where_add, `(`+A.StrJoin(where2_and, `) OR (`)+`)`)
+			//		}
+			//	} // tetap tercover oleh default case, selain itu juga bisa digunakan untuk untuk text search
 		default:
 			for _, str := range val_arr {
 				str = S.Trim(str)

@@ -5,6 +5,7 @@ package Z
 import (
 	"bytes"
 	"errors"
+	"github.com/davecheney/autobench/work/go1.5beta1/src/path/filepath"
 	"github.com/kokizzu/gotro/L"
 	"github.com/kokizzu/gotro/M"
 	"github.com/kokizzu/gotro/S"
@@ -93,10 +94,12 @@ func (t *TemplateChain) Reload() (*TemplateChain, error) {
 	}
 	// check for changes
 	info, err := os.Stat(dup.Filename)
-	errinfo := `failed to stat the template`
+	base := filepath.Base(dup.Filename)
+	errinfo := `failed to stat the template: ` + base
 	//L.Print(t.Filename, err)
 	if L.IsError(err, errinfo, dup.Filename) {
 		dup.Parts = [][]byte{[]byte(errinfo)}
+		L.Print(dup.Filename)
 		return &dup, errors.New(errinfo)
 	}
 	// when not modified
@@ -108,9 +111,10 @@ func (t *TemplateChain) Reload() (*TemplateChain, error) {
 	dup.ModTime = mod_time
 	// read the actual file
 	bs, err := ioutil.ReadFile(dup.Filename)
-	errinfo = `template not found`
+	errinfo = `template not found: ` + base
 	if L.IsError(err, errinfo, dup.Filename) {
 		dup.Parts = [][]byte{[]byte(errinfo)}
+		L.Print(dup.Filename)
 		return &dup, errors.New(errinfo)
 	}
 	// clear parts

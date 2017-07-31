@@ -85,13 +85,19 @@ function GridMason( id, rec_type, columns, rows, actions, events, vue_options ) 
 				break;
 			case 'image':
 			case 'video':
-				// file upload
-				col = '<div class="file_upload not_initialized"' + ZZ( 'data-key', key ) + ZZ( ':data-id', 'row.id' ) + ZZ( 'data-type', typ ) + '>Upload</div>';
+				// file upload: disabled, the id wes not correctly set using vue
+				//col = '<div class="file_upload not_initialized"' + ZZ( 'data-key', key ) + ZZ( ':data-id', 'row.id' ) + ZZ( 'data-type', typ ) + '>Upload</div>';
+				col = '';
 				col += '<span' + ZZ( 'v-if', 'row.' + key + ' && row.' + key + '_size' ) + '>';
 				if( typ=='image' ) col += '<img style="height:100%;max-height:240px" :src="row.' + key + '" /><br/>';
 				else if( typ=='video' ) col += '<video controls height="240"><source :src="row.' + key + '" type="video/mp4" /></video><br/>';
 				col += '<a :href="row.' + key + '">{{row.' + key + '_size | filesize}} | {{row.' + key + '_time | datetime}}</a>';
 				col += '</span>';
+				break;
+			case 'select':
+			case 'multiselect':
+				console.log(column);
+				col += '{{ !isNaN(row.' + key + ') ? DS.' + column.sub_type + '[row.' + key + '] : row.' + key + ' }}';
 				break;
 			case 'json':
 				col = '<div' + ZZ( 'v-html', 'row.' + key + '' ) + '></div>';
@@ -199,7 +205,7 @@ function GridMason( id, rec_type, columns, rows, actions, events, vue_options ) 
 	// init
 	var el_id = '#' + id;
 	var el = $( el_id );
-	if(!el.length) throw('Element '+el_id+ ' not found');
+	if( !el.length ) throw('Element ' + el_id + ' not found');
 	el.html( g_html + f_html );
 	var el_filter = $( el_id + '__filter' );
 	var el_parent = el.parent();
@@ -225,7 +231,8 @@ function GridMason( id, rec_type, columns, rows, actions, events, vue_options ) 
 			filter_count: 0, // cache
 			order: order, // ["+key","-key"] + ascending, - descending
 			order_hash: {}, // cache
-			order_idx: {} // cache
+			order_idx: {}, // cache
+			DS: DS
 		},
 		computed: {
 			col_shown_hash: function() {

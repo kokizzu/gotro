@@ -118,6 +118,7 @@ END; $$ LANGUAGE plpgsql;`
 
 // create a base table
 func (db *RDBMS) CreateBaseTable(name, users_table string) {
+	users_table = S.IfEmpty(users_table, `users`)
 	db.DoTransaction(func(tx *Tx) string {
 		query := `
 CREATE TABLE IF NOT EXISTS ` + name + ` (

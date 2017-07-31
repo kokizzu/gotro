@@ -81,7 +81,6 @@ echo '> Comparing binaries..' \
 b_diff=`cmp -l /tmp/example-complete-raw /tmp/example-complete-${PROJECT} | wc -l`
 if [ "$b_diff" -gt 6 ] || [ "$b_diff" == 0 ]; then
 	EXECUTABLES="$EXECUTABLES /tmp/example-complete"
-#	REMOTE_CMD="systemctl restart example-complete; $REMOTE_CMD"
 	echo "> example-complete service ${b_diff} bytes differ, compressing.."
 	upx --no-progress /tmp/example-complete &
 	PIDS="$PIDS $!"
@@ -90,7 +89,7 @@ fi
 b_diff=`cmp -l /tmp/example-cron-raw /tmp/example-cron-${PROJECT} | wc -l`
 if [ "$b_diff" -gt 6 ] || [ "$b_diff" == 0 ]; then
 	EXECUTABLES="$EXECUTABLES /tmp/example-cron"
-	REMOTE_CMD="systemctl restart menolak_lupa; $REMOTE_CMD"
+	REMOTE_CMD="systemctl restart TODO_CRON_SERVICE; $REMOTE_CMD"
 	echo "> example-cron service ${b_diff} bytes differ, compressing.."
 	upx --no-progress /tmp/example-cron &
 	PIDS="$PIDS $!"
