@@ -13,10 +13,10 @@ import (
 	"github.com/kokizzu/gotro/X"
 )
 
-var SELECT_CACHE cmap.CMap
-var FORM_CACHE cmap.CMap // cache form fields
-var GRID_CACHE cmap.CMap // cache grid fields
-var TYPE_CACHE cmap.CMap // cache key-type (M.SS)
+var SELECT_CACHE *cmap.CMap
+var FORM_CACHE *cmap.CMap // cache form fields
+var GRID_CACHE *cmap.CMap // cache grid fields
+var TYPE_CACHE *cmap.CMap // cache key-type (M.SS)
 
 func init() {
 	SELECT_CACHE = cmap.New()

@@ -15,10 +15,10 @@ import (
 // bucket = the bucket of keys, all keys will be removed when it's expired
 // ram_key = the key of the query
 
-var CACHE_INV cmap.CMap  // table invalidate date
-var CACHE_TTL cmap.CMap  // cache invalidate time
-var CACHE_BORN cmap.CMap // cache born time
-var CACHE cmap.CMap      // cache real storage
+var CACHE_INV *cmap.CMap  // table invalidate date
+var CACHE_TTL *cmap.CMap  // cache invalidate time
+var CACHE_BORN *cmap.CMap // cache born time
+var CACHE *cmap.CMap      // cache real storage
 
 const TTL = 3
 

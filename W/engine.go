@@ -29,7 +29,7 @@ type Engine struct {
 	// contact if there's bug
 	WebMasterAnchor string
 	// view template cache
-	ViewCache cmap.CMap
+	ViewCache *cmap.CMap
 	// global variables
 	GlobalInt M.SI
 	GlobalStr M.SS

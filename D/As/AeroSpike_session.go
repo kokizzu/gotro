@@ -14,7 +14,7 @@ import (
 const DEFAULT_HOST = `127.0.0.1`
 const DEFAULT_PORT = 3333
 
-var POLICIES cmap.CMap
+var POLICIES *cmap.CMap
 
 func init() {
 	POLICIES = cmap.New()

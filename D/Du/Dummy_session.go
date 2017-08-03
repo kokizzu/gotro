@@ -11,7 +11,7 @@ import (
 
 // in memory data session (used when no database installed), gone when program exit
 type DummySession struct {
-	Pool cmap.CMap
+	Pool *cmap.CMap
 }
 
 type DummyRecord struct {
@@ -104,15 +104,9 @@ func (sess DummySession) GetMSX(key string) M.SX {
 
 func (sess DummySession) Inc(key string) int64 {
 	val := sess.GetInt(key) + 1
-	notChanged := func(ov, nv interface{}) bool {
-		return X.ToI(ov)+1 == X.ToI(nv)
-	}
-	for {
-		if sess.Pool.CompareAndSwap(key, val, notChanged) {
-			return val
-		}
-		val = sess.GetInt(key) + 1
-	}
+	// TODO: Protect from concurrent access
+	sess.SetInt(key, val)
+	return val
 }
 
 func (sess DummySession) SetStr(key, val string) {

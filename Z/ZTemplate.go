@@ -5,13 +5,13 @@ package Z
 import (
 	"bytes"
 	"errors"
-	"github.com/davecheney/autobench/work/go1.5beta1/src/path/filepath"
 	"github.com/kokizzu/gotro/L"
 	"github.com/kokizzu/gotro/M"
 	"github.com/kokizzu/gotro/S"
 	"github.com/kokizzu/gotro/X"
 	"io/ioutil"
 	"os"
+	"path/filepath"
 	"time"
 )
 
