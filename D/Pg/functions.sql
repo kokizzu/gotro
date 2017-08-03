@@ -164,6 +164,7 @@ BEGIN
 			(CASE WHEN data->>'gmail' = '' THEN NULL ELSE data->>'gmail' END),
 			(CASE WHEN data->>'yahoo' = '' THEN NULL ELSE data->>'yahoo' END),
 			(CASE WHEN data->>'email' = '' THEN NULL ELSE data->>'email' END),
+			(CASE WHEN data->>'outlook' = '' THEN NULL ELSE data->>'outlook' END),
 			(CASE WHEN data->>'office_mail' = '' THEN NULL ELSE data->>'office_mail' END)
 		]
 	],', ');

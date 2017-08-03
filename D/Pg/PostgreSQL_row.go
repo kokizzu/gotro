@@ -592,11 +592,16 @@ func (mp *Row) Set_UserEmails_ByTable(emails string, table string) (ok bool) {
 				S.Contains(mail, `@ymail.`) ||
 				S.Contains(mail, `@rocketmail.`) {
 				orig[`yahoo`] = mail
+			} else if S.Contains(mail, `@outlook.`) ||
+				S.Contains(mail, `@hotmail.`) ||
+				S.Contains(mail, `@live.`) ||
+				S.Contains(mail, `@windowslive.`) {
+				orig[`outlook`] = mail
 			} else {
 				orig[`email`] = mail
 			}
 		}
-		for _, key := range []string{`office_mail`, `gmail`, `yahoo`, `email`} {
+		for _, key := range []string{`office_mail`, `gmail`, `yahoo`, `outlook`, `email`} {
 			val := orig[key]
 			mp.SetVal(key, val)
 			if val == `` {
