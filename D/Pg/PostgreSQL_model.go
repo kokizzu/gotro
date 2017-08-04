@@ -124,6 +124,42 @@ func (tm *TableModel) Select() string {
 	return query_str
 }
 
+// generate select fields without join
+func (tm *TableModel) SelectNoJoin() string {
+	cache := SELECT_CACHE.Get(tm.CacheName + `__NoJoin`)
+	query_str, ok := cache.(string)
+	if !ok {
+		queries := []string{}
+		pos := 1
+		for idx, field := range tm.Fields {
+			if field.Hide || field.SqlHide {
+				continue
+			}
+			switch field.Key {
+			case `id`:
+				query := `x1.id::TEXT "id"`
+				queries = append(queries, query)
+				tm.Fields[idx].SqlColPos = pos
+				pos += 1
+				continue
+			case `created_at`, `modified_at`, `updated_at`, `deleted_at`, `restored_at`:
+				tm.Fields[idx].Label = S.ToTitle(S.Replace(field.Key, `_`, ` `))
+				tm.Fields[idx].Type = `datetime`
+			}
+			if field.CustomQuery != `` {
+				continue
+			}
+			query := field.SqlColumn() + ` ` + ZZ(field.Key)
+			queries = append(queries, query)
+			tm.Fields[idx].SqlColPos = pos
+			pos += 1
+		}
+		query_str = A.StrJoin(queries, "\n, ")
+		SELECT_CACHE.Set(tm.CacheName, query_str)
+	}
+	return query_str
+}
+
 // generate form fields json
 func (tm *TableModel) FormFields() A.MSX {
 	cache := FORM_CACHE.Get(tm.CacheName)
