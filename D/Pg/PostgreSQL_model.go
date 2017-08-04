@@ -220,10 +220,12 @@ type QueryParams struct {
 	Model     *TableModel
 	IsDefault bool
 
+	WithAs  string
 	Where   string
 	Select  string
 	RamKey  string
 	From    string
+	Join    string
 	OrderBy string
 }
 
@@ -417,10 +419,11 @@ func (qp *QueryParams) SearchQuery_ByConn(conn *RDBMS) {
 			qp.OrderBy += ` DESC`
 		}
 	}
-	query_str := qp.From + `
+	query_str := qp.From + ` ` + qp.Join + `
 WHERE 1=1
 ` + qp.Where
 	query := ` -- ` + qp.RamKey + `_Count
+` + qp.WithAs + `
 SELECT COUNT(*)
 ` + query_str
 	qp.Count = conn.QInt(query)
@@ -430,6 +433,7 @@ SELECT COUNT(*)
 		qp.Offset = qp.Count / qp.Limit * qp.Limit
 	}
 	query = ` -- ` + qp.RamKey + `
+` + qp.WithAs + `
 SELECT ` + qp.Select + `
 ` + query_str + `
 ORDER BY ` + S.IfEmpty(qp.OrderBy, `x1.id`) + `

@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"github.com/kokizzu/gotro/I"
 	"github.com/kokizzu/gotro/L"
+	"strconv"
 	"strings"
 )
 
@@ -52,4 +53,23 @@ func IntJoin(arr []int64, sep string) string {
 		}
 	}
 	return buf.String()
+}
+
+/* Convert array of string to array of int64
+func main() {
+    m:= []string{`1`,`2`}
+    L.Print(A.StrToInt(m))//output [1 2]
+}
+*/
+// convert string list to integer list
+func StrToInt(arr []string) []int64 {
+	res := []int64{}
+	for _, v := range arr {
+		if v == `` {
+			continue
+		}
+		iv, _ := strconv.ParseInt(v, 10, 64)
+		res = append(res, iv)
+	}
+	return res
 }
