@@ -2,6 +2,7 @@ package W
 
 import (
 	"github.com/kokizzu/gotro/M"
+	"github.com/kokizzu/gotro/S"
 )
 
 type RequestModel struct {
@@ -42,4 +43,8 @@ func NewRequestModel_ByUniq_ByDbActor_ByAjax(uniq_id string, db_actor string, aj
 		DbActor: db_actor,
 		Ajax:    ajax,
 	}
+}
+
+func (rm *RequestModel) IdInt() int64 {
+	return S.ToI(rm.Id)
 }
