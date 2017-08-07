@@ -201,3 +201,8 @@ func EpochAfterStr(d time.Duration) string {
 func UnixToFile(i int64) string {
 	return time.Unix(i, 0).Format(FILE)
 }
+
+// check if today is a weekday
+func Weekday() string {
+	return time.Now().Weekday().String()
+}
