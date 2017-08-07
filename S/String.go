@@ -464,7 +464,38 @@ func Left(str string, n int) string {
 	if len(str) < n {
 		return str
 	}
+	if n < 0 {
+		n = 0
+	}
 	return str[:n]
+}
+
+// substring at right most n characters
+func Right(str string, n int) string {
+	if len(str) >= n {
+		return str
+	}
+	if n < 0 {
+		n = 0
+	}
+	return str[(len(str) - n):]
+}
+
+// substring at set left right n characters
+func Mid(str string, left int, length int) string {
+	if len(str) < left {
+		return str
+	}
+	if left < 0 {
+		left = 0
+	}
+	if length < 0 {
+		return ``
+	}
+	if len(str) < (left + length) {
+		return str[left:]
+	}
+	return str[left : left+length]
 }
 
 // substring before last `substr`

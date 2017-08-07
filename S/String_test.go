@@ -1,6 +1,7 @@
 package S
 
 import (
+	"github.com/kokizzu/gotro/L"
 	"testing"
 )
 
@@ -26,4 +27,14 @@ func TestNegativeEqualsIgnoreCaseFunc(t *testing.T) {
 	if result {
 		t.Error(`%s %s should not equal`, firstInput, secondInput)
 	}
+}
+
+func TestMidFunction(t *testing.T) {
+	text := "ABCDE"
+	L.Print(`1` + Mid(text, -1, 1))
+	L.Print(`2` + Mid(text, 0, -1))
+	L.Print(`3` + Mid(text, 3, 1))
+	L.Print(`4` + Mid(text, 4, 5))
+	L.Print(`5` + Mid(text, 6, 1))
+	L.Print(`6` + Mid(text, 2, 3))
 }
