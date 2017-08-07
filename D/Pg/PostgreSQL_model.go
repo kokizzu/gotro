@@ -155,7 +155,7 @@ func (tm *TableModel) SelectNoJoin() string {
 			pos += 1
 		}
 		query_str = A.StrJoin(queries, "\n, ")
-		SELECT_CACHE.Set(tm.CacheName, query_str)
+		SELECT_CACHE.Set(tm.CacheName+`__NoJoin`, query_str)
 	}
 	return query_str
 }
@@ -446,11 +446,7 @@ func (qp *QueryParams) SearchQuery_ByConn(conn *RDBMS) {
 		if qp.OrderBy != `` {
 			qp.OrderBy += `, `
 		}
-		if fm.SqlColPos > 0 && fm.SqlColPos < len(qp.Model.Fields) {
-			qp.OrderBy += I.ToStr(fm.SqlColPos)
-		} else {
-			qp.OrderBy += fm.SqlColumn()
-		}
+		qp.OrderBy += fm.SqlColumn()
 		if direction == '-' {
 			qp.OrderBy += ` DESC`
 		}
