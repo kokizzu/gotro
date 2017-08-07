@@ -446,7 +446,7 @@ func (qp *QueryParams) SearchQuery_ByConn(conn *RDBMS) {
 		if qp.OrderBy != `` {
 			qp.OrderBy += `, `
 		}
-		if fm.SqlColPos > 0 {
+		if fm.SqlColPos > 0 && fm.SqlColPos < len(qp.Model.Fields) {
 			qp.OrderBy += I.ToStr(fm.SqlColPos)
 		} else {
 			qp.OrderBy += fm.SqlColumn()
