@@ -14,12 +14,14 @@ import (
 )
 
 var SELECT_CACHE *cmap.CMap
+var SELECT_NOJOIN_CACHE *cmap.CMap
 var FORM_CACHE *cmap.CMap // cache form fields
 var GRID_CACHE *cmap.CMap // cache grid fields
 var TYPE_CACHE *cmap.CMap // cache key-type (M.SS)
 
 func init() {
 	SELECT_CACHE = cmap.New()
+	SELECT_NOJOIN_CACHE = cmap.New()
 	FORM_CACHE = cmap.New()
 	GRID_CACHE = cmap.New()
 	TYPE_CACHE = cmap.New()
@@ -126,7 +128,7 @@ func (tm *TableModel) Select() string {
 
 // generate select fields without join
 func (tm *TableModel) SelectNoJoin() string {
-	cache := SELECT_CACHE.Get(tm.CacheName + `__NoJoin`)
+	cache := SELECT_NOJOIN_CACHE.Get(tm.CacheName)
 	query_str, ok := cache.(string)
 	if !ok {
 		queries := []string{}
@@ -155,7 +157,7 @@ func (tm *TableModel) SelectNoJoin() string {
 			pos += 1
 		}
 		query_str = A.StrJoin(queries, "\n, ")
-		SELECT_CACHE.Set(tm.CacheName+`__NoJoin`, query_str)
+		SELECT_NOJOIN_CACHE.Set(tm.CacheName, query_str)
 	}
 	return query_str
 }
@@ -446,7 +448,11 @@ func (qp *QueryParams) SearchQuery_ByConn(conn *RDBMS) {
 		if qp.OrderBy != `` {
 			qp.OrderBy += `, `
 		}
-		qp.OrderBy += fm.SqlColumn()
+		if (fm.SqlColPos) > 0 {
+			qp.OrderBy += I.ToStr(fm.SqlColPos)
+		} else {
+			qp.OrderBy += fm.SqlColumn()
+		}
 		if direction == '-' {
 			qp.OrderBy += ` DESC`
 		}
