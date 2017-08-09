@@ -211,3 +211,8 @@ func WeekdayStr() string {
 func Weekday() int {
 	return int(time.Now().Weekday())
 }
+
+// convert
+func UnixToDateTimeStr(epoch int64) string {
+	return time.Unix(epoch, 0).Format(YMD_HMS)
+}
