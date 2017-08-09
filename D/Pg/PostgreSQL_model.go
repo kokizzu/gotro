@@ -32,6 +32,7 @@ type FieldModel struct {
 	HtmlLabel   string // label for both form and grid
 	FormLabel   string // label in form
 	GridLabel   string // label in grid
+	GridFooter  string // footer in grid, sum
 	FormTooltip string // placeholder in form
 	Key         string // key in the table.data
 	Type        string // for formatting sql, form, and grid: float2, integer, datetime
@@ -213,6 +214,9 @@ func (tm *TableModel) GridFields() A.MSX {
 				`key`:   field.Key,
 				`label`: S.Coalesce(field.GridLabel, field.HtmlLabel, field.Label),
 				`type`:  S.IfEmpty(field.GridType, field.Type),
+			}
+			if field.GridFooter == `` {
+				json_obj[`footer`] = field.GridFooter
 			}
 			if field.HtmlSubType != `` {
 				json_obj[`sub_type`] = field.HtmlSubType
