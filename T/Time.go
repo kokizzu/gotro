@@ -213,6 +213,6 @@ func Weekday() int {
 }
 
 // convert
-func UnixToDateTimeStr(epoch int64) string {
-	return time.Unix(epoch, 0).Format(YMD_HMS)
+func UnixToDateTimeStr(epoch float64) string {
+	return time.Unix(int64(epoch), 0).Format(YMD_HMS)
 }
