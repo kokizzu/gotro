@@ -433,7 +433,9 @@ func (qp *QueryParams) SearchQuery_ByConn(conn *RDBMS) {
 				where_add = append(where_add, criteria+` ILIKE `+ZLIKE(str))
 			}
 		}
-		qp.Where += ` AND ((` + A.StrJoin(where_add, `) OR (`) + `)) `
+		if len(where_add) > 0 {
+			qp.Where += ` AND ((` + A.StrJoin(where_add, `) OR (`) + `)) `
+		}
 	}
 	if len(qp.Order) > 0 {
 		qp.OrderBy = ``

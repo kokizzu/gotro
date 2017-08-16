@@ -49,7 +49,7 @@ func LoginExample(ctx *W.Context) {
 		a := posts.GetStr(`a`)
 		switch a {
 		case `login`:
-			username := posts.GetStr(`username`)
+			username := posts.GetStr(`username`) // $_POST
 			password := posts.GetStr(`password`)
 			if username != password {
 				ajax.Set(`is_success`, false)
@@ -104,7 +104,7 @@ func NamedParamsExample(ctx *W.Context) {
 // this function handles /query_string_example?something=a&something_else=123
 func QueryStringExample(ctx *W.Context) {
 	params := ctx.QueryParams()
-	//params.GetStr(`something`)
+	//params.GetStr(`something`) // $_GET['something']
 	//params.GetInt(`something_else`)
 	data := M.SX{}
 	params.VisitAll(func(key, value []byte) {
