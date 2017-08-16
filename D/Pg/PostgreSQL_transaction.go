@@ -366,6 +366,11 @@ func (tx *Tx) DoUpsert(actor int64, table string, kvparams M.SX) (id int64) {
 
 // generate update command and execute it
 func (tx *Tx) DoUpdate(actor int64, table string, id int64, kvparams M.SX) (ra int64) {
+	defer func() {
+		if err := recover(); err != nil {
+			L.Describe(`Duplicate unique constraint violated: `+table+`: `+X.ToS(kvparams[`unique_id`]), err)
+		}
+	}()
 	if id > 0 {
 		kvparams[`updated_by`] = actor
 		query, params := GenUpdateId(table, id, kvparams)

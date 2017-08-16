@@ -582,7 +582,8 @@ func (mp *Row) Set_UserEmails_ByTable(emails string, table string) (ok bool) {
 			mail = S.ValidateEmail(orig_mail)
 			if mail == `` {
 				L.Describe(`invalid e-mail`, orig_mail)
-				continue
+				ok = false
+				return
 			}
 			if S.EndsWith(mail, OFFICE_MAIL_SUFFIX) {
 				orig[`office_mail`] = mail
