@@ -110,6 +110,17 @@ func ZLIKE(str string) string {
 	return `'%` + str + `%'`
 }
 
+// ZLIKE but for json (not replacing double quote)
+func ZJLIKE(str string) string {
+	str = Trim(str)
+	str = Replace(str, `<`, `&lt;`)
+	str = Replace(str, `>`, `&gt;`)
+	str = Replace(str, `'`, `&apos;`)
+	str = Replace(str, `\`, `\\`)
+	str = Replace(str, `%`, `\%`)
+	return `'%` + str + `%'`
+}
+
 // replace <, >, ', ", % but without giving single quote
 func XSS(str string) string {
 	str = Trim(str)

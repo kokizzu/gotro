@@ -14,6 +14,7 @@ var ZZ func(string) string
 var ZJ func(string) string
 var ZI func(int64) string
 var ZLIKE func(string) string
+var ZJLIKE func(string) string
 var ZS func(string) string
 
 var DEBUG bool
@@ -24,6 +25,7 @@ func init() {
 	ZJ = S.ZJJ
 	ZI = S.ZI
 	ZLIKE = S.ZLIKE
+	ZJLIKE = S.ZJLIKE
 	ZS = S.ZS
 	DEBUG = D.DEBUG
 }

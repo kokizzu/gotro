@@ -424,6 +424,14 @@ func (qp *QueryParams) SearchQuery_ByConn(conn *RDBMS) {
 			//			where_add = append(where_add, `(`+A.StrJoin(where2_and, `) OR (`)+`)`)
 			//		}
 			//	} // tetap tercover oleh default case, selain itu juga bisa digunakan untuk untuk text search
+		case `json`:
+			for _, str := range val_arr {
+				str = S.Trim(str)
+				if str == `` {
+					continue
+				}
+				where_add = append(where_add, criteria+` ILIKE `+ZJLIKE(str))
+			}
 		default:
 			for _, str := range val_arr {
 				str = S.Trim(str)
