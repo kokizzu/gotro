@@ -144,7 +144,7 @@ func Track(fun func()) time.Duration {
 	start := time.Now()
 	fun()
 	elapsed := time.Since(start)
-	L.Describe(`done in ` + F.ToStr(elapsed.Seconds()) + `s`)
+	L.ParentDescribe(`done in ` + F.ToStr(elapsed.Seconds()) + `s`)
 	return elapsed
 }
 

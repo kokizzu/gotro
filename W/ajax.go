@@ -47,7 +47,7 @@ func (json Ajax) Error(msg string) string {
 	errors = append(errors, msg)
 	json.SX[`errors`] = errors
 	json.SX[`is_success`] = false
-	L.Describe(`Ajax error`, msg)
+	L.ParentDescribe(`Ajax error`, msg)
 	return msg
 }
 
