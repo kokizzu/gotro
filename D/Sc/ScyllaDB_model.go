@@ -93,7 +93,7 @@ func (tm *TableModel) Select() string {
 		queries := []string{}
 		pos := 1
 		for idx, field := range tm.Fields {
-			if field.Hide || field.SqlHide {
+			if field.Hide || field.SqlHide || field.Type == `separator` {
 				continue
 			}
 			switch field.Key {

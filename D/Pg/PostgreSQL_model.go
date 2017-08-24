@@ -432,6 +432,8 @@ func (qp *QueryParams) SearchQuery_ByConn(conn *RDBMS) {
 				}
 				where_add = append(where_add, criteria+` ILIKE `+ZJLIKE(str))
 			}
+		case `separator`:
+			continue
 		default:
 			for _, str := range val_arr {
 				str = S.Trim(str)
@@ -462,7 +464,7 @@ func (qp *QueryParams) SearchQuery_ByConn(conn *RDBMS) {
 		if qp.OrderBy != `` {
 			qp.OrderBy += `, `
 		}
-		if (fm.SqlColPos) > 0 {
+		if fm.SqlColPos > 0 {
 			qp.OrderBy += I.ToStr(fm.SqlColPos)
 		} else {
 			qp.OrderBy += fm.SqlColumn()

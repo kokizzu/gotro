@@ -192,6 +192,23 @@ func Describe(args ...interface{}) {
 	LOG.Debug(strings.Replace(str, `%`, `%%`, -1))
 }
 
+// describe anything
+func ParentDescribe(args ...interface{}) {
+	pc, file, line, _ := runtime.Caller(2)
+	prefix := ``
+	if len(file) >= len(FILE_PATH) {
+		prefix = file[len(FILE_PATH):]
+	}
+	str := color.CyanString(prefix + `:` + I.ToStr(line) + `: `)
+	str += color.YellowString(` ` + runtime.FuncForPC(pc).Name() + "\n")
+	for _, arg := range args {
+		//res, _ := json.MarshalIndent(variable, `   `, `  `)
+		res := pretty.Formatter(arg)
+		str += fmt.Sprintf("\t%# v\n", res)
+	}
+	LOG.Debug(strings.Replace(str, `%`, `%%`, -1))
+}
+
 // replacement for fmt.Println, gives line number
 func Print(any ...interface{}) {
 	_, file, line, _ := runtime.Caller(1)

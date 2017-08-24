@@ -22,7 +22,7 @@ import (
 // convert any data type to int64
 //  var m interface{}
 //  m = `123`
-//  L.Describe(X.ToI(m)) // int64(123)
+//  L.ParentDescribe(X.ToI(m)) // int64(123)
 func ToI(any interface{}) int64 {
 	if any == nil {
 		return 0
@@ -65,7 +65,7 @@ func ToI(any interface{}) int64 {
 		if val, err := strconv.ParseFloat(string(v), 64); err == nil {
 			return int64(val)
 		}
-		L.Describe(`Can't convert to int64`, any)
+		L.ParentDescribe(`Can't convert to int64`, any)
 	case string:
 		if val, err := strconv.ParseInt(v, 10, 64); err == nil {
 			return val
@@ -73,9 +73,9 @@ func ToI(any interface{}) int64 {
 		if val, err := strconv.ParseFloat(v, 64); err == nil {
 			return int64(val)
 		}
-		L.Describe(`Can't convert to int64`, any)
+		L.ParentDescribe(`Can't convert to int64`, any)
 	default:
-		L.Describe(`Can't convert to int64`, any)
+		L.ParentDescribe(`Can't convert to int64`, any)
 	}
 	return 0
 }
@@ -83,7 +83,7 @@ func ToI(any interface{}) int64 {
 // Convert any data type to float64
 //  var m interface{}
 //  m = `123.5`
-//  L.Describe(X.ToF(m)) // float64(123.5)
+//  L.ParentDescribe(X.ToF(m)) // float64(123.5)
 func ToF(any interface{}) float64 {
 	if any == nil {
 		return 0
@@ -123,14 +123,14 @@ func ToF(any interface{}) float64 {
 		if val, err := strconv.ParseFloat(string(v), 64); err == nil {
 			return val
 		}
-		L.Describe(`Can't convert to float64`, any)
+		L.ParentDescribe(`Can't convert to float64`, any)
 	case string:
 		if val, err := strconv.ParseFloat(v, 64); err == nil {
 			return val
 		}
-		L.Describe(`Can't convert to float64`, any)
+		L.ParentDescribe(`Can't convert to float64`, any)
 	default:
-		L.Describe(`Can't convert to float64`, any)
+		L.ParentDescribe(`Can't convert to float64`, any)
 	}
 	return 0
 }
@@ -138,7 +138,7 @@ func ToF(any interface{}) float64 {
 // convert any data type to string
 //  var m interface{}
 //  m = `123`
-//  L.Describe(X.ToS(m)) // `123`
+//  L.ParentDescribe(X.ToS(m)) // `123`
 func ToS(any interface{}) string {
 	if any == nil {
 		return ``
@@ -202,7 +202,7 @@ func ToTime(any interface{}) time.Time {
 // convert any data type to bool
 //  var m interface{}
 //  m = `123`
-//  L.Describe(X.ToBool(m)) // bool(true)
+//  L.ParentDescribe(X.ToBool(m)) // bool(true)
 func ToBool(any interface{}) bool {
 	if any == nil {
 		return false
@@ -244,7 +244,7 @@ func ToBool(any interface{}) bool {
 		val = strings.TrimSpace(strings.ToLower(val))
 		return !(val == `` || val == `0` || val == `f` || val == `false`)
 	default:
-		L.Describe(`Can't convert to string`, v)
+		L.ParentDescribe(`Can't convert to string`, v)
 	}
 	return false
 }
@@ -252,7 +252,7 @@ func ToBool(any interface{}) bool {
 // convert any data type to array of any
 //  var m3 interface{}
 //  m3 = []interface{}{1}   // tipe array
-//  L.Describe(X.ToArr(m3)) // []interface {}{int(1),}
+//  L.ParentDescribe(X.ToArr(m3)) // []interface {}{int(1),}
 func ToArr(any interface{}) []interface{} {
 	if any == nil {
 		return []interface{}{}
@@ -267,7 +267,7 @@ func ToArr(any interface{}) []interface{} {
 // convert array of any data type to array of string
 //  var m4 []interface{}
 //  m4 = []interface{}{1}     // // tipe array
-//  L.Describe(X.ArrToStrArr(m4)) // []string{"1"}
+//  L.ParentDescribe(X.ArrToStrArr(m4)) // []string{"1"}
 func ArrToStrArr(any_arr []interface{}) []string {
 	res := []string{}
 	for _, val := range any_arr {
@@ -279,7 +279,7 @@ func ArrToStrArr(any_arr []interface{}) []string {
 // Convert array of any data type to array of int64
 //  var m4 []interface{}
 //  m4 = []interface{}{1}     // // tipe array
-//  L.Describe(X.ArrToIntArr(m4)) // []int64{1}
+//  L.ParentDescribe(X.ArrToIntArr(m4)) // []int64{1}
 func ArrToIntArr(any_arr []interface{}) []int64 {
 	res := []int64{}
 	for _, val := range any_arr {
