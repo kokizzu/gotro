@@ -604,7 +604,9 @@ func (mp *Row) Set_UserEmails_ByTable(emails string, table string) (ok bool) {
 		}
 		for _, key := range []string{`office_mail`, `gmail`, `yahoo`, `outlook`, `email`} {
 			val := orig[key]
-			mp.SetVal(key, val)
+			if key != `openid_email` && key != `openid_mail` {
+				mp.SetVal(key, val)
+			}
 			if val == `` {
 				continue
 			}
