@@ -15,6 +15,7 @@ const YMD_HMS = `2006-01-02 15:04:05`
 const YMD = `2006-01-02`
 const FILE = `20060102_150405`
 const HUMAN = `2-Jan-2006 15:04:05`
+const YY = `06`
 
 var EMPTY = time.Time{}
 
@@ -220,4 +221,9 @@ func UnixToDateTimeStr(epoch float64) string {
 // convert from unix to date format
 func UnixToDateStr(epoch float64) string {
 	return time.Unix(int64(epoch), 0).Format(YMD)
+}
+
+// return current last two digit year
+func LastTwoDigitYear() string {
+	return time.Now().Format(YY)
 }

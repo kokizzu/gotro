@@ -472,7 +472,7 @@ func Left(str string, n int) string {
 
 // substring at right most n characters
 func Right(str string, n int) string {
-	if len(str) >= n {
+	if len(str) < n {
 		return str
 	}
 	if n < 0 {

@@ -67,7 +67,7 @@ func (engine *Engine) SendMail(mail_id string, bcc []string, subject string, mes
 	if mailer == nil {
 		L.LOG.Notice(`SendMail: Invalid mailer ID: ` + mail_id)
 	}
-	mailer.SendBCC(bcc, subject, message)
+	mailer.SendBCC(bcc, S.If(engine.DebugMode, `[DEBUG] `)+subject, message)
 }
 
 // send email and return error
@@ -76,7 +76,7 @@ func (engine *Engine) SendMailSync(mail_id string, bcc []string, subject string,
 	if mailer == nil {
 		return `SyncSendMail: Invalid mailer ID: ` + mail_id
 	}
-	return mailer.SendSyncBCC(bcc, subject, message)
+	return mailer.SendSyncBCC(bcc, S.If(engine.DebugMode, `[DEBUG] `)+subject, message)
 }
 
 // minify assets
