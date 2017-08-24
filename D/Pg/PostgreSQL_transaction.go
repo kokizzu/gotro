@@ -459,24 +459,24 @@ func (tx *Tx) DoRestore2(actor int64, table string, id int64, lambda func(base *
 }
 
 // fetch json data as map
-func (tx *Tx) DataJsonMap(table string, id int64) M.SX {
-	res := M.SX{}
+func (tx *Tx) DataJsonMapAndUniq_ById(table string, id int64) (res M.SX, uniq string) {
+	res = M.SX{}
 	if id <= 0 {
-		return res
+		return res, ``
 	}
-	query := `SELECT data FROM ` + table + ` WHERE id = ` + I.ToS(id)
+	query := `SELECT data, COALESCE(unique_id,'') FROM ` + table + ` WHERE id = ` + I.ToS(id)
 	rows := tx.QAll(query)
 	str := ``
 	defer rows.Close()
 	if rows.Next() {
-		rows.Scan(&str)
+		rows.Scan(&str, &uniq)
 		res = S.JsonToMap(str)
 	}
-	return res
+	return
 }
 
 // fecth json data as map by unique id
-func (tx *Tx) DataJsonMapUniq(table, unique_id string) (res M.SX, id int64) {
+func (tx *Tx) DataJsonMapAndId_ByUniq(table, unique_id string) (res M.SX, id int64) {
 	res = M.SX{}
 	id = 0
 	if unique_id == `` {

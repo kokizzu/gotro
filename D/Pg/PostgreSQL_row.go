@@ -39,8 +39,8 @@ func (mp *Row) ToJson() string {
 // fetch model to be edited
 func NewRow(tx *Tx, table string, rm *W.RequestModel) *Row {
 	id := S.ToI(rm.Id)
-	data := tx.DataJsonMap(table, id)
-	return &Row{data, M.SX{}, rm.Posts, rm.Ajax, rm, table, id, tx, S.ToI(rm.DbActor), ``, ``}
+	data, uniq := tx.DataJsonMapAndUniq_ById(table, id)
+	return &Row{data, M.SX{}, rm.Posts, rm.Ajax, rm, table, id, tx, S.ToI(rm.DbActor), ``, uniq}
 }
 
 // create empty model
@@ -51,7 +51,7 @@ func NewNonDataRow(tx *Tx, table string, rm *W.RequestModel) *Row {
 
 // fetch model to be edited from unique
 func NewRowUniq(tx *Tx, table string, unique_id string, rm *W.RequestModel) *Row {
-	data, id := tx.DataJsonMapUniq(table, unique_id)
+	data, id := tx.DataJsonMapAndId_ByUniq(table, unique_id)
 	new_uniq := unique_id
 	if id == 0 {
 		new_uniq = ``

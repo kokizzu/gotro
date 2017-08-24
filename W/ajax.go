@@ -82,3 +82,7 @@ func (json Ajax) LastError() string {
 	}
 	return errors[len(errors)-1]
 }
+
+func (json Ajax) ClearErrors() {
+	json.SX[`errors`] = []string{}
+}
