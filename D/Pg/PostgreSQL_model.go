@@ -106,6 +106,8 @@ func (tm *TableModel) Select() string {
 				continue
 			}
 			switch field.Key {
+			case `password`:
+				continue
 			case `id`:
 				query := `x1.id::TEXT "id"`
 				queries = append(queries, query)
@@ -139,6 +141,8 @@ func (tm *TableModel) SelectNoJoin() string {
 				continue
 			}
 			switch field.Key {
+			case `password`:
+				continue
 			case `id`:
 				query := `x1.id::TEXT "id"`
 				queries = append(queries, query)
