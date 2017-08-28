@@ -226,6 +226,19 @@ func JsonToMap(str string) (res map[string]interface{}) {
 	return
 }
 
+// convert JSON object to map[string]string, silently print and return empty map if failed
+//  json_str := `{"test":123,"bla":[1,2,3,4]}`
+//  map1 := S.JsonToMap(json_str)
+func JsonToStrStrMap(str string) (res map[string]string) {
+	res = map[string]string{}
+	if len(str) == 0 {
+		return
+	}
+	err := json.Unmarshal([]byte(str), &res)
+	L.IsError(err, str)
+	return
+}
+
 // convert JSON object to []interface{}, silently print and return empty slice of interface if failed
 //  json_str := `[1,2,['test'],'a']`
 //  arr := S.JsonToArr(json_str)

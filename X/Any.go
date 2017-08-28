@@ -238,11 +238,11 @@ func ToBool(any interface{}) bool {
 	case fmt.Stringer:
 		val := v.String()
 		val = strings.TrimSpace(strings.ToLower(val))
-		return !(val == `` || val == `0` || val == `f` || val == `false`)
+		return !(val == `` || val == `0` || val == `f` || val == `false` || val == `no` || val == `n`)
 	case string:
 		val := v
 		val = strings.TrimSpace(strings.ToLower(val))
-		return !(val == `` || val == `0` || val == `f` || val == `false`)
+		return !(val == `` || val == `0` || val == `f` || val == `false` || val == `no` || val == `n`)
 	default:
 		L.ParentDescribe(`Can't convert to string`, v)
 	}

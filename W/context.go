@@ -46,6 +46,21 @@ func (ctx *Context) ParamInt(key string) int64 {
 	return X.ToI(ctx.RequestCtx.UserValue(key))
 }
 
+// get url parameter as boolean
+func (ctx *Context) ParamBool(key string) bool {
+	return X.ToBool(ctx.RequestCtx.UserValue(key))
+}
+
+// get url parameter as M.SX
+func (ctx *Context) ParamJsonMap(key string) M.SX {
+	return S.JsonToMap(X.ToS(ctx.RequestCtx.UserValue(key)))
+}
+
+// get url parameter as []string
+func (ctx *Context) ParamJsonStrArr(key string) []string {
+	return S.JsonToStrArr(X.ToS(ctx.RequestCtx.UserValue(key)))
+}
+
 // check if request method is POST
 func (ctx *Context) IsAjax() bool {
 	method := ctx.Request.Header.Method()
