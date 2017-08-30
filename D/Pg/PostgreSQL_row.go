@@ -297,6 +297,16 @@ func (mp *Row) Restore() {
 	}
 }
 
+// permanent delete (usage warning!)
+func (mp *Row) PermanentErase() {
+	if mp.Id > 0 {
+		af, _ := mp.Tx.DoExec(`DELETE FROM ` + mp.Table + ` WHERE id = ` + I.ToS(mp.Id)).RowsAffected()
+		if af > 0 {
+			mp.Log += "record " + I.ToS(af) + " permanently erased" + S.WebBR
+		}
+	}
+}
+
 // delete
 func (mp *Row) Delete() {
 	if mp.Id > 0 {
