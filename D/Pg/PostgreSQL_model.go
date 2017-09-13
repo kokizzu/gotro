@@ -63,6 +63,8 @@ func (field *FieldModel) SqlColumn() string {
 		} else {
 			query = `(` + field.CustomQuery + `)`
 		}
+	case `created_by`, `deleted_by`, `restored_by`, `updated_by`:
+		query = `x1.` + field.Key
 	case `modified_at`, `created_at`, `deleted_at`, `restored_at`, `updated_at`:
 		field.CustomQuery = `EXTRACT(EPOCH FROM x1.` + field.Key + `)`
 		fallthrough
@@ -115,8 +117,10 @@ func (tm *TableModel) Select() string {
 				pos += 1
 				continue
 			case `created_at`, `modified_at`, `updated_at`, `deleted_at`, `restored_at`:
-				tm.Fields[idx].Label = S.ToTitle(S.Replace(field.Key, `_`, ` `))
 				tm.Fields[idx].Type = `datetime`
+				fallthrough
+			case `created_by`, `deleted_by`, `updated_by`, `restored_by`:
+				tm.Fields[idx].Label = S.ToTitle(S.Replace(field.Key, `_`, ` `))
 			}
 			query := field.SqlColumn() + ` ` + ZZ(field.Key)
 			queries = append(queries, query)
