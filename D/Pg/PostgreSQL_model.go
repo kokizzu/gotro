@@ -296,7 +296,7 @@ func NewQueryParams(posts *W.Posts, model *TableModel) *QueryParams {
 	}
 }
 
-func (qp *QueryParams) ToMap(ajax W.Ajax) {
+func (qp *QueryParams) ToAjax(ajax W.Ajax) {
 	ajax.Set(`rows`, qp.Rows)
 	ajax.Set(`count`, qp.Count)
 	ajax.Set(`offset`, qp.Offset)
@@ -305,6 +305,18 @@ func (qp *QueryParams) ToMap(ajax W.Ajax) {
 		// for rendering html, mostly this required
 		ajax.Set(`form_fields`, qp.Model.FormFields())
 		ajax.Set(`grid_fields`, qp.Model.GridFields())
+	}
+}
+
+func (qp *QueryParams) ToMSX(m M.SX) {
+	m[`rows`] = qp.Rows
+	m[`count`] = qp.Count
+	m[`offset`] = qp.Offset
+	m[`limit`] = qp.Limit
+	if qp.IsDefault {
+		// for rendering html, mostly this required
+		m[`form_fields`] = qp.Model.FormFields()
+		m[`grid_fields`] = qp.Model.GridFields()
 	}
 }
 
