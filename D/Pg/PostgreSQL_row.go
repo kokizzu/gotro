@@ -40,12 +40,18 @@ func (mp *Row) ToJson() string {
 func NewRow(tx *Tx, table string, rm *W.RequestModel) *Row {
 	id := S.ToI(rm.Id)
 	data, uniq := tx.DataJsonMapAndUniq_ById(table, id)
+	if rm.Ajax.SX == nil {
+		rm.Ajax = W.NewAjax()
+	}
 	return &Row{data, M.SX{}, rm.Posts, rm.Ajax, rm, table, id, tx, S.ToI(rm.DbActor), ``, uniq}
 }
 
 // create empty model
 func NewNonDataRow(tx *Tx, table string, rm *W.RequestModel) *Row {
 	id := S.ToI(rm.Id)
+	if rm.Ajax.SX == nil {
+		rm.Ajax = W.NewAjax()
+	}
 	return &Row{M.SX{}, M.SX{}, rm.Posts, rm.Ajax, rm, table, id, tx, S.ToI(rm.DbActor), ``, ``}
 }
 
@@ -55,6 +61,9 @@ func NewRowUniq(tx *Tx, table string, unique_id string, rm *W.RequestModel) *Row
 	new_uniq := unique_id
 	if id == 0 {
 		new_uniq = ``
+	}
+	if rm.Ajax.SX == nil {
+		rm.Ajax = W.NewAjax()
 	}
 	res := &Row{data, M.SX{}, rm.Posts, rm.Ajax, rm, table, id, tx, S.ToI(rm.DbActor), ``, new_uniq}
 	if id == 0 {
