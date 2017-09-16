@@ -34,8 +34,8 @@ sudo ln -s /home/postgresql /var/lib/postgresql
 
 sudo systemctl start postgresql # psql
 sudo su - postgres <<EOF
-createuser baik
-createdb baik
+createuser TODO_CHANGE_DB
+createdb TODO_CHANGE_DB
 psql -c 'GRANT ALL PRIVILEGES ON DATABASE TODO_CHANGE_DB TO TODO_CHANGE_DB;'
 EOF
 ```

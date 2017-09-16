@@ -63,6 +63,8 @@ func (field *FieldModel) SqlColumn() string {
 		} else {
 			query = `(` + field.CustomQuery + `)`
 		}
+	case `created_by`, `deleted_by`, `restored_by`, `updated_by`:
+		query = `x1.` + field.Key
 	case `modified_at`, `created_at`, `deleted_at`, `restored_at`, `updated_at`:
 		field.CustomQuery = `EXTRACT(EPOCH FROM x1.` + field.Key + `)`
 		fallthrough
@@ -115,8 +117,10 @@ func (tm *TableModel) Select() string {
 				pos += 1
 				continue
 			case `created_at`, `modified_at`, `updated_at`, `deleted_at`, `restored_at`:
-				tm.Fields[idx].Label = S.ToTitle(S.Replace(field.Key, `_`, ` `))
 				tm.Fields[idx].Type = `datetime`
+				fallthrough
+			case `created_by`, `deleted_by`, `updated_by`, `restored_by`:
+				tm.Fields[idx].Label = S.ToTitle(S.Replace(field.Key, `_`, ` `))
 			}
 			query := field.SqlColumn() + ` ` + ZZ(field.Key)
 			queries = append(queries, query)
@@ -296,7 +300,7 @@ func NewQueryParams(posts *W.Posts, model *TableModel) *QueryParams {
 	}
 }
 
-func (qp *QueryParams) ToMap(ajax W.Ajax) {
+func (qp *QueryParams) ToAjax(ajax W.Ajax) {
 	ajax.Set(`rows`, qp.Rows)
 	ajax.Set(`count`, qp.Count)
 	ajax.Set(`offset`, qp.Offset)
@@ -305,6 +309,18 @@ func (qp *QueryParams) ToMap(ajax W.Ajax) {
 		// for rendering html, mostly this required
 		ajax.Set(`form_fields`, qp.Model.FormFields())
 		ajax.Set(`grid_fields`, qp.Model.GridFields())
+	}
+}
+
+func (qp *QueryParams) ToMSX(m M.SX) {
+	m[`rows`] = qp.Rows
+	m[`count`] = qp.Count
+	m[`offset`] = qp.Offset
+	m[`limit`] = qp.Limit
+	if qp.IsDefault {
+		// for rendering html, mostly this required
+		m[`form_fields`] = qp.Model.FormFields()
+		m[`grid_fields`] = qp.Model.GridFields()
 	}
 }
 
