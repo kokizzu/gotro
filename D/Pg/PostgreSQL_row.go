@@ -659,7 +659,7 @@ func (mp *Row) SetNonDataVal(key string, val interface{}) {
 func (mp *Row) SetNonData(key string) {
 	nv := mp.ReqModel.Posts.GetStr(key)
 	if nv != `` {
-		nv = S.Trim(nv)
+		nv = S.XSS(nv)
 		mp.NonData.Set(key, nv)
 		mp.LogNonData(key, nv)
 	}
