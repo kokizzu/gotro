@@ -94,6 +94,14 @@ func (field *FieldModel) SqlColumn() string {
 type TableModel struct {
 	CacheName string
 	Fields    []FieldModel
+	Joins     string
+}
+
+func (tm *TableModel) JoinStr() string {
+	if tm == nil {
+		return ``
+	}
+	return tm.Joins
 }
 
 // generate select fields
@@ -493,7 +501,11 @@ func (qp *QueryParams) SearchQuery_ByConn(conn *RDBMS) {
 			qp.OrderBy += ` DESC`
 		}
 	}
-	query_str := qp.From + ` ` + qp.Join + `
+	query_str := qp.From + ` 
+	-- qp.Join
+	` + qp.Join + ` 
+	-- qp.Model.Joins
+	` + qp.Model.JoinStr() + `
 WHERE 1=1
 ` + qp.Where
 	query := ` -- ` + qp.RamKey + `_Count
