@@ -73,3 +73,21 @@ func StrToInt(arr []string) []int64 {
 	}
 	return res
 }
+
+// Append string to array of string if not exists
+func StrContains(arr []string, str string) bool {
+	for _, s := range arr {
+		if s == str {
+			return true
+		}
+	}
+	return false
+}
+
+// Append if not exists
+func StrAppendIfNotExists(arr []string, str string) []string {
+	if StrContains(arr, str) {
+		return arr
+	}
+	return append(arr, str)
+}
