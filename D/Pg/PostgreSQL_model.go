@@ -199,6 +199,9 @@ func (tm *TableModel) FormFields() A.MSX {
 				`type`:    S.Coalesce(field.FormType, field.HtmlLabel, field.Type),
 				`tooltip`: S.Coalesce(field.FormTooltip, field.FormLabel, field.HtmlLabel, field.Label),
 			}
+			if field.Required {
+				json_obj[`required`] = true
+			}
 			if field.HtmlSubType != `` {
 				json_obj[`sub_type`] = field.HtmlSubType
 			}
