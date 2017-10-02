@@ -130,3 +130,13 @@ func XSS(str string) string {
 	str = Replace(str, `"`, `&quot;`)
 	return str
 }
+
+// replace <, >, and & back, quot and apos to alternative utf8
+func UZ(str string) string {
+	str = Replace(str, `&apos;`, `‘`)
+	str = Replace(str, `&quot;`, `ʺ`)
+	str = Replace(str, `&lt;`, `<`)
+	str = Replace(str, `&gt;`, `>`)
+	str = Replace(str, `&amp;`, `&`)
+	return str
+}
