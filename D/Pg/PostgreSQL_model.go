@@ -525,7 +525,7 @@ SELECT COUNT(*)
 ` + qp.WithAs + `
 SELECT ` + qp.Select + `
 ` + query_str + `
-ORDER BY ` + S.IfEmpty(qp.OrderBy, `x1.id`) + `
+ORDER BY ` + S.IfEmpty(qp.OrderBy, `x1.id`) + `, x1.id
 LIMIT ` + I.ToS(qp.Limit) + S.If(qp.Offset > 0, ` OFFSET `+I.ToS(qp.Offset))
 	if DEBUG {
 		L.Print(query)
