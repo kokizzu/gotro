@@ -399,6 +399,9 @@ func (qp *QueryParams) SearchQuery_ByConn(conn *RDBMS) {
 			}
 			continue
 		}
+		if fm.Key == `id` {
+			fm.Type = `int`
+		}
 		switch fm.Type {
 		case `bool`:
 			if len(val_arr) != 1 {
