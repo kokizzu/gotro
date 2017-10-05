@@ -401,6 +401,7 @@ func (qp *QueryParams) SearchQuery_ByConn(conn *RDBMS) {
 		}
 		if fm.Key == `id` {
 			fm.Type = `int`
+			criteria = `x1.id`
 		}
 		switch fm.Type {
 		case `bool`:
