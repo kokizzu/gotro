@@ -80,6 +80,8 @@ func (field *FieldModel) SqlColumn() string {
 		}
 		typ := S.IfEmpty(field.SqlType, field.Type)
 		switch typ {
+		case `epoch`:
+			query = `EXTRACT(EPOCH FROM ` + query + `)::FLOAT`
 		case `float2`, `float`, `datetime`, `date`:
 			query = `(` + query + `)::FLOAT`
 		case `int`, `integer`, `bigint`:
