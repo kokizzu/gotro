@@ -97,6 +97,7 @@ type TableModel struct {
 	CacheName string
 	Fields    []FieldModel
 	Joins     string
+	WithAs    string
 }
 
 func (tm *TableModel) JoinStr() string {
@@ -510,6 +511,15 @@ func (qp *QueryParams) SearchQuery_ByConn(conn *RDBMS) {
 			qp.OrderBy += ` DESC`
 		}
 	}
+	with_as := qp.WithAs
+	with_as_add := qp.Model.WithAs
+	if with_as_add != `` {
+		if with_as != `` {
+			with_as += `, ` + with_as_add
+		} else {
+			with_as += `WITH ` + with_as_add
+		}
+	}
 	query_str := qp.From + ` 
 	-- qp.Join
 	` + qp.Join + ` 
@@ -518,7 +528,7 @@ func (qp *QueryParams) SearchQuery_ByConn(conn *RDBMS) {
 WHERE 1=1
 ` + qp.Where
 	query := ` -- ` + qp.RamKey + `_Count
-` + qp.WithAs + `
+` + with_as + `
 SELECT COUNT(*)
 ` + query_str
 	qp.Count = conn.QInt(query)
@@ -528,7 +538,7 @@ SELECT COUNT(*)
 		qp.Offset = qp.Count / qp.Limit * qp.Limit
 	}
 	query = ` -- ` + qp.RamKey + `
-` + qp.WithAs + `
+` + with_as + `
 SELECT ` + qp.Select + `
 ` + query_str + `
 ORDER BY ` + S.IfEmpty(qp.OrderBy, `x1.id`) + `, x1.id
