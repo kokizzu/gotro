@@ -110,6 +110,7 @@ func (tm *TableModel) JoinStr() string {
 func (tm *TableModel) Query(table, ram_key string) string {
 	return ram_key + `
 ` + S.If(tm.WithAs != ``, `WITH `) + tm.WithAs + `
+` + tm.Select() + `
 ` + table + ` x1
 ` + tm.Joins + `
 `
