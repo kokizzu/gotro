@@ -107,6 +107,14 @@ func (tm *TableModel) JoinStr() string {
 	return tm.Joins
 }
 
+func (tm *TableModel) Query(table, ram_key string) string {
+	return ram_key + `
+` + S.If(tm.WithAs != ``, `WITH `) + tm.WithAs + `
+` + table + ` x1
+` + tm.Joins + `
+`
+}
+
 // generate select fields
 func (tm *TableModel) Select() string {
 	cache := SELECT_CACHE.Get(tm.CacheName)
