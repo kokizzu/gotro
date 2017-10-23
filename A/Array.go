@@ -84,10 +84,50 @@ func StrContains(arr []string, str string) bool {
 	return false
 }
 
+// Append int64 to array of string if not exists
+func IntContains(arr []int64, str int64) bool {
+	for _, s := range arr {
+		if s == str {
+			return true
+		}
+	}
+	return false
+}
+
 // Append if not exists
 func StrAppendIfNotExists(arr []string, str string) []string {
 	if StrContains(arr, str) {
 		return arr
 	}
 	return append(arr, str)
+}
+
+// Append if not exists
+func IntAppendIfNotExists(arr []int64, str int64) []int64 {
+	if IntContains(arr, str) {
+		return arr
+	}
+	return append(arr, str)
+}
+
+// Append slices if not exists
+func StrsAppendIfNotExists(arr []string, strs []string) []string {
+	for _, str := range strs {
+		if StrContains(arr, str) {
+			continue
+		}
+		arr = append(arr, str)
+	}
+	return arr
+}
+
+// Append slices if not exists
+func IntsAppendIfNotExists(arr []int64, ints []int64) []int64 {
+	for _, i := range ints {
+		if IntContains(arr, i) {
+			continue
+		}
+		arr = append(arr, i)
+	}
+	return arr
 }
