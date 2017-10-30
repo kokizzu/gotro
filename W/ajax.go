@@ -86,3 +86,10 @@ func (json Ajax) LastError() string {
 func (json Ajax) ClearErrors() {
 	json.SX[`errors`] = []string{}
 }
+
+func (json Ajax) TestError(err error, errmsg string) bool {
+	if L.IsError(err, errmsg) {
+		json.Error(errmsg)
+	}
+	return json.HasError()
+}
