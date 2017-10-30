@@ -1,6 +1,7 @@
 package W
 
 import (
+	"github.com/kokizzu/gotro/L"
 	"github.com/kokizzu/gotro/M"
 	"github.com/kokizzu/gotro/S"
 )
@@ -47,4 +48,11 @@ func NewRequestModel_ByUniq_ByDbActor_ByAjax(uniq_id string, db_actor string, aj
 
 func (rm *RequestModel) IdInt() int64 {
 	return S.ToI(rm.Id)
+}
+
+func (rm *RequestModel) HasAjaxError(err error, errmsg string) bool {
+	if L.IsError(err, errmsg) {
+		rm.Ajax.Error(errmsg)
+	}
+	return rm.Ajax.HasError()
 }
