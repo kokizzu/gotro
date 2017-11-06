@@ -131,3 +131,23 @@ func IntsAppendIfNotExists(arr []int64, ints []int64) []int64 {
 	}
 	return arr
 }
+
+// split, add alias, and concat emails with name
+func ParseEmail(str_emails, each_name string) []string {
+	temp := []string{}
+	str_email := strings.Split(str_emails, `,`)
+	for _, each_email := range str_email {
+		each_email = strings.TrimSpace(each_email)
+		if each_email == `` {
+			continue
+		}
+		each_name = strings.Replace(each_name, `,`, `_`, -1)
+		each_name = strings.Replace(each_name, `.`, `_`, -1)
+		each_name = strings.Replace(each_name, `<`, `_`, -1)
+		each_name = strings.Replace(each_name, `>`, `_`, -1)
+		each_name = strings.Replace(each_name, `(`, `_`, -1)
+		each_name = strings.Replace(each_name, `)`, `_`, -1)
+		temp = append(temp, each_name+`<`+each_email+`>`)
+	}
+	return temp
+}

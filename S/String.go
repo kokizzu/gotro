@@ -537,3 +537,11 @@ func RemoveLastN(str string, n int) string {
 	}
 	return str[0 : m-n]
 }
+
+// concat if not empty with additional separator
+func ConcatIfNotEmpty(str, sep string) string {
+	if str == `` {
+		return ``
+	}
+	return str + sep
+}
