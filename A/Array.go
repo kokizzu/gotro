@@ -151,3 +151,13 @@ func ParseEmail(str_emails, each_name string) []string {
 	}
 	return temp
 }
+
+// check if float exists on array
+func FloatExist(arr []float64, val float64) bool {
+	for _, cur := range arr {
+		if val == cur {
+			return true
+		}
+	}
+	return false
+}
