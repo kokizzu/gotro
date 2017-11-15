@@ -502,3 +502,14 @@ func ToMSX(any interface{}) M.SX {
 	}
 	return val
 }
+
+func ToMSS(any interface{}) M.SS {
+	if any == nil {
+		return M.SS{}
+	}
+	val, ok := any.(map[string]string)
+	if L.CheckIf(!ok, `Can't convert to M.SS`, any) {
+		return M.SS{}
+	}
+	return val
+}
