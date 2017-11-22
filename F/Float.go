@@ -45,3 +45,10 @@ func ToIsoDateStr(num float64) string {
 	t := time.Unix(n, 0)
 	return t.UTC().Format(`2006-01-02T15:04:05Z`)
 }
+
+// convert float64 unix to `YYYY-MM-DD`
+func ToDateStr(num float64) string {
+	n := int64(num)
+	t := time.Unix(n, 0)
+	return t.UTC().Format(`2006-01-02`)
+}
