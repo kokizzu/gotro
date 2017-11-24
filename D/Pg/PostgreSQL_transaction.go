@@ -364,7 +364,7 @@ func (tx *Tx) DoUpsert(actor int64, table string, kvparams M.SX) (id int64) {
 	return
 }
 
-// generate update command and execute it
+// generate update command and execute it, returns number of updated records
 func (tx *Tx) DoUpdate(actor int64, table string, id int64, kvparams M.SX) (ra int64) {
 	defer func() {
 		if err := recover(); err != nil {
