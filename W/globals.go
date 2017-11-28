@@ -19,7 +19,10 @@ var MIME2EXT = map[string]string{
 	`image/png`:       `png`,
 	`image/jpeg`:      `jpg`,
 	`application/zip`: `zip`, // any open document format (odf) are also zip
-	// supported by youtube
+}
+
+// supported by youtube
+var YOUTUBE_MIME2EXT = map[string]string{
 	`video/x-flv`:     `flv`,
 	`video/mp4`:       `mp4`,
 	`video/quicktime`: `mov`,
@@ -29,6 +32,15 @@ var MIME2EXT = map[string]string{
 	`video/3gpp`:      `3gp`,
 	`video/mp2p`:      `mpegps`,
 	`video/mp1s`:      `mpegps`,
+}
+var YOUTUBE_MIME_LIST []string
+
+func init() {
+	YOUTUBE_MIME_LIST = []string{}
+	for k, v := range YOUTUBE_MIME2EXT {
+		MIME2EXT[k] = v
+		YOUTUBE_MIME_LIST = append(YOUTUBE_MIME_LIST, k)
+	}
 }
 
 var Errors = map[int]string{
