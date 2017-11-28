@@ -129,16 +129,16 @@ func (mp *Row) UpdateRow() int64 {
 	for k, v := range mp.NonData {
 		params[k] = v
 	}
-	new_id := mp.Tx.DoUpdate(mp.DbActor, mp.Table, mp.Id, params)
-	if new_id < 1 {
+	update_count := mp.Tx.DoUpdate(mp.DbActor, mp.Table, mp.Id, params)
+	if update_count < 1 {
 		mp.Ajax.Error(`Failed saving ` + label)
 		L.Describe(mp.Table, mp.Id, mp.UniqueId, mp.Log, mp.Row)
-		mp.Ajax.Set(`id`, new_id)
-		return new_id
+		mp.Ajax.Set(`_updated`, update_count)
+		return update_count
 	}
 	mp.Ajax.Info(`Updated ` + label + " with: \n" + mp.Log)
-	mp.Ajax.Set(`id`, I.ToS(new_id))
-	return new_id
+	mp.Ajax.Set(`_updated`, I.ToS(update_count))
+	return update_count
 }
 
 // insert or update row, if uniq ada

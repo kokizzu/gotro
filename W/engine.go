@@ -154,9 +154,9 @@ func (engine *Engine) MinifyAssets() {
 		for _, fname := range []string{`lib.css`, `mod.css`, `lib.js`, `mod.js`} {
 			ioutil.WriteFile(dir+fname, r[fname].Bytes(), DEFAULT_FILEDIR_PERM)
 			if S.EndsWith(fname, `.js`) {
-				engine.Assets += `<script type='text/javascript' src='/` + fname + `' ></script>`
+				engine.Assets += `<script type='text/javascript' src='/` + fname + `?` + engine.Name + `' ></script>`
 			} else {
-				engine.Assets += `<link type='text/css' rel='stylesheet' href='/` + fname + `' />`
+				engine.Assets += `<link type='text/css' rel='stylesheet' href='/` + fname + `?` + engine.Name + `' />`
 			}
 		}
 	}
