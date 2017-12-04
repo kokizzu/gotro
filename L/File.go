@@ -7,6 +7,11 @@ func FileExists(name string) bool {
 	return !os.IsNotExist(err)
 }
 
+func FileEmpty(name string) bool {
+	stat, err := os.Stat(name)
+	return os.IsNotExist(err) || stat.Size() <= 0
+}
+
 func CreateFile(path string, content string) bool {
 	var file, err = os.OpenFile(path, os.O_CREATE|os.O_WRONLY|os.O_TRUNC, 0644)
 	if IsError(err, `CreateFile.OpenFile: %s`, path) {
