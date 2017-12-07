@@ -271,8 +271,19 @@ func (mp *Row) LogIt(key string, val interface{}) {
 	} else {
 		oldv := X.ToS(mp.Row[key])
 		if oldv != newv {
-			mp.Log += key_label + `  from ` + ZZ(oldv) + ` to ` + new_label + S.WebBR
+			mp.Log += key_label + ` from ` + ZZ(oldv) + ` to ` + new_label + S.WebBR
 		}
+	}
+}
+
+// log the changes
+func (mp *Row) NotLogIt(key string, val interface{}) {
+	key_label := ZZ(key)
+	newv := X.ToS(val)
+	new_label := ZZ(newv)
+	oldv := X.ToS(mp.Row[key])
+	if oldv != newv {
+		mp.Log += `NOT overwriting ` + key_label + ` from ` + ZZ(oldv) + ` to ` + new_label + S.WebBR
 	}
 }
 
@@ -524,6 +535,21 @@ func (mp *Row) Check_UserPassword(pass string) bool {
 
 // set Row value
 func (mp *Row) SetVal(key string, val interface{}) interface{} {
+	switch v := val.(type) {
+	case string:
+		val = S.XSS(v)
+	}
+	mp.LogIt(key, val)
+	mp.Row[key] = val
+	return val
+}
+
+// set Row value only if still empty, or never being saved
+func (mp *Row) SetValOnce(key string, val interface{}) interface{} {
+	if _, ok := mp.Row[key]; mp.Id != 0 && ok {
+		mp.NotLogIt(key, val)
+		return mp.Row[key]
+	}
 	switch v := val.(type) {
 	case string:
 		val = S.XSS(v)
