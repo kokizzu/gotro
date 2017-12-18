@@ -1,6 +1,9 @@
 package L
 
-import "os"
+import (
+	"io/ioutil"
+	"os"
+)
 
 func FileExists(name string) bool {
 	_, err := os.Stat(name)
@@ -37,4 +40,12 @@ func CreateDir(path string) bool {
 		return false
 	}
 	return true
+}
+
+func ReadFile(path string) string {
+	var buff, err = ioutil.ReadFile(path)
+	if IsError(err, `ReadFile: %s`, path) {
+		return ``
+	}
+	return string(buff)
 }
