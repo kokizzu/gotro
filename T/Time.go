@@ -16,6 +16,8 @@ const YMD = `2006-01-02`
 const FILE = `20060102_150405`
 const HUMAN = `2-Jan-2006 15:04:05`
 const YY = `06`
+const YMDH = `20060102.15`
+const YMDHM = `20060102.1504`
 
 var EMPTY = time.Time{}
 
@@ -73,10 +75,16 @@ func ToDateHourStr(t time.Time) string {
 	return t.Format(YMD_HM)
 }
 
-// current iso date and hour:minute
-//  T.DateHourStr()// output "2016-03-17 10:07"
-func DateHourStr(t time.Time) string {
-	return time.Now().Format(YMD_HM)
+// current iso date and hour
+//  T.DateHhStr()// output "20160317.10"
+func DateHhStr() string {
+	return time.Now().Format(YMDH)
+}
+
+// current iso date and hour
+//  T.DateHhMmStr()// output "20160317.1059"
+func DateHhMmStr() string {
+	return time.Now().Format(YMDHM)
 }
 
 // convert time to iso date and time
