@@ -481,6 +481,9 @@ func (mp *Row) SetFloat(key string) float64 {
 		if S.ToLower(val) == `now` {
 			// special case for date
 			fval = float64(T.Epoch())
+		} else if S.Trim(val) == `` {
+			mp.Unset(key)
+			return 0
 		} else {
 			fval = mp.Posts.GetFloat(key)
 		}
@@ -495,7 +498,7 @@ func (mp *Row) SetBool(key string) bool {
 	val := mp.Posts.GetStr(key)
 	if val != `` {
 		mp.LogIt(key, val)
-		mp.Row[key] = (val == `true`)
+		mp.Row[key] = val == `true`
 	}
 	return X.ToBool(mp.Row[key])
 }
