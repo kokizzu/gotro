@@ -35,7 +35,7 @@ const WebBR = "\n<br/>"
 
 // initialize logger
 func init() {
-	_, file, _, _ := runtime.Caller(1)
+	_, file, _, _ := runtime.Caller(0)
 	FILE_PATH = file[:4+strings.Index(file, `/src/`)]
 	GO_PATH = os.Getenv(`GOPATH`)
 	GO_ROOT = os.Getenv(`GOROOT`)

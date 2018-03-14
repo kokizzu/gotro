@@ -379,6 +379,33 @@ func HashPassword(pass string) string {
 	return base64.StdEncoding.EncodeToString(res3)
 }
 
+// return valid version of mail contact (part before <usr@email>)
+func ValidateMailContact(str string) string {
+	str = Replace(str, `,`, `_`)
+	str = Replace(str, `.`, `_`)
+	str = Replace(str, `<`, `_`)
+	str = Replace(str, `>`, `_`)
+	str = Replace(str, `(`, `_`)
+	str = Replace(str, `)`, `_`)
+	str = Replace(str, `@`, `_`)
+	return str
+}
+
+// return formatted array of mail contact <usr@email>
+func MergeMailContactEmails(each_name, str_emails string) []string {
+	temp := []string{}
+	str_email := Split(str_emails, `,`)
+	for _, each_email := range str_email {
+		each_email = Trim(each_email)
+		if each_email == `` {
+			continue
+		}
+		each_name = ValidateMailContact(each_name)
+		temp = append(temp, each_name+`<`+each_email+`>`)
+	}
+	return temp
+}
+
 // return empty string if str is not a valid email
 func ValidateEmail(str string) string {
 	res := strings.Split(str, `@`)
