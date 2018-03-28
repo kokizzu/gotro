@@ -547,6 +547,54 @@ func (mp *Row) SetVal(key string, val interface{}) interface{} {
 	return val
 }
 
+// set Row from json int[]
+func (mp *Row) SetJsonIntArr(key string) []int64 {
+	str := S.Trim(mp.Posts.GetStr(key))
+	if str == `` || str[0] != '[' {
+		return []int64{}
+	}
+	val := mp.Posts.GetJsonIntArr(key)
+	mp.LogIt(key, str)
+	mp.Row[key] = val
+	return val
+}
+
+// set Row from json string[]
+func (mp *Row) SetJsonStrArr(key string) []string {
+	str := S.Trim(mp.Posts.GetStr(key))
+	if str == `` || str[0] != '[' {
+		return []string{}
+	}
+	val := mp.Posts.GetJsonStrArr(key)
+	mp.LogIt(key, str)
+	mp.Row[key] = val
+	return val
+}
+
+// set Row from json object[]
+func (mp *Row) SetJsonObjArr(key string) []map[string]interface{} {
+	str := S.Trim(mp.Posts.GetStr(key))
+	if str == `` || str[0] != '[' {
+		return []map[string]interface{}{}
+	}
+	val := mp.Posts.GetJsonObjArr(key)
+	mp.LogIt(key, str)
+	mp.Row[key] = val
+	return val
+}
+
+// set Row from json {object}
+func (mp *Row) SetJsonMap(key string) M.SX {
+	str := S.Trim(mp.Posts.GetStr(key))
+	if str == `` || str[0] != '{' {
+		return M.SX{}
+	}
+	val := mp.Posts.GetJsonMap(key)
+	mp.LogIt(key, str)
+	mp.Row[key] = val
+	return val
+}
+
 // set Row value only if still empty, or never being saved
 func (mp *Row) SetValOnce(key string, val interface{}) interface{} {
 	if _, ok := mp.Row[key]; mp.Id != 0 && ok {
