@@ -28,11 +28,24 @@ type Context struct {
 	PostCache   *Posts
 	NoLayout    bool
 	ContentType string
+	headers     M.SS
 }
 
 // protocol
 func (ctx *Context) Proto() string {
-	return `http` + S.If(ctx.RequestCtx.IsTLS(), `s`) + `://`
+	tls := ctx.RequestCtx.IsTLS() || ctx.Headers().GetStr(`x-forwarded-proto`) == `https`
+	return `http` + S.If(tls, `s`) + `://`
+}
+
+// parse header if first time
+func (ctx *Context) Headers() M.SS {
+	if ctx.headers == nil {
+		ctx.headers = M.SS{}
+		ctx.Request.Header.VisitAll(func(key, val []byte) {
+			ctx.headers[S.ToLower(string(key))] = string(val)
+		})
+	}
+	return ctx.headers
 }
 
 // get url parameter as string
