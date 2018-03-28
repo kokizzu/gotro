@@ -18,6 +18,7 @@
 
 .idea
 
+*.iml
 *.deb
 *.gz
 *.xz
