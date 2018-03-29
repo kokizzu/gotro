@@ -199,7 +199,7 @@ func (tm *TableModel) FormFields() A.MSX {
 		json_arr = A.MSX{}
 		for _, field := range tm.Fields {
 			switch field.Key {
-			case `id`, `is_deleted`, `modified_at`, `unique_id`:
+			case `id`, `is_deleted`, `modified_at`, `unique_id`, `created_at`, `updated_at`, `deleted_at`, `restored_at`:
 				continue
 			}
 			if field.Hide || field.HtmlHide || field.FormHide {
@@ -237,6 +237,8 @@ func (tm *TableModel) GridFields() A.MSX {
 			switch field.Key {
 			case `id`, `is_deleted`, `modified_at`:
 				continue
+			case `created_at`, `updated_at`, `deleted_at`, `restored_at`:
+				field.GridType = `datetime`
 			}
 			if field.Hide || field.HtmlHide || field.GridHide {
 				continue
