@@ -140,3 +140,13 @@ func UZ(str string) string {
 	str = Replace(str, `&amp;`, `&`)
 	return str
 }
+
+// replace <, >, and & back, quot and apos to real html
+func UZRAW(str string) string {
+	str = Replace(str, `&apos;`, `'`)
+	str = Replace(str, `&quot;`, `"`)
+	str = Replace(str, `&lt;`, `<`)
+	str = Replace(str, `&gt;`, `>`)
+	str = Replace(str, `&amp;`, `&`)
+	return str
+}
