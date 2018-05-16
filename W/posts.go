@@ -1,6 +1,7 @@
 package W
 
 import (
+	"github.com/kokizzu/gotro/L"
 	"github.com/kokizzu/gotro/M"
 	"github.com/kokizzu/gotro/S"
 	"github.com/valyala/fasthttp"
@@ -48,6 +49,8 @@ func (p *Posts) FromContext(ctx *Context) {
 		for k, v := range mf.Value {
 			p.SS[k] = v[0]
 		}
+	} else {
+		L.Print(`Error Parsing Post Data: ` + err.Error())
 	}
 }
 
