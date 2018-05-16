@@ -1,6 +1,7 @@
 package W
 
 import (
+	"github.com/kokizzu/gotro/I"
 	"github.com/kokizzu/gotro/L"
 	"github.com/kokizzu/gotro/M"
 	"github.com/kokizzu/gotro/S"
@@ -46,8 +47,10 @@ func (p *Posts) FromContext(ctx *Context) {
 	})
 	mf, err := ctx.RequestCtx.MultipartForm()
 	if err == nil {
+		L.Print(`Multipart Post Data: `)
 		for k, v := range mf.Value {
 			p.SS[k] = v[0]
+			L.Print(`* ` + k + `: ` + S.IfElse(len(v[0]) < 128, v[0], `length=`+I.ToStr(len(v[0]))) + S.If(len(v) > 1, ` [warning: array form ignored: `+I.ToStr(len(v))+`]`))
 		}
 	} else {
 		L.Print(`Error Parsing Post Data: ` + err.Error())
