@@ -47,7 +47,7 @@ func (p *Posts) FromContext(ctx *Context) {
 	})
 	mf, err := ctx.RequestCtx.MultipartForm()
 	if err == nil {
-		L.Print(`Multipart Post Data: `)
+		L.Print(`Multipart Post Data: ` + I.ToStr(len(mf.Value)) + ` keys`)
 		for k, v := range mf.Value {
 			p.SS[k] = v[0]
 			L.Print(`* ` + k + `: ` + S.IfElse(len(v[0]) < 128, v[0], `length=`+I.ToStr(len(v[0]))) + S.If(len(v) > 1, ` [warning: array form ignored: `+I.ToStr(len(v))+`]`))
