@@ -29,6 +29,8 @@ type SessionConnector interface {
 	GetMSX(key string) M.SX
 	// increment
 	Inc(key string) int64
+	// increment
+	Dec(key string) int64
 	// set string
 	SetStr(key, val string)
 	// set integer

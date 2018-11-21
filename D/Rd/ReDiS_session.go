@@ -80,6 +80,12 @@ func (sess RedisSession) Inc(key string) int64 {
 	return val
 }
 
+func (sess RedisSession) Dec(key string) int64 {
+	val, err := sess.Pool.Decr(sess.Prefix + key).Result()
+	L.IsError(err, `failed to DECR`, key)
+	return val
+}
+
 func (sess RedisSession) SetStr(key, val string) {
 	err := sess.Pool.Set(sess.Prefix+key, val, 0).Err()
 	L.IsError(err, `failed to SET`, key, val)
