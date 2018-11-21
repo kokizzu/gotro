@@ -459,35 +459,35 @@ func (tx *Tx) DoRestore2(actor int64, table string, id int64, lambda func(base *
 }
 
 // fetch json data as map
-func (tx *Tx) DataJsonMapAndUniq_ById(table string, id int64) (res M.SX, uniq string) {
+func (tx *Tx) DataJsonMapUniqAndIsDeleted_ById(table string, id int64) (res M.SX, uniq string, is_deleted bool) {
 	res = M.SX{}
 	if id <= 0 {
-		return res, ``
+		return res, ``, false
 	}
-	query := `SELECT data, COALESCE(unique_id,'') FROM ` + table + ` WHERE id = ` + I.ToS(id)
+	query := `SELECT data, COALESCE(unique_id,''), is_deleted FROM ` + table + ` WHERE id = ` + I.ToS(id)
 	rows := tx.QAll(query)
 	str := ``
 	defer rows.Close()
 	if rows.Next() {
-		rows.Scan(&str, &uniq)
+		rows.Scan(&str, &uniq, &is_deleted)
 		res = S.JsonToMap(str)
 	}
 	return
 }
 
 // fecth json data as map by unique id
-func (tx *Tx) DataJsonMapAndId_ByUniq(table, unique_id string) (res M.SX, id int64) {
+func (tx *Tx) DataJsonMapIdAndIsDeleted_ByUniq(table, unique_id string) (res M.SX, id int64, is_deleted bool) {
 	res = M.SX{}
 	id = 0
 	if unique_id == `` {
 		return
 	}
-	query := `SELECT data, id FROM ` + table + ` WHERE unique_id = ` + Z(unique_id)
+	query := `SELECT data, id, is_deleted FROM ` + table + ` WHERE unique_id = ` + Z(unique_id)
 	rows := tx.QAll(query)
 	str := ``
 	defer rows.Close()
 	if rows.Next() {
-		rows.Scan(&str, &id)
+		rows.Scan(&str, &id, &is_deleted)
 		res = S.JsonToMap(str)
 	}
 	return

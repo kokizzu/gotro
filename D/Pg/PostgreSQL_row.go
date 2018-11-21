@@ -18,17 +18,18 @@ func InitOfficeMail(suffix string) {
 
 // primary table model
 type Row struct {
-	Row      M.SX
-	NonData  M.SX
-	Posts    *W.Posts
-	Ajax     W.Ajax
-	ReqModel *W.RequestModel
-	Table    string
-	Id       int64
-	Tx       *Tx
-	DbActor  int64
-	Log      string
-	UniqueId string // set when you want to update it
+	Row       M.SX
+	NonData   M.SX
+	Posts     *W.Posts
+	Ajax      W.Ajax
+	ReqModel  *W.RequestModel
+	Table     string
+	Id        int64
+	Tx        *Tx
+	DbActor   int64
+	Log       string
+	UniqueId  string // set when you want to update it
+	IsDeleted bool
 }
 
 // convert Row to JSON string
@@ -39,11 +40,11 @@ func (mp *Row) ToJson() string {
 // fetch model to be edited
 func NewRow(tx *Tx, table string, rm *W.RequestModel) *Row {
 	id := S.ToI(rm.Id)
-	data, uniq := tx.DataJsonMapAndUniq_ById(table, id)
+	data, uniq, is_deleted := tx.DataJsonMapUniqAndIsDeleted_ById(table, id)
 	if rm.Ajax.SX == nil {
 		rm.Ajax = W.NewAjax()
 	}
-	return &Row{data, M.SX{}, rm.Posts, rm.Ajax, rm, table, id, tx, S.ToI(rm.DbActor), ``, uniq}
+	return &Row{data, M.SX{}, rm.Posts, rm.Ajax, rm, table, id, tx, S.ToI(rm.DbActor), ``, uniq, is_deleted}
 }
 
 // create empty model
@@ -52,12 +53,12 @@ func NewNonDataRow(tx *Tx, table string, rm *W.RequestModel) *Row {
 	if rm.Ajax.SX == nil {
 		rm.Ajax = W.NewAjax()
 	}
-	return &Row{M.SX{}, M.SX{}, rm.Posts, rm.Ajax, rm, table, id, tx, S.ToI(rm.DbActor), ``, ``}
+	return &Row{M.SX{}, M.SX{}, rm.Posts, rm.Ajax, rm, table, id, tx, S.ToI(rm.DbActor), ``, ``, false}
 }
 
 // fetch model to be edited from unique
 func NewRowUniq(tx *Tx, table string, unique_id string, rm *W.RequestModel) *Row {
-	data, id := tx.DataJsonMapAndId_ByUniq(table, unique_id)
+	data, id, is_deleted := tx.DataJsonMapIdAndIsDeleted_ByUniq(table, unique_id)
 	new_uniq := unique_id
 	if id == 0 {
 		new_uniq = ``
@@ -65,7 +66,7 @@ func NewRowUniq(tx *Tx, table string, unique_id string, rm *W.RequestModel) *Row
 	if rm.Ajax.SX == nil {
 		rm.Ajax = W.NewAjax()
 	}
-	res := &Row{data, M.SX{}, rm.Posts, rm.Ajax, rm, table, id, tx, S.ToI(rm.DbActor), ``, new_uniq}
+	res := &Row{data, M.SX{}, rm.Posts, rm.Ajax, rm, table, id, tx, S.ToI(rm.DbActor), ``, new_uniq, is_deleted}
 	if id == 0 {
 		res.Set_UniqueId(unique_id)
 	}
