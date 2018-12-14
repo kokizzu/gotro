@@ -41,6 +41,10 @@ type SessionConnector interface {
 	SetMSS(key string, val M.SS)
 	// get product name, eg: Pg, Sc, My, Rd
 	Product() string
+
+	Lpush(key string, val string)
+	Rpush(key string, val string)
+	Lrange(key string, first, last int64) []string
 }
 
 var SESS_KEY = `SK`

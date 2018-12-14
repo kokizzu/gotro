@@ -94,10 +94,24 @@ func (sess RedisSession) SetStr(key, val string) {
 func (sess RedisSession) SetInt(key string, val int64) {
 	sess.SetStr(key, I.ToS(val))
 }
-
 func (sess RedisSession) SetMSX(key string, val M.SX) {
 	sess.SetStr(key, val.ToJson())
 }
 func (sess RedisSession) SetMSS(key string, val M.SS) {
 	sess.SetStr(key, val.ToJson())
+}
+
+func (sess RedisSession) Lpush(key string, val string) {
+	sess.Pool.LPush(key, val)
+}
+func (sess RedisSession) Rpush(key string, val string) {
+	sess.Pool.RPush(key, val)
+}
+func (sess RedisSession) Lrange(key string, start, end int64) []string {
+	res := sess.Pool.LRange(key, start, end)
+	r, err := res.Result()
+	if err != nil {
+		return []string{}
+	}
+	return r
 }
