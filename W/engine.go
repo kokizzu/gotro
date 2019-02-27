@@ -341,7 +341,7 @@ func NewEngine(debugMode, multiApp bool, projectName, baseDir string) *Engine {
 					Actions:    append([]Action{LogFilter, PanicFilter, SessionFilter}, Filters...),
 				}
 				if n_ctx.IsAjax() {
-					n_ctx.ContentType = `application/json`
+					n_ctx.ContentType = `application/json; charset=utf-8`
 					n_ctx.NoLayout = true
 				} else {
 					n_ctx.ContentType = `text/html`
