@@ -104,7 +104,7 @@ func (ctx *Context) AppendString(txt string) {
 }
 
 // append json
-func (ctx *Context) AppendJson(any M.SX) {
+func (ctx *Context) AppendMap(any M.SX) {
 	//if ctx.Engine.DebugMode {
 	//	fmt.Fprintf("%# v", pretty.Formatter(any))
 	//}
