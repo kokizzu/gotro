@@ -150,6 +150,13 @@ func (s *Session) String() string {
 	return s.SX.Pretty(` | `)
 }
 
+func (s *Session) NewlineString() string {
+	if len(s.SX) == 0 {
+		return ``
+	}
+	return s.SX.Pretty("\n\t")
+}
+
 func InitSession(sess_key string, expire_ns, renew_ns time.Duration, conn SessionConnector, glob SessionConnector) {
 	rand.Seed(T.UnixNano())
 	SESS_KEY = S.IfEmpty(sess_key, SESS_KEY)
