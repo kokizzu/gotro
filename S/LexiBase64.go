@@ -3,6 +3,8 @@ package S
 import (
 	"github.com/kokizzu/gotro/L"
 	"math/rand"
+	"sync/atomic"
+	"time"
 )
 
 const i2c_cb63 = `-0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz`
@@ -11,6 +13,7 @@ const MaxStrLenCB63 = 11
 
 var c2i_cb63 map[rune]int64
 var ModCB63 []uint64
+var atom int64
 
 func init() {
 	c2i_cb63 = map[rune]int64{}
@@ -24,6 +27,7 @@ func init() {
 		ModCB63 = append(ModCB63, mod)
 	}
 	ModCB63 = append(ModCB63, 9223372036854775808)
+	atom = time.Now().UnixNano()
 }
 
 // convert integer to custom base-63 encoding that lexicographically correct, positive integer only
@@ -71,8 +75,10 @@ func DecodeCB63(str string) (int64, bool) {
 // random CB63 n-times, the result is n*MaxStrLenCB63 bytes
 func RandomCB63(len int64) string {
 	res := ``
-	for z := int64(0); z < len; z++ {
+	for z := int64(0); z < len-1; z++ {
 		res += EncodeCB63(rand.Int63(), MaxStrLenCB63)
 	}
+	now := atomic.AddInt64(&atom, 1)
+	res += EncodeCB63(now, MaxStrLenCB63)
 	return res
 }
