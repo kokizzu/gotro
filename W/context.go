@@ -31,6 +31,10 @@ type Context struct {
 	headers     M.SS
 }
 
+func (ctx *Context) Log(message string) {
+	ctx.Engine.Log(ctx.RequestLogStr() + message)
+}
+
 // protocol
 func (ctx *Context) Proto() string {
 	tls := ctx.RequestCtx.IsTLS() || ctx.Headers().GetStr(`x-forwarded-proto`) == `https`
@@ -100,11 +104,23 @@ func (ctx *Context) AppendString(txt string) {
 }
 
 // append json
-func (ctx *Context) AppendJson(any M.SX) {
+func (ctx *Context) AppendMap(any M.SX) {
 	//if ctx.Engine.DebugMode {
 	//	fmt.Fprintf("%# v", pretty.Formatter(any))
 	//}
 	buf, err := json.Marshal(any)
+	L.IsError(err, `error converting to json`)
+	ctx.Buffer.Write(buf)
+}
+
+func (ctx *Context) AppendAjax(ajax Ajax) {
+	//if ctx.Engine.DebugMode {
+	//	fmt.Fprintf("%# v", pretty.Formatter(any))
+	//}
+	if ajax.HasError() {
+		ctx.Log("\nResponse:\n\t" + ajax.SX.Pretty("\n\t"))
+	}
+	buf, err := json.Marshal(ajax.SX)
 	L.IsError(err, `error converting to json`)
 	ctx.Buffer.Write(buf)
 }
@@ -219,6 +235,15 @@ func (ctx *Context) UploadedFile(id string) (fileName, ext, contentType string, 
 	ext = filepath.Ext(fileName)
 	ext = S.ToLower(ext)
 	return
+}
+
+// debug info
+func (ctx *Context) RequestLogStr() string {
+	return ctx.Session.IpAddr + " | " + ctx.Session.HeaderString() + "\n" +
+		"Referrer: " + string(ctx.Referer()) + "\n" +
+		S.IfElse(ctx.IsAjax(), `POST`, `GET`) + ` ` + S.IfEmpty(string(ctx.Path()), `/`) + "\n\t" +
+		ctx.Posts().NewlineString() +
+		"\nSession:\n\t" + ctx.Session.NewlineString()
 }
 
 // debug info

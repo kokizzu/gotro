@@ -54,7 +54,7 @@ func LoginExample(ctx *W.Context) {
 			if username != password {
 				ajax.Set(`is_success`, false)
 				ajax.Error(`301 Wrong username or password; username is case sensitive`)
-				ctx.AppendJson(ajax.SX)
+				ctx.AppendAjax(ajax)
 				return
 			}
 			id := X.ToS(rand.Intn(1000))
@@ -70,7 +70,7 @@ func LoginExample(ctx *W.Context) {
 		default:
 			ajax.Error(`Unknown action`)
 		}
-		ctx.AppendJson(ajax.SX)
+		ctx.AppendAjax(ajax)
 		return
 	}
 	ctx.Render(`login_example`, M.SX{
@@ -85,7 +85,7 @@ func PostValuesExample(ctx *W.Context) {
 		ajax := AjaxResponse()
 		value := ctx.Posts().GetStr(`value`)
 		ajax.Set(`value`, value)
-		ctx.AppendJson(ajax.SX)
+		ctx.AppendAjax(ajax)
 		return
 	}
 	ctx.Render(`post_values_example`, M.SX{

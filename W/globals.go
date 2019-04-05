@@ -12,8 +12,11 @@ var Globals SessionConnector       // from session.go
 var Routes map[string]Action
 var Assets [][2]string // []{{`js css /js /css`,`filename`}, ...}
 var Filters []Action
-var PUBLIC_SUBDIR = `public/`
-var VIEWS_SUBDIR = `views/`
+
+const PUBLIC_SUBDIR = `public/`
+const VIEWS_SUBDIR = `views/`
+const LOG_SUBDIR = `logs/`
+
 var MIME2EXT = map[string]string{
 	`application/pdf`: `pdf`,
 	`image/png`:       `png`,

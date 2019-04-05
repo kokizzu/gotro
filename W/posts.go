@@ -66,3 +66,11 @@ func (p *Posts) String() string {
 		return S.IfElse(key == `pass` || key == `password`, S.Repeat(`*`, len(val)), val)
 	})
 }
+func (p *Posts) NewlineString() string {
+	return p.SS.PrettyFunc("\n\t", func(key, val string) string {
+		if len(val) > 4096 {
+			return val[:4096] + `...`
+		}
+		return S.IfElse(key == `pass` || key == `password`, S.Repeat(`*`, len(val)), val)
+	})
+}

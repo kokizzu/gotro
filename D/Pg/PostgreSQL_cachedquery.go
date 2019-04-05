@@ -42,6 +42,13 @@ func RamGlobalEvict_ByAjax_ByBucket(ajax W.Ajax, bucket string) {
 	}
 }
 
+func RamGlobalEvict_ByBucket(bucket string) {
+	CACHE_INV.Set(bucket, T.UnixNano())
+	if DEBUG {
+		L.Print(`RamGlobalEvict_ByBucket: ` + bucket)
+	}
+}
+
 func RamExpired_ByBucket_ByKey(bucket, ram_key string) bool {
 	global := CACHE_INV.Get(bucket)
 	if global != nil {

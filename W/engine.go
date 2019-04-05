@@ -40,10 +40,17 @@ type Engine struct {
 	// location of the project, will be concatenated with VIEWS_SUBDIR, PUBLIC_SUBDIR
 	BaseDir   string
 	PublicDir string // with slash
+	Logger    *os.File
+	LogPath   string
 	// server creation time
 	CreatedAt time.Time
 	// assets <script and <link as string
 	Assets string
+}
+
+func (engine *Engine) Log(message string) {
+	engine.Logger.WriteString(T.DateTimeStr() + "\t" + message + "\n\n")
+	engine.Logger.Sync()
 }
 
 // send debug mail
@@ -165,9 +172,12 @@ func (engine *Engine) MinifyAssets() {
 // start the server
 func (engine *Engine) StartServer(addressPort string) {
 	engine.MinifyAssets()
-	L.LOG.Notice(engine.Name + ` ` + S.IfElse(engine.DebugMode, `[DEVELOPMENT]`, `[PRODUCTION]`) + ` server with ` + I.ToStr(len(Routes)) + ` route(s) on ` + addressPort + "\n  Work Directory: " + engine.BaseDir)
+	L.LOG.Notice(engine.Name + ` ` + S.IfElse(engine.DebugMode, `[DEVELOPMENT]`, `[PRODUCTION]`) + ` server with ` + I.ToStr(len(Routes)) + ` route(s) on ` + addressPort +
+		"\n  Ajax Error Log: " + engine.LogPath +
+		"\n  Work Directory: " + engine.BaseDir)
 	err := fasthttp.ListenAndServe(addressPort, engine.Router.Handler)
 	L.IsError(err, `Failed to listen on `+addressPort)
+	engine.Logger.Close()
 }
 
 func checkMailers(errors []string) []string {
@@ -303,6 +313,13 @@ func NewEngine(debugMode, multiApp bool, projectName, baseDir string) *Engine {
 	if len(errors) > 0 {
 		panic(A.StrJoin(errors, "\n"))
 	}
+
+	log_dir := baseDir + LOG_SUBDIR
+	os.Mkdir(log_dir, os.ModePerm)
+	log_file := log_dir + S.If(debugMode, `local_`) + `ajax_` + T.Filename() + `.log`
+	logger, err := os.OpenFile(log_file, os.O_CREATE|os.O_APPEND|os.O_WRONLY, os.ModePerm)
+	L.PanicIf(err, `failed create log file: `+log_file)
+
 	engine := &Engine{
 		Router:          fasthttprouter.New(),
 		DebugMode:       debugMode,
@@ -313,10 +330,14 @@ func NewEngine(debugMode, multiApp bool, projectName, baseDir string) *Engine {
 		GlobalStr:       M.SS{},
 		GlobalInt:       M.SI{},
 		GlobalAny:       M.SX{},
+		Logger:          logger,
+		LogPath:         log_file,
 		CreatedAt:       time.Now(),
 		ViewCache:       cmap.New(),
 		WebMasterAnchor: `<a href='mailto:` + Webmasters.KeysConcat(`,`) + `'>webmasters</a>`,
 	}
+
+	engine.Log(`Server Started`)
 
 	// handle static files
 	fs := &fasthttp.FS{
