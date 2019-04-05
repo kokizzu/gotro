@@ -49,7 +49,7 @@ type Engine struct {
 }
 
 func (engine *Engine) Log(message string) {
-	engine.Logger.WriteString(T.DateTimeStr() + "\t" + message + "\n")
+	engine.Logger.WriteString(T.DateTimeStr() + "\t" + message + "\n\n")
 	engine.Logger.Sync()
 }
 

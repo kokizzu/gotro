@@ -107,6 +107,10 @@ func LogFilter(ctx *Context) {
 func SessionFilter(ctx *Context) {
 	ctx.Session = &Session{}
 	ctx.Session.Load(ctx)
+	prev := ctx.Session.HeaderString()
 	ctx.Next()(ctx)
+	if ctx.Session.Changed {
+		ctx.Log("session changed, previously: " + prev)
+	}
 	ctx.Session.Save(ctx)
 }

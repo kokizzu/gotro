@@ -239,9 +239,7 @@ func (ctx *Context) UploadedFile(id string) (fileName, ext, contentType string, 
 
 // debug info
 func (ctx *Context) RequestLogStr() string {
-	return ctx.Session.IpAddr + " | " +
-		"UserAgent: " + ctx.Session.UserAgent + "\n" +
-		"SessionKey: " + ctx.Session.Key + "\n" +
+	return ctx.Session.IpAddr + " | " + ctx.Session.HeaderString() + "\n" +
 		"Referrer: " + string(ctx.Referer()) + "\n" +
 		S.IfElse(ctx.IsAjax(), `POST`, `GET`) + ` ` + S.IfEmpty(string(ctx.Path()), `/`) + "\n\t" +
 		ctx.Posts().NewlineString() +

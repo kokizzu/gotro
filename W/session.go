@@ -72,6 +72,7 @@ func (s *Session) RandomKey() {
 	for {
 		s.Key = s.StateCSRF() + S.RandomCB63(8)
 		if Sessions.GetStr(s.Key) == `` {
+			Sessions.FadeMSX(s.Key, M.SX{`key_at`: T.Epoch()}, EXPIRE_SEC)
 			break // no collision
 		}
 	}
@@ -155,6 +156,10 @@ func (s *Session) NewlineString() string {
 		return ``
 	}
 	return s.SX.Pretty("\n\t")
+}
+
+func (s *Session) HeaderString() string {
+	return s.GetStr(`id`) + "\n\tUserAgent: " + s.UserAgent + "\n\tSessionKey: " + s.Key
 }
 
 func InitSession(sess_key string, expire_ns, renew_ns time.Duration, conn SessionConnector, glob SessionConnector) {
