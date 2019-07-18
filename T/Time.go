@@ -195,7 +195,7 @@ func Epoch() int64 {
 //2019-07-16 Yonas
 //convert string date to epoch => '2019-01-01' -->1546300800
 func ToEpoch(date string) int64 {
-	d, err := time.Parse(T.YMD, date)
+	d, err := time.Parse(YMD, date)
 	if err != nil {
 		return 0
 	} else {
