@@ -15,6 +15,7 @@ const YMD_HMS = `2006-01-02 15:04:05`
 const YMD = `2006-01-02`
 const FILE = `20060102_150405`
 const HUMAN = `2-Jan-2006 15:04:05`
+const HUMAN_DATE = `2 Jan 2006`
 const YY = `06`
 const YMDH = `20060102.15`
 const YMDHM = `20060102.1504`
@@ -191,6 +192,17 @@ func Epoch() int64 {
 	return time.Now().Unix()
 }
 
+//2019-07-16 Yonas
+//convert string date to epoch => '2019-01-01' -->1546300800
+func ToEpoch(date string) int64 {
+	d, err := time.Parse(YMD, date)
+	if err != nil {
+		return 0
+	} else {
+		return d.Unix()
+	}
+}
+
 // get current unix (second) as string
 func EpochStr() string {
 	return I.ToS(time.Now().Unix())
@@ -229,6 +241,11 @@ func UnixToDateTimeStr(epoch float64) string {
 // convert from unix to date format
 func UnixToDateStr(epoch float64) string {
 	return time.Unix(int64(epoch), 0).Format(YMD)
+}
+
+// convert from unix to human date format
+func UnixToHumanStr(epoch float64) string {
+	return time.Unix(int64(epoch), 0).Format(HUMAN_DATE)
 }
 
 // return current last two digit year
