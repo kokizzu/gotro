@@ -318,6 +318,62 @@ func (json SX) GetInt(key string) int64 {
 	return 0
 }
 
+// get uint type from map
+//  m := M.SX{`test`:234.345,`coba`:`buah`,`dia`:true,`angka`:int64(23435)}
+//  m.GetInt(`test`))  // int64(234)
+//  m.GetInt(`dia`))   // int64(1)
+//  m.GetInt(`coba`))  // int64(0)
+//  m.GetInt(`angka`)) // int64(23435)
+func (json SX) GetUint(key string) uint {
+	any := json[key]
+	if any == nil {
+		return 0
+	}
+	if val, ok := any.(uint); ok {
+		return val
+	}
+	switch v := any.(type) {
+	case int:
+		return uint(v)
+	case int8:
+		return uint(v)
+	case int16:
+		return uint(v)
+	case int32:
+		return uint(v)
+	case uint:
+		return uint(v)
+	case uint8:
+		return uint(v)
+	case uint16:
+		return uint(v)
+	case uint32:
+		return uint(v)
+	case uint64:
+		return uint(v)
+	case float32:
+		return uint(v)
+	case float64:
+		return uint(v)
+	case bool:
+		if v {
+			return 1
+		}
+		return 0
+	case string:
+		if val, err := strconv.ParseUint(v, 10, 64); err == nil {
+			return uint(val)
+		}
+		if val, err := strconv.ParseFloat(v, 64); err == nil {
+			return uint(val)
+		}
+		L.Describe(`Property [` + key + `] is not an uint: ` + fmt.Sprintf("%T", any))
+	default:
+		L.Describe(`Property [` + key + `] is not an uint: ` + fmt.Sprintf("%T", any))
+	}
+	return 0
+}
+
 // get float64 type from map
 //  m := M.SX{`test`:234.345,`coba`:`buah`,`dia`:true,`angka`:23435}
 //  m.GetFloat(`test`)  // float64(234.345)

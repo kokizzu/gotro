@@ -180,6 +180,9 @@ func ToS(any interface{}) string {
 		}
 		return `false`
 	case fmt.Stringer:
+		if v == nil {
+			return ``
+		}
 		return v.String()
 	default:
 		return ToJson5(v)
