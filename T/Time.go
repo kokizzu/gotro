@@ -19,6 +19,7 @@ const HUMAN_DATE = `2 Jan 2006`
 const YY = `06`
 const YMDH = `20060102.15`
 const YMDHM = `20060102.1504`
+const HMS = `150405`
 
 var EMPTY = time.Time{}
 
@@ -76,6 +77,15 @@ func ToDateHourStr(t time.Time) string {
 	return t.Format(YMD_HM)
 }
 
+// convert time to iso date and hourminutesecond
+//  T.ToDateHourStr(time.Now()) // "230744"
+func ToHhmmssStr(t time.Time) string {
+	if t == EMPTY {
+		return ``
+	}
+	return t.Format(HMS)
+}
+
 // current iso date and hour
 //  T.DateHhStr()// output "20160317.10"
 func DateHhStr() string {
@@ -128,10 +138,15 @@ func YearDayInt() int64 {
 	return int64(time.Now().YearDay())
 }
 
-// get filename version of current dat
+// get filename version of current date
 //  T.Filename()) // "20160317_102543"
 func Filename() string {
 	return time.Now().Format(FILE)
+}
+
+// get filename version of current time
+func HhmmssStr() string {
+	return ToHhmmssStr(time.Now())
 }
 
 // sleep for nanosec
