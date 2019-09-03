@@ -23,36 +23,38 @@ import (
 //  var m interface{}
 //  m = `123`
 //  L.ParentDescribe(X.ToI(m)) // uint(123)
-func ToU(any interface{}) uint {
+func ToU(any interface{}) uint64 {
 	if any == nil {
 		return 0
 	}
-	if val, ok := any.(uint); ok {
+	if val, ok := any.(uint64); ok {
 		return val
 	}
 	switch v := any.(type) {
 	case int:
-		return uint(v)
+		return uint64(v)
 	case uint:
-		return uint(v)
+		return uint64(v)
 	case int8:
-		return uint(v)
+		return uint64(v)
 	case int16:
-		return uint(v)
+		return uint64(v)
 	case int32:
-		return uint(v)
+		return uint64(v)
+	case int64:
+		return uint64(v)
 	case uint8:
-		return uint(v)
+		return uint64(v)
 	case uint16:
-		return uint(v)
+		return uint64(v)
 	case uint32:
-		return uint(v)
+		return uint64(v)
 	case uint64:
-		return uint(v)
+		return uint64(v)
 	case float32:
-		return uint(v)
+		return uint64(v)
 	case float64:
-		return uint(v)
+		return uint64(v)
 	case bool:
 		if v {
 			return 1
@@ -60,22 +62,22 @@ func ToU(any interface{}) uint {
 		return 0
 	case []byte:
 		if val, err := strconv.ParseInt(string(v), 10, 64); err == nil {
-			return uint(val)
+			return uint64(val)
 		}
 		if val, err := strconv.ParseFloat(string(v), 64); err == nil {
-			return uint(val)
+			return uint64(val)
 		}
-		L.ParentDescribe(`Can't convert to uint`, any)
+		L.ParentDescribe(`Can't convert to uint64`, any)
 	case string:
 		if val, err := strconv.ParseInt(v, 10, 64); err == nil {
-			return uint(val)
+			return uint64(val)
 		}
 		if val, err := strconv.ParseFloat(v, 64); err == nil {
-			return uint(val)
+			return uint64(val)
 		}
-		L.ParentDescribe(`Can't convert to uint`, any)
+		L.ParentDescribe(`Can't convert to uint64`, any)
 	default:
-		L.ParentDescribe(`Can't convert to uint`, any)
+		L.ParentDescribe(`Can't convert to uint64`, any)
 	}
 	return 0
 }

@@ -324,37 +324,39 @@ func (json SX) GetInt(key string) int64 {
 //  m.GetInt(`dia`))   // int64(1)
 //  m.GetInt(`coba`))  // int64(0)
 //  m.GetInt(`angka`)) // int64(23435)
-func (json SX) GetUint(key string) uint {
+func (json SX) GetUint(key string) uint64 {
 	any := json[key]
 	if any == nil {
 		return 0
 	}
-	if val, ok := any.(uint); ok {
+	if val, ok := any.(uint64); ok {
 		return val
 	}
 	switch v := any.(type) {
 	case int:
-		return uint(v)
+		return uint64(v)
 	case int8:
-		return uint(v)
+		return uint64(v)
 	case int16:
-		return uint(v)
+		return uint64(v)
 	case int32:
-		return uint(v)
+		return uint64(v)
+	case int64:
+		return uint64(v)
 	case uint:
-		return uint(v)
+		return uint64(v)
 	case uint8:
-		return uint(v)
+		return uint64(v)
 	case uint16:
-		return uint(v)
+		return uint64(v)
 	case uint32:
-		return uint(v)
+		return uint64(v)
 	case uint64:
-		return uint(v)
+		return uint64(v)
 	case float32:
-		return uint(v)
+		return uint64(v)
 	case float64:
-		return uint(v)
+		return uint64(v)
 	case bool:
 		if v {
 			return 1
@@ -362,14 +364,14 @@ func (json SX) GetUint(key string) uint {
 		return 0
 	case string:
 		if val, err := strconv.ParseUint(v, 10, 64); err == nil {
-			return uint(val)
+			return uint64(val)
 		}
 		if val, err := strconv.ParseFloat(v, 64); err == nil {
-			return uint(val)
+			return uint64(val)
 		}
-		L.Describe(`Property [` + key + `] is not an uint: ` + fmt.Sprintf("%T", any))
+		L.Describe(`Property [` + key + `] is not an uint64: ` + fmt.Sprintf("%T", any))
 	default:
-		L.Describe(`Property [` + key + `] is not an uint: ` + fmt.Sprintf("%T", any))
+		L.Describe(`Property [` + key + `] is not an uint64: ` + fmt.Sprintf("%T", any))
 	}
 	return 0
 }
@@ -738,7 +740,7 @@ func (hash SS) GetInt(key string) int64 {
 }
 
 // get uint from map
-func (hash SS) GetUint(key string) uint {
+func (hash SS) GetUint(key string) uint64 {
 	return S.ToU(hash[key])
 }
 

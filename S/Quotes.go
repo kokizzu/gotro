@@ -55,8 +55,8 @@ func ZI(num int64) string {
 // give ' to uint value
 //  S.ZI(23)) // '23'
 //  S.ZI(03)) // '3'
-func ZU(num uint) string {
-	return `'` + strconv.FormatUint(uint64(num), 10) + `'`
+func ZU(num uint64) string {
+	return `'` + strconv.FormatUint(num, 10) + `'`
 }
 
 // double quote a json string

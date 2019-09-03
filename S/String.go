@@ -179,13 +179,13 @@ func Coalesce(strs ...string) string {
 	return ``
 }
 
-// convert string to uint, returns 0 and silently print error if not valid
+// convert string to uint64, returns 0 and silently print error if not valid
 //  S.ToU(`1234`) // 1234
 //  S.ToU(`1a`) // 0
-func ToU(str string) uint {
-	val, _ := strconv.ParseInt(str, 10, 64)
+func ToU(str string) uint64 {
+	val, _ := strconv.ParseUint(str, 10, 64)
 	//L.IsError(err, str)
-	return uint(val)
+	return val
 }
 
 // convert string to int64, returns 0 and silently print error if not valid
