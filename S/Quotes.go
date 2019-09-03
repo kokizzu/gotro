@@ -6,6 +6,7 @@ import (
 	"github.com/kokizzu/gotro/B"
 	"github.com/kokizzu/gotro/I"
 	"runtime"
+	"strconv"
 )
 
 // TODO: find out how backspace \b null \0 character processed on common SQL
@@ -49,6 +50,13 @@ func ZB(b bool) string {
 //  S.ZI(03)) // '3'
 func ZI(num int64) string {
 	return `'` + I.ToS(num) + `'`
+}
+
+// give ' to uint value
+//  S.ZI(23)) // '23'
+//  S.ZI(03)) // '3'
+func ZU(num uint) string {
+	return `'` + strconv.FormatUint(uint64(num), 10) + `'`
 }
 
 // double quote a json string

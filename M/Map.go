@@ -737,6 +737,11 @@ func (hash SS) GetInt(key string) int64 {
 	return S.ToI(hash[key])
 }
 
+// get uint from map
+func (hash SS) GetUint(key string) uint {
+	return S.ToU(hash[key])
+}
+
 // get float64 type from map
 func (hash SS) GetFloat(key string) float64 {
 	return S.ToF(hash[key])

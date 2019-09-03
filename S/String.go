@@ -179,6 +179,15 @@ func Coalesce(strs ...string) string {
 	return ``
 }
 
+// convert string to uint, returns 0 and silently print error if not valid
+//  S.ToU(`1234`) // 1234
+//  S.ToU(`1a`) // 0
+func ToU(str string) uint {
+	val, _ := strconv.ParseInt(str, 10, 64)
+	//L.IsError(err, str)
+	return uint(val)
+}
+
 // convert string to int64, returns 0 and silently print error if not valid
 //  S.ToI(`1234`) // 1234
 //  S.ToI(`1a`) // 0
@@ -186,6 +195,14 @@ func ToI(str string) int64 {
 	val, _ := strconv.ParseInt(str, 10, 64)
 	//L.IsError(err, str)
 	return val
+}
+
+// convert to uint with check
+//  S.AsU(`1234`) // 1234, true
+//  S.AsU(`1abc`) // 0, false
+func AsU(str string) (uint, bool) {
+	res, err := strconv.ParseInt(str, 10, 64)
+	return uint(res), err == nil
 }
 
 // convert to int64 with check

@@ -19,6 +19,67 @@ import (
 
 // Any type support package
 
+// convert any data type to uint
+//  var m interface{}
+//  m = `123`
+//  L.ParentDescribe(X.ToI(m)) // uint(123)
+func ToU(any interface{}) uint {
+	if any == nil {
+		return 0
+	}
+	if val, ok := any.(uint); ok {
+		return val
+	}
+	switch v := any.(type) {
+	case int:
+		return uint(v)
+	case uint:
+		return uint(v)
+	case int8:
+		return uint(v)
+	case int16:
+		return uint(v)
+	case int32:
+		return uint(v)
+	case uint8:
+		return uint(v)
+	case uint16:
+		return uint(v)
+	case uint32:
+		return uint(v)
+	case uint64:
+		return uint(v)
+	case float32:
+		return uint(v)
+	case float64:
+		return uint(v)
+	case bool:
+		if v {
+			return 1
+		}
+		return 0
+	case []byte:
+		if val, err := strconv.ParseInt(string(v), 10, 64); err == nil {
+			return uint(val)
+		}
+		if val, err := strconv.ParseFloat(string(v), 64); err == nil {
+			return uint(val)
+		}
+		L.ParentDescribe(`Can't convert to uint`, any)
+	case string:
+		if val, err := strconv.ParseInt(v, 10, 64); err == nil {
+			return uint(val)
+		}
+		if val, err := strconv.ParseFloat(v, 64); err == nil {
+			return uint(val)
+		}
+		L.ParentDescribe(`Can't convert to uint`, any)
+	default:
+		L.ParentDescribe(`Can't convert to uint`, any)
+	}
+	return 0
+}
+
 // convert any data type to int64
 //  var m interface{}
 //  m = `123`
