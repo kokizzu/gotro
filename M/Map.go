@@ -855,3 +855,14 @@ func (hash SX) Pretty(sep string) string {
 	}
 	return buff.String()
 }
+
+// retrieve all keys started with
+func SSKeysStartedWith(m SS, prefix string) []string {
+	res := []string{}
+	for k := range m {
+		if S.StartsWith(k, prefix) {
+			res = append(res, k)
+		}
+	}
+	return res
+}
