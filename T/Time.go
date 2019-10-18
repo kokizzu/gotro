@@ -263,6 +263,11 @@ func UnixToHumanStr(epoch float64) string {
 	return time.Unix(int64(epoch), 0).Format(HUMAN_DATE)
 }
 
+// convert from unix to human format
+func UnixToDateTimeStr(epoch float64) string {
+	return time.Unix(int64(epoch), 0).Format(HUMAN)
+}
+
 // return current last two digit year
 func LastTwoDigitYear() string {
 	return time.Now().Format(YY)
