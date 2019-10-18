@@ -259,12 +259,12 @@ func UnixToDateStr(epoch float64) string {
 }
 
 // convert from unix to human date format
-func UnixToHumanStr(epoch float64) string {
-	return time.Unix(int64(epoch), 0).Format(HUMAN_DATE)
+func UnixToHumanDateStr(epoch float64) string {
+	return time.Unix(int64(epoch), 0).Format(HUMAN_DATE)UnixToDateTimeStr
 }
 
 // convert from unix to human format
-func UnixToDateTimeStr(epoch float64) string {
+func UnixToHumanStr(epoch float64) string {
 	return time.Unix(int64(epoch), 0).Format(HUMAN)
 }
 
