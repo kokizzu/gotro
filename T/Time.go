@@ -259,8 +259,13 @@ func UnixToDateStr(epoch float64) string {
 }
 
 // convert from unix to human date format
-func UnixToHumanStr(epoch float64) string {
+func UnixToHumanDateStr(epoch float64) string {
 	return time.Unix(int64(epoch), 0).Format(HUMAN_DATE)
+}
+
+// convert from unix to human format
+func UnixToHumanStr(epoch float64) string {
+	return time.Unix(int64(epoch), 0).Format(HUMAN)
 }
 
 // return current last two digit year
