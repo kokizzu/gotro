@@ -217,6 +217,14 @@ func Print(any ...interface{}) {
 	fmt.Println(any...)
 }
 
+// print but show grandparent caller function
+func PrintParent(any ...interface{}) {
+	_, file, line, _ := runtime.Caller(2)
+	str := color.CyanString(file[len(FILE_PATH):] + `:` + I.ToStr(line) + `: `)
+	LOG.Debug(strings.Replace(str, `%`, `%%`, -1))
+	fmt.Println(any...)
+}
+
 // print error message and exit program
 func PanicIf(err error, msg string, args ...interface{}) {
 	if err == nil {
