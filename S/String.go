@@ -6,9 +6,6 @@ import (
 	"strconv"
 	"strings"
 
-	"crypto/sha256"
-	"encoding/base64"
-
 	"bytes"
 	"github.com/kokizzu/gotro/C"
 	"github.com/kokizzu/gotro/I"
@@ -386,14 +383,6 @@ func PadRight(s string, padStr string, lenStr int) string {
 	var padCount int
 	padCount = I.MaxOf(lenStr-len(s), 0)
 	return s + strings.Repeat(padStr, padCount)
-}
-
-// hash password with sha256 (without salt)
-func HashPassword(pass string) string {
-	res1 := []byte(pass)
-	res2 := sha256.Sum256(res1)
-	res3 := res2[:]
-	return base64.StdEncoding.EncodeToString(res3)
 }
 
 // return valid version of mail contact (part before <usr@email>)
