@@ -23,6 +23,15 @@ func ZT(strs ...string) string {
 	return `-- ` + fmt.Sprintf("%s:%d %s|%s", file, line, f.Name(), str)
 }
 
+// trace function, location of 2nd level caller, parameterless, with newline
+func ZT2() string {
+	pc := make([]uintptr, 10) // at least 1 entry needed
+	runtime.Callers(3, pc)
+	f := runtime.FuncForPC(pc[0])
+	file, line := f.FileLine(pc[0])
+	return `-- ` + fmt.Sprintf("%s:%d %s", file, line, f.Name()) + "\n"
+}
+
 // add single quote in the beginning and the end of string.
 //  S.Q(`coba`) // `'coba'`
 //  S.Q(`123`)  // `'123'`
