@@ -70,6 +70,7 @@ gopkg.in/redis.v5
 - Dikaimin Simon
 - Dimas Yudha P
 - Rizal Widyarta Gowandy
+- Tien Pham
 
 ## TODO
 
