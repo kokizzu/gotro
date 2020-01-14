@@ -486,6 +486,7 @@ func (db *RDBMS) QAll(query string, params ...interface{}) (rows Records) {
 		start = time.Now()
 	}
 	var err error
+
 	rs, err := db.Adapter.Queryx(query, params...)
 	L.PanicIf(err, `failed to QAll: %s %# v`, query, params)
 	rows = Records{rs, query, params}
@@ -724,6 +725,11 @@ func (db *RDBMS) DoTransaction(lambda func(tx *Tx) string) {
 
 func (db *RDBMS) ViewExists(viewname string) bool {
 	query := `SELECT COALESCE((SELECT COUNT(*) FROM information_schema.views WHERE table_name = ` + Z(viewname) + `),0)`
+	return db.QInt(query) > 0
+}
+
+func (db *RDBMS) TableExists(tableName string) bool {
+	query := `SELECT COALESCE((SELECT COUNT(*) FROM information_schema.tables WHERE table_name = ` + Z(tableName) + `),0)`
 	return db.QInt(query) > 0
 }
 
