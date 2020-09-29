@@ -194,6 +194,15 @@ func ToI(str string) int64 {
 	return val
 }
 
+// convert string to int, returns 0 and silently print error if not valid
+//  S.ToInt(`1234`) // 1234
+//  S.ToInt(`1a`) // 0
+func ToInt(str string) int {
+	val, _ := strconv.ParseInt(str, 10, 64)
+	//L.IsError(err, str)
+	return int(val)
+}
+
 // convert to uint with check
 //  S.AsU(`1234`) // 1234, true
 //  S.AsU(`1abc`) // 0, false
