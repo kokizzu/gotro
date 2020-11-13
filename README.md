@@ -72,6 +72,7 @@ gopkg.in/redis.v5
 - Rizal Widyarta Gowandy
 - Michael Lim
 - Pham Hoang Tien
+- Devin Yonas
 
 ## TODO
 
