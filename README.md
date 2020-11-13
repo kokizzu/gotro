@@ -77,6 +77,8 @@ gopkg.in/redis.v5
 ## TODO
 
 - fix mysql adapter so it becomes usable (currently copied from Postgres'), probably wait until mysql has indexable json column, or do alters like scylladb and sqlite
+- rewrite W using [fasthttp/router](https://github.com/fasthttp/router) or [fiber](https://gofiber.io/)
+- rewrite D using prepared statements, so no more `S.Z`
 - possibly refactor move cachedquery, records, etc to D package since nothing different about them, wait for cassandra version
 - [Review](//goo.gl/tBkfse) which databases we must support primarily for `D`, that can be silver bullet for extreme cases (high-write: sharding/partitioning and multi-master replication or auto-failover; full-text-search) 
   - [ActorDB](//www.actordb.com) <-- high-write
@@ -97,6 +99,5 @@ gopkg.in/redis.v5
   - [TiDB](//github.com/pingcap/tidb) <-- high-write
 - Review which queuing service we're gonna use ([NATS](//nats.io)), requirement: must support persistence
 - Add [ExampleXxx function](//blog.golang.org/examples), getting started and more documentation 
-- Add graceful restart (zero downtime deployment): [grace](//github.com/facebookgo/grace) or [endless](//github.com/fvbock/endless)
-- Write a book (or blog) about [Advanced Programming](//goo.gl/X4BIlM), [Database Systems](//goo.gl/uR8iVB) and [Web Programming](//goo.gl/Bl3fPE) that includes this framework
+- Add graceful restart (zero downtime deployment): [grace](//github.com/facebookgo/grace) or [endless](//github.com/fvbock/endless) or [overseer](https://github.com/jpillora/overseer)
 - Add Catch NotFound (rewrite the `Response.Body`) if no route and static file found
