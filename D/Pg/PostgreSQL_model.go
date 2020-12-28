@@ -136,6 +136,13 @@ func (tm *TableModel) Select() string {
 				tm.Fields[idx].SqlColPos = pos
 				pos += 1
 				continue
+			case `wind_speed`, `wind_speed_average`, `wind_gust`:
+				// convert to knot
+				query := `x1.` + field.Key + ` * 1.94384 "` + field.Key + `"`
+				queries = append(queries, query)
+				tm.Fields[idx].SqlColPos = pos
+				pos += 1
+				continue
 			case `created_at`, `modified_at`, `updated_at`, `deleted_at`, `restored_at`:
 				tm.Fields[idx].Type = `datetime`
 				fallthrough
