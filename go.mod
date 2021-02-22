@@ -12,7 +12,6 @@ require (
 	github.com/jmoiron/sqlx v1.3.1
 	github.com/jordan-wright/email v4.0.1-0.20210109023952-943e75fe5223+incompatible
 	github.com/jung-kurt/gofpdf v1.16.2 // indirect
-	github.com/kokizzu/gotro v0.0.0-20210222075046-ec6f2beda832
 	github.com/kr/pretty v0.2.1
 	github.com/lib/pq v1.9.0
 	github.com/meilisearch/meilisearch-go v0.14.0
