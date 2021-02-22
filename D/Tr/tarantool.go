@@ -43,6 +43,16 @@ type TableProp struct {
 	Uniques       []string // multicolumn unique
 	Indexes       []string
 	AutoIncrement bool
+	SpaceName     string
+	conn          *Taran
+}
+
+func (t *TableProp) AttachConnection(connection *Taran) {
+	t.conn = connection
+}
+
+func (t *TableProp) Truncate() bool {
+	return t.conn.CallBoxSpace(t.SpaceName+`:truncate`,A.X{})
 }
 
 type Field struct { // https://godoc.org/gopkg.in/vmihailenco/msgpack.v2#pkg-examples
@@ -57,7 +67,12 @@ type Index struct {
 	Sequence    string   `msgpack:"sequence,omitempty"`
 }
 
-func (t *Taran) upsertTable(tableName string, prop *TableProp) bool {
+func (t *Taran) upsertTable(prop *TableProp) bool {
+	tableName := prop.SpaceName
+	if tableName == `` {
+		t.Log.Fatal(`table name cannot be empty`)
+		return false
+	}
 	if !t.CallTarantool(`box.schema.space.create`, A.X{
 		tableName,
 		map[string]interface{}{
@@ -127,10 +142,10 @@ func (t *Taran) CallBoxSpace(funcName string, params A.X) bool {
 	return true
 }
 
-func (t *Taran) MigrateTarantool(tableName string, prop *TableProp) {
-	if !t.upsertTable(tableName, prop) && prop.Droppable {
+func (t *Taran) MigrateTarantool(prop *TableProp) {
+	if !t.upsertTable(prop) && prop.Droppable {
 		// drop table and recreate if error
-		t.CallBoxSpace(tableName+`:drop`, A.X{})
-		t.upsertTable(tableName, prop)
+		t.CallBoxSpace(prop.SpaceName+`:drop`, A.X{})
+		t.upsertTable(prop)
 	}
 }
