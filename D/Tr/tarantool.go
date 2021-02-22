@@ -28,6 +28,10 @@ const Scalar = `scalar`
 const Array = `array`
 const Map = `map`
 
+// calls
+const createIndex = `:create_index`
+const format = `:format`
+
 // misc
 const Engine = `engine`
 const Vinyl = `vinyl`
@@ -37,22 +41,14 @@ const IfNotExists = `if_not_exists`
 const sequenceSuffix = `_seq`
 
 type TableProp struct {
-	Droppable     bool
+	Droppable     bool // will drop table and recreate if failed to re-format the table
 	Fields        []Field
 	Unique        string
 	Uniques       []string // multicolumn unique
 	Indexes       []string
-	AutoIncrement bool
+	AutoIncrement bool   // will set first column to auto increment integer/unsigned
 	SpaceName     string // table name
 	conn          *Taran
-}
-
-func (t *TableProp) AttachConnection(connection *Taran) {
-	t.conn = connection
-}
-
-func (t *TableProp) Truncate() bool {
-	return t.conn.CallBoxSpace(t.SpaceName+`:truncate`, A.X{})
 }
 
 type Field struct { // https://godoc.org/gopkg.in/vmihailenco/msgpack.v2#pkg-examples
@@ -67,8 +63,24 @@ type Index struct {
 	Sequence    string   `msgpack:"sequence,omitempty"`
 }
 
-func (t *Taran) upsertTable(prop *TableProp) bool {
+func (t *TableProp) AttachConnection(connection *Taran) {
+	t.conn = connection
+}
+
+func (t *TableProp) TruncateTable() bool {
+	return t.conn.CallBoxSpace(t.SpaceName+`:truncate`, A.X{})
+}
+
+func (t *TableProp) DropTable() bool {
+	return t.conn.CallBoxSpace(t.SpaceName+`:drop`, A.X{})
+}
+
+func (prop *TableProp) CreateTable() bool {
 	tableName := prop.SpaceName
+	t := prop.conn
+	if t == nil {
+		t.Log.Fatal(`must attach connection`)
+	}
 	if tableName == `` {
 		t.Log.Fatal(`table name cannot be empty`)
 		return false
@@ -82,13 +94,13 @@ func (t *Taran) upsertTable(prop *TableProp) bool {
 	}) {
 		return false
 	}
-	if !t.CallBoxSpace(tableName+`:format`, A.X{
+	if !t.CallBoxSpace(tableName+format, A.X{
 		&prop.Fields,
 	}) {
 		return false
 	}
 	// create one field unique index
-	t.CallBoxSpace(tableName+`:format`, A.X{})
+	t.CallBoxSpace(tableName+format, A.X{})
 	// create auto increment
 	if prop.AutoIncrement {
 		t.CallTarantool(`box.schema.sequence.create`, A.X{tableName + sequenceSuffix, M.SX{
@@ -100,19 +112,19 @@ func (t *Taran) upsertTable(prop *TableProp) bool {
 		if prop.AutoIncrement {
 			idx.Sequence = tableName + sequenceSuffix
 		}
-		t.CallBoxSpace(tableName+`:create_index`, A.X{
+		t.CallBoxSpace(tableName+createIndex, A.X{
 			prop.Unique, idx,
 		})
 	}
 	// create multi-field unique index
 	if len(prop.Uniques) > 2 {
-		t.CallBoxSpace(tableName+`:create_index`, A.X{
+		t.CallBoxSpace(tableName+createIndex, A.X{
 			prop.Uniques[0], Index{Parts: prop.Uniques[1:], IfNotExists: true},
 		})
 	}
 	// create other indexes
 	for _, index := range prop.Indexes {
-		t.CallBoxSpace(tableName+`:create_index`, A.X{
+		t.CallBoxSpace(tableName+createIndex, A.X{
 			index, Index{Parts: []string{index}, IfNotExists: true},
 		})
 	}
@@ -143,9 +155,9 @@ func (t *Taran) CallBoxSpace(funcName string, params A.X) bool {
 }
 
 func (t *Taran) MigrateTarantool(prop *TableProp) {
-	if !t.upsertTable(prop) && prop.Droppable {
+	if !prop.CreateTable() && prop.Droppable {
 		// drop table and recreate if error
-		t.CallBoxSpace(prop.SpaceName+`:drop`, A.X{})
-		t.upsertTable(prop)
+		prop.DropTable()
+		prop.CreateTable()
 	}
 }

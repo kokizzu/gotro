@@ -587,3 +587,92 @@ func ConcatIfNotEmpty(str, sep string) string {
 	}
 	return str + sep
 }
+
+// convert to CamelCase
+// source: https://github.com/iancoleman/strcase
+func CamelCase(s string) string {
+	s = strings.TrimSpace(s)
+	if s == "" {
+		return s
+	}
+
+	n := strings.Builder{}
+	n.Grow(len(s))
+	capNext := true
+	for i, v := range []byte(s) {
+		isCap := v >= 'A' && v <= 'Z'
+		isLow := v >= 'a' && v <= 'z'
+		if capNext {
+			if isLow {
+				v += 'A'
+				v -= 'a'
+			}
+		} else if i == 0 {
+			if isCap {
+				v += 'a'
+				v -= 'A'
+			}
+		}
+		if isCap || isLow {
+			n.WriteByte(v)
+			capNext = false
+		} else if vIsNum := v >= '0' && v <= '9'; vIsNum {
+			n.WriteByte(v)
+			capNext = true
+		} else {
+			capNext = v == '_' || v == ' ' || v == '-' || v == '.'
+		}
+	}
+	return n.String()
+}
+
+// convert to snake case
+// source: https://github.com/iancoleman/strcase
+func SnakeCase(s string) string {
+	s = strings.TrimSpace(s)
+	n := strings.Builder{}
+	const delimiter = '_'
+	ignore := byte(0)
+	n.Grow(len(s) + 2) // nominal 2 bytes of extra space for inserted delimiters
+	for i, v := range []byte(s) {
+		isCap := v >= 'A' && v <= 'Z'
+		isLow := v >= 'a' && v <= 'z'
+		if isCap {
+			v += 'a'
+			v -= 'A'
+		}
+
+		// treat acronyms as words, eg for JSONData -> JSON is a whole word
+		if i+1 < len(s) {
+			next := s[i+1]
+			vIsNum := v >= '0' && v <= '9'
+			nextIsCap := next >= 'A' && next <= 'Z'
+			nextIsLow := next >= 'a' && next <= 'z'
+			nextIsNum := next >= '0' && next <= '9'
+			// add underscore if next letter case type is changed
+			if (isCap && (nextIsLow || nextIsNum)) || (isLow && (nextIsCap || nextIsNum)) || (vIsNum && (nextIsCap || nextIsLow)) {
+				if prevIgnore := ignore > 0 && i > 0 && s[i-1] == ignore; !prevIgnore {
+					if isCap && nextIsLow {
+						if prevIsCap := i > 0 && s[i-1] >= 'A' && s[i-1] <= 'Z'; prevIsCap {
+							n.WriteByte(delimiter)
+						}
+					}
+					n.WriteByte(v)
+					if isLow || vIsNum || nextIsNum {
+						n.WriteByte(delimiter)
+					}
+					continue
+				}
+			}
+		}
+
+		if (v == ' ' || v == '_' || v == '-') && v != ignore {
+			// replace space/underscore/hyphen with delimiter
+			n.WriteByte(delimiter)
+		} else {
+			n.WriteByte(v)
+		}
+	}
+
+	return n.String()
+}
