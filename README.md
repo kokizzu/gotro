@@ -3,6 +3,11 @@
 GotRo is abbreviation of `Gotong Royong`. the meaning in `Indonesia`: "do it together", "mutual cooperation". 
 This Framework is rewrite of [gokil](//gitlab.com/kokizzu/gokil), that previously use [httprouter](//github.com/julienschmidt/httprouter) but now rewritten using [fasthttprouter](//github.com/buaazp/fasthttprouter). For tutorial, read [this blog post](//kokizzu.blogspot.com/2017/05/gotro-framework-tutorial-go-redis-and.html).
 
+## Versioning
+
+versioning using this format `(YEAR-2020)`.`MDD`.`HMM`,
+so for example v1.213.1549 means it was released at `2021-02-13 15:49`
+
 ## Design Goal
 - As similar as possible to Gokil
 - Opinionated (choose the best dependency), for example by default uses int64 and float64
