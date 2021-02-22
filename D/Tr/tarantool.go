@@ -52,7 +52,7 @@ func (t *TableProp) AttachConnection(connection *Taran) {
 }
 
 func (t *TableProp) Truncate() bool {
-	return t.conn.CallBoxSpace(t.SpaceName+`:truncate`,A.X{})
+	return t.conn.CallBoxSpace(t.SpaceName+`:truncate`, A.X{})
 }
 
 type Field struct { // https://godoc.org/gopkg.in/vmihailenco/msgpack.v2#pkg-examples

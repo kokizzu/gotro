@@ -15,6 +15,7 @@ require (
 	github.com/kokizzu/gotro v0.0.0-20210222075046-ec6f2beda832
 	github.com/kr/pretty v0.2.1
 	github.com/lib/pq v1.9.0
+	github.com/meilisearch/meilisearch-go v0.14.0
 	github.com/op/go-logging v0.0.0-20160315200505-970db520ece7
 	github.com/tarantool/go-tarantool v0.0.0-20201220111423-77ce7d9a407a
 	github.com/tdewolff/minify v2.3.6+incompatible
