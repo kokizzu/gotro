@@ -43,7 +43,7 @@ type TableProp struct {
 	Uniques       []string // multicolumn unique
 	Indexes       []string
 	AutoIncrement bool
-	SpaceName     string
+	SpaceName     string // table name
 	conn          *Taran
 }
 

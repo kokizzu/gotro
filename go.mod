@@ -1,4 +1,4 @@
-module gotro
+module github.com/kokizzu/gotro
 
 go 1.15
 
