@@ -1,7 +1,7 @@
 # GotRo
 
 GotRo is abbreviation of `Gotong Royong`. the meaning in `Indonesia`: "do it together", "mutual cooperation". 
-This Framework is rewrite of [gokil](//gitlab.com/kokizzu/gokil), that previously use [httprouter](//github.com/julienschmidt/httprouter) but now rewritten using [fasthttprouter](//github.com/buaazp/fasthttprouter). For tutorial, read [this blog post](//kokizzu.blogspot.com/2017/05/gotro-framework-tutorial-go-redis-and.html).
+This Framework is rewrite of [gokil](//gitlab.com/kokizzu/gokil), that previously use [httprouter](//github.com/julienschmidt/httprouter) but now rewritten using [fasthttprouter](//github.com/buaazp/fasthttprouter). For tutorial, read [this blog post](//kokizzu.blogspot.com/2017/05/gotro-framework-tutorial-go-redis-and.html) (deprecated do not use `W` package for now, wait for full rewrite to `fiber` or use `v1.222.1557` if you need the old version).
 
 ## Versioning
 
@@ -47,7 +47,7 @@ Other than above, you must use officially provided database adapter from respect
 ## Benchmark
 
 Benchmarked using [hay](//github.com/rakyll/hey) `-c 255 -n 255000 http://localhost:3001` on i7-4720HQ [gotro](//github.com/kokizzu/gotro) almost 2x faster than [gokil](//gitlab.com/kokizzu/gokil) (23k rps vs 12k rps, thanks to `fasthttp`),
-this already includes session loading and template rendering (real-life use case, but with template auto-reloading which should be faster on production mode).
+this already includes session loading and template rendering (real-life use case, but with template auto-reloading which should be faster on production mode since it doesn't stat disk at all).
 
 ## Usage
 
@@ -90,6 +90,7 @@ gopkg.in/redis.v5
 - fix mysql adapter so it becomes usable (currently copied from Postgres'), probably wait until mysql has indexable json column, or do alters like scylladb and sqlite
 - rewrite W using [fasthttp/router](https://github.com/fasthttp/router) or [fiber](https://gofiber.io/)
 - rewrite D using prepared statements, so no more `S.Z`
+- use `nikoksr/notify` for notification and mail sending instead of tied to `W`
 - possibly refactor move cachedquery, records, etc to D package since nothing different about them, wait for cassandra version
 - [Review](//goo.gl/tBkfse) which databases we must support primarily for `D`, that can be silver bullet for extreme cases (high-write: sharding/partitioning and multi-master replication or auto-failover; full-text-search) 
   - [ActorDB](//www.actordb.com) <-- high-write
