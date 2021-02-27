@@ -1,7 +1,7 @@
 # GotRo
 
 GotRo is abbreviation of `Gotong Royong`. the meaning in `Indonesia`: "do it together", "mutual cooperation". 
-This Framework is rewrite of [gokil](//gitlab.com/kokizzu/gokil), that previously use [httprouter](//github.com/julienschmidt/httprouter) but now rewritten using [fasthttprouter](//github.com/buaazp/fasthttprouter). For tutorial, read [this blog post](//kokizzu.blogspot.com/2017/05/gotro-framework-tutorial-go-redis-and.html) (deprecated do not use `W` package for now, wait for full rewrite to `fiber` or use `v1.222.1557` if you need the old version).
+This Framework is rewrite of [gokil](//gitlab.com/kokizzu/gokil), that previously use [httprouter](//github.com/julienschmidt/httprouter) but now rewritten using [fasthttprouter](//github.com/buaazp/fasthttprouter). For tutorial, read [this blog post](//kokizzu.blogspot.com/2017/05/gotro-framework-tutorial-go-redis-and.html) (**deprecated**, do not use `W` package for now, wait for full rewrite to [fiber](//gofiber.io) or use `v1.222.1557` if you need to use the old version).
 
 ## Versioning
 
@@ -9,8 +9,8 @@ versioning using this format `(YEAR-2020)`.`MDD`.`HMM`,
 so for example v1.213.1549 means it was released at `2021-02-13 15:49`
 
 ## Design Goal
-- As similar as possible to Gokil
-- Opinionated (choose the best dependency), for example by default uses int64 and float64
+- As similar as possible to [gokil](//gitlab.com/kokizzu/gokil) that still used by my old company
+- Opinionated (choose the best dependency), for example by default uses `int64` and `float64`
 - 1-letter supporting package so we only need to write a short common function, such as: `I.ToS(1234)` to convert `int64` to `string`)
   - A - Array
   - B - Boolean
@@ -22,7 +22,7 @@ so for example v1.213.1549 means it was released at `2021-02-13 15:49`
   - I - Integer
   - S - String
   - T - Time (and Date)
-  - W - Web (the "framework") **STATUS**: usable since 2017-03-08, see `W/example-simplified/` and `W/example-complex/`
+  - W - Web (the "framework") **STATUS**: usable since 2017-03-08, see `W/example-simplified/`
   - X - Anything (aka `interface{}`)
   - Z - Z-Template Engine, that has syntax similar to ruby string interpolation `#{foo}` or any other that javascript friendly `{/* foo */}`, `[/* bar */]`, `/*! bar */`
 - Comment and examples on each type and function, so it can be viewed using godoc, something like: `godoc github.com/kokizzu/gotro/A`
@@ -47,7 +47,7 @@ Other than above, you must use officially provided database adapter from respect
 ## Benchmark
 
 Benchmarked using [hay](//github.com/rakyll/hey) `-c 255 -n 255000 http://localhost:3001` on i7-4720HQ [gotro](//github.com/kokizzu/gotro) almost 2x faster than [gokil](//gitlab.com/kokizzu/gokil) (23k rps vs 12k rps, thanks to `fasthttp`),
-this already includes session loading and template rendering (real-life use case, but with template auto-reloading which should be faster on production mode since it doesn't stat disk at all).
+this already includes session loading and template rendering (real-life use case, but with template auto-reloading which should be faster on production mode, since unlike in development mode it doesn't stat disk at all).
 
 ## Usage
 
