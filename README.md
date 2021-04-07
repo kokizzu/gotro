@@ -46,7 +46,7 @@ Other than above, you must use officially provided database adapter from respect
 
 ## Benchmark
 
-Benchmarked using [hay](//github.com/rakyll/hey) `-c 255 -n 255000 http://localhost:3001` on i7-4720HQ [gotro](//github.com/kokizzu/gotro) almost 2x faster than [gokil](//gitlab.com/kokizzu/gokil) (23k rps vs 12k rps, thanks to `fasthttp`),
+Benchmarked using [hey](//github.com/rakyll/hey) `-c 255 -n 255000 http://localhost:3001` on i7-4720HQ [gotro](//github.com/kokizzu/gotro) almost 2x faster than [gokil](//gitlab.com/kokizzu/gokil) (23k rps vs 12k rps, thanks to `fasthttp`),
 this already includes session loading and template rendering (real-life use case, but with template auto-reloading which should be faster on production mode, since unlike in development mode it doesn't stat disk at all).
 
 ## Usage
