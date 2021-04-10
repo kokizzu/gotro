@@ -35,4 +35,6 @@ git commit -m "$*" && git pull && git push origin master
 git tag -a `ruby -e 't = Time.now; print "v#{t.year%10}.#{t.month}#{t.day}.#{t.hour}.#{t.min}"'`
 git push --tags
 
-# delete tag: git tag -d v1.mdd.hhmm; git push :v1.mdd.hhmm
+# delete tag: 
+# git tag -d v1.mdd.hhmm 
+# git push -d origin v1.mdd.hhmm
