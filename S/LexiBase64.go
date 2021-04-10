@@ -1,10 +1,11 @@
 package S
 
 import (
-	"github.com/kokizzu/gotro/L"
 	"math/rand"
 	"sync/atomic"
 	"time"
+
+	"github.com/kokizzu/gotro/L"
 )
 
 const i2c_cb63 = `-0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz`
@@ -28,6 +29,8 @@ func init() {
 	}
 	ModCB63 = append(ModCB63, 9223372036854775808)
 	atom = time.Now().UnixNano()
+
+	rand.Seed(atom)
 }
 
 // convert integer to custom base-63 encoding that lexicographically correct, positive integer only
