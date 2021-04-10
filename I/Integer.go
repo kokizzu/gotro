@@ -54,9 +54,21 @@ func ToS(num int64) string {
 }
 
 // convert int to string
-//  I.ToS(1234) // `1234`
+//  I.ToStr(1234) // `1234`
 func ToStr(num int) string {
 	return strconv.Itoa(num)
+}
+
+// convert uint64 to string
+//  I.UToS(uint64(1234)) // `1234`
+func UToS(num uint64) string {
+	return strconv.FormatUint(num, 10)
+}
+
+// convert int to string
+//  I.UToStr(uint(1234)) // `1234`
+func UToStr(num uint) string {
+	return strconv.FormatUint(uint64(num), 10)
 }
 
 // int64 min of two values
@@ -77,6 +89,24 @@ func Max(a, b int64) int64 {
 	return b
 }
 
+// uint64 min of two values
+//  I.UMin(uint64(3),uint64(4)) // 3
+func UMin(a, b uint64) uint64 {
+	if a < b {
+		return a
+	}
+	return b
+}
+
+// uint64 max of two values
+//  I.UMax(uint64(3),uint64(4)) // 4
+func UMax(a, b uint64) uint64 {
+	if a > b {
+		return a
+	}
+	return b
+}
+
 // int min of two values
 //  I.MinOf(3,4) // 3
 func MinOf(a, b int) int {
@@ -89,6 +119,24 @@ func MinOf(a, b int) int {
 // int max of two values
 //  I.MaxOf(3,4) // 4
 func MaxOf(a, b int) int {
+	if a > b {
+		return a
+	}
+	return b
+}
+
+// uint min of two values
+//  I.MinOf(3,4) // 3
+func UMinOf(a, b uint) uint {
+	if a < b {
+		return a
+	}
+	return b
+}
+
+// uint max of two values
+//  I.MaxOf(3,4) // 4
+func UMaxOf(a, b uint) uint {
 	if a > b {
 		return a
 	}
