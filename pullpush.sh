@@ -32,7 +32,7 @@ read -p "Press Ctrl+C to exit, press any enter key to really commit..
 
 git commit -m "$*" && git pull && git push origin master
 
-git tag -a `ruby -e 't = Time.now; print "v#{t.year%10}.#{t.month}#{t.day}.#{t.hour}#{t.min}"'` -m "$*"
+git tag -a `ruby -e 't = Time.now; print "v#{t.year%10}.#{t.month}%02d.#{t.hour}%02d" % [t.day, t.min]'` -m "$*"
 git push --tags 
 
 # delete tag: 
