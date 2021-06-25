@@ -5,7 +5,7 @@ This Framework is rewrite of [gokil](//gitlab.com/kokizzu/gokil), that previousl
 
 ## Versioning
 
-versioning using this format `(YEAR-2020)`.`MDD`.`HMM`,
+versioning using this format 1.`(M+(YEAR-2021)*12)DD`.`HMM`,
 so for example v1.213.1549 means it was released at `2021-02-13 15:49`
 
 ## Design Goal
