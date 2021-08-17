@@ -47,6 +47,46 @@ func IsZero(val1, val2 int) int {
 	return val1
 }
 
+// simplified ternary operator (bool ? val : 0), returns second argument, if the condition (first arg) is true, returns 0 if not
+//  UI.UIf(true,3) // 3
+//  UI.UIf(false,3) // 0
+func UIf(b bool, yes uint64) uint64 {
+	if b {
+		return yes
+	}
+	return 0
+}
+
+// ternary operator (bool ? val1 : val2), returns second argument if the condition (first arg) is true, third argument if not
+//  UI.UIfElse(true,3,4) // 3
+//  UI.UIfElse(false,3,4) // 4
+func UIfElse(b bool, yes, no uint64) uint64 {
+	if b {
+		return yes
+	}
+	return no
+}
+
+// simplified ternary operator (bool ? val1==0 : val2), returns second argument, if val1 (first arg) is zero, returns val2 if not
+//  UI.UIfZero(0,3) // 3
+//  UI.UIfZero(4,3) // 4
+func UIfZero(val1, val2 uint64) uint64 {
+	if val1 == 0 {
+		return val2
+	}
+	return val1
+}
+
+// simplified ternary operator (bool ? val1==0 : val2), returns second argument, if val1 (first arg) is zero, returns val2 if not
+//  UI.UIsZero(0,3) // 3
+//  UI.UIsZero(4,3) // 4
+func UIsZero(val1, val2 uint) uint {
+	if val1 == 0 {
+		return val2
+	}
+	return val1
+}
+
 // convert int64 to string
 //  I.ToS(int64(1234)) // `1234`
 func ToS(num int64) string {
