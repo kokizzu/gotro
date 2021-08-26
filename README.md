@@ -3,6 +3,8 @@
 GotRo is abbreviation of `Gotong Royong`. the meaning in `Indonesia`: "do it together", "mutual cooperation". 
 This Framework is rewrite of [gokil](//gitlab.com/kokizzu/gokil), that previously use [httprouter](//github.com/julienschmidt/httprouter) but now rewritten using [fasthttprouter](//github.com/buaazp/fasthttprouter). For tutorial, read [this blog post](//kokizzu.blogspot.com/2017/05/gotro-framework-tutorial-go-redis-and.html) (**deprecated**, do not use `W` package for now, wait for full rewrite to [fiber](//gofiber.io) or use `v1.222.1557` if you need to use the old version).
 
+**NOTE** do not use `W/` package, since it's no longer maintained and will be replaced with [fiber](//gofiber.io) version.
+
 ## Versioning
 
 versioning using this format 1.`(M+(YEAR-2021)*12)DD`.`HMM`,
