@@ -1,6 +1,8 @@
 
 # ZTemplate
 
+a simple javascript syntax highlighting-friendly template engine.
+
 ## Template Example
 
 ```
@@ -26,7 +28,7 @@ const printDebug = true
 const fileName = `dummy.html`
 tc, err := ParseFile(autoReload, printDebug, fileName)
 if L.IsError(err, `filed Z.ParseFile: `+fileName) {
-	t.Fail()
+	return err
 }
 buff := bytes.Buffer{}
 tc.Render(&buff,M.SX{
@@ -39,7 +41,7 @@ tc.Render(&buff,M.SX{
 		`c`:`something`,
 	},
 })
-// buff.String()
+// buff.String() will contain the output below
 ```
 
 ## Example Output
