@@ -4,6 +4,10 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"strconv"
+	"strings"
+	"time"
+
 	"github.com/kokizzu/gotro/A"
 	"github.com/kokizzu/gotro/B"
 	"github.com/kokizzu/gotro/C"
@@ -12,9 +16,6 @@ import (
 	"github.com/kokizzu/gotro/L"
 	"github.com/kokizzu/gotro/M"
 	"github.com/kokizzu/gotro/S"
-	"strconv"
-	"strings"
-	"time"
 )
 
 // Any type support package
@@ -78,6 +79,66 @@ func ToU(any interface{}) uint64 {
 		L.ParentDescribe(`Can't convert to uint64`, any)
 	default:
 		L.ParentDescribe(`Can't convert to uint64`, any)
+	}
+	return 0
+}
+
+// convert any data type to int8
+//  var m interface{}
+//  m = `123`
+//  L.ParentDescribe(X.ToByte(m)) // byte(123)
+func ToByte(any interface{}) byte {
+	if any == nil {
+		return 0
+	}
+	switch v := any.(type) {
+	case int:
+		return byte(v)
+	case uint:
+		return byte(v)
+	case int8:
+		return byte(v)
+	case int16:
+		return byte(v)
+	case int32:
+		return byte(v)
+	case int64:
+		return byte(v)
+	case uint8:
+		return v
+	case uint16:
+		return byte(v)
+	case uint32:
+		return byte(v)
+	case uint64:
+		return byte(v)
+	case float32:
+		return byte(v)
+	case float64:
+		return byte(v)
+	case bool:
+		if v {
+			return 1
+		}
+		return 0
+	case []byte:
+		if val, err := strconv.ParseInt(string(v), 10, 64); err == nil {
+			return byte(val)
+		}
+		if val, err := strconv.ParseFloat(string(v), 64); err == nil {
+			return byte(val)
+		}
+		L.ParentDescribe(`Can't convert to byte`, any)
+	case string:
+		if val, err := strconv.ParseInt(v, 10, 64); err == nil {
+			return byte(val)
+		}
+		if val, err := strconv.ParseFloat(v, 64); err == nil {
+			return byte(val)
+		}
+		L.ParentDescribe(`Can't convert to byte`, any)
+	default:
+		L.ParentDescribe(`Can't convert to byte`, any)
 	}
 	return 0
 }
