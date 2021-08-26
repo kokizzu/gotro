@@ -12,9 +12,10 @@ a simple javascript syntax-friendly template engine (it means in the javascript 
 </head>
 <body>
 <script>
-  const a = '#{ aString }';
+  const a = +'#{ aNumber }';
   const b = [/* anArray */];
   const c = {/* aMap */ };
+  const d = '#{aString}';
 </script>
 </body>
 </html>
@@ -33,13 +34,14 @@ if L.IsError(err, `filed Z.ParseFile: `+fileName) {
 buff := bytes.Buffer{}
 tc.Render(&buff,M.SX{
 	`title`: `this is a title`,
-	`aString`: `this is a string`,
-	`anArray`: A.X{1,`b`,`c`,4},
-	`aMap`: M.SX{
+	`aNumber`: 123,
+	`anArray`: A.X{1,`b`,`c`,4}, // == []interface{}
+	`aMap`: M.SX{ // == map[string]interface{}
 		`a`:1,
 		`b`:`test`,
 		`c`:`something`,
 	},
+	`aString`: `ayaya`,
 })
 // buff.String() will contain the output below
 ```
@@ -52,9 +54,10 @@ tc.Render(&buff,M.SX{
 </head>
 <body>
 <script>
-  const a = 'this is a string';
+  const a = +'123';
   const b = [1,"b","c",4];
   const c = {"a":1,"b":"test","c":"something"};
+  const d = 'ayaya';
 </script>
 </body>
 </html>
