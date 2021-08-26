@@ -1,7 +1,7 @@
 
 # ZTemplate
 
-a simple javascript syntax highlighting-friendly template engine.
+a simple javascript syntax-friendly template engine (it means in the javascript editor/IDE, it wont show a lexical/syntax error).
 
 ## Template Example
 
