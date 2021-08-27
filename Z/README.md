@@ -1,7 +1,7 @@
 
 # ZTemplate
 
-a simple javascript syntax-friendly template engine (it means in the javascript editor/IDE, it wont show a lexical/syntax error, the autocomplete will still works).
+a simple javascript syntax-friendly template engine (it means in the javascript editor/IDE, it wont show a lexical/syntax error or wrong syntax highlighting, the autocomplete will still works).
 
 ## Template Example
 
