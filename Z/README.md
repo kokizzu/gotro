@@ -6,10 +6,10 @@ a simple javascript syntax-friendly template engine (it means in the javascript 
 ## Syntax
 
 There's 4 tags:
-- /*! mapKey */ -- for HTML or CSS
-- #{mapKey} -- for HTML, or if quoted can be used for Javascript string
-- [/* mapKey */] -- for Javascript array
-- {/* mapKey */} -- for Javascript object
+- `/*! mapKey */` -- for HTML or CSS
+- `#{mapKey}` -- for HTML, or if quoted can be used for Javascript string
+- `[/* mapKey */]` -- for Javascript array
+- `{/* mapKey */}` -- for Javascript object
 
 You can switch around, it doesn't matter, but it would be better to use each differently so the frontend guy (if not yourself) knows what's the type.
 
