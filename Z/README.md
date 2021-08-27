@@ -14,7 +14,7 @@ a simple javascript syntax-friendly template engine (it means in the javascript 
 <script>
   const a = +'#{ aNumber }';
   const b = [/* anArray */];
-  const c = {/* aMap */ };
+  const c = {/* aMap */};
   const d = '#{aString}';
 </script>
 </body>
