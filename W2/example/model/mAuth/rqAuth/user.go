@@ -19,7 +19,9 @@ OFFSET ` + X.ToS(offset)
 	}
 	s.Adapter.QuerySql(query, func(row []interface{}) {
 		obj := &Users{}
-		res = append(res, obj.FromArray(row))
+		obj.FromArray(row)
+		obj.CensorFields()
+		res = append(res, obj)
 	})
 	return
 }

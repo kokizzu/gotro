@@ -10,7 +10,6 @@ import (
 )
 
 func ConnectTarantool() *tarantool.Connection {
-
 	hostPort := fmt.Sprintf(`%s:%s`,
 		TARANTOOL_HOST,
 		TARANTOOL_PORT,

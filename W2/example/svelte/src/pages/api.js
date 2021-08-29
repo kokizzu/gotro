@@ -1,7 +1,7 @@
 // can be hit using with /api/[ApiName]
-export const LastUpdatedAt = 1630267876
+export const LastUpdatedAt = 1630271387
 export const APIs = {
-	PlayerChangeEmail: {
+	UserChangeEmail: {
 		in: {
 		}, out: {
 		}, read: [
@@ -10,7 +10,7 @@ export const APIs = {
 		], deps: [
 		], err: []
 	},
-	PlayerChangePassword: {
+	UserChangePassword: {
 		in: {
 			password: '', // string
 			newPassword: '', // string
@@ -32,10 +32,10 @@ export const APIs = {
 			[403, `session expired or logged out`],
 			[500, `cannot encrypt password`],
 			[500, `failed to change password`],
-			[500, `player not found`],
+			[500, `user not found`],
 		]
 	},
-	PlayerConfirmEmail: {
+	UserConfirmEmail: {
 		in: {
 		}, out: {
 		}, read: [
@@ -44,7 +44,7 @@ export const APIs = {
 		], deps: [
 		], err: []
 	},
-	PlayerForgotPassword: {
+	UserForgotPassword: {
 		in: {
 			email: '', // string
 			changePassCallback: '', // string
@@ -60,7 +60,7 @@ export const APIs = {
 			[500, `failed to update row on database`],
 		]
 	},
-	PlayerList: {
+	UserList: {
 		in: {
 			limit: 0, // uint32
 			offset: 0, // uint32
@@ -68,7 +68,7 @@ export const APIs = {
 			limit: 0, // uint32
 			offset: 0, // uint32
 			total: 0, // uint32
-			players: [{
+			users: [{
 				id:  '', // uint64
 				email:  '', // string
 				password:  '', // string
@@ -96,7 +96,7 @@ export const APIs = {
 		], deps: [
 		], err: []
 	},
-	PlayerLogin: {
+	UserLogin: {
 		in: {
 			email: '', // string
 			password: '', // string
@@ -115,7 +115,7 @@ export const APIs = {
 			[500, `cannot create session`],
 		]
 	},
-	PlayerLogout: {
+	UserLogout: {
 		in: {
 		}, out: {
 			loggedOut: false, // bool
@@ -127,11 +127,11 @@ export const APIs = {
 		], deps: [
 		], err: []
 	},
-	PlayerProfile: {
+	UserProfile: {
 		in: {
 			sessionToken: '', //string | player login token
 		}, out: {
-			player: {
+			user: {
 				id:  '', // uint64
 				email:  '', // string
 				password:  '', // string
@@ -163,17 +163,17 @@ export const APIs = {
 			[400, `session missing from database, wrong env?`],
 			[400, `token expired`],
 			[403, `session expired or logged out`],
-			[404, `player does not exists on database: `],
+			[404, `user does not exists on database: `],
 		]
 	},
-	PlayerRegister: {
+	UserRegister: {
 		in: {
 			userName: '', // string
 			email: '', // string
 			password: '', // string
 		}, out: {
 			createdAt: 0, // int64
-			playerId: '', // uint64
+			userId: '', // uint64
 		}, read: [
 		], write: [
 			"Auth.Users",
@@ -187,7 +187,7 @@ export const APIs = {
 			[500, `cannot encrypt password`],
 		]
 	},
-	PlayerResetPassword: {
+	UserResetPassword: {
 		in: {
 			password: '', // string
 			secretCode: '', // string
@@ -200,34 +200,12 @@ export const APIs = {
 		], stat: [
 		], deps: [
 		], err: [
-			[400, `cannot find player, wrong env?`],
+			[400, `cannot find user, wrong env?`],
 			[400, `invalid hash`],
 			[400, `invalid secret code`],
 			[400, `secret code expired`],
 			[500, `cannot encrypt password`],
-			[500, `failed to update player password`],
-		]
-	},
-	PlayerUpdateProfile: {
-		in: {
-			userName: '', // string
-			sessionToken: '', //string | player login token
-		}, out: {
-			ok: false, // bool
-		}, read: [
-			"Auth.Sessions",
-		], write: [
-			"Auth.Users",
-		], stat: [
-		], deps: [
-		], err: [
-			[400, `invalid session token`],
-			[400, `missing session token`],
-			[400, `player not found in database. wrong env?`],
-			[400, `session missing from database, wrong env?`],
-			[400, `token expired`],
-			[403, `session expired or logged out`],
-			[500, `failed to update profile`],
+			[500, `failed to update user password`],
 		]
 	},
 }

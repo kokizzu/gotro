@@ -6,7 +6,6 @@ import (
 
 	"github.com/kokizzu/gotro/L"
 	"github.com/kokizzu/gotro/S"
-	"github.com/kokizzu/gotro/W2"
 	"github.com/kokizzu/gotro/W2/example/conf"
 	"github.com/kokizzu/gotro/W2/example/model/mAuth/wcAuth"
 	"github.com/kokizzu/id64"
@@ -18,17 +17,17 @@ import (
 const testDomain = `@localhost`
 
 func TestMain(t *testing.M) {
-	W2.LoadTestEnv()
+	L.Print(conf.LoadTestEnv())
 
 	// ensure admin account exists
 	d := NewDomain()
-	player := wcAuth.NewUsersMutator(d.Taran)
-	player.Id = 1
-	if !player.FindById() {
-		player.Email = conf.SuperAdmin
-		player.SetEncryptPassword(player.Email)
-		player.CreatedAt = fastime.UnixNow()
-		if !player.DoUpdateById() {
+	user := wcAuth.NewUsersMutator(d.Taran)
+	user.Id = 1
+	if !user.FindById() {
+		user.Email = conf.SuperAdmin
+		user.SetEncryptPassword(user.Email)
+		user.CreatedAt = fastime.UnixNow()
+		if !user.DoUpdateById() {
 			panic(`cannot create superadmin`)
 		}
 	}
@@ -36,152 +35,122 @@ func TestMain(t *testing.M) {
 	t.Run()
 }
 
-func TestDomain_PlayerLoginRegisterFlow(t *testing.T) {
+func TestDomain_UserLoginRegisterFlow(t *testing.T) {
 	d := NewDomain()
 	name := id64.ID().String()
 	pass := lexid.ID()
 	email := name + testDomain
 	t.Run(`register should ok`, func(t *testing.T) {
-		in := &PlayerRegister_In{
+		in := &UserRegister_In{
 			Email:    email,
 			Password: pass,
 			UserName: name,
 		}
-		out := d.PlayerRegister(in)
+		out := d.UserRegister(in)
 		assert.Empty(t, out.Error)
 	})
 
 	t.Run(`reregister same email should fail`, func(t *testing.T) {
-		in := &PlayerRegister_In{
+		in := &UserRegister_In{
 			Email:    email,
 			Password: pass,
 			UserName: name + `1`,
 		}
-		out := d.PlayerRegister(in)
-		assert.NotEmpty(t, out.Error)
-		assert.NotEqual(t, 200, out.StatusCode)
-		assert.NotEqual(t, 0, out.StatusCode)
-	})
-
-	t.Run(`reregister same userName should fail`, func(t *testing.T) {
-		in := &PlayerRegister_In{
-			Email:    email + `1`,
-			Password: pass,
-			UserName: name,
-		}
-		out := d.PlayerRegister(in)
+		out := d.UserRegister(in)
 		assert.NotEmpty(t, out.Error)
 		assert.NotEqual(t, 200, out.StatusCode)
 		assert.NotEqual(t, 0, out.StatusCode)
 	})
 
 	t.Run(`login with unregistered user should fail`, func(t *testing.T) {
-		in := &PlayerLogin_In{
+		in := &UserLogin_In{
 			Email:    name + `notExists` + testDomain,
 			Password: pass,
 		}
-		out := d.PlayerLogin(in)
+		out := d.UserLogin(in)
 		assert.NotEmpty(t, out.Error)
 	})
 
 	t.Run(`login with wrong password should fail`, func(t *testing.T) {
-		in := &PlayerLogin_In{
+		in := &UserLogin_In{
 			Email:    email,
 			Password: name,
 		}
-		out := d.PlayerLogin(in)
+		out := d.UserLogin(in)
 		assert.NotEmpty(t, out.Error)
 	})
 
 	sessionToken := ``
 	t.Run(`login with correct password should ok`, func(t *testing.T) {
-		in := &PlayerLogin_In{
+		in := &UserLogin_In{
 			Email:    email,
 			Password: pass,
 		}
-		out := d.PlayerLogin(in)
+		out := d.UserLogin(in)
 		assert.Empty(t, out.Error)
 		assert.NotEmpty(t, out.SessionToken)
 		sessionToken = out.SessionToken
 	})
 
 	t.Run(`check profile with active session should ok`, func(t *testing.T) {
-		in := &PlayerProfile_In{NewRC(sessionToken)}
-		out := d.PlayerProfile(in)
+		in := &UserProfile_In{NewRC(sessionToken)}
+		out := d.UserProfile(in)
 		assert.Empty(t, out.Error)
-		assert.NotNil(t, out.Player)
-		if out.Player == nil {
+		assert.NotNil(t, out.User)
+		if out.User == nil {
 			t.Failed()
 			return
 		}
-		assert.Equal(t, email, out.Player.Email)
+		assert.Equal(t, email, out.User.Email)
 	})
 
 	t.Run(`change password with wrong password must fail`, func(t *testing.T) {
-		in := &PlayerChangePassword_In{
+		in := &UserChangePassword_In{
 			RequestCommon: NewRC(sessionToken),
 			Password:      ``,
 			NewPassword:   `abc`,
 		}
-		out := d.PlayerChangePassword(in)
+		out := d.UserChangePassword(in)
 		assert.NotEmpty(t, out.Error)
 	})
 
 	t.Run(`change password with correct password must ok`, func(t *testing.T) {
-		in := &PlayerChangePassword_In{
+		in := &UserChangePassword_In{
 			RequestCommon: NewRC(sessionToken),
 			Password:      pass,
 			NewPassword:   email,
 		}
-		out := d.PlayerChangePassword(in)
+		out := d.UserChangePassword(in)
 		assert.Empty(t, out.Error)
-	})
-
-	t.Run(`change userName with unique username must ok`, func(t *testing.T) {
-		in := &PlayerUpdateProfile_In{
-			RequestCommon: NewRC(sessionToken),
-			UserName:      name + `-dummy`,
-		}
-		out := d.PlayerUpdateProfile(in)
-		assert.Empty(t, out.Error)
-	})
-
-	t.Run(`change userName with existing username must fail`, func(t *testing.T) {
-		in := &PlayerUpdateProfile_In{
-			RequestCommon: NewRC(sessionToken),
-			UserName:      S.LeftOf(conf.SuperAdmin, `@`),
-		}
-		out := d.PlayerUpdateProfile(in)
-		assert.NotEmpty(t, out.Error)
 	})
 
 	t.Run(`logout should ok`, func(t *testing.T) {
-		in := &PlayerLogout_In{RequestCommon{SessionToken: sessionToken}}
-		out := d.PlayerLogout(in)
+		in := &UserLogout_In{RequestCommon{SessionToken: sessionToken}}
+		out := d.UserLogout(in)
 		assert.Equal(t, out.LoggedOut, true)
 	})
 
 	t.Run(`check profile with expired session should fail`, func(t *testing.T) {
-		in := &PlayerProfile_In{NewRC(sessionToken)}
-		out := d.PlayerProfile(in)
+		in := &UserProfile_In{NewRC(sessionToken)}
+		out := d.UserProfile(in)
 		assert.Equal(t, 403, out.StatusCode)
 	})
 }
 
-func TestDomain_PlayerList(t *testing.T) {
+func TestDomain_UserList(t *testing.T) {
 	d := NewDomain()
 
 	// if fail, then probably no data
-	t.Run(`list player must ok`, func(t *testing.T) {
-		in := &PlayerList_In{
+	t.Run(`list user must ok`, func(t *testing.T) {
+		in := &UserList_In{
 			Limit:  2,
 			Offset: 0,
 		}
-		out := d.PlayerList(in)
+		out := d.UserList(in)
 		assert.Empty(t, out.Error)
-		assert.NotEmpty(t, out.Players)
-		assert.Greater(t, len(out.Players), 1)
-		L.Describe(out.Players)
+		assert.NotEmpty(t, out.Users)
+		assert.Greater(t, len(out.Users), 1)
+		L.Describe(out.Users)
 	})
 }
 
@@ -204,88 +173,88 @@ func dummyUser(d *Domain) (*wcAuth.UsersMutator, string) {
 	return p1, sess.SessionToken
 }
 
-func TestDomain_PlayerForgotReset(t *testing.T) {
+func TestDomain_UserForgotReset(t *testing.T) {
 	d := NewDomain()
 	p1, _ := dummyUser(d)
 	hash := S.EncodeCB63(int64(p1.Id), 1)
 	newPass := `12345678`
 
-	t.Run(`player forgot password must ok`, func(t *testing.T) {
-		in := &PlayerForgotPassword_In{
+	t.Run(`user forgot password must ok`, func(t *testing.T) {
+		in := &UserForgotPassword_In{
 			Email: p1.Email,
 		}
-		out := d.PlayerForgotPassword(in)
+		out := d.UserForgotPassword(in)
 		time.Sleep(1 * time.Second)
 		assert.Empty(t, out.Error)
 	})
 
-	t.Run(`player login with old password must ok`, func(t *testing.T) {
-		loginIn := &PlayerLogin_In{Email: p1.Email, Password: p1.Email}
-		loginOut := d.PlayerLogin(loginIn)
+	t.Run(`user login with old password must ok`, func(t *testing.T) {
+		loginIn := &UserLogin_In{Email: p1.Email, Password: p1.Email}
+		loginOut := d.UserLogin(loginIn)
 		assert.Empty(t, loginOut.Error)
 	})
 
-	t.Run(`player forgot password with invalid email must fail`, func(t *testing.T) {
-		in := &PlayerForgotPassword_In{
+	t.Run(`user forgot password with invalid email must fail`, func(t *testing.T) {
+		in := &UserForgotPassword_In{
 			Email: id64.ID().String() + testDomain,
 		}
-		out := d.PlayerForgotPassword(in)
+		out := d.UserForgotPassword(in)
 		assert.NotEmpty(t, out.Error)
 	})
 
 	p1.FindById() // to get SecretCode
 
-	t.Run(`player reset password with incorrect secretCode must fail`, func(t *testing.T) {
-		in := &PlayerResetPassword_In{
+	t.Run(`user reset password with incorrect secretCode must fail`, func(t *testing.T) {
+		in := &UserResetPassword_In{
 			Password:   newPass,
 			SecretCode: `duar`,
 			Hash:       hash,
 		}
-		out := d.PlayerResetPassword(in)
+		out := d.UserResetPassword(in)
 		assert.NotEmpty(t, out.Error)
 	})
 
-	t.Run(`player login with new password must fail`, func(t *testing.T) {
-		loginIn := &PlayerLogin_In{Email: p1.Email, Password: newPass}
-		loginOut := d.PlayerLogin(loginIn)
+	t.Run(`user login with new password must fail`, func(t *testing.T) {
+		loginIn := &UserLogin_In{Email: p1.Email, Password: newPass}
+		loginOut := d.UserLogin(loginIn)
 		assert.NotEmpty(t, loginOut.Error)
 	})
 
-	t.Run(`player reset password with incorrect hash must fail`, func(t *testing.T) {
-		in := &PlayerResetPassword_In{
+	t.Run(`user reset password with incorrect hash must fail`, func(t *testing.T) {
+		in := &UserResetPassword_In{
 			Password:   newPass,
 			SecretCode: p1.SecretCode,
 			Hash:       `-`,
 		}
-		out := d.PlayerResetPassword(in)
+		out := d.UserResetPassword(in)
 		assert.NotEmpty(t, out.Error)
 	})
 
-	t.Run(`player login with new password must fail`, func(t *testing.T) {
-		loginIn := &PlayerLogin_In{Email: p1.Email, Password: newPass}
-		loginOut := d.PlayerLogin(loginIn)
+	t.Run(`user login with new password must fail`, func(t *testing.T) {
+		loginIn := &UserLogin_In{Email: p1.Email, Password: newPass}
+		loginOut := d.UserLogin(loginIn)
 		assert.NotEmpty(t, loginOut.Error)
 	})
 
-	t.Run(`player reset password must ok`, func(t *testing.T) {
-		in := &PlayerResetPassword_In{
+	t.Run(`user reset password must ok`, func(t *testing.T) {
+		in := &UserResetPassword_In{
 			Password:   newPass,
 			SecretCode: p1.SecretCode,
 			Hash:       hash,
 		}
-		out := d.PlayerResetPassword(in)
+		out := d.UserResetPassword(in)
 		assert.Empty(t, out.Error)
 	})
 
-	t.Run(`player relogin with old password must fail`, func(t *testing.T) {
-		loginIn := &PlayerLogin_In{Email: p1.Email, Password: p1.Email}
-		loginOut := d.PlayerLogin(loginIn)
+	t.Run(`user relogin with old password must fail`, func(t *testing.T) {
+		loginIn := &UserLogin_In{Email: p1.Email, Password: p1.Email}
+		loginOut := d.UserLogin(loginIn)
 		assert.NotEmpty(t, loginOut.Error)
 	})
 
-	t.Run(`player login with new password must ok`, func(t *testing.T) {
-		loginIn := &PlayerLogin_In{Email: p1.Email, Password: newPass}
-		loginOut := d.PlayerLogin(loginIn)
+	t.Run(`user login with new password must ok`, func(t *testing.T) {
+		loginIn := &UserLogin_In{Email: p1.Email, Password: newPass}
+		loginOut := d.UserLogin(loginIn)
 		assert.Empty(t, loginOut.Error)
 	})
 }

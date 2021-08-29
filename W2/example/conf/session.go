@@ -23,20 +23,20 @@ const CookieLogoutValue = `LOGOUT`
 const CookieDays = 30
 
 type Session struct {
-	PlayerId  uint64
+	UserId    uint64
 	ExpiredAt int64
 	Email     string
 }
 
 func (u *Session) MarshalEnkodo(enc *enkodo.Encoder) (err error) {
-	enc.Uint64(u.PlayerId)
+	enc.Uint64(u.UserId)
 	enc.Int64(u.ExpiredAt)
 	enc.String(u.Email)
 	return
 }
 
 func (u *Session) UnmarshalEnkodo(dec *enkodo.Decoder) (err error) {
-	if u.PlayerId, err = dec.Uint64(); err != nil {
+	if u.UserId, err = dec.Uint64(); err != nil {
 		return
 	}
 	if u.ExpiredAt, err = dec.Int64(); err != nil {

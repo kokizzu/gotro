@@ -18,94 +18,86 @@ func cliArgsRunner(args []string) {
 	)
 
 	patterns := map[string]map[string]int{
-		domain.PlayerChangeEmail_Url:    {},
-		domain.PlayerChangePassword_Url: {},
-		domain.PlayerConfirmEmail_Url:   {},
-		domain.PlayerForgotPassword_Url: {},
-		domain.PlayerList_Url:           {},
-		domain.PlayerLogin_Url:          {},
-		domain.PlayerLogout_Url:         {},
-		domain.PlayerProfile_Url:        {},
-		domain.PlayerRegister_Url:       {},
-		domain.PlayerResetPassword_Url:  {},
-		domain.PlayerUpdateProfile_Url:  {},
+		domain.UserChangeEmail_Url:    {},
+		domain.UserChangePassword_Url: {},
+		domain.UserConfirmEmail_Url:   {},
+		domain.UserForgotPassword_Url: {},
+		domain.UserList_Url:           {},
+		domain.UserLogin_Url:          {},
+		domain.UserLogout_Url:         {},
+		domain.UserProfile_Url:        {},
+		domain.UserRegister_Url:       {},
+		domain.UserResetPassword_Url:  {},
 	}
 	switch pattern := cliUrlPattern(args[0], patterns); pattern {
 
-	case domain.PlayerChangeEmail_Url:
-		in := domain.PlayerChangeEmail_In{}
+	case domain.UserChangeEmail_Url:
+		in := domain.UserChangeEmail_In{}
 		in.FromCli(os.Stdin, tracerCtx)
-		out := vdomain.PlayerChangeEmail(&in)
+		out := vdomain.UserChangeEmail(&in)
 		out.ToCli(os.Stdout)
 		in.ToCli(os.Stdout, &out)
 
-	case domain.PlayerChangePassword_Url:
-		in := domain.PlayerChangePassword_In{}
+	case domain.UserChangePassword_Url:
+		in := domain.UserChangePassword_In{}
 		in.FromCli(os.Stdin, tracerCtx)
-		out := vdomain.PlayerChangePassword(&in)
+		out := vdomain.UserChangePassword(&in)
 		out.ToCli(os.Stdout)
 		in.ToCli(os.Stdout, &out)
 
-	case domain.PlayerConfirmEmail_Url:
-		in := domain.PlayerConfirmEmail_In{}
+	case domain.UserConfirmEmail_Url:
+		in := domain.UserConfirmEmail_In{}
 		in.FromCli(os.Stdin, tracerCtx)
-		out := vdomain.PlayerConfirmEmail(&in)
+		out := vdomain.UserConfirmEmail(&in)
 		out.ToCli(os.Stdout)
 		in.ToCli(os.Stdout, &out)
 
-	case domain.PlayerForgotPassword_Url:
-		in := domain.PlayerForgotPassword_In{}
+	case domain.UserForgotPassword_Url:
+		in := domain.UserForgotPassword_In{}
 		in.FromCli(os.Stdin, tracerCtx)
-		out := vdomain.PlayerForgotPassword(&in)
+		out := vdomain.UserForgotPassword(&in)
 		out.ToCli(os.Stdout)
 		in.ToCli(os.Stdout, &out)
 
-	case domain.PlayerList_Url:
-		in := domain.PlayerList_In{}
+	case domain.UserList_Url:
+		in := domain.UserList_In{}
 		in.FromCli(os.Stdin, tracerCtx)
-		out := vdomain.PlayerList(&in)
+		out := vdomain.UserList(&in)
 		out.ToCli(os.Stdout)
 		in.ToCli(os.Stdout, &out)
 
-	case domain.PlayerLogin_Url:
-		in := domain.PlayerLogin_In{}
+	case domain.UserLogin_Url:
+		in := domain.UserLogin_In{}
 		in.FromCli(os.Stdin, tracerCtx)
-		out := vdomain.PlayerLogin(&in)
+		out := vdomain.UserLogin(&in)
 		out.ToCli(os.Stdout)
 		in.ToCli(os.Stdout, &out)
 
-	case domain.PlayerLogout_Url:
-		in := domain.PlayerLogout_In{}
+	case domain.UserLogout_Url:
+		in := domain.UserLogout_In{}
 		in.FromCli(os.Stdin, tracerCtx)
-		out := vdomain.PlayerLogout(&in)
+		out := vdomain.UserLogout(&in)
 		out.ToCli(os.Stdout)
 		in.ToCli(os.Stdout, &out)
 
-	case domain.PlayerProfile_Url:
-		in := domain.PlayerProfile_In{}
+	case domain.UserProfile_Url:
+		in := domain.UserProfile_In{}
 		in.FromCli(os.Stdin, tracerCtx)
-		out := vdomain.PlayerProfile(&in)
+		out := vdomain.UserProfile(&in)
 		out.ToCli(os.Stdout)
 		in.ToCli(os.Stdout, &out)
 
-	case domain.PlayerRegister_Url:
-		in := domain.PlayerRegister_In{}
+	case domain.UserRegister_Url:
+		in := domain.UserRegister_In{}
 		in.FromCli(os.Stdin, tracerCtx)
-		out := vdomain.PlayerRegister(&in)
+		out := vdomain.UserRegister(&in)
 		out.ToCli(os.Stdout)
 		in.ToCli(os.Stdout, &out)
 
-	case domain.PlayerResetPassword_Url:
-		in := domain.PlayerResetPassword_In{}
+	case domain.UserResetPassword_Url:
+		in := domain.UserResetPassword_In{}
 		in.FromCli(os.Stdin, tracerCtx)
-		out := vdomain.PlayerResetPassword(&in)
-		out.ToCli(os.Stdout)
-		in.ToCli(os.Stdout, &out)
-
-	case domain.PlayerUpdateProfile_Url:
-		in := domain.PlayerUpdateProfile_In{}
-		in.FromCli(os.Stdin, tracerCtx)
-		out := vdomain.PlayerUpdateProfile(&in)
+		out := vdomain.UserResetPassword(&in)
 		out.ToCli(os.Stdout)
 		in.ToCli(os.Stdout, &out)
 

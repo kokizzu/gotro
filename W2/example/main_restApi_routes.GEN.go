@@ -14,167 +14,152 @@ func webApiInitRoutes(app *fiber.App) *domain.Domain {
 		vdomain = domain.NewDomain()
 	)
 
-	app.All(conf.API_PREFIX+domain.PlayerChangeEmail_Url, func(ctx *fiber.Ctx) error {
-		url := domain.PlayerChangeEmail_Url
+	app.All(conf.API_PREFIX+domain.UserChangeEmail_Url, func(ctx *fiber.Ctx) error {
+		url := domain.UserChangeEmail_Url
 		tracerCtx, span := conf.T.Start(ctx.Context(), url, trace.WithSpanKind(trace.SpanKindServer))
 		defer span.End()
 
-		in := domain.PlayerChangeEmail_In{}
+		in := domain.UserChangeEmail_In{}
 		if err := webApiParseInput(ctx, &in.RequestCommon, &in, url); err != nil {
 			return err
 		}
 		in.FromFiberCtx(ctx, tracerCtx)
-		out := vdomain.PlayerChangeEmail(&in)
+		out := vdomain.UserChangeEmail(&in)
 		out.ToFiberCtx(ctx, &in.RequestCommon, &in)
 		return in.ToFiberCtx(ctx, out)
 	})
 
-	app.All(conf.API_PREFIX+domain.PlayerChangePassword_Url, func(ctx *fiber.Ctx) error {
-		url := domain.PlayerChangePassword_Url
+	app.All(conf.API_PREFIX+domain.UserChangePassword_Url, func(ctx *fiber.Ctx) error {
+		url := domain.UserChangePassword_Url
 		tracerCtx, span := conf.T.Start(ctx.Context(), url, trace.WithSpanKind(trace.SpanKindServer))
 		defer span.End()
 
-		in := domain.PlayerChangePassword_In{}
+		in := domain.UserChangePassword_In{}
 		if err := webApiParseInput(ctx, &in.RequestCommon, &in, url); err != nil {
 			return err
 		}
 		in.FromFiberCtx(ctx, tracerCtx)
-		out := vdomain.PlayerChangePassword(&in)
+		out := vdomain.UserChangePassword(&in)
 		out.ToFiberCtx(ctx, &in.RequestCommon, &in)
 		return in.ToFiberCtx(ctx, out)
 	})
 
-	app.All(conf.API_PREFIX+domain.PlayerConfirmEmail_Url, func(ctx *fiber.Ctx) error {
-		url := domain.PlayerConfirmEmail_Url
+	app.All(conf.API_PREFIX+domain.UserConfirmEmail_Url, func(ctx *fiber.Ctx) error {
+		url := domain.UserConfirmEmail_Url
 		tracerCtx, span := conf.T.Start(ctx.Context(), url, trace.WithSpanKind(trace.SpanKindServer))
 		defer span.End()
 
-		in := domain.PlayerConfirmEmail_In{}
+		in := domain.UserConfirmEmail_In{}
 		if err := webApiParseInput(ctx, &in.RequestCommon, &in, url); err != nil {
 			return err
 		}
 		in.FromFiberCtx(ctx, tracerCtx)
-		out := vdomain.PlayerConfirmEmail(&in)
+		out := vdomain.UserConfirmEmail(&in)
 		out.ToFiberCtx(ctx, &in.RequestCommon, &in)
 		return in.ToFiberCtx(ctx, out)
 	})
 
-	app.All(conf.API_PREFIX+domain.PlayerForgotPassword_Url, func(ctx *fiber.Ctx) error {
-		url := domain.PlayerForgotPassword_Url
+	app.All(conf.API_PREFIX+domain.UserForgotPassword_Url, func(ctx *fiber.Ctx) error {
+		url := domain.UserForgotPassword_Url
 		tracerCtx, span := conf.T.Start(ctx.Context(), url, trace.WithSpanKind(trace.SpanKindServer))
 		defer span.End()
 
-		in := domain.PlayerForgotPassword_In{}
+		in := domain.UserForgotPassword_In{}
 		if err := webApiParseInput(ctx, &in.RequestCommon, &in, url); err != nil {
 			return err
 		}
 		in.FromFiberCtx(ctx, tracerCtx)
-		out := vdomain.PlayerForgotPassword(&in)
+		out := vdomain.UserForgotPassword(&in)
 		out.ToFiberCtx(ctx, &in.RequestCommon, &in)
 		return in.ToFiberCtx(ctx, out)
 	})
 
-	app.All(conf.API_PREFIX+domain.PlayerList_Url, func(ctx *fiber.Ctx) error {
-		url := domain.PlayerList_Url
+	app.All(conf.API_PREFIX+domain.UserList_Url, func(ctx *fiber.Ctx) error {
+		url := domain.UserList_Url
 		tracerCtx, span := conf.T.Start(ctx.Context(), url, trace.WithSpanKind(trace.SpanKindServer))
 		defer span.End()
 
-		in := domain.PlayerList_In{}
+		in := domain.UserList_In{}
 		if err := webApiParseInput(ctx, &in.RequestCommon, &in, url); err != nil {
 			return err
 		}
 		in.FromFiberCtx(ctx, tracerCtx)
-		out := vdomain.PlayerList(&in)
+		out := vdomain.UserList(&in)
 		out.ToFiberCtx(ctx, &in.RequestCommon, &in)
 		return in.ToFiberCtx(ctx, out)
 	})
 
-	app.All(conf.API_PREFIX+domain.PlayerLogin_Url, func(ctx *fiber.Ctx) error {
-		url := domain.PlayerLogin_Url
+	app.All(conf.API_PREFIX+domain.UserLogin_Url, func(ctx *fiber.Ctx) error {
+		url := domain.UserLogin_Url
 		tracerCtx, span := conf.T.Start(ctx.Context(), url, trace.WithSpanKind(trace.SpanKindServer))
 		defer span.End()
 
-		in := domain.PlayerLogin_In{}
+		in := domain.UserLogin_In{}
 		if err := webApiParseInput(ctx, &in.RequestCommon, &in, url); err != nil {
 			return err
 		}
 		in.FromFiberCtx(ctx, tracerCtx)
-		out := vdomain.PlayerLogin(&in)
+		out := vdomain.UserLogin(&in)
 		out.ToFiberCtx(ctx, &in.RequestCommon, &in)
 		return in.ToFiberCtx(ctx, out)
 	})
 
-	app.All(conf.API_PREFIX+domain.PlayerLogout_Url, func(ctx *fiber.Ctx) error {
-		url := domain.PlayerLogout_Url
+	app.All(conf.API_PREFIX+domain.UserLogout_Url, func(ctx *fiber.Ctx) error {
+		url := domain.UserLogout_Url
 		tracerCtx, span := conf.T.Start(ctx.Context(), url, trace.WithSpanKind(trace.SpanKindServer))
 		defer span.End()
 
-		in := domain.PlayerLogout_In{}
+		in := domain.UserLogout_In{}
 		if err := webApiParseInput(ctx, &in.RequestCommon, &in, url); err != nil {
 			return err
 		}
 		in.FromFiberCtx(ctx, tracerCtx)
-		out := vdomain.PlayerLogout(&in)
+		out := vdomain.UserLogout(&in)
 		out.ToFiberCtx(ctx, &in.RequestCommon, &in)
 		return in.ToFiberCtx(ctx, out)
 	})
 
-	app.All(conf.API_PREFIX+domain.PlayerProfile_Url, func(ctx *fiber.Ctx) error {
-		url := domain.PlayerProfile_Url
+	app.All(conf.API_PREFIX+domain.UserProfile_Url, func(ctx *fiber.Ctx) error {
+		url := domain.UserProfile_Url
 		tracerCtx, span := conf.T.Start(ctx.Context(), url, trace.WithSpanKind(trace.SpanKindServer))
 		defer span.End()
 
-		in := domain.PlayerProfile_In{}
+		in := domain.UserProfile_In{}
 		if err := webApiParseInput(ctx, &in.RequestCommon, &in, url); err != nil {
 			return err
 		}
 		in.FromFiberCtx(ctx, tracerCtx)
-		out := vdomain.PlayerProfile(&in)
+		out := vdomain.UserProfile(&in)
 		out.ToFiberCtx(ctx, &in.RequestCommon, &in)
 		return in.ToFiberCtx(ctx, out)
 	})
 
-	app.All(conf.API_PREFIX+domain.PlayerRegister_Url, func(ctx *fiber.Ctx) error {
-		url := domain.PlayerRegister_Url
+	app.All(conf.API_PREFIX+domain.UserRegister_Url, func(ctx *fiber.Ctx) error {
+		url := domain.UserRegister_Url
 		tracerCtx, span := conf.T.Start(ctx.Context(), url, trace.WithSpanKind(trace.SpanKindServer))
 		defer span.End()
 
-		in := domain.PlayerRegister_In{}
+		in := domain.UserRegister_In{}
 		if err := webApiParseInput(ctx, &in.RequestCommon, &in, url); err != nil {
 			return err
 		}
 		in.FromFiberCtx(ctx, tracerCtx)
-		out := vdomain.PlayerRegister(&in)
+		out := vdomain.UserRegister(&in)
 		out.ToFiberCtx(ctx, &in.RequestCommon, &in)
 		return in.ToFiberCtx(ctx, out)
 	})
 
-	app.All(conf.API_PREFIX+domain.PlayerResetPassword_Url, func(ctx *fiber.Ctx) error {
-		url := domain.PlayerResetPassword_Url
+	app.All(conf.API_PREFIX+domain.UserResetPassword_Url, func(ctx *fiber.Ctx) error {
+		url := domain.UserResetPassword_Url
 		tracerCtx, span := conf.T.Start(ctx.Context(), url, trace.WithSpanKind(trace.SpanKindServer))
 		defer span.End()
 
-		in := domain.PlayerResetPassword_In{}
+		in := domain.UserResetPassword_In{}
 		if err := webApiParseInput(ctx, &in.RequestCommon, &in, url); err != nil {
 			return err
 		}
 		in.FromFiberCtx(ctx, tracerCtx)
-		out := vdomain.PlayerResetPassword(&in)
-		out.ToFiberCtx(ctx, &in.RequestCommon, &in)
-		return in.ToFiberCtx(ctx, out)
-	})
-
-	app.All(conf.API_PREFIX+domain.PlayerUpdateProfile_Url, func(ctx *fiber.Ctx) error {
-		url := domain.PlayerUpdateProfile_Url
-		tracerCtx, span := conf.T.Start(ctx.Context(), url, trace.WithSpanKind(trace.SpanKindServer))
-		defer span.End()
-
-		in := domain.PlayerUpdateProfile_In{}
-		if err := webApiParseInput(ctx, &in.RequestCommon, &in, url); err != nil {
-			return err
-		}
-		in.FromFiberCtx(ctx, tracerCtx)
-		out := vdomain.PlayerUpdateProfile(&in)
+		out := vdomain.UserResetPassword(&in)
 		out.ToFiberCtx(ctx, &in.RequestCommon, &in)
 		return in.ToFiberCtx(ctx, out)
 	})

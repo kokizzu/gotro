@@ -13,7 +13,7 @@ var AdminTestExpiredSession string
 
 func init() {
 	sess := Session{
-		PlayerId:  1,
+		UserId:    1,
 		Email:     SuperAdmin,
 		ExpiredAt: fastime.UnixNow() + 60*60*24*365,
 	}

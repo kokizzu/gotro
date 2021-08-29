@@ -19,22 +19,22 @@ import (
 //go:generate replacer 'By" form' 'By,string" form' type user.go
 
 type (
-	PlayerRegister_In struct {
+	UserRegister_In struct {
 		RequestCommon
 		UserName string `json:"userName" form:"userName" query:"userName" long:"userName" msg:"userName"`
 		Email    string `json:"email" form:"email" query:"email" long:"email" msg:"email"`
 		Password string `json:"password" form:"password" query:"password" long:"password" msg:"password"`
 	}
-	PlayerRegister_Out struct {
+	UserRegister_Out struct {
 		ResponseCommon
 		CreatedAt int64  `json:"createdAt" form:"createdAt" query:"createdAt" long:"createdAt" msg:"createdAt"`
-		PlayerId  uint64 `json:"playerId,string" form:"playerId" query:"playerId" long:"playerId" msg:"playerId"`
+		UserId    uint64 `json:"playerId,string" form:"playerId" query:"playerId" long:"playerId" msg:"playerId"`
 	}
 )
 
-const PlayerRegister_Url = `/PlayerRegister`
+const UserRegister_Url = `/PlayerRegister`
 
-func (d *Domain) PlayerRegister(in *PlayerRegister_In) (out PlayerRegister_Out) {
+func (d *Domain) UserRegister(in *UserRegister_In) (out UserRegister_Out) {
 
 	username := S.Trim(in.UserName)
 	if username == `` {
@@ -72,24 +72,24 @@ func (d *Domain) PlayerRegister(in *PlayerRegister_In) (out PlayerRegister_Out) 
 
 	//go d.SendMail(WelcomeMail{...},user.Email)
 	out.CreatedAt = user.CreatedAt
-	out.PlayerId = user.Id
+	out.UserId = user.Id
 
 	return
 }
 
 type (
-	PlayerLogin_In struct {
+	UserLogin_In struct {
 		RequestCommon
 		Email    string `json:"email" form:"email" query:"email" long:"email" msg:"email"`
 		Password string `json:"password" form:"password" query:"password" long:"password" msg:"password"`
 	}
-	PlayerLogin_Out struct {
+	UserLogin_Out struct {
 		ResponseCommon
 		WalletId string `json:"walletId,string" form:"walletId" query:"walletId" long:"walletId" msg:"walletId"` // wallet on stardust
 	}
 )
 
-const PlayerLogin_Url = `/PlayerLogin`
+const UserLogin_Url = `/PlayerLogin`
 
 func (d *Domain) expireSession(sessionToken string) bool {
 	if sessionToken == `` {
@@ -112,7 +112,7 @@ func (d *Domain) createSession(playerId uint64, email, userAgent string) *wcAuth
 	session := wcAuth.NewSessionsMutator(d.Taran)
 	session.UserId = playerId
 	sess := conf.Session{
-		PlayerId:  playerId,
+		UserId:    playerId,
 		Email:     email,
 		ExpiredAt: time.Now().AddDate(0, 0, conf.CookieDays).Unix(),
 	}
@@ -121,14 +121,14 @@ func (d *Domain) createSession(playerId uint64, email, userAgent string) *wcAuth
 	return session
 }
 
-func (d *Domain) PlayerLogin(in *PlayerLogin_In) (out PlayerLogin_Out) {
-	player := rqAuth.NewUsers(d.Taran)
-	player.Email = in.Email
-	if !player.FindByEmail() {
+func (d *Domain) UserLogin(in *UserLogin_In) (out UserLogin_Out) {
+	user := rqAuth.NewUsers(d.Taran)
+	user.Email = in.Email
+	if !user.FindByEmail() {
 		out.SetError(401, `wrong email or password`)
 		return
 	}
-	if !player.CheckPassword(in.Password) {
+	if !user.CheckPassword(in.Password) {
 		out.SetError(401, `wrong password`)
 		return
 	}
@@ -136,7 +136,7 @@ func (d *Domain) PlayerLogin(in *PlayerLogin_In) (out PlayerLogin_Out) {
 	d.expireSession(in.SessionToken)
 
 	// create session
-	session := d.createSession(player.Id, player.Email, in.UserAgent)
+	session := d.createSession(user.Id, user.Email, in.UserAgent)
 	if !session.DoInsert() {
 		out.SetError(500, `cannot create session`)
 		return
@@ -146,18 +146,18 @@ func (d *Domain) PlayerLogin(in *PlayerLogin_In) (out PlayerLogin_Out) {
 }
 
 type (
-	PlayerLogout_In struct {
+	UserLogout_In struct {
 		RequestCommon
 	}
-	PlayerLogout_Out struct {
+	UserLogout_Out struct {
 		ResponseCommon
 		LoggedOut bool `json:"loggedOut" form:"loggedOut" query:"loggedOut" long:"loggedOut" msg:"loggedOut"`
 	}
 )
 
-const PlayerLogout_Url = `/PlayerLogout`
+const UserLogout_Url = `/PlayerLogout`
 
-func (d *Domain) PlayerLogout(in *PlayerLogout_In) (out PlayerLogout_Out) {
+func (d *Domain) UserLogout(in *UserLogout_In) (out UserLogout_Out) {
 	loggedOut := d.expireSession(in.SessionToken)
 	out.LoggedOut = loggedOut
 	out.SessionToken = conf.CookieLogoutValue
@@ -165,135 +165,91 @@ func (d *Domain) PlayerLogout(in *PlayerLogout_In) (out PlayerLogout_Out) {
 }
 
 type (
-	PlayerProfile_In struct {
+	UserProfile_In struct {
 		RequestCommon
 	}
-	PlayerProfile_Out struct {
+	UserProfile_Out struct {
 		ResponseCommon
-		Player *rqAuth.Users `json:"player" form:"player" query:"player" long:"player" msg:"player"`
+		User *rqAuth.Users `json:"player" form:"player" query:"player" long:"player" msg:"player"`
 	}
 )
 
-const PlayerProfile_Url = `/PlayerProfile`
+const UserProfile_Url = `/PlayerProfile`
 
-func (d *Domain) PlayerProfile(in *PlayerProfile_In) (out PlayerProfile_Out) {
+func (d *Domain) UserProfile(in *UserProfile_In) (out UserProfile_Out) {
 	sess := d.mustLogin(in.SessionToken, in.UserAgent, &out.ResponseCommon)
 	if sess == nil {
 		return
 	}
 
-	player := rqAuth.NewUsers(d.Taran)
-	player.Id = sess.PlayerId
-	if !player.FindById() {
-		out.SetError(404, `player does not exists on database: `+X.ToS(sess.PlayerId))
+	user := rqAuth.NewUsers(d.Taran)
+	user.Id = sess.UserId
+	if !user.FindById() {
+		out.SetError(404, `user does not exists on database: `+X.ToS(sess.UserId))
 		return
 	}
-	player.CensorFields()
-	out.Player = player
+	user.CensorFields()
+	out.User = user
 	return
 }
 
 type (
-	PlayerUpdateProfile_In struct {
-		RequestCommon
-		UserName string `json:"userName" form:"userName" query:"userName" long:"userName" msg:"userName"`
-	}
-	PlayerUpdateProfile_Out struct {
-		ResponseCommon
-		Ok bool `json:"ok" form:"ok" query:"ok" long:"ok" msg:"ok"`
-	}
-)
-
-const PlayerUpdateProfile_Url = `/PlayerUpdateProfile`
-
-func (d *Domain) PlayerUpdateProfile(in *PlayerUpdateProfile_In) (out PlayerUpdateProfile_Out) {
-	sess := d.mustLogin(in.SessionToken, in.UserAgent, &out.ResponseCommon)
-	if sess == nil {
-		return
-	}
-	player := wcAuth.NewUsersMutator(d.Taran)
-	player.Id = sess.PlayerId
-	if !player.FindById() {
-		out.SetError(400, `player not found in database. wrong env?`)
-		return
-	}
-
-	// example if there's multiple unique column on table:
-	//player.SetUserName(in.UserName)
-	//if player.FindByUserName() && player.Id != sess.PlayerId {
-	//	out.SetError(400, `userName already used by other player`)
-	//	return
-	//}
-
-	if !player.DoUpdateById() {
-		out.SetError(500, `failed to update profile`)
-		return
-	}
-
-	out.Ok = true
-	return
-}
-
-type (
-	PlayerList_In struct {
+	UserList_In struct {
 		RequestCommon
 		Limit  uint32 `json:"limit" form:"limit" query:"limit" long:"limit" msg:"limit"`
 		Offset uint32 `json:"offset" form:"offset" query:"offset" long:"offset" msg:"offset"`
 	}
-	PlayerList_Out struct {
+	UserList_Out struct {
 		ResponseCommon
-		Limit   uint32          `json:"limit" form:"limit" query:"limit" long:"limit" msg:"limit"`
-		Offset  uint32          `json:"offset" form:"offset" query:"offset" long:"offset" msg:"offset"`
-		Total   uint32          `json:"total" form:"total" query:"total" long:"total" msg:"total"`
-		Players []*rqAuth.Users `json:"players" form:"players" query:"players" long:"players" msg:"players"`
+		Limit  uint32          `json:"limit" form:"limit" query:"limit" long:"limit" msg:"limit"`
+		Offset uint32          `json:"offset" form:"offset" query:"offset" long:"offset" msg:"offset"`
+		Total  uint32          `json:"total" form:"total" query:"total" long:"total" msg:"total"`
+		Users  []*rqAuth.Users `json:"players" form:"players" query:"players" long:"players" msg:"players"`
 	}
 )
 
-const PlayerList_Url = `/PlayerList`
+const UserList_Url = `/PlayerList`
 
-func (d *Domain) PlayerList(in *PlayerList_In) (out PlayerList_Out) {
-	player := rqAuth.NewUsers(d.Taran)
-	out.Players = player.FindOffsetLimit(in.Offset, in.Limit)
-	out.Total = uint32(player.Total())
+func (d *Domain) UserList(in *UserList_In) (out UserList_Out) {
+	user := rqAuth.NewUsers(d.Taran)
+	out.Users = user.FindOffsetLimit(in.Offset, in.Limit)
+	out.Total = uint32(user.Total())
 	out.Limit = in.Limit
 	out.Offset = in.Offset
-	for k := range out.Players {
-		out.Players[k].CensorFields()
-	}
 	return
 }
 
 type (
-	PlayerForgotPassword_In struct {
+	UserForgotPassword_In struct {
 		RequestCommon
 		Email              string `json:"email" form:"email" query:"email" long:"email" msg:"email"`
 		ChangePassCallback string `json:"changePassCallback" form:"changePassCallback" query:"changePassCallback" long:"changePassCallback" msg:"changePassCallback"`
 	}
-	PlayerForgotPassword_Out struct {
+	UserForgotPassword_Out struct {
 		ResponseCommon
 		Ok bool `json:"ok" form:"ok" query:"ok" long:"ok" msg:"ok"`
 	}
 )
 
-const PlayerForgotPassword_Url = `/PlayerForgotPassword`
+const UserForgotPassword_Url = `/PlayerForgotPassword`
 
 var forgotPasswordLock = nsync.NewNamedMutex()
 
-func (d *Domain) PlayerForgotPassword(in *PlayerForgotPassword_In) (out PlayerForgotPassword_Out) {
-	player := wcAuth.NewUsersMutator(d.Taran)
-	player.Email = in.Email
+func (d *Domain) UserForgotPassword(in *UserForgotPassword_In) (out UserForgotPassword_Out) {
+	user := wcAuth.NewUsersMutator(d.Taran)
+	user.Email = in.Email
 
 	forgotPasswordLock.Lock(in.Email)
-	if !player.FindByEmail() {
+	if !user.FindByEmail() {
 		out.SetError(400, `email not found`)
 		return
 	}
 	secretCode := id64.SID()
-	player.SetSecretCode(secretCode)
-	player.SetSecretCodeAt(in.UnixNow())
-	hash := S.EncodeCB63(int64(player.Id), 8)
+	user.SetSecretCode(secretCode)
+	user.SetSecretCodeAt(in.UnixNow())
+	hash := S.EncodeCB63(int64(user.Id), 8)
 	if in.ChangePassCallback == `` {
-		in.ChangePassCallback = conf.WEBAPI_HOSTPORT + conf.API_PREFIX + PlayerResetPassword_Url
+		in.ChangePassCallback = conf.WEBAPI_HOSTPORT + conf.API_PREFIX + UserResetPassword_Url
 	}
 	url := in.ChangePassCallback + `?secretCode=` + secretCode + `&hash=` + hash
 	go func(email, url string) {
@@ -301,7 +257,7 @@ func (d *Domain) PlayerForgotPassword(in *PlayerForgotPassword_In) (out PlayerFo
 		// go //go d.SendMail(ForgotPassMail{...},user.Email)
 	}(in.Email, url)
 
-	if !player.DoUpdateById() {
+	if !user.DoUpdateById() {
 		out.SetError(500, `failed to update row on database`)
 		return
 	}
@@ -310,49 +266,49 @@ func (d *Domain) PlayerForgotPassword(in *PlayerForgotPassword_In) (out PlayerFo
 }
 
 type (
-	PlayerResetPassword_In struct {
+	UserResetPassword_In struct {
 		RequestCommon
 		Password   string `json:"password" form:"password" query:"password" long:"password" msg:"password"`
 		SecretCode string `query:"secretCode" json:"secretCode" form:"secretCode" long:"secretCode" msg:"secretCode"`
 		Hash       string `query:"hash" json:"hash" form:"hash" long:"hash" msg:"hash"`
 	}
-	PlayerResetPassword_Out struct {
+	UserResetPassword_Out struct {
 		ResponseCommon
 		Ok bool `json:"ok" form:"ok" query:"ok" long:"ok" msg:"ok"`
 	}
 )
 
-const PlayerResetPassword_Url = `/PlayerResetPassword`
+const UserResetPassword_Url = `/PlayerResetPassword`
 
-func (d *Domain) PlayerResetPassword(in *PlayerResetPassword_In) (out PlayerResetPassword_Out) {
-	playerId, ok := S.DecodeCB63(in.Hash)
+func (d *Domain) UserResetPassword(in *UserResetPassword_In) (out UserResetPassword_Out) {
+	userId, ok := S.DecodeCB63(in.Hash)
 	if !ok {
 		out.SetError(400, `invalid hash`)
 		return
 	}
-	player := wcAuth.NewUsersMutator(d.Taran)
-	player.Id = uint64(playerId)
-	if !player.FindById() {
-		out.SetError(400, `cannot find player, wrong env?`)
+	user := wcAuth.NewUsersMutator(d.Taran)
+	user.Id = uint64(userId)
+	if !user.FindById() {
+		out.SetError(400, `cannot find user, wrong env?`)
 		return
 	}
-	if player.SecretCode != in.SecretCode {
+	if user.SecretCode != in.SecretCode {
 		out.SetError(400, `invalid secret code`)
 		return
 	}
-	if in.UnixNow()-player.SecretCodeAt >= 60*45 { // 45 minutes
+	if in.UnixNow()-user.SecretCodeAt >= 60*45 { // 45 minutes
 		out.SetError(400, `secret code expired`)
 		return
 	}
-	if !player.SetEncryptPassword(in.Password) {
+	if !user.SetEncryptPassword(in.Password) {
 		out.SetError(500, `cannot encrypt password`)
 		return
 	}
-	player.SetSecretCode(``)
-	player.SetSecretCodeAt(0)
-	player.SetPasswordSetAt(in.UnixNow())
-	if !player.DoUpdateById() {
-		out.SetError(500, `failed to update player password`)
+	user.SetSecretCode(``)
+	user.SetSecretCodeAt(0)
+	user.SetPasswordSetAt(in.UnixNow())
+	if !user.DoUpdateById() {
+		out.SetError(500, `failed to update user password`)
 		return
 	}
 	out.Ok = true
@@ -360,40 +316,40 @@ func (d *Domain) PlayerResetPassword(in *PlayerResetPassword_In) (out PlayerRese
 }
 
 type (
-	PlayerChangePassword_In struct {
+	UserChangePassword_In struct {
 		RequestCommon
 		Password    string `json:"password" form:"password" query:"password" long:"password" msg:"password"`
 		NewPassword string `json:"newPassowrd" form:"newPassword" query:"newPassword" long:"newPassword" msg:"newPassword"`
 	}
-	PlayerChangePassword_Out struct {
+	UserChangePassword_Out struct {
 		ResponseCommon
 		UpdatedAt int64 `json:"updatedAt" form:"updatedAt" query:"updatedAt" long:"updatedAt" msg:"updatedAt"`
 	}
 )
 
-const PlayerChangePassword_Url = `/PlayerChangePassword`
+const UserChangePassword_Url = `/PlayerChangePassword`
 
-func (d *Domain) PlayerChangePassword(in *PlayerChangePassword_In) (out PlayerChangePassword_Out) {
+func (d *Domain) UserChangePassword(in *UserChangePassword_In) (out UserChangePassword_Out) {
 	sess := d.mustLogin(in.SessionToken, in.UserAgent, &out.ResponseCommon)
 	if sess == nil {
 		return
 	}
-	player := wcAuth.NewUsersMutator(d.Taran)
-	player.Id = sess.PlayerId
-	if !player.FindById() {
-		out.SetError(500, `player not found`)
+	user := wcAuth.NewUsersMutator(d.Taran)
+	user.Id = sess.UserId
+	if !user.FindById() {
+		out.SetError(500, `user not found`)
 		return
 	}
-	if !player.CheckPassword(in.Password) {
+	if !user.CheckPassword(in.Password) {
 		out.SetError(401, `wrong password`)
 		return
 	}
-	if !player.SetEncryptPassword(in.Password) {
+	if !user.SetEncryptPassword(in.Password) {
 		out.SetError(500, `cannot encrypt password`)
 		return
 	}
-	player.SetUpdatedAt(in.UnixNow())
-	if !player.DoUpdateById() {
+	user.SetUpdatedAt(in.UnixNow())
+	if !user.DoUpdateById() {
 		out.SetError(500, `failed to change password`)
 		return
 	}
@@ -401,33 +357,33 @@ func (d *Domain) PlayerChangePassword(in *PlayerChangePassword_In) (out PlayerCh
 }
 
 type (
-	PlayerConfirmEmail_In struct {
+	UserConfirmEmail_In struct {
 		RequestCommon
 	}
-	PlayerConfirmEmail_Out struct {
+	UserConfirmEmail_Out struct {
 		ResponseCommon
 	}
 )
 
-const PlayerConfirmEmail_Url = `/PlayerConfirmEmail`
+const UserConfirmEmail_Url = `/PlayerConfirmEmail`
 
-func (d *Domain) PlayerConfirmEmail(in *PlayerConfirmEmail_In) (out PlayerConfirmEmail_Out) {
+func (d *Domain) UserConfirmEmail(in *UserConfirmEmail_In) (out UserConfirmEmail_Out) {
 	// TODO: continue this
 	return
 }
 
 type (
-	PlayerChangeEmail_In struct {
+	UserChangeEmail_In struct {
 		RequestCommon
 	}
-	PlayerChangeEmail_Out struct {
+	UserChangeEmail_Out struct {
 		ResponseCommon
 	}
 )
 
-const PlayerChangeEmail_Url = `/PlayerChangeEmail`
+const UserChangeEmail_Url = `/PlayerChangeEmail`
 
-func (d *Domain) PlayerChangeEmail(in *PlayerChangeEmail_In) (out PlayerChangeEmail_Out) {
+func (d *Domain) UserChangeEmail(in *UserChangeEmail_In) (out UserChangeEmail_Out) {
 	// TODO: continue this
 	return
 }
