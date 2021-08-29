@@ -1,18 +1,15 @@
 # GotRo
 
 GotRo is abbreviation of `Gotong Royong`. the meaning in `Indonesia`: "do it together", "mutual cooperation". 
-This Framework is rewrite of [gokil](//gitlab.com/kokizzu/gokil), that previously use [httprouter](//github.com/julienschmidt/httprouter) but now rewritten using [fasthttprouter](//github.com/buaazp/fasthttprouter). For tutorial, read [this blog post](//kokizzu.blogspot.com/2017/05/gotro-framework-tutorial-go-redis-and.html) (**deprecated**, do not use `W` package for now, wait for full rewrite to [fiber](//gofiber.io) or use `v1.222.1557` if you need to use the old version).
-
-**NOTE** do not use `W/` package, since it's no longer maintained and will be replaced with [fiber](//gofiber.io) version.
-
+This Framework is rewrite of [gokil](//gitlab.com/kokizzu/gokil), that previously use [httprouter](//github.com/julienschmidt/httprouter) but now rewritten using [fasthttprouter](//github.com/buaazp/fasthttprouter) (`W` package deprecated soon), latest framework `W2` are now using [fiber](//gofiber.io).
 ## Versioning
 
 versioning using this format 1.`(M+(YEAR-2021)*12)DD`.`HMM`,
 so for example v1.213.1549 means it was released at `2021-02-13 15:49`
 
 ## Design Goal
-- As similar as possible to [gokil](//gitlab.com/kokizzu/gokil) that still used by my old company
-- Opinionated (choose the best dependency), for example by default uses `int64` and `float64`
+- As similar as possible to [gokil](//gitlab.com/kokizzu/gokil) that still used by my old company.
+- Opinionated (choose the best dependency), for example by default uses `int64` and `float64`, `uint64` for id(s).
 - 1-letter supporting package so we only need to write a short common function, such as: `I.ToS(1234)` to convert `int64` to `string`)
   - A - Array
   - B - Boolean
@@ -24,7 +21,7 @@ so for example v1.213.1549 means it was released at `2021-02-13 15:49`
   - I - Integer
   - S - String
   - T - Time (and Date)
-  - W - Web (the old "web framework") **STATUS**: usable since 2017-03-08, see `W/example-simplified/`
+  - W - Web (the old "web framework") **DEPRECATED**: usable since 2017-03-08, see `W/example-simplified/`
   - W2 - Web (the new codegen-based "web-framework") **STATUS**: usable since 2021-08-30, see `W2/example`
   - X - Anything (aka `interface{}`)
   - Z - Z-Template Engine, that has syntax similar to ruby string interpolation `#{foo}` or any other that javascript friendly `{/* foo */}`, `[/* bar */]`, `/*! bar */`
@@ -39,10 +36,10 @@ Usable session adapter:
   - AreoSpike
   
 Usable database adapter:
-  - PostgreSQL
-  - Tarantool
-  - ClickHouse
-  - Meilisearch
+  - PostgreSQL (OLTP)
+  - Tarantool (OLTP and cache)
+  - ClickHouse (OLAP)
+  - Meilisearch (full text search)
   
 Other than above, you must use officially provided database adapter from respective vendors.
 
