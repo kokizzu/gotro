@@ -13,6 +13,12 @@ How to develop?
 - create an integration/unit test to make sure that your code is correct
 ![image](https://user-images.githubusercontent.com/1061610/131266911-281090aa-f062-43eb-80cf-9ba561e019d2.png)
 
+How to release?
+- change `production/` configuration values
+- setup the server, ssh to server and run `setup_server.sh`
+- cd `production`, run `./sync_service.sh`
+- run `./deploy_prod.sh`
+
 ## Setup
 
 ```bash
