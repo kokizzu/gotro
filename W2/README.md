@@ -77,3 +77,8 @@ main_cli_args.GEN.go --> cli arguments handler
 main_restApi_routes.GEN.go --> used to generating fiber route handlers
 svelte/src/pages/api.js --> used for generating API client
 ```
+
+## Example Generated API Docs
+
+![image](https://user-images.githubusercontent.com/1061610/131266708-44935872-e34a-4538-885a-6056946c9482.png)
+
