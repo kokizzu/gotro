@@ -1,4 +1,4 @@
-package WW
+package W2
 
 import (
 	"bytes"
@@ -46,6 +46,9 @@ func GenerateFiberAndCli(c *GeneratorConfig) {
 }
 
 func GenerateApiDocs(c *GeneratorConfig) {
+	if c.ModelPath == `` {
+		c.ModelPath = `../model`
+	}
 	if c.ApiDocsFile == `` {
 		c.ApiDocsFile = `../svelte/src/pages/api.js`
 	}

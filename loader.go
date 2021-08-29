@@ -18,7 +18,7 @@ import (
 	_ "github.com/kokizzu/gotro/S"
 	_ "github.com/kokizzu/gotro/T"
 	_ "github.com/kokizzu/gotro/W"
-	_ "github.com/kokizzu/gotro/WW"
+	_ "github.com/kokizzu/gotro/W2"
 	_ "github.com/kokizzu/gotro/X"
 	_ "github.com/kokizzu/gotro/Z"
 )
