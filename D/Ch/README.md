@@ -1,5 +1,29 @@
 
-# Clickhouse ORM Generator
+# Clickhouse Adapter and ORM Generator
+
+## How to create a connection
+
+```go
+import (
+	"database/sql"
+	"fmt"
+
+	_ "github.com/ClickHouse/clickhouse-go"
+)
+
+func ConnectClickhouse() *sql.DB {
+	connStr := fmt.Sprintf("tcp://%s:%s?debug=true",
+		CLICKHOUSE_HOST,
+		CLICKHOUSE_PORT,
+	)
+	click, err := sql.Open(`clickhouse`, connStr)
+	L.PanicIf(err, `sql.Open `+connStr)
+	return click
+}
+
+// then use it like this:
+ch := &Ch.Adapter{DB: conf.ConnectClickhouse(), Reconnect: conf.ConnectClickhouse}
+```
 
 ## Usage
 
@@ -97,7 +121,7 @@ for i in ./m*; do
 done
 ```
 
-7. in your web server engine/domain logic (one that initializes dependencies), create methods to help initialize the buffer, something like this:
+6. in your web server engine/domain logic (one that initializes dependencies), create methods to help initialize the buffer, something like this:
 
 ```go
 type Domain struct {

@@ -80,14 +80,14 @@ func GenerateOrm(tables map[TableName]*TableProp) {
 
 	// import reader
 	SA(qi(`database/sql`))
-	SA(qi(this.PackageName)) // /3rdparty/clickhouse
-	SA(qi(ci.PackageName))   // /models/m*
+	SA(qi(ci.PackageName)) // /models/m*
 	SA(qi(`time`))
 	SA(connImport)
 	SA(buffImport)
 
 	SA("\n")
 	SA(qi(`github.com/kokizzu/gotro/A`))
+	SA(qi(this.PackageName)) // github.com/kokizzu/gotro/D/Ch
 	SA(qi(`github.com/kokizzu/gotro/L`))
 	//SA(qi(`github.com/kokizzu/gotro/X`))
 
@@ -111,7 +111,7 @@ func GenerateOrm(tables map[TableName]*TableProp) {
 		SA(`var ` + tableName + `Dummy = ` + S.CamelCase(tableName) + "{}\n")
 	}
 
-	SA("var Preparators = map[clickhouse.TableName]chBuffer.Preparator{\n")
+	SA("var Preparators = map[Ch.TableName]chBuffer.Preparator{\n")
 	for _, tableName := range tableNames {
 		SA(`	` + mPkgName + `.Table` + S.CamelCase(tableName) + `: func(tx *sql.Tx) *sql.Stmt {
 		query := ` + tableName + `Dummy.sqlInsert()
@@ -151,7 +151,7 @@ func GenerateOrm(tables map[TableName]*TableProp) {
 
 		// table name
 		receiverName := strings.ToLower(string(structName[0]))
-		SA(`func (` + receiverName + ` ` + structName + ") TableName() clickhouse.TableName { //nolint:dupl false positive\n")
+		SA(`func (` + receiverName + ` ` + structName + ") TableName() Ch.TableName { //nolint:dupl false positive\n")
 		SA("	return " + mPkgName + `.Table` + structName + "\n")
 		SA("}\n\n")
 

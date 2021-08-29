@@ -120,13 +120,13 @@ func GenerateOrm(tables map[TableName]*TableProp) {
 	BOTH(`import (`)
 
 	// import reader
-	BOTH(qi(this.PackageName))
 	RQ(qi(ci.PackageName))
 	RQ(connImport)
 	WC(qi(ci.PackageName + `/` + rqPkgName))
 
 	BOTH("\n")
 	BOTH(qi(`github.com/kokizzu/gotro/A`))
+	BOTH(qi(this.PackageName)) // github.com/kokizzu/gotro/D/Tt
 	BOTH(qi(`github.com/kokizzu/gotro/L`))
 
 	RQ(qi(`github.com/kokizzu/gotro/X`))
