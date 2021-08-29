@@ -49,11 +49,11 @@ var typeConverter = map[DataType]string{
 	Int8:    `X.ToByte`,
 }
 
-const connStruct = `clickhouse.Adapter`
+const connStruct = `Ch.Adapter`
 const connImport = "\n\n\t_ `github.com/ClickHouse/clickhouse-go`"
 const buffImport = "\n\tchBuffer `github.com/kokizzu/ch-timed-buffer`"
 
-const warning = "// DO NOT EDIT, will be overwritten by clickhouse_orm_generator.go\n\n"
+const warning = "// DO NOT EDIT, will be overwritten by github.com/kokizzu/Ch/clickhouse_orm_generator.go\n\n"
 
 func GenerateOrm(tables map[TableName]*TableProp) {
 	ci := L.CallerInfo(2)

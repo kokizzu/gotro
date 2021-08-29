@@ -45,12 +45,12 @@ var typeConverter = map[DataType]string{
 	Boolean:  `X.ToBool`,
 }
 
-const connStruct = `tarantool.Adapter`
-const connImport = "\n\n\tgotarantool `github.com/tarantool/go-tarantool`"
-const iterEq = `gotarantool.IterEq`
-const iterAll = `gotarantool.IterAll`
+const connStruct = `Tt.Adapter`
+const connImport = "\n\n\t`github.com/tarantool/go-tarantool`"
+const iterEq = `tarantool.IterEq`
+const iterAll = `tarantool.IterAll`
 
-const warning = "// DO NOT EDIT, will be overwritten by tarantool_orm_generator.go\n\n"
+const warning = "// DO NOT EDIT, will be overwritten by github.com/kokizzu/D/Tt/tarantool_orm_generator.go\n\n"
 
 func GenerateOrm(tables map[TableName]*TableProp) {
 	ci := L.CallerInfo(2)
