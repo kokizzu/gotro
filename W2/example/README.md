@@ -7,6 +7,10 @@ How to use this template?
 - `go mod init projectName`
 - replace all word `github.com/kokizzu/gotro/W2/example` and `example` with `projectName`
 
+How to develop?
+- modify or create new `model/m*/*_tables.go`, then run `make gen-orm`
+- create a new `*_In`, `*_Out`, `*_Url`, and `*` business logic methods inside `domain`, then run `make gen-route`
+
 ## Setup
 
 ```bash
@@ -16,13 +20,13 @@ make setup-deps
 # install reverse proxy
 make setup-webserver
 
-# install dependencies for web frontend (Svelte): localhost:3000
+# install dependencies for web frontend (Svelte with Vite build system): localhost:3000
 make webclient
 
 # start dependencies (Tarantool, Clickhouse): localhost:3301, localhost:9000
 make compose
 
-# run api server (Go): localhost:9090
+# run api server (Go with Air autorecompile): localhost:9090
 make apiserver
 
 # run reverse proxy (Caddy): localhost:80
