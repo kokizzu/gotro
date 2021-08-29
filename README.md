@@ -25,6 +25,7 @@ so for example v1.213.1549 means it was released at `2021-02-13 15:49`
   - S - String
   - T - Time (and Date)
   - W - Web (the "framework") **STATUS**: usable since 2017-03-08, see `W/example-simplified/`
+  - WW - Web (the rewritten "framework") **STATUS**: ongoing rewrite 
   - X - Anything (aka `interface{}`)
   - Z - Z-Template Engine, that has syntax similar to ruby string interpolation `#{foo}` or any other that javascript friendly `{/* foo */}`, `[/* bar */]`, `/*! bar */`
 - Comment and examples on each type and function, so it can be viewed using godoc, something like: `godoc github.com/kokizzu/gotro/A`
@@ -39,9 +40,8 @@ Usable session adapter:
   
 Usable database adapter:
   - PostgreSQL
-
-Additional adapter:
   - Tarantool
+  - ClickHouse
   - Meilisearch
   
 Other than above, you must use officially provided database adapter from respective vendors.
@@ -53,30 +53,7 @@ this already includes session loading and template rendering (real-life use case
 
 ## Usage
 
-`go get -u -v github.com/kokizzu/gotro`
-
-## Dependencies
-
-These dependencies automatically installed when you run `go get` (checked using `go list -f '{{join .Deps "\n"}}' |  xargs go list -f '{{if not .Standard}}{{.ImportPath}}{{end}}' | uniq`)
-
-```
-github.com/OneOfOne/cmap 
-github.com/aerospike/aerospike-client-go 
-github.com/buaazp/fasthttprouter 
-github.com/fatih/color 
-github.com/go-sql-driver/mysql 
-github.com/jmoiron/sqlx  
-github.com/kr/pretty 
-github.com/lib/pq 
-github.com/mutecomm/go-sqlcipher
-github.com/meilisearch/meilisearch-go 
-github.com/op/go-logging 
-github.com/tdewolff/minify 
-github.com/tarantool/go-tarantool
-github.com/valyala/fasthttp 
-github.com/yosuke-furukawa/json5/encoding/json5 
-gopkg.in/redis.v5 
-```
+`go get -u -v github.com/kokizzu/gotro` or for Go 1.16+ just import one of the sub-library and `go mod tidy`
 
 ## Contributors
 
@@ -90,30 +67,29 @@ gopkg.in/redis.v5
 ## TODO
 
 - fix mysql adapter so it becomes usable (currently copied from Postgres'), probably wait until mysql has indexable json column, or do alters like scylladb and sqlite
-- rewrite W using [fasthttp/router](https://github.com/fasthttp/router) or [fiber](https://gofiber.io/)
+- rewrite W using [fiber](https://gofiber.io/)
 - rewrite D using prepared statements, so no more `S.Z`
 - use `nikoksr/notify` for notification and mail sending instead of tied to `W`
-- possibly refactor move cachedquery, records, etc to D package since nothing different about them, wait for cassandra version
-- [Review](//goo.gl/tBkfse) which databases we must support primarily for `D`, that can be silver bullet for extreme cases (high-write: sharding/partitioning and multi-master replication or auto-failover; full-text-search) 
+- possibly refactor move cachedquery, records, etc to D package since nothing different about them
+- [Review](//goo.gl/tBkfse) which other [databases](//github.com/alexmacarthur/local-docker-db) we must support primarily for `D`, that can be silver bullet for extreme cases (high-write: sharding/partitioning and multi-master replication or auto-failover; full-text-search) 
   - [ActorDB](//www.actordb.com) <-- high-write
-  - [Cassandra](//cassandra.apache.org) <-- high-write
-  - [CockroachDB](//www.cockroachlabs.com) <-- high-read
-  - [DGraph](//dgraph.io/)   
+  - [CockroachDB](//www.cockroachlabs.com) <-- high-write (postgresql-compatible)
+  - [CouchBase](//www.couchbase.com) <-- high-write
+  - [DGraph](//dgraph.io)   
   - [CrateDB](//www.crate.io) <-- high-write
   - [GridDB](//griddb.net/en) <-- high-write
   - [GunDB](//gundb.github.io)
-  - [Impala](//impala.apache.org)
+  - [IceFireDB](//github.com/gitsrc/IceFireDB) <-- high-write (redis-compatible)
   - [InfluxDB](//docs.influxdata.com/influxdb)
-  - [MariaDB](//mariadb.org) <-- high-read
   - [NebulaGraph](//nebula-graph.io)
   - [OrientDB](//orientdb.com)
-  - [PostgreXL](//www.postgres-xl.org) <-- high-write
-  - [Riak](//docs.basho.com/riak)
-  - [ScyllaDB](//www.scylladb.com) <-- high-write
-  - [SingeStore](//www.singlestore.com) <-- high-write
-  - [TiDB](//github.com/pingcap/tidb) <-- high-write
-  - [TimeScaleDB](//www.timescale.com/) <-- high write
-- Review which queuing service we're gonna use ([NATS](//nats.io)), requirement: must support persistence
+  - [PostgreXL](//www.postgres-xl.org) <-- high-write (postgresql-compatible)
+  - [SingeStore](//www.singlestore.com) <-- high-write (mysql-compatible)
+  - [TiDB](//github.com/pingcap/tidb) <-- high-write (mysql-compatible)
+  - [TimeScaleDB](//www.timescale.com) <-- high-write (postgresql-compatible)
+  - [TypeSense](//typesense.org)
+  - [YugaByteDB](//www.yugabyte.com) <-- high-write (postgresql/redis/cassandra-compatible)
+- Review which queuing/pub-sub service we're gonna use ([NATS](//nats.io), [RedPanda](//vectorized.io)), requirement: must support persistence
 - Add [ExampleXxx function](//blog.golang.org/examples), getting started and more documentation 
 - Add graceful restart (zero downtime deployment): [grace](//github.com/facebookgo/grace) or [endless](//github.com/fvbock/endless) or [overseer](https://github.com/jpillora/overseer)
 - Add Catch NotFound (rewrite the `Response.Body`) if no route and static file found

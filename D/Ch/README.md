@@ -29,8 +29,8 @@ ch := &Ch.Adapter{DB: conf.ConnectClickhouse(), Reconnect: conf.ConnectClickhous
 
 ## Usage
 
-1. create a `model/` directory inside project
-2. create a `m[Domain]` directory inside project, for example if the domain is authentication, you might want to create `mAuth`
+1. create a `model/` directory inside your project
+2. create a `model/m[Domain]` directory, for example if the business domain is authentication, you might want to create `mAuth`
 3. create a `[domain]_tables.go` something like this:
 
 ```go
