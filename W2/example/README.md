@@ -1,19 +1,33 @@
 
-# Example W2 Project
+# Example gotro/W2 Project
+
+How to use this template?
+- install Go 1.16+ and clone this repo with `--depth 1` flag
+- copy this `example` directory to another folder (rename to `projectName`)
+- `go mod init projectName`
+- replace all word `github.com/kokizzu/gotro/W2/example` and `example` with `projectName`
 
 ## Setup
 
 ```bash
-# install dependencies for web frontend
+# install tools required for codegen
+make setup-deps
+
+# install reverse proxy
+make setup-webserver
+
+# install dependencies for web frontend (Svelte): localhost:3000
 make webclient
 
-# run api server
+# start dependencies (Tarantool, Clickhouse): localhost:3301, localhost:9000
+make compose
+
+# run api server (Go): localhost:9090
 make apiserver
 
-# run reverse proxy
+# run reverse proxy (Caddy): localhost:80
 make reverseproxy
 ```
-
 
 ## Usage
 
