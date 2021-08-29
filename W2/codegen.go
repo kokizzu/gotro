@@ -26,6 +26,8 @@ type GeneratorConfig struct {
 	WebRoutesFile string // fiber web route generated file
 	CliArgsFile   string // cli args handler generated file
 	ApiDocsFile   string // apidocs generated file
+
+	ThirdParties []string
 }
 
 func GenerateFiberAndCli(c *GeneratorConfig) {
@@ -64,7 +66,7 @@ func GenerateApiDocs(c *GeneratorConfig) {
 //go:generate go test -run=XXX -bench=Benchmark_Generate_WebApiRoutes_CliArgs
 
 func (c *GeneratorConfig) ParseRoutes(parseModelAndCalls bool) *RoutesArgs {
-	r := &RoutesArgs{ProjectName: c.ProjectName}
+	r := &RoutesArgs{ProjectName: c.ProjectName, ThirdParties: c.ThirdParties}
 	r.parseModel = parseModelAndCalls
 	r.parseCalls = parseModelAndCalls
 
@@ -223,7 +225,8 @@ func (c *CallList) AddCallParam(args []ast.Expr) {
 }
 
 type RoutesArgs struct {
-	ProjectName string
+	ProjectName  string
+	ThirdParties []string
 
 	// domain
 	methodsPkgMap        M.SS // method:package
@@ -246,8 +249,7 @@ type RoutesArgs struct {
 	lastFuncDecl    string
 	funcNewRqList   map[string]*CallList // read query
 	funcNewWcList   map[string]*CallList // writer command
-	funcStardust    map[string]bool
-	funcCoinbase    map[string]bool
+	func3rdParty    map[string]bool
 	funcStatistics  map[string]*CallList
 }
 
@@ -318,8 +320,7 @@ func (r *RoutesArgs) ParseDomain(path string) {
 			r.funcSetErrorMap = map[string]*ErrMap{}
 			r.funcNewRqList = map[string]*CallList{}
 			r.funcNewWcList = map[string]*CallList{}
-			r.funcStardust = map[string]bool{}
-			r.funcCoinbase = map[string]bool{}
+			r.func3rdParty = map[string]bool{}
 			r.funcCalls = map[string]*CallList{}
 			r.funcStatistics = map[string]*CallList{}
 		}
@@ -397,11 +398,10 @@ func (r *RoutesArgs) ParseDomain(path string) {
 				} else {
 					calls.ZeroCallCount(funName) // not Rq
 					// also show 3rd party dependencies
-					if S.StartsWith(funName, `stardust.`) {
-						r.funcStardust[methodName] = true
-					}
-					if S.StartsWith(funName, `coinbase.`) {
-						r.funcCoinbase[methodName] = true
+					for _, thirdParty := range r.ThirdParties {
+						if S.StartsWith(funName, thirdParty+`.`) {
+							r.func3rdParty[methodName+`|`+thirdParty] = true
+						}
 					}
 					if S.EndsWith(funName, `.Statistics`) {
 						r.IncStatisticsCalls(methodName, param)
@@ -970,15 +970,12 @@ export const APIs = {`)
 
 		buf.WriteString(`
 		], deps: [`)
-		if r.funcCoinbase[method] {
-			buf.WriteString(`
-			"coinbase",`)
-		}
-		if r.funcStardust[method] {
-			buf.WriteString(`
-			"stardust",`)
-		}
+		for _, thirdP := range r.ThirdParties {
+			if r.func3rdParty[method+`|`+thirdP] {
+				buf.WriteString(`"` + thirdP + `",`)
+			}
 
+		}
 		buf.WriteString(`
 		], err: [`)
 		errList, ok := r.funcSetErrorMap[method]

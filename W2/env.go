@@ -1,4 +1,4 @@
-package W
+package W2
 
 import (
 	"os"

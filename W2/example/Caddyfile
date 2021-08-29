@@ -1,0 +1,26 @@
+{
+	debug
+	auto_https off
+	log {
+		output stdout
+		level DEBUG
+	}
+	local_certs
+}
+
+127.0.0.1, 127.0.0.1:80, localhost, localhost:80 {
+	handle /upload/* {
+		root ./svelte/dist
+		file_server browse
+	}
+
+	handle /api/* { # Go
+		reverse_proxy 127.0.0.1:9090
+	}
+
+	handle { # Svelte
+		reverse_proxy 127.0.0.1:3000
+	}
+}
+
+# https://richj.co/caddy-v2-custom-404-error-pages/
