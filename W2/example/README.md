@@ -8,8 +8,10 @@ How to use this template?
 - replace all word `github.com/kokizzu/gotro/W2/example` and `example` with `projectName`
 
 How to develop?
-- modify or create new `model/m*/*_tables.go`, then run `make gen-orm`
-- create a new `*_In`, `*_Out`, `*_Url`, and `*` business logic methods inside `domain`, then run `make gen-route`
+- modify or create new `model/m*/*_tables.go`, then run `make gen-orm` (will generate ORM), you may only add column/field at the end of model.
+- create a new `*_In`, `*_Out`, `*_Url`, and the business logic methods inside `domain`, then run `make gen-route` (will generate routes and API docs).
+- create an integration/unit test to make sure that your code is correct
+![image](https://user-images.githubusercontent.com/1061610/131266911-281090aa-f062-43eb-80cf-9ba561e019d2.png)
 
 ## Setup
 
@@ -23,10 +25,10 @@ make setup-webserver
 # install dependencies for web frontend (Svelte with Vite build system): localhost:3000
 make webclient
 
-# start dependencies (Tarantool, Clickhouse): localhost:3301, localhost:9000
+# start dependencies (Tarantool, Clickhouse, mailhog): localhost:3301, localhost:9000, localhost:1025
 make compose
 
-# run api server (Go with Air autorecompile): localhost:9090
+# run api server (Go with Air auto-recompile): localhost:9090
 make apiserver
 
 # run reverse proxy (Caddy): localhost:80
@@ -45,7 +47,25 @@ clickhouse-client
 # generate ORM (after add new table or columns on models/m*/*_tables.go)
 make gen-orm
 
-# generate route (after add new _In _Out _Url and business logic method on domain/*.go)
+# generate route (after add new _In+_Out struct, _Url const and business logic method on domain/*.go)
 make gen-route
 ```
 
+## Gotchas
+
+- Call `wc*.Set*` instead of direct assignment (`=`) before calling `wc*.DoUpdateBy*`
+- Clickhouse inserts are buffered using [chTimedBuffer](//github.com/kokizzu/ch-timed-buffer), so you must wait ~1s to ensure it's flushed
+- Clickhouse have eventual consistency, so you must use `FINAL` query to make sure it's committed
+- You cannot change Tarantool's datatype
+- You cannot change Clickhouse's ordering keys datatype
+- Currently migration only allowed for adding columns/fields at the end (you cannot insert new column in the middle/begginging)
+- All Tarantool's columns always set not null after migration
+
+## TODOs
+
+- Add SEO pre-render: [Rendora](//github.com/rendora/rendora)
+- Add search-engine: [TypeSense](//typesense.org/) example
+- Add persisted cache: [IceFireDB](https://github.com/gitsrc/IceFireDB) or [Aerospike](https://aerospike.com/)
+- Add external storage upload example (minio? wasabi?)
+- Replace LightStep with [SigNoz](https://github.com/SigNoz/signoz)
+- Add more deployment script with [LXC/LXD share](https://bobcares.com/blog/how-to-setup-high-density-vps-hosting-using-lxc-linux-containers-and-lxd/) for single server multi-tenant
