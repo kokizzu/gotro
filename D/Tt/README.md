@@ -1,6 +1,8 @@
 
 # Tarantool Adapter and ORM Generator
 
+This package provides automatic schema migration (only for appending new columns, not for changing data types). This package also can be used to generate ORM.
+
 ## Dependencies
 
 ```
@@ -124,8 +126,6 @@ import (
 
 //go:generate go test -run=XXX -bench=Benchmark_GenerateOrm
 
-// TODO: generate json tag also from beginning
-
 func Benchmark_GenerateOrm(b *testing.B) {
 	GenerateORM()
 	b.SkipNow()
@@ -187,7 +187,7 @@ func NewDomain() *Domain {
 
 ```go
 
-func (d *Domain) BusinessLogic1(in *BusinessLogic1_In) BusinessLogic1_Out {
+func (d *Domain) BusinessLogic1(in *BusinessLogic1_In) (out BusinessLogic1_Out) {
 	
 	// do something else
 	
@@ -260,7 +260,7 @@ SELECT ` + s.sqlSelectAllFields() + `
 FROM ` + s.sqlTableName() + `
 ORDER BY ` + s.sqlId() + `
 LIMIT ` + X.ToS(limit) + `
-OFFSET ` + X.ToS(offset)
+OFFSET ` + X.ToS(offset) // note: for string, use S.Z or S.XSS to prevent SQL injection
 	if conf.DEBUG_MODE {
 		L.Print(query)
 	}
@@ -296,5 +296,25 @@ func (p *UsersMutator) SetEncryptPassword(password string) bool {
 	pass, err := bcrypt.GenerateFromPassword([]byte(password), 0)
 	p.SetPassword(string(pass))
 	return !L.IsError(err, `bcrypt.GenerateFromPassword`)
+}
+```
+
+
+9. to initialize automatic migration, just create `model/run_migration.go`
+
+```
+func RunMigration() {
+	L.Print(`run migration..`)
+	tt := &Tt.Adapter{Connection: ConnectTarantool(), Reconnect: ConnectTarantool}
+	tt.MigrateTables(mAuth.ClickhouseTables)
+	// add other tarantool tables to be migrated here
+}
+```
+
+then call it on `main`
+
+```
+func main() {
+	model.RunMigration()
 }
 ```

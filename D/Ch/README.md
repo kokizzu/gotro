@@ -1,6 +1,8 @@
 
 # Clickhouse Adapter and ORM Generator
 
+This package provides automatic migration (only when adding more columns on the last position, not for changing reordering or changing order key's data type). This package also can be used to generate ORM           
+
 ## How to create a connection
 
 ```go
@@ -58,7 +60,7 @@ var ClickhouseTables = map[Ch.TableName]*Ch.TableProp{
 			{IpAddr4, Ch.IPv4},
 			{IpAddr6, Ch.IPv6},
 			{UserAgent, Ch.String},
-			// TODO: add more columns
+			// add more columns here
 		},
 		Orders: []string{ActorId, RequestId},
 	},
@@ -78,8 +80,6 @@ import (
 )
 
 //go:generate go test -run=XXX -bench=Benchmark_GenerateOrm
-
-// TODO: generate json tag also from beginning
 
 func Benchmark_GenerateOrm(b *testing.B) {
 	GenerateORM()
@@ -128,7 +128,7 @@ type Domain struct {
 	Click     *Ch.Adapter
 	chBuffers map[Ch.TableName]*chBuffer.TimedBuffer
 	waitGroup *sync.WaitGroup
-	// TODO: add more dependencies
+	// add more dependency initialization here
 }
 
 func (d *Domain) InitClickhouseBuffer(preparators map[Ch.TableName]chBuffer.Preparator) {
@@ -196,7 +196,7 @@ func NewDomain() *Domain {
 
 ```go
 
-func (d *Domain) BusinessLogic1(in *BusinessLogic1_In) BusinessLogic1_Out {
+func (d *Domain) BusinessLogic1(in *BusinessLogic1_In) (out BusinessLogic1_Out) {
 	
 	// do something else
 	
@@ -240,7 +240,7 @@ ORDER BY COUNT(1) DESC
 	,  MAX(` + m.sqlCreatedAt() + `)
 LIMIT 1000
 OFFSET ` + X.ToS(offset) + `
-`
+` // note: for string, use S.Z or S.XSS to prevent SQL injection
 	rows, err := m.Adapter.Query(query)
 	if L.IsError(err, `failed query: `+query) {
 		return
@@ -259,4 +259,23 @@ OFFSET ` + X.ToS(offset) + `
 	return
 }
 
+```
+
+9. to initialize automatic migration, just create `model/run_migration.go`
+
+```
+func RunMigration() {
+	L.Print(`run migration..`)
+	ch := &Ch.Adapter{DB: ConnectClickhouse(), Reconnect: ConnectClickhouse}
+	ch.MigrateTables(mAuth.ClickhouseTables)
+	// add other clickhouse tables to be migrated here
+}
+```
+
+then call it on `main`
+
+```
+func main() {
+	model.RunMigration()
+}
 ```
