@@ -1,4 +1,4 @@
-package Me
+package Ms
 
 import (
 	"github.com/francoispqt/onelog"
