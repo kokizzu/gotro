@@ -36,9 +36,9 @@ Usable session adapter:
   - AreoSpike
   
 Usable database adapter:
-  - PostgreSQL (OLTP)
-  - Tarantool (OLTP and cache)
-  - ClickHouse (OLAP)
+  - PostgreSQL (OLTP, using JSONB)
+  - Tarantool (OLTP and cache, have migration tool)
+  - ClickHouse (OLAP, have migration tool)
   - Meilisearch (full text search)
   
 Other than above, you must use officially provided database adapter from respective vendors.
@@ -46,7 +46,7 @@ Other than above, you must use officially provided database adapter from respect
 ## Benchmark
 
 Benchmarked using [hey](//github.com/rakyll/hey) `-c 255 -n 255000 http://localhost:3001` on i7-4720HQ [gotro](//github.com/kokizzu/gotro) almost 2x faster than [gokil](//gitlab.com/kokizzu/gokil) (23k rps vs 12k rps, thanks to `fasthttp`),
-this already includes session loading and template rendering (real-life use case, but with template auto-reloading which should be faster on production mode, since unlike in development mode it doesn't stat disk at all). For `W2` can achieve 20k rps on Ryzen 3 3100 without session loading and template rendering (only renders JSON), but with debug logging turned on.
+this already includes session loading and template rendering (real-life use case, but with template auto-reloading which should be faster on production mode, since unlike in development mode it doesn't stat disk at all). For `W2` can achieve 20k rps on Ryzen3 3100 without session loading and template rendering (only renders JSON), but with debug logging turned on (development mode).
 
 ## Usage
 
@@ -64,8 +64,7 @@ this already includes session loading and template rendering (real-life use case
 ## TODO
 
 - fix mysql adapter so it becomes usable (currently copied from Postgres'), probably wait until mysql has indexable json column, or do alters like scylladb and sqlite
-- rewrite W using [fiber](https://gofiber.io/)
-- rewrite D using prepared statements, so no more `S.Z`
+- rewrite `D/Pg` using prepared statements, so no more `S.Z`
 - use `nikoksr/notify` for notification and mail sending instead of tied to `W`
 - possibly refactor move cachedquery, records, etc to D package since nothing different about them
 - [Review](//goo.gl/tBkfse) which other [databases](//github.com/alexmacarthur/local-docker-db) we must support primarily for `D`, that can be silver bullet for extreme cases (high-write: sharding/partitioning and multi-master replication or auto-failover; full-text-search) 
