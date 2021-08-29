@@ -972,7 +972,8 @@ export const APIs = {`)
 		], deps: [`)
 		for _, thirdP := range r.ThirdParties {
 			if r.func3rdParty[method+`|`+thirdP] {
-				buf.WriteString(`"` + thirdP + `",`)
+				buf.WriteString(`
+			"` + thirdP + `",`)
 			}
 
 		}

@@ -24,8 +24,8 @@ so for example v1.213.1549 means it was released at `2021-02-13 15:49`
   - I - Integer
   - S - String
   - T - Time (and Date)
-  - W - Web (the "framework") **STATUS**: usable since 2017-03-08, see `W/example-simplified/`
-  - W2 - Web (the new "framework") **STATUS**: usable since 2021-08-30, see `W2/example`
+  - W - Web (the old "web framework") **STATUS**: usable since 2017-03-08, see `W/example-simplified/`
+  - W2 - Web (the new codegen-based "web-framework") **STATUS**: usable since 2021-08-30, see `W2/example`
   - X - Anything (aka `interface{}`)
   - Z - Z-Template Engine, that has syntax similar to ruby string interpolation `#{foo}` or any other that javascript friendly `{/* foo */}`, `[/* bar */]`, `/*! bar */`
 - Comment and examples on each type and function, so it can be viewed using godoc, something like: `godoc github.com/kokizzu/gotro/A`

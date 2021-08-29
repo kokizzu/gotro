@@ -1,7 +1,32 @@
 
 # Codegen for Web Framework
 
+This framework aims to reduce common task that happened during backend API development which are:
+
+1. generating and migrating model
+2. generate for other type of input and output format/encoding (json, msgpack, yaml, etc), command line, or different transport (rest, websocket, grpc, etc)
+3. generate API client for different clients
+4. testable business logic (by untangling `domain/` and decorator/adapter/)
+
+This codegen currently tied to Tarantool (for OLTP use cases), Clickhouse (for OLAP use cases), and Fiber (for web routes) and only tested for generating json using REST transport and plain JS API docs. But you can always create a new codegen for other databases or other web frameworks or other API clients.
+
+## FAQ
+
+Why is it tied to [Tarantool](//www.tarantool.io/en/developers)?
+- because it's currently the fastest SQL-OLTP database that also works as in-memory cache, so I can do [integration testing](//kokizzu.blogspot.com/2021/07/mock-vs-fake-and-classical-testing.html) without noticable overhead (can do 200K writes per second).
+
+Why is it tied to [Clickhouse](//clickhouse.tech)?
+- because it's currently the fastest OLAP database (can do 600K inserts per second).
+
+Why is it tied to [Fiber](//gofiber.io/)?
+- because it's currently the fastest minimalist golang framework.
+
+Why still using `encoding/json`?
+- because I couldn't find any other faster alternative that can properly parse int64/uint64.
+
 ## Usage
+
+See example directory or if you want to do codegen manually:
 
 1. create a test file `0_generator_test.go` inside your `domain/` project folder
 

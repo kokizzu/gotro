@@ -17,7 +17,7 @@ reverseproxy:
 	caddy run -config Caddyfile
 
 run:
-	go run *.go cmd
+	go run *.go cli
 
 ### setup
 
