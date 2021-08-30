@@ -125,7 +125,7 @@ func (d *Domain) MediaUpload(in *MediaUpload_In) (out MediaUpload_Out) {
 	}
 
 	up := wcSomething.NewMediaUploadsMutator(d.Taran)
-	up.Id = I.UIfZero(in.UploadId, id64.UID())
+	up.Id = in.UploadId
 	if in.UploadId > 0 {
 		if !up.FindById() {
 			out.SetError(404, `upload not found, wrong env?`)
@@ -133,6 +133,7 @@ func (d *Domain) MediaUpload(in *MediaUpload_In) (out MediaUpload_Out) {
 		}
 	}
 	if up.CreatedAt == 0 {
+		up.Id = id64.UID()
 		up.CreatedAt = in.UnixNow()
 		up.CreatedBy = sess.PlayerId
 	}
