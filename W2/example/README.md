@@ -30,7 +30,7 @@ How to release?
     - `sa[Domain]` - statistics analytics (event source), you can add a new file here to extend the default ORM
     - `wc[Domain]` - write command (C from CQRS), you can add a new file here to extend the default ORM
     - `*_table.go` - the schema file for that domain, to generate the ORM and as an input for migration
-- `production` - scripts for production 
+- `production` - scripts and env for deploying to production
 - `svelte` - frontend (can be replaced with any framework) 
 
 outer files:
