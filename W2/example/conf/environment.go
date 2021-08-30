@@ -12,11 +12,8 @@ import (
 
 const PROJECT_NAME = `example` // must be the same as go.mod
 const API_PREFIX = `/api`
-const SKIN_SUBDIR = `skins/`
-const EVENT_SUBDIR = `events/`
-const COIN_NAME = `$DIH Coin`
+const MEDIA_SUBDIR = `media/`
 const MAIL_VIEWS_DIR = `/views`
-const AVATAR_PREFIX = `/avatars/`
 
 var (
 	// ALL_CAPS = from .env
