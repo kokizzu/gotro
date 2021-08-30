@@ -69,3 +69,110 @@ make gen-route
 - Add external storage upload example (minio? wasabi?)
 - Replace LightStep with [SigNoz](https://github.com/SigNoz/signoz)
 - Add more deployment script with [LXC/LXD share](https://bobcares.com/blog/how-to-setup-high-density-vps-hosting-using-lxc-linux-containers-and-lxd/) for single server multi-tenant
+
+
+## File Upload Example
+
+```go
+type (
+	MediaUpload_In struct {
+		RequestCommon
+		UploadId   uint64 `json:"uploadId,string" form:"uploadId" query:"uploadId" long:"uploadId" msg:"uploadId"`
+		FileBinary string `json:"fileBinary" form:"fileBinary" query:"fileBinary" long:"fileBinary" msg:"fileBinary"`
+	}
+	MediaUpload_Out struct {
+		ResponseCommon
+		MediaUpload *rqSomething.MediaUploads `json:"mediaUpload" form:"mediaUpload" query:"mediaUpload" long:"mediaUpload" msg:"mediaUpload"`
+	}
+)
+
+const MediaUpload_Url = `/MediaUpload`
+
+func (d *Domain) MediaUpload(in *MediaUpload_In) (out MediaUpload_Out) {
+	sess := d.mustAdmin(in.SessionToken, in.UserAgent, &out.ResponseCommon)
+	if sess == nil {
+		return
+	}
+
+	if len(in.Uploads) == 0 {
+		out.SetError(400, `missing fileBinary, enctype not multipart/form-data?`)
+		return
+	}
+
+	up := wcSomething.NewMediaUploadsMutator(d.Taran)
+	up.Id = I.UIfZero(in.UploadId, id64.UID())
+	if in.UploadId > 0 {
+		if !up.FindById() {
+			out.SetError(404, `upload not found, wrong env?`)
+			return
+		}
+	}
+	if up.CreatedAt == 0 {
+		up.CreatedAt = in.UnixNow()
+		up.CreatedBy = sess.PlayerId
+	}
+	up.UpdatedAt = in.UnixNow()
+	up.UpdatedBy = sess.PlayerId
+	for fileName, tmpFile := range in.Uploads {
+		up.OrigName = fileName
+		oldPath := up.FilePath
+		uriPath := conf.UPLOAD_URI + conf.MEDIA_SUBDIR
+		dir := conf.UPLOAD_DIR + conf.MEDIA_SUBDIR
+		idStr := I.UToS(up.Id)
+		if S.StartsWith(oldPath, uriPath) {
+			oldPath = dir + S.RightOf(oldPath, uriPath)
+		} else if oldPath != `` {
+			L.Print(`ERROR weird name format to be replaced for mediaUpload.id: ` + idStr + `:` + oldPath)
+		}
+
+		mtype, err := mimetype.DetectFile(tmpFile)
+		if L.IsError(err, `cannot detect file type: `+tmpFile) {
+			out.SetError(500, `cannot detect file type: `+up.OrigName)
+			return
+		}
+
+		err = os.MkdirAll(dir, 0755)
+		if L.IsError(err, `failed to create upload directory: `+dir) {
+			out.SetError(500, `cannot create upload directory`)
+			return
+		}
+		ext := S.ToLower(filepath.Ext(fileName))
+		newName := idStr + ext
+		newPath := dir + newName
+		err = os.Rename(tmpFile, newPath)
+		if L.IsError(err, `failed to rename `+tmpFile+` to `+newPath) {
+			out.SetError(500, `failed moving uploaded file`)
+			return
+		}
+		in.Uploads[fileName] = oldPath // delete old file later
+		up.FilePath = uriPath + newName
+		stat, err := os.Stat(newPath)
+		if L.IsError(err, `failed to stat moved file: `+newPath) {
+			out.SetError(500, `failed to stat moved file`)
+			return
+		}
+		up.SizeByte = uint64(stat.Size())
+		up.ContentType = mtype.String()
+
+		// ignore if upload more than one
+		break
+	}
+	//if in.DoDelete {
+	//	up.IsDeleted = true
+	//	up.DeletedAt = in.UnixNow()
+	//	up.DeletedBy = sess.PlayerId
+	//}
+	//if in.DoRestore {
+	//	up.IsDeleted = false
+	//	up.RestoredAt = in.UnixNow()
+	//	up.RestoredBy = sess.PlayerId
+	//}
+
+	if !up.DoReplace() {
+		out.SetError(500, `cannot upsert media`)
+		return
+	}
+	out.MediaUpload = &up.MediaUploads
+	return
+}
+```
