@@ -98,6 +98,60 @@ make gen-route
 
 ## File Upload Example
 
+the schema (`/model/m[Something]/[something]_tables.go`), after creating this, run `make gen-orm`:
+
+```go
+const (
+	TableMediaUploads Tt.TableName = `mediaUploads`
+	Id            = `id`
+	CreatedBy     = `createdBy`
+	CreatedAt     = `createdAt`
+	UpdatedBy     = `updatedBy`
+	UpdatedAt     = `updatedAt`
+	DeletedBy     = `deletedBy`
+	DeletedAt     = `deletedAt`
+	IsDeleted     = `isDeleted`
+	RestoredBy    = `restoredBy`
+	RestoredAt    = `restoredAt`
+	SizeByte      = `sizeByte`
+	FilePath      = `filePath`
+	ContentType   = `contentType`
+	OrigName      = `origName`
+)
+
+var TarantoolTables = map[Tt.TableName]*Tt.TableProp{
+	TableMediaUploads: {
+		Fields: []Tt.Field{
+			{Id, Tt.Unsigned},
+			{CreatedAt, Tt.Integer},
+			{CreatedBy, Tt.Unsigned},
+			{UpdatedAt, Tt.Integer},
+			{UpdatedBy, Tt.Unsigned},
+			{DeletedAt, Tt.Integer},
+			{DeletedBy, Tt.Unsigned},
+			{IsDeleted, Tt.Boolean},
+			{RestoredAt, Tt.Integer},
+			{RestoredBy, Tt.Unsigned},
+			{SizeByte, Tt.Unsigned},
+			{FilePath, Tt.String},
+			{ContentType, Tt.String},
+			{OrigName, Tt.String},
+		},
+		Unique1: Id,
+		Unique2: FilePath,
+	},
+}
+
+func GenerateORM() {
+	Tt.GenerateOrm(TarantoolTables)
+}
+
+// don't forget to add migration on model.go:
+//	m.Taran.MigrateTables(mSomething.TarantoolTables)
+```
+
+the code for domain/business logic `/domain/media.go`, after creating this, run `make gen-route`: 
+
 ```go
 type (
 	MediaUpload_In struct {
