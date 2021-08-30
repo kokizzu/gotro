@@ -4,9 +4,9 @@
 This framework aims to reduce common task that happened during backend API development which are:
 
 1. generating ORM and migrating model
-2. generate for other type of input and output encoding/presentation format (json, msgpack, yaml, etc), command line, or different transport (REST, websocket, gRPC, etc)
-3. generate API documentation and clients for different programming languages
-4. testable business logic (by untangling `domain/` and decorator/adapter/)
+2. generate for other type of input and output encoding/presentation format (JSON, MsgPack, YAML, JSON5, etc), command line, or different transport (REST, WebSocket, gRPC, CLI, etc)
+3. generate API documentation and API clients for different programming languages
+4. testable business logic (by untangling `domain/` and decorator/adapter/presentation)
 
 This codegen currently tied to Tarantool (for OLTP use cases), Clickhouse (for OLAP use cases), and Fiber (for web routes) and only tested for generating json using REST transport and plain JS API docs. But you can always create a new codegen for other databases or other web frameworks or other API clients.
 
@@ -23,6 +23,11 @@ Why is it tied to [Fiber](//gofiber.io/)?
 
 Why still using `encoding/json`?
 - because I couldn't find any other faster alternative that can properly parse int64/uint64 (already tried jsoniter and easyjson, both give wrong result for `{"id":"89388457092187654"}` with `json:"id,string"` tag).
+
+Why tying between business logic and data store?
+- because we are rarely changing database product, like 90% of the time we'll never switch database since it's too costly (time consuming)
+- because the data store itself are fast (in-mem) and can be tested using docker-compose or dockertest
+- because we shouldn't separate between memory (data structure) and business logic (algorithm), since they are both the brain of our application
 
 ## Usage
 
