@@ -67,6 +67,7 @@ make gen-route
 - Currently migration only allowed for adding columns/fields at the end (you cannot insert new column in the middle/begginging)
 - All Tarantool's columns always set not null after migration
 - Tarantool does not support client side transaction (so you must use Lua or split into SAGAs)
+- Current parser/codegen does not allow calling SetError with more than 1 concatenation or complex expression or non constant left-hand-side, eg. `d.SetError(500, "error on" + Bla(bar) + Yay(baz))`, you must repharase the error detail into something like this: `d.SetError(500, "error on " + msg)`
 
 ## TODOs
 
