@@ -13,7 +13,7 @@ This codegen currently tied to Tarantool (for OLTP use cases), Clickhouse (for O
 ## FAQ
 
 Why is it tied to [Tarantool](//www.tarantool.io/en/developers)?
-- because it's currently the fastest SQL-OLTP database that also works as in-memory cache, so I can do [integration testing](//kokizzu.blogspot.com/2021/07/mock-vs-fake-and-classical-testing.html) without noticable overhead (can do ~200K writes per second).
+- because it's currently the fastest SQL-OLTP database that also works as in-memory cache, so I can do [integration testing](//kokizzu.blogspot.com/2021/07/mock-vs-fake-and-classical-testing.html) without noticable overhead (can do ~200K writes per second), your first scalability issue would mostly always be the database, unless you're using slow untyped programming language.
 
 Why is it tied to [Clickhouse](//clickhouse.tech)?
 - because it's currently the fastest OLAP database (can do ~600K inserts per second).
