@@ -19,6 +19,23 @@ How to release?
 - cd `production`, run `./sync_service.sh`
 - run `./deploy_prod.sh`
 
+## Directory Structure
+
+- `3rdparty` - all third party wrapper should be here as a subfolder
+- `conf` - all configuration constants
+- `domain` - contains your business logic, these are the one that shouldbe unit tested
+- `model` - contains your domains' data store
+  - `m[Domain]` - contains data store that should be grouped inside that domain
+    - `rq[Domain]` - read query (R from CQRS), you can add a new file here to extend the default ORM
+    - `sa[Domain]` - statistics analytics (event source), you can add a new file here to extend the default ORM
+    - `wc[Domain]` - write command (C from CQRS), you can add a new file here to extend the default ORM
+    - `*_table.go` - the schema file for that domain, to generate the ORM and as an input for migration
+- `production` - scripts and env for deploying to production
+- `svelte` - frontend (can be replaced with any framework) 
+
+outer files:
+- `main_*.GEN.go` - will be generated per transport/presentation/adapter (eg. gRPC, REST, WebSocket, CLI, etc)
+
 ## Setup
 
 ```bash
@@ -108,7 +125,7 @@ func (d *Domain) MediaUpload(in *MediaUpload_In) (out MediaUpload_Out) {
 	}
 
 	up := wcSomething.NewMediaUploadsMutator(d.Taran)
-	up.Id = I.UIfZero(in.UploadId, id64.UID())
+	up.Id = in.UploadId
 	if in.UploadId > 0 {
 		if !up.FindById() {
 			out.SetError(404, `upload not found, wrong env?`)
@@ -116,6 +133,7 @@ func (d *Domain) MediaUpload(in *MediaUpload_In) (out MediaUpload_Out) {
 		}
 	}
 	if up.CreatedAt == 0 {
+		up.Id = id64.UID()
 		up.CreatedAt = in.UnixNow()
 		up.CreatedBy = sess.PlayerId
 	}
