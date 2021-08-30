@@ -10,6 +10,11 @@ go install github.com/fatih/gomodifytags@latest
 go install github.com/kokizzu/replacer@latest
 ```
 
+## Generated ORM Example
+
+![image](https://user-images.githubusercontent.com/1061610/131272783-0b2e0dc6-072b-47e1-854f-1f5291725255.png)
+![image](https://user-images.githubusercontent.com/1061610/131272846-928a5630-4714-4092-8384-540c98772596.png)
+
 ## How to create a connection
 
 ```go

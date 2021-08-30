@@ -35,21 +35,21 @@ package domain_test
 
 import (
 	"testing"
-	`github.com/kokizzu/gotro/WW`
+	`github.com/kokizzu/gotro/W2`
 )
 
 //go:generate go test -run=XXX -bench=Benchmark_Generate_WebApiRoutes_CliArgs
 //go:generate go test -run=XXX -bench=Benchmark_Generate_SvelteApiDocs
 
 func Benchmark_Generate_WebApiRoutes_CliArgs(b *testing.B) {
-	WW.GenerateFiberAndCli(&WW.GeneratorConfig{
+	W2.GenerateFiberAndCli(&WW.GeneratorConfig{
 		ProjectName: PROJECT_NAME,
 	})
 	b.SkipNow()
 }
 
 func Benchmark_Generate_SvelteApiDocs(b *testing.B) {
-	WW.GenerateApiDocs(&WW.GeneratorConfig{
+	W2.GenerateApiDocs(&WW.GeneratorConfig{
 		ProjectName: PROJECT_NAME,
 	})
 	b.SkipNow()

@@ -13,6 +13,12 @@ How to develop?
 - create an integration/unit test to make sure that your code is correct
 ![image](https://user-images.githubusercontent.com/1061610/131266911-281090aa-f062-43eb-80cf-9ba561e019d2.png)
 
+How to release?
+- change `production/` configuration values
+- setup the server, ssh to server and run `setup_server.sh`
+- cd `production`, run `./sync_service.sh`
+- run `./deploy_prod.sh`
+
 ## Setup
 
 ```bash
@@ -60,6 +66,8 @@ make gen-route
 - You cannot change Clickhouse's ordering keys datatype
 - Currently migration only allowed for adding columns/fields at the end (you cannot insert new column in the middle/begginging)
 - All Tarantool's columns always set not null after migration
+- Tarantool does not support client side transaction (so you must use Lua or split into SAGAs)
+- Current parser/codegen does not allow calling SetError with more than 1 concatenation or complex expression or non constant left-hand-side, eg. `d.SetError(500, "error on" + Bla(bar) + Yay(baz))`, you must repharase the error detail into something like this: `d.SetError(500, "error on " + msg)`
 
 ## TODOs
 

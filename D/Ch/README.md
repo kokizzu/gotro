@@ -3,6 +3,18 @@
 
 This package provides automatic migration (only when adding more columns on the last position, not for changing reordering or changing order key's data type). This package also can be used to generate ORM           
 
+## Dependencies
+
+```
+go install github.com/fatih/gomodifytags@latest
+go install github.com/kokizzu/replacer@latest
+```
+
+## Generated ORM example
+
+![image](https://user-images.githubusercontent.com/1061610/131272641-2fe22b60-0f8a-47ad-b8f9-49e571946648.png)
+
+
 ## How to create a connection
 
 ```go
