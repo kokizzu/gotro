@@ -19,7 +19,7 @@ Why is it tied to [Clickhouse](//clickhouse.tech)?
 - because it's currently the fastest OLAP database (can do ~600K inserts per second).
 
 Why is it tied to [Fiber](//gofiber.io/)?
-- because it's currently the fastest minimalist golang framework.
+- because it's currently the [fastest](//www.techempower.com/benchmarks/#section=data-r20&hw=ph&test=update&l=zijocf-sf) minimalist golang framework, ones that are faster but not more painful to use is C#'s [bettlex](//beetlex.io/)
 
 Why still using `encoding/json`?
 - because I couldn't find any other faster alternative that can properly parse int64/uint64 (already tried jsoniter and easyjson, both give wrong result for `{"id":"89388457092187654"}` with `json:"id,string"` tag).
