@@ -15,15 +15,25 @@ How to develop?
 
 How to release?
 - change `production/` configuration values
-- setup the server, ssh to server and run `setup_server.sh`
-- cd `production`, run `./sync_service.sh`
+- setup the server, ssh to the production/staging server and run `setup_server.sh`
+- cd `production`, run `./sync_service.sh` 
 - run `./deploy_prod.sh`
+
+How to do multi server?
+
+- replace [id64](//github.com/kokizzu/lexid) with string, for example [lexid](//github.com/kokizzu/lexid) or standard `uuid`
+- add an environment variable for SERVER_ID, and init it as `lexid.ServerId`
+- before running deployment script, make sure to append environment variable SERVER_ID that are must unique per server
+
+How to do multi database?
+
+- see [this](//kokizzu.blogspot.com/2021/05/easy-tarantool-clickhouse-replication-setup.html) blog post
 
 ## Directory Structure
 
 - `3rdparty` - all third party wrapper should be here as a subfolder
 - `conf` - all configuration constants
-- `domain` - contains your business logic, these are the one that shouldbe unit tested
+- `domain` - contains your business logic, these are the one that should be integration/unit tested
 - `model` - contains your domains' data store
   - `m[Domain]` - contains data store that should be grouped inside that domain
     - `rq[Domain]` - read query (R from CQRS), you can add a new file here to extend the default ORM
@@ -62,7 +72,7 @@ make reverseproxy
 
 ```bash
 # connect to OLTP database
-tarantoolctll connect 3301
+tarantoolctl connect 3301
 
 # connect to OLAP database
 clickhouse-client
@@ -78,12 +88,12 @@ make gen-route
 
 - Call `wc*.Set*` instead of direct assignment (`=`) before calling `wc*.DoUpdateBy*`
 - Clickhouse inserts are buffered using [chTimedBuffer](//github.com/kokizzu/ch-timed-buffer), so you must wait ~1s to ensure it's flushed
-- Clickhouse have eventual consistency, so you must use `FINAL` query to make sure it's committed
+- Clickhouse have eventual consistency, so you must use `FINAL` query to make sure it's force-committed
 - You cannot change Tarantool's datatype
 - You cannot change Clickhouse's ordering keys datatype
 - Currently migration only allowed for adding columns/fields at the end (you cannot insert new column in the middle/begginging)
-- All Tarantool's columns always set not null after migration
-- Tarantool does not support client side transaction (so you must use Lua or split into SAGAs)
+- All Tarantool's columns always set not null after migration (I hate null values XD)
+- Tarantool does not support client side transaction (so you must use [Lua](//www.tarantool.io/en/doc/latest/book/box/atomic/) or 2PC or split into SAGAs)
 - Current parser/codegen does not allow calling SetError with more than 1 concatenation or complex expression or non constant left-hand-side, eg. `d.SetError(500, "error on" + Bla(bar) + Yay(baz))`, you must repharase the error detail into something like this: `d.SetError(500, "error on " + msg)`
 
 ## TODOs
@@ -94,7 +104,6 @@ make gen-route
 - Add external storage upload example (minio? wasabi?)
 - Replace LightStep with [SigNoz](https://github.com/SigNoz/signoz)
 - Add more deployment script with [LXC/LXD share](https://bobcares.com/blog/how-to-setup-high-density-vps-hosting-using-lxc-linux-containers-and-lxd/) for single server multi-tenant
-
 
 ## File Upload Example
 
