@@ -86,7 +86,7 @@ make gen-route
 
 ## Gotchas
 
-- Calling direct assignment (`=`) instead of `wc*.Set*` before calling `wc*.DoUpdateBy*` will do nothing, as direct assignment does not append mutation property
+- Calling direct assignment (`=`) instead of `wc*.Set*()` before calling `wc*.DoUpdateBy*()` will do nothing, as direct assignment does not append mutation property
 ```
 # proper way to update
 x := mAuth.NewUsersMutator(s.Taran)
@@ -110,7 +110,7 @@ x.Bla = ..
 x.Foo = ..
 x.Bar = ..
 x.Baz = ..
-x.DoInsert() or x.DoReplace()
+x.DoInsert() or x.DoReplace() // calling DoUpdateBy*() will do nothing, since mutation property only set when calling .Set*() method
 ```
 - Clickhouse inserts are buffered using [chTimedBuffer](//github.com/kokizzu/ch-timed-buffer), so you must wait ~1s to ensure it's flushed
 - Clickhouse have eventual consistency, so you must use `FINAL` query to make sure it's force-committed
