@@ -90,6 +90,11 @@ make gen-route
 ```
 # proper way to update
 x := mAuth.NewUsersMutator(s.Taran)
+x.Id = ...
+if !x.FindById() {
+   // not found
+   return // or x.DoInsert() then continue with update
+}
 x.SetBla(..) 
 x.SetFoo(..)
 x.SetBar(..)
@@ -105,7 +110,7 @@ x.Bla = ..
 x.Foo = ..
 x.Bar = ..
 x.Baz = ..
-x.DoInsert() or x.DoUpdate()
+x.DoInsert() or x.DoReplace()
 ```
 - Clickhouse inserts are buffered using [chTimedBuffer](//github.com/kokizzu/ch-timed-buffer), so you must wait ~1s to ensure it's flushed
 - Clickhouse have eventual consistency, so you must use `FINAL` query to make sure it's force-committed
