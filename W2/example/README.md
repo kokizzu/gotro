@@ -86,7 +86,27 @@ make gen-route
 
 ## Gotchas
 
-- Call `wc*.Set*` instead of direct assignment (`=`) before calling `wc*.DoUpdateBy*`
+- Calling direct assignment (`=`) instead of `wc*.Set*` before calling `wc*.DoUpdateBy*` will do nothing, as direct assignment does not append mutation property
+```
+# proper way to update
+x := mAuth.NewUsersMutator(s.Taran)
+x.SetBla(..) 
+x.SetFoo(..)
+x.SetBar(..)
+x.SetBaz(..)
+x.SetBaz(..) // calling twice on the same column will cause DoUpdate to fail
+if !x.DoUpdateById() {
+   // failed to update
+}
+
+# but if you need only insert or replace, you can use = directly
+x := mAuth.NewUsersMutator(s.Taran)
+x.Bla = ..
+x.Foo = ..
+x.Bar = ..
+x.Baz = ..
+x.DoInsert() or x.DoUpdate()
+```
 - Clickhouse inserts are buffered using [chTimedBuffer](//github.com/kokizzu/ch-timed-buffer), so you must wait ~1s to ensure it's flushed
 - Clickhouse have eventual consistency, so you must use `FINAL` query to make sure it's force-committed
 - You cannot change Tarantool's datatype
