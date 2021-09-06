@@ -15,7 +15,7 @@ You can switch around, it doesn't matter, but it would be better to use each dif
 
 ## Template Example
 
-```
+```html
 <html>
 <head>
 	<title>/*! title */</title>
@@ -33,7 +33,7 @@ You can switch around, it doesn't matter, but it would be better to use each dif
 
 ## Usage Example
 
-```
+```go
 const autoReload = true
 const printDebug = true
 const fileName = `dummy.html`
@@ -58,7 +58,8 @@ tc.Render(&buff,M.SX{
 
 ## Example Output
 
-```<html>
+```html
+<html>
 <head>
 	<title>this is a title</title>
 </head>
@@ -71,4 +72,22 @@ tc.Render(&buff,M.SX{
 </script>
 </body>
 </html>
+```
+
+## Example from string
+
+note that it's preferable for `FromString` to be reused (declared as global or cached) so it doesn't have to parse the template again and again.
+
+```go
+const printDebug = true
+res := bytes.Buffer{}
+FromString(`hi my name #{name}, my age #{age}`,printDebug).Render(&res,M.SX{
+	`name`: `Tzuyu`,
+	`age`: 21,
+})
+res.String() == `hi my name Tzuyu, my age 21`
+str := FromString(`i like #{char}`).Str(M.SX{
+	`char`: `Rem`,
+})
+str == `i like Rem`
 ```

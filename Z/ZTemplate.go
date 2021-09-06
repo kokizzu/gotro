@@ -5,14 +5,17 @@ package Z
 import (
 	"bytes"
 	"errors"
-	"github.com/kokizzu/gotro/L"
-	"github.com/kokizzu/gotro/M"
-	"github.com/kokizzu/gotro/S"
-	"github.com/kokizzu/gotro/X"
 	"io/ioutil"
 	"os"
 	"path/filepath"
 	"time"
+
+	"github.com/kokizzu/gotro/I"
+	"github.com/kokizzu/gotro/L"
+	"github.com/kokizzu/gotro/M"
+	"github.com/kokizzu/gotro/S"
+	"github.com/kokizzu/gotro/X"
+	"github.com/kpango/fastime"
 )
 
 // The Z-Template engine syntax are javascript friendly or similar to ruby's string interpolation:
@@ -32,12 +35,19 @@ type TemplateChain struct {
 	ModTime     time.Time
 	AutoRefresh bool
 	PrintDebug  bool
+	InMemory    bool
 }
 
 func (t TemplateChain) Print() {
 	for k, v := range t.Parts {
 		L.Print(k, string(v))
 	}
+}
+
+func (t *TemplateChain) Str(values M.SX) string {
+	bs := bytes.Buffer{}
+	t.Render(&bs, values)
+	return bs.String()
 }
 
 // write to buffer
@@ -84,6 +94,9 @@ func (t *TemplateChain) Render(target *bytes.Buffer, values M.SX) {
 
 // reload from file
 func (t *TemplateChain) Reload() (*TemplateChain, error) {
+	if t.InMemory {
+		return t, nil
+	}
 	dup := TemplateChain{
 		Parts:       [][]byte{},
 		Keys:        []string{},
@@ -117,9 +130,14 @@ func (t *TemplateChain) Reload() (*TemplateChain, error) {
 		L.Print(dup.Filename)
 		return &dup, errors.New(errinfo)
 	}
+	dup.parseTemplate(bs)
+	return &dup, nil
+}
+
+func (t *TemplateChain) parseTemplate(bs []byte) {
 	// clear parts
-	dup.Parts = [][]byte{}
-	dup.Keys = []string{}
+	t.Parts = [][]byte{}
+	t.Keys = []string{}
 	//L.Print(`start parsing`, t.Filename)
 	// split into Parts and Keys
 	start := 0
@@ -286,31 +304,52 @@ func (t *TemplateChain) Reload() (*TemplateChain, error) {
 		if end > 0 {
 			//L.Print(`part`, string(bs[start:p]))
 			//L.Print(`key`, string(key))
-			dup.Parts = append(dup.Parts, bs[start:p])
+			t.Parts = append(t.Parts, bs[start:p])
 			// trim whitespace before and after key
-			dup.Keys = append(dup.Keys, S.Trim(key))
+			t.Keys = append(t.Keys, S.Trim(key))
 			start = end
 			p = end
 		} else {
 			p += 1
 		}
 	}
-	if len(dup.Parts) == 0 {
+	if len(t.Parts) == 0 {
 		//L.Print(`part (all) not shown`, len(bs[:]))
-		dup.Parts = append(dup.Parts, bs[:])
+		t.Parts = append(t.Parts, bs[:])
 	} else {
 		//L.Print(`part`, string(bs[start:]))
-		dup.Parts = append(dup.Parts, bs[start:])
+		t.Parts = append(t.Parts, bs[start:])
 	}
-	//L.Print(`end parsing`, t.Filename, len(dup.Parts), len(dup.Keys), info.Size())
-	return &dup, nil
+	//L.Print(`end parsing`, t.Filename, len(t.Parts), len(t.Keys), info.Size())
 }
 
 // parse a file and cache it
-func ParseFile(auto_reload, print_debug bool, filename string) (*TemplateChain, error) {
-	res := TemplateChain{}
-	res.AutoRefresh = auto_reload
-	res.PrintDebug = print_debug
+func ParseFile(autoReload, printDebug bool, filename string) (*TemplateChain, error) {
+	res := &TemplateChain{}
+	res.AutoRefresh = autoReload
+	res.PrintDebug = printDebug
 	res.Filename = filename
 	return res.Reload()
+}
+
+func FromString(template string, debugFlags ...bool) *TemplateChain {
+	printDebug := false
+	if len(debugFlags) == 1 {
+		printDebug = debugFlags[0]
+	}
+	res := &TemplateChain{
+		Parts:       [][]byte{},
+		Keys:        []string{},
+		AutoRefresh: false,
+		PrintDebug:  printDebug,
+		ModTime:     fastime.Now(),
+	}
+	if printDebug {
+		caller := L.CallerInfo()
+		res.Filename = caller.FileName + `:` + I.ToStr(caller.Line)
+	} else {
+		res.Filename = template
+	}
+	res.parseTemplate([]byte(template))
+	return res
 }

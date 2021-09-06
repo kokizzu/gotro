@@ -43,3 +43,18 @@ func Test_Template(t *testing.T) {
 </html>
 `, buff.String())
 }
+
+func Test_TemplateString(t *testing.T) {
+	const printDebug = true
+	res := bytes.Buffer{}
+	const template = `hi my name #{name}, my age #{age}`
+	FromString(template, printDebug).Render(&res, M.SX{
+		`name`: `Tzuyu`,
+		`age`:  21,
+	})
+	assert.Equal(t, `hi my name Tzuyu, my age 21`, res.String())
+	str := FromString(`i like #{char}`).Str(M.SX{
+		`char`: `Rem`,
+	})
+	assert.Equal(t, `i like Rem`, str)
+}
