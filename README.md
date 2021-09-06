@@ -1,14 +1,15 @@
 # GotRo
 
 GotRo is abbreviation of `Gotong Royong`. the meaning in `Indonesia`: "do it together", "mutual cooperation". 
-This Framework is rewrite of [gokil](//gitlab.com/kokizzu/gokil), that previously use [httprouter](//github.com/julienschmidt/httprouter) but now rewritten using [fasthttprouter](//github.com/buaazp/fasthttprouter) (`W` package deprecated soon), latest framework `W2` are now using [fiber](//gofiber.io).
+This Framework is rewrite of [gokil](//gitlab.com/kokizzu/gokil), that previously use [httprouter](//github.com/julienschmidt/httprouter) but rewritten using [fasthttprouter](//github.com/buaazp/fasthttprouter) (`W` framework, deprecated), latest framework `W2` are now using [fiber](//gofiber.io).
+
 ## Versioning
 
 versioning using this format 1.`(M+(YEAR-2021)*12)DD`.`HMM`,
 so for example v1.213.1549 means it was released at `2021-02-13 15:49`
 
 ## Design Goal
-- As similar as possible to [gokil](//gitlab.com/kokizzu/gokil) that still used by my old company.
+- As similar as possible to [gokil](//gitlab.com/kokizzu/gokil) that still used by my old company (2014-now).
 - Opinionated (choose the best dependency), for example by default uses `int64` and `float64`, `uint64` for id(s).
 - 1-letter supporting package so we only need to write a short common function, such as: `I.ToS(1234)` to convert `int64` to `string`)
   - A - Array
@@ -41,7 +42,7 @@ Usable database adapter:
   - ClickHouse (OLAP, have migration tool)
   - Meilisearch (full text search)
   
-Other than above, you must use officially provided database adapter from respective vendors.
+Other than above, you must use officially provided database adapter from respective vendors. For docker compose example. you can see [local-docker-db](//github.com/alexmacarthur/local-docker-db)
 
 ## Benchmark
 
@@ -50,23 +51,23 @@ this already includes session loading and template rendering (real-life use case
 
 ## Usage
 
-`go get -u -v github.com/kokizzu/gotro` or for Go 1.16+ `go mod download github.com/kokizzu/gotro` or just import one of the sub-library and run `go mod tidy` 
+`go get -u -v github.com/kokizzu/gotro` or for Go 1.16+: `go mod download github.com/kokizzu/gotro` or just import one of the sub-library and run `go mod tidy` 
 
 ## Contributors
 
+- Devin Yonas
 - Dikaimin Simon
 - Dimas Yudha P
-- Rizal Widyarta Gowandy
 - Michael Lim
 - Pham Hoang Tien
-- Devin Yonas
+- Rizal Widyarta Gowandy
 
 ## TODO
 
-- fix mysql adapter so it becomes usable (currently copied from Postgres'), probably wait until mysql has indexable json column, or do alters like scylladb and sqlite
+- fix mysql adapter so it becomes usable (currently copied from Postgres'), probably wait until mysql has indexable json column, or do alters like scylladb and sqlite, or just remove and rewrite one for [TiDB](//github.com/kokizzu/list-of-tech-migrations)
 - rewrite `D/Pg` using prepared statements, so no more `S.Z`
 - use `nikoksr/notify` for notification and mail sending instead of tied to `W`
-- possibly refactor move cachedquery, records, etc to D package since nothing different about them
+- possibly refactor move cachedquery, records, etc to `D` package since nothing different about them
 - [Review](//goo.gl/tBkfse) which other [databases](//github.com/alexmacarthur/local-docker-db) we must support primarily for `D`, that can be silver bullet for extreme cases (high-write: sharding/partitioning and multi-master replication or auto-failover; full-text-search) 
   - [ActorDB](//www.actordb.com) <-- high-write
   - [CockroachDB](//www.cockroachlabs.com) <-- high-write (postgresql-compatible)
