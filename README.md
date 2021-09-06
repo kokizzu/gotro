@@ -12,20 +12,20 @@ so for example v1.213.1549 means it was released at `2021-02-13 15:49`
 - As similar as possible to [gokil](//gitlab.com/kokizzu/gokil) that still used by my old company (2014-now).
 - Opinionated (choose the best dependency), for example by default uses `int64` and `float64`, `uint64` for id(s).
 - 1-letter supporting package so we only need to write a short common function, such as: `I.ToS(1234)` to convert `int64` to `string`)
-  - [A](/kokizzu/gotro/edit/master/A) - Array
-  - [B](/kokizzu/gotro/edit/master/B) - Boolean
-  - [C](/kokizzu/gotro/edit/master/C) - Character (or Rune)
-  - [D](/kokizzu/gotro/edit/master/D) - Database
-  - [F](/kokizzu/gotro/edit/master/F) - Floating Point
-  - [L](/kokizzu/gotro/edit/master/L) - Logging
-  - [M](/kokizzu/gotro/edit/master/M) - Map
-  - [I](/kokizzu/gotro/edit/master/I) - Integer
-  - [S](/kokizzu/gotro/edit/master/S) - String
-  - [T](/kokizzu/gotro/edit/master/T) - Time (and Date)
-  - [W](/kokizzu/gotro/edit/master/W) - Web (the old "web framework") usable since 2017-03-08 **DEPRECATED**
-  - [W2](/kokizzu/gotro/edit/master/W2) - Web (the new codegen-based "web-framework") **STATUS**: usable since 2021-08-30, see [W2/example](/kokizzu/gotro/edit/master/W2/example)
-  - [X](/kokizzu/gotro/edit/master/X) - Anything (aka `interface{}`)
-  - [Z](/kokizzu/gotro/edit/master/Z) - Z-Template Engine, that has syntax similar to ruby string interpolation `#{foo}` or any other that javascript friendly `{/* foo */}`, `[/* bar */]`, `/*! bar */`
+  - [A](//github.com/kokizzu/gotro/edit/master/A) - Array
+  - [B](//github.com/kokizzu/gotro/edit/master/B) - Boolean
+  - [C](//github.com/kokizzu/gotro/edit/master/C) - Character (or Rune)
+  - [D](//github.com/kokizzu/gotro/edit/master/D) - Database
+  - [F](//github.com/kokizzu/gotro/edit/master/F) - Floating Point
+  - [L](//github.com/kokizzu/gotro/edit/master/L) - Logging
+  - [M](//github.com/kokizzu/gotro/edit/master/M) - Map
+  - [I](//github.com/kokizzu/gotro/edit/master/I) - Integer
+  - [S](//github.com/kokizzu/gotro/edit/master/S) - String
+  - [T](//github.com/kokizzu/gotro/edit/master/T) - Time (and Date)
+  - [W](//github.com/kokizzu/gotro/edit/master/W) - Web (the old "web framework") usable since 2017-03-08 **DEPRECATED**
+  - [W2](/kokizzu/gotro/edit/master/W2) - Web (the new codegen-based "web-framework") **STATUS**: usable since 2021-08-30, see [W2/example](//github.com/kokizzu/gotro/edit/master/W2/example)
+  - [X](//github.com/kokizzu/gotro/edit/master/X) - Anything (aka `interface{}`)
+  - [Z](//github.com/kokizzu/gotro/edit/master/Z) - Z-Template Engine, that has syntax similar to ruby string interpolation `#{foo}` or any other that javascript friendly `{/* foo */}`, `[/* bar */]`, `/*! bar */`
 - Comment and examples on each type and function, so it can be viewed using godoc, something like: `godoc github.com/kokizzu/gotro/A`
 
 ## Status
