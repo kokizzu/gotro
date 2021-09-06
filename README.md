@@ -12,35 +12,30 @@ so for example v1.213.1549 means it was released at `2021-02-13 15:49`
 - As similar as possible to [gokil](//gitlab.com/kokizzu/gokil) that still used by my old company (2014-now).
 - Opinionated (choose the best dependency), for example by default uses `int64` and `float64`, `uint64` for id(s).
 - 1-letter supporting package so we only need to write a short common function, such as: `I.ToS(1234)` to convert `int64` to `string`)
-  - [A](//github.com/kokizzu/gotro/edit/master/A) - Array
-  - [B](//github.com/kokizzu/gotro/edit/master/B) - Boolean
-  - [C](//github.com/kokizzu/gotro/edit/master/C) - Character (or Rune)
-  - [D](//github.com/kokizzu/gotro/edit/master/D) - Database
-  - [F](//github.com/kokizzu/gotro/edit/master/F) - Floating Point
-  - [L](//github.com/kokizzu/gotro/edit/master/L) - Logging
-  - [M](//github.com/kokizzu/gotro/edit/master/M) - Map
-  - [I](//github.com/kokizzu/gotro/edit/master/I) - Integer
-  - [S](//github.com/kokizzu/gotro/edit/master/S) - String
-  - [T](//github.com/kokizzu/gotro/edit/master/T) - Time (and Date)
-  - [W](//github.com/kokizzu/gotro/edit/master/W) - Web (the old "web framework") usable since 2017-03-08 **DEPRECATED**
-  - [W2](//github.com/kokizzu/gotro/edit/master/W2) - Web (the new codegen-based "web-framework") **STATUS**: usable since 2021-08-30, see [W2/example](//github.com/kokizzu/gotro/edit/master/W2/example)
-  - [X](//github.com/kokizzu/gotro/edit/master/X) - Anything (aka `interface{}`)
-  - [Z](//github.com/kokizzu/gotro/edit/master/Z) - Z-Template Engine, that has syntax similar to ruby string interpolation `#{foo}` or any other that javascript friendly `{/* foo */}`, `[/* bar */]`, `/*! bar */`
+  - [A](/A) - Array
+  - [B](/B) - Boolean
+  - [C](/C) - Character (or Rune)
+  - [D](/D) - Database
+  - [F](/F) - Floating Point
+  - [L](/L) - Logging
+  - [M](/M) - Map
+  - [I](/I) - Integer
+  - [S](/S) - String
+  - [T](/T) - Time (and Date)
+  - [W](/W) - Web (the old "web framework") usable since 2017-03-08 **DEPRECATED**
+  - [W2](/W2) - Web (the new codegen-based "web-framework") **STATUS**: usable since 2021-08-30, see [W2/example](/W2/example)
+  - [X](/X) - Anything (aka `interface{}`)
+  - [Z](/Z) - Z-Template Engine, that has syntax similar to ruby string interpolation `#{foo}` or any other that javascript friendly `{/* foo */}`, `[/* bar */]`, `/*! bar */`
 - Comment and examples on each type and function, so it can be viewed using godoc, something like: `godoc github.com/kokizzu/gotro/A`
 
 ## Status
 
-Usable session adapter:
-  - Redis
-  - ScyllaDB
-  - PostgreSQL
-  - AreoSpike
-  
-Usable database adapter:
-  - PostgreSQL (OLTP, using JSONB)
-  - Tarantool (OLTP and cache, have migration tool)
-  - ClickHouse (OLAP, have migration tool)
-  - Meilisearch (full text search)
+Usable 3rd party database adapter:
+  - [Redis](/D/Rd)
+  - [PostgreSQL](/D/Pg) (OLTP, using JSONB)
+  - [Tarantool](/D/Tt) (OLTP and cache, have migration tool) -- recommended
+  - [ClickHouse](/D/Ch) (OLAP, have migration tool) -- recommended
+  - [Meilisearch](/D/Ms) (full text search)
   
 Other than above, you must use officially provided database adapter from respective vendors. For docker compose example. you can see [local-docker-db](//github.com/alexmacarthur/local-docker-db)
 
