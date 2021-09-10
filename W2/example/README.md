@@ -125,10 +125,11 @@ x.DoInsert() or x.DoReplace() // calling DoUpdateBy*() will do nothing, since mu
 
 - Add SEO pre-render: [Rendora](//github.com/rendora/rendora)
 - Add search-engine: [TypeSense](//typesense.org/) example
-- Add persisted cache: [IceFireDB](https://github.com/gitsrc/IceFireDB) or [Aerospike](https://aerospike.com/)
+- Add persisted cache: [IceFireDB](//github.com/gitsrc/IceFireDB) or [Aerospike](//aerospike.com/) 
 - Add external storage upload example (minio? wasabi?)
-- Replace LightStep with [SigNoz](https://github.com/SigNoz/signoz)
-- Add more deployment script with [LXC/LXD share](https://bobcares.com/blog/how-to-setup-high-density-vps-hosting-using-lxc-linux-containers-and-lxd/) for single server multi-tenant
+- Replace LightStep with [SigNoz](//github.com/SigNoz/signoz) and/or [datav](//github.com/datav-io/datav) 
+- Add more deployment script with [LXC/LXD share](//bobcares.com/blog/how-to-setup-high-density-vps-hosting-using-lxc-linux-containers-and-lxd/) for single server multi-tenant
+- Add backup scripts for Tarantool and Clickhouse
 
 ## File Upload Example
 
