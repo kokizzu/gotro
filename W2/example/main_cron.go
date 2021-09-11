@@ -7,8 +7,8 @@ import (
 
 func runCron(d *domain.Domain) {
 
-	// TODO: increment delay based on total player
 	gocron.Every(10).Minute().Do(func() {
+		// TODO: do cron/periodic action here
 		//d.CalculateRank()
 	})
 	gocron.Start()

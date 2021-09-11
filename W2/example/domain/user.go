@@ -13,7 +13,7 @@ import (
 	"github.com/vburenin/nsync"
 )
 
-//go:generate gomodifytags -file player.go -all -add-tags json,form,query,long,msg -transform camelcase --skip-unexported --skip-unexported -w -file user.go
+//go:generate gomodifytags -file user.go -all -add-tags json,form,query,long,msg -transform camelcase --skip-unexported --skip-unexported -w -file user.go
 //go:generate replacer 'Id" form' 'Id,string" form' type user.go
 //go:generate replacer 'json:"id"' 'json:id,string" form' type user.go
 //go:generate replacer 'By" form' 'By,string" form' type user.go
@@ -28,11 +28,11 @@ type (
 	UserRegister_Out struct {
 		ResponseCommon
 		CreatedAt int64  `json:"createdAt" form:"createdAt" query:"createdAt" long:"createdAt" msg:"createdAt"`
-		UserId    uint64 `json:"playerId,string" form:"playerId" query:"playerId" long:"playerId" msg:"playerId"`
+		UserId    uint64 `json:"userId,string" form:"userId" query:"userId" long:"userId" msg:"userId"`
 	}
 )
 
-const UserRegister_Url = `/PlayerRegister`
+const UserRegister_Url = `/UserRegister`
 
 func (d *Domain) UserRegister(in *UserRegister_In) (out UserRegister_Out) {
 
@@ -89,7 +89,7 @@ type (
 	}
 )
 
-const UserLogin_Url = `/PlayerLogin`
+const UserLogin_Url = `/UserLogin`
 
 func (d *Domain) expireSession(sessionToken string) bool {
 	if sessionToken == `` {
@@ -108,11 +108,11 @@ func (d *Domain) expireSession(sessionToken string) bool {
 	return false
 }
 
-func (d *Domain) createSession(playerId uint64, email, userAgent string) *wcAuth.SessionsMutator {
+func (d *Domain) createSession(userId uint64, email, userAgent string) *wcAuth.SessionsMutator {
 	session := wcAuth.NewSessionsMutator(d.Taran)
-	session.UserId = playerId
+	session.UserId = userId
 	sess := conf.Session{
-		UserId:    playerId,
+		UserId:    userId,
 		Email:     email,
 		ExpiredAt: time.Now().AddDate(0, 0, conf.CookieDays).Unix(),
 	}
@@ -155,7 +155,7 @@ type (
 	}
 )
 
-const UserLogout_Url = `/PlayerLogout`
+const UserLogout_Url = `/UserLogout`
 
 func (d *Domain) UserLogout(in *UserLogout_In) (out UserLogout_Out) {
 	loggedOut := d.expireSession(in.SessionToken)
@@ -170,11 +170,11 @@ type (
 	}
 	UserProfile_Out struct {
 		ResponseCommon
-		User *rqAuth.Users `json:"player" form:"player" query:"player" long:"player" msg:"player"`
+		User *rqAuth.Users `json:"user" form:"user" query:"user" long:"user" msg:"user"`
 	}
 )
 
-const UserProfile_Url = `/PlayerProfile`
+const UserProfile_Url = `/UserProfile`
 
 func (d *Domain) UserProfile(in *UserProfile_In) (out UserProfile_Out) {
 	sess := d.mustLogin(in.SessionToken, in.UserAgent, &out.ResponseCommon)
@@ -204,11 +204,11 @@ type (
 		Limit  uint32          `json:"limit" form:"limit" query:"limit" long:"limit" msg:"limit"`
 		Offset uint32          `json:"offset" form:"offset" query:"offset" long:"offset" msg:"offset"`
 		Total  uint32          `json:"total" form:"total" query:"total" long:"total" msg:"total"`
-		Users  []*rqAuth.Users `json:"players" form:"players" query:"players" long:"players" msg:"players"`
+		Users  []*rqAuth.Users `json:"users" form:"users" query:"users" long:"users" msg:"users"`
 	}
 )
 
-const UserList_Url = `/PlayerList`
+const UserList_Url = `/UserList`
 
 func (d *Domain) UserList(in *UserList_In) (out UserList_Out) {
 	user := rqAuth.NewUsers(d.Taran)
@@ -231,7 +231,7 @@ type (
 	}
 )
 
-const UserForgotPassword_Url = `/PlayerForgotPassword`
+const UserForgotPassword_Url = `/UserForgotPassword`
 
 var forgotPasswordLock = nsync.NewNamedMutex()
 
@@ -278,7 +278,7 @@ type (
 	}
 )
 
-const UserResetPassword_Url = `/PlayerResetPassword`
+const UserResetPassword_Url = `/UserResetPassword`
 
 func (d *Domain) UserResetPassword(in *UserResetPassword_In) (out UserResetPassword_Out) {
 	userId, ok := S.DecodeCB63(in.Hash)
@@ -327,7 +327,7 @@ type (
 	}
 )
 
-const UserChangePassword_Url = `/PlayerChangePassword`
+const UserChangePassword_Url = `/UserChangePassword`
 
 func (d *Domain) UserChangePassword(in *UserChangePassword_In) (out UserChangePassword_Out) {
 	sess := d.mustLogin(in.SessionToken, in.UserAgent, &out.ResponseCommon)
@@ -365,7 +365,7 @@ type (
 	}
 )
 
-const UserConfirmEmail_Url = `/PlayerConfirmEmail`
+const UserConfirmEmail_Url = `/UserConfirmEmail`
 
 func (d *Domain) UserConfirmEmail(in *UserConfirmEmail_In) (out UserConfirmEmail_Out) {
 	// TODO: continue this
@@ -381,7 +381,7 @@ type (
 	}
 )
 
-const UserChangeEmail_Url = `/PlayerChangeEmail`
+const UserChangeEmail_Url = `/UserChangeEmail`
 
 func (d *Domain) UserChangeEmail(in *UserChangeEmail_In) (out UserChangeEmail_Out) {
 	// TODO: continue this

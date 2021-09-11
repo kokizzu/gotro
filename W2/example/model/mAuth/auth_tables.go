@@ -5,7 +5,7 @@ import (
 	"github.com/kokizzu/gotro/D/Tt"
 )
 
-// table players, sessions
+// table users, sessions
 const (
 	TableUsers         Tt.TableName = `users`
 	Id                              = `id`

@@ -125,9 +125,9 @@ x.DoInsert() or x.DoReplace() // calling DoUpdateBy*() will do nothing, since mu
 
 - Add SEO pre-render: [Rendora](//github.com/rendora/rendora)
 - Add search-engine: [TypeSense](//typesense.org/) example
-- Add persisted cache: [IceFireDB](https://github.com/gitsrc/IceFireDB) or [Aerospike](https://aerospike.com/)
+- Add more persisted cache option: [IceFireDB](https://github.com/gitsrc/IceFireDB) or [Aerospike](//aerospike.com/)
 - Add external storage upload example (minio? wasabi?)
-- Replace LightStep with [SigNoz](https://github.com/SigNoz/signoz)
+- Replace LightStep with [SigNoz](//github.com/SigNoz/signoz), [tutorial](//dev.to/signoz/monitor-your-golang-application-with-opentelemetry-and-signoz-3fli)
 - Add more deployment script with [LXC/LXD share](https://bobcares.com/blog/how-to-setup-high-density-vps-hosting-using-lxc-linux-containers-and-lxd/) for single server multi-tenant
 
 ## File Upload Example
@@ -223,10 +223,10 @@ func (d *Domain) MediaUpload(in *MediaUpload_In) (out MediaUpload_Out) {
 	if up.CreatedAt == 0 {
 		up.Id = id64.UID()
 		up.CreatedAt = in.UnixNow()
-		up.CreatedBy = sess.PlayerId
+		up.CreatedBy = sess.UserId
 	}
 	up.UpdatedAt = in.UnixNow()
-	up.UpdatedBy = sess.PlayerId
+	up.UpdatedBy = sess.UserId
 	for fileName, tmpFile := range in.Uploads {
 		up.OrigName = fileName
 		oldPath := up.FilePath
@@ -274,12 +274,12 @@ func (d *Domain) MediaUpload(in *MediaUpload_In) (out MediaUpload_Out) {
 	//if in.DoDelete {
 	//	up.IsDeleted = true
 	//	up.DeletedAt = in.UnixNow()
-	//	up.DeletedBy = sess.PlayerId
+	//	up.DeletedBy = sess.UserId
 	//}
 	//if in.DoRestore {
 	//	up.IsDeleted = false
 	//	up.RestoredAt = in.UnixNow()
-	//	up.RestoredBy = sess.PlayerId
+	//	up.RestoredBy = sess.UserId
 	//}
 
 	if !up.DoReplace() {

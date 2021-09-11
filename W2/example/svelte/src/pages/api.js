@@ -14,7 +14,7 @@ export const APIs = {
 		in: {
 			password: '', // string
 			newPassword: '', // string
-			sessionToken: '', //string | player login token
+			sessionToken: '', //string | user login token
 		}, out: {
 			updatedAt: 0, // int64
 		}, read: [
@@ -129,7 +129,7 @@ export const APIs = {
 	},
 	UserProfile: {
 		in: {
-			sessionToken: '', //string | player login token
+			sessionToken: '', //string | user login token
 		}, out: {
 			user: {
 				id:  '', // uint64

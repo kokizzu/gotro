@@ -530,7 +530,7 @@ func (r *RoutesArgs) Visit(n ast.Node) ast.Visitor { // parse domain
 					r.inputFieldsByMethod[methodName] = append(r.inputFieldsByMethod[methodName], StructField{
 						Name:    `sessionToken`,
 						Type:    `string`,
-						Comment: `player login token`,
+						Comment: `user login token`,
 					})
 				}
 				if fun.Sel.Name == `mustAdmin` {
