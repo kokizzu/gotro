@@ -127,8 +127,9 @@ x.DoInsert() or x.DoReplace() // calling DoUpdateBy*() will do nothing, since mu
 - Add search-engine: [TypeSense](//typesense.org/) example
 - Add more persisted cache option: [IceFireDB](https://github.com/gitsrc/IceFireDB) or [Aerospike](//aerospike.com/)
 - Add external storage upload example (minio? wasabi?)
-- Replace LightStep with [SigNoz](//github.com/SigNoz/signoz), [tutorial](//dev.to/signoz/monitor-your-golang-application-with-opentelemetry-and-signoz-3fli)
-- Add more deployment script with [LXC/LXD share](https://bobcares.com/blog/how-to-setup-high-density-vps-hosting-using-lxc-linux-containers-and-lxd/) for single server multi-tenant
+- Replace LightStep with [SigNoz](//github.com/SigNoz/signoz), [tutorial](//dev.to/signoz/monitor-your-golang-application-with-opentelemetry-and-signoz-3fli) and/or [datav](//github.com/datav-io/datav)
+- Add more deployment script with [LXC/LXD share](//bobcares.com/blog/how-to-setup-high-density-vps-hosting-using-lxc-linux-containers-and-lxd/) for single server multi-tenant
+- Add backup scripts for Tarantool and Clickhouse
 
 ## File Upload Example
 
