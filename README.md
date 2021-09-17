@@ -10,7 +10,7 @@ so for example v1.213.1549 means it was released at `2021-02-13 15:49`
 
 ## Design Goal
 - As similar as possible to [gokil](//gitlab.com/kokizzu/gokil) that still used by my old company (2014-now).
-- Opinionated (choose the best dependency), for example by default uses `int64` and `float64`, `uint64` for id(s).
+- Opinionated (choose the best dependency), for example by default uses `int64` and `float64` for values, and `uint64` for id(s).
 - 1-letter supporting package so we only need to write a short common function, such as: `I.ToS(1234)` to convert `int64` to `string`)
   - [A](/A) - Array
   - [B](/B) - Boolean
