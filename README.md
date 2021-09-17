@@ -73,6 +73,7 @@ this already includes session loading and template rendering (real-life use case
   - [GunDB](//gundb.github.io)
   - [IceFireDB](//github.com/gitsrc/IceFireDB) <-- high-write (redis-compatible)
   - [InfluxDB](//docs.influxdata.com/influxdb)
+  - [LocustDB](//github.com/cswinter/LocustDB) <-- OLAP use-cases
   - [NebulaGraph](//nebula-graph.io)
   - [OrientDB](//orientdb.com)
   - [PostgreXL](//www.postgres-xl.org) <-- high-write (postgresql-compatible)
