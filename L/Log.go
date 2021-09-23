@@ -328,7 +328,10 @@ func CallerInfo(skip ...int) *CallInfo {
 	if len(skip) > 0 {
 		skipCount = skip[0]
 	}
-	pc, file, line, _ := runtime.Caller(skipCount)
+	pc, file, line, ok := runtime.Caller(skipCount)
+	if !ok {
+		return &CallInfo{}
+	}
 	_, fileName := path.Split(file)
 	parts := strings.Split(runtime.FuncForPC(pc).Name(), ".")
 	pl := len(parts)
