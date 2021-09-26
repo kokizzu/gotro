@@ -43,7 +43,7 @@ require (
 	github.com/tarantool/go-tarantool v0.0.0-20201220111423-77ce7d9a407a
 	github.com/tdewolff/minify v2.3.6+incompatible
 	github.com/tdewolff/test v1.0.6 // indirect
-	github.com/valyala/fasthttp v1.29.0
+	github.com/valyala/fasthttp v1.30.0
 	github.com/vburenin/nsync v0.0.0-20160822015540-9a75d1c80410
 	github.com/xeipuuv/gojsonpointer v0.0.0-20190905194746-02993c407bfb // indirect
 	github.com/yosuke-furukawa/json5 v0.1.1
