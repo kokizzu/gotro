@@ -42,12 +42,27 @@ func StrJoin(arr []string, sep string) string {
 
 // combine int64s in the array of int64 with the chosen string separator
 //  m1:= []int64{123,456}
-//  A.IntJoin(m1,`-`) // 123-456
+//  A.IntJoin(m1,`|`) // 123|456
 func IntJoin(arr []int64, sep string) string {
 	buf := bytes.Buffer{}
 	len := len(arr) - 1
 	for idx, v := range arr {
 		buf.WriteString(I.ToS(v))
+		if idx < len {
+			buf.WriteString(sep)
+		}
+	}
+	return buf.String()
+}
+
+// combine uint64s in the array of int64 with the chosen string separator
+//  m1:= []uint64{123,456}
+//  A.UIntJoin(m1,`-`) // 123-456
+func UIntJoin(arr []uint64, sep string) string {
+	buf := bytes.Buffer{}
+	len := len(arr) - 1
+	for idx, v := range arr {
+		buf.WriteString(I.UToS(v))
 		if idx < len {
 			buf.WriteString(sep)
 		}
