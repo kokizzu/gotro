@@ -4,7 +4,7 @@ import "testing"
 
 func TestCartFlow(t *testing.T) {
 	t.Run(`add new item to cart`, func(t *testing.T) {
-		
+
 	})
 	t.Run(`add other item to cart`, func(t *testing.T) {
 

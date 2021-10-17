@@ -45,9 +45,9 @@ const (
 	TotalDiscount  = `totalDiscount`
 	DeliveryMethod = `deliveryMethod`
 	DeliveryPrice  = `deliveryPrice`
-	TotalPaid      = `totalPaid`    // TotalPrice - TotalDiscount + DeliveryPrice
+	TotalPaid      = `totalPaid` // TotalPrice - TotalDiscount + DeliveryPrice
 	PaymentMethod  = `paymentMethod`
-	DeadlineAt     = `deadlineAt`   // payment deadline
+	DeadlineAt     = `deadlineAt` // payment deadline
 	PaidAt         = `paidAt`
 	PromoRuleIds   = `promoRuleIds` // applied rules in separated by space
 )

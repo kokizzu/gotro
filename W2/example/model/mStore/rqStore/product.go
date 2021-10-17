@@ -29,8 +29,8 @@ func (p *Products) FindByIds(ids ...uint64) (res []*Products) {
 	query := `
 SELECT ` + p.sqlSelectAllFields() + `
 FROM ` + p.sqlTableName() + `
-WHERE ` + p.sqlId() + ` IN (` + A.UIntJoin(ids,`,`) + `)
-ORDER BY ` + p.sqlId() 
+WHERE ` + p.sqlId() + ` IN (` + A.UIntJoin(ids, `,`) + `)
+ORDER BY ` + p.sqlId()
 	if conf.DEBUG_MODE {
 		L.Print(query)
 	}

@@ -44,7 +44,7 @@ type (
 		RequestCommon
 		ProductId uint64
 		DeltaQty  int64
-		// -n remove from cart, +n add to cart 
+		// -n remove from cart, +n add to cart
 	}
 	StoreCartItemsAdd_Out struct {
 		ResponseCommon
@@ -169,7 +169,7 @@ func (d *Domain) StoreInvoice(in *StoreInvoice_In) (out StoreInvoice_Out) {
 	for _, ci := range out.CartItems {
 		cartItemIdMap[ci.Id] = ci
 	}
-	
+
 	if in.Recalculate || in.DoPurchase {
 		for _, ci := range out.CartItems {
 			ci.InvoiceId = in.InvoiceId
@@ -185,7 +185,7 @@ func (d *Domain) StoreInvoice(in *StoreInvoice_In) (out StoreInvoice_Out) {
 				inv := int64(product.InventoryQty)
 				if ci.Qty > inv {
 					ci.Info = "qty in cart more than available stock\n"
-					// make sure next purchase doesn't overflow 
+					// make sure next purchase doesn't overflow
 					ci.Qty = I.Min(ci.Qty, inv)
 				}
 			}
@@ -199,7 +199,7 @@ func (d *Domain) StoreInvoice(in *StoreInvoice_In) (out StoreInvoice_Out) {
 				if ci.Qty >= minCount {
 					multiplier := ci.Qty / minCount
 					if promo.FreeProductId > 0 { // got other product for free
-						addFreeProduct(promo.FreeProductId, multiplier, `got `+I.ToS(multiplier)+` free every purchase of `+I.ToS(minCount)+` `+ product.Name)
+						addFreeProduct(promo.FreeProductId, multiplier, `got `+I.ToS(multiplier)+` free every purchase of `+I.ToS(minCount)+` `+product.Name)
 					} else if promo.DiscountPercent > 0 {
 						orig := ci.SubTotal
 						ci.SubTotal = int64(float64(ci.SubTotal) * (100 - promo.DiscountPercent) / 100)
@@ -224,7 +224,6 @@ func (d *Domain) StoreInvoice(in *StoreInvoice_In) (out StoreInvoice_Out) {
 			}
 		}
 
-
 		// add free item
 		for productId, freeInfo := range freeProductsMap {
 			if product == nil { // ignore if product doesn't exists
@@ -235,18 +234,18 @@ func (d *Domain) StoreInvoice(in *StoreInvoice_In) (out StoreInvoice_Out) {
 			if ok {
 				ci.Qty += freeInfo.Count
 				ci.Info += freeInfo.Label
-				ci.Discount += product.Price*uint64(freeInfo.Count)
+				ci.Discount += product.Price * uint64(freeInfo.Count)
 			} else {
 				ci = &rqStore.CartItems{
-					Id: id64.UID(),
+					Id:        id64.UID(),
 					ProductId: productId,
 					OwnerId:   sess.UserId,
 					Qty:       freeInfo.Count,
 					Info:      freeInfo.Label,
 					InvoiceId: out.Invoice.Id,
 					PriceCopy: int64(product.Price),
-					NameCopy: product.Name,
-					Discount: product.Price*uint64(freeInfo.Count),
+					NameCopy:  product.Name,
+					Discount:  product.Price * uint64(freeInfo.Count),
 				}
 				out.CartItems = append(out.CartItems, ci)
 				if in.DoPurchase {
@@ -260,9 +259,9 @@ func (d *Domain) StoreInvoice(in *StoreInvoice_In) (out StoreInvoice_Out) {
 			inv := int64(product.InventoryQty)
 			if ci.Qty > inv {
 				missing := ci.Qty - inv
-				ci.Info += "but we don't have enough free item in inventory (missing: "+I.ToS(missing)+")\n"
+				ci.Info += "but we don't have enough free item in inventory (missing: " + I.ToS(missing) + ")\n"
 				ci.Qty = I.Min(ci.Qty, inv)
-				ci.Discount -= product.Price*uint64(missing)
+				ci.Discount -= product.Price * uint64(missing)
 			}
 		}
 	}
