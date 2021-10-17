@@ -6,7 +6,6 @@ import (
 
 	"github.com/kokizzu/gotro/L"
 	"github.com/kokizzu/gotro/S"
-	"github.com/kokizzu/gotro/W2/example/conf"
 	"github.com/kokizzu/gotro/W2/example/model/mAuth/wcAuth"
 	"github.com/kokizzu/id64"
 	"github.com/kokizzu/lexid"
@@ -15,25 +14,6 @@ import (
 )
 
 const testDomain = `@localhost`
-
-func TestMain(t *testing.M) {
-	L.Print(conf.LoadTestEnv())
-
-	// ensure admin account exists
-	d := NewDomain()
-	user := wcAuth.NewUsersMutator(d.Taran)
-	user.Id = 1
-	if !user.FindById() {
-		user.Email = conf.SuperAdmin
-		user.SetEncryptPassword(user.Email)
-		user.CreatedAt = fastime.UnixNow()
-		if !user.DoUpdateById() {
-			panic(`cannot create superadmin`)
-		}
-	}
-
-	t.Run()
-}
 
 func TestDomain_UserLoginRegisterFlow(t *testing.T) {
 	d := NewDomain()

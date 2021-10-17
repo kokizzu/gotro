@@ -3,6 +3,7 @@ package main
 import (
 	"github.com/kokizzu/gotro/W2/example/conf"
 	"github.com/kokizzu/gotro/W2/example/domain"
+
 	"go.opentelemetry.io/otel/trace"
 
 	"github.com/gofiber/fiber/v2"
@@ -160,6 +161,21 @@ func webApiInitRoutes(app *fiber.App) *domain.Domain {
 		}
 		in.FromFiberCtx(ctx, tracerCtx)
 		out := vdomain.UserResetPassword(&in)
+		out.ToFiberCtx(ctx, &in.RequestCommon, &in)
+		return in.ToFiberCtx(ctx, out)
+	})
+
+	app.All(conf.API_PREFIX+domain.XXX_Url, func(ctx *fiber.Ctx) error {
+		url := domain.XXX_Url
+		tracerCtx, span := conf.T.Start(ctx.Context(), url, trace.WithSpanKind(trace.SpanKindServer))
+		defer span.End()
+
+		in := domain.XXX_In{}
+		if err := webApiParseInput(ctx, &in.RequestCommon, &in, url); err != nil {
+			return err
+		}
+		in.FromFiberCtx(ctx, tracerCtx)
+		out := vdomain.XXX(&in)
 		out.ToFiberCtx(ctx, &in.RequestCommon, &in)
 		return in.ToFiberCtx(ctx, out)
 	})

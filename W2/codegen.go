@@ -22,10 +22,12 @@ import (
 type GeneratorConfig struct {
 	ProjectName string // must equal go.mod header
 
-	ModelPath     string // model directory
-	WebRoutesFile string // fiber web route generated file
-	CliArgsFile   string // cli args handler generated file
-	ApiDocsFile   string // apidocs generated file
+	ModelPath string // model directory
+
+	WebRoutesFile  string // fiber web route generated file
+	WebGraphqlFile string // fiber /graphql generated handler
+	CliArgsFile    string // cli args handler generated file
+	ApiDocsFile    string // apidocs generated file
 
 	ThirdParties []string
 }
@@ -37,12 +39,17 @@ func GenerateFiberAndCli(c *GeneratorConfig) {
 	if c.WebRoutesFile == `` {
 		c.WebRoutesFile = `../main_restApi_routes.GEN.go`
 	}
+	if c.WebGraphqlFile == `` {
+		c.WebGraphqlFile = `../main_restApi_graphql.GEN.go`
+	}
 	if c.CliArgsFile == `` {
 		c.CliArgsFile = `../main_cli_args.GEN.go`
 	}
-	r := c.ParseRoutes(false)
+	r := c.ParseRoutes(true) // must be true for generating graphql
 
 	r.WriteWebRoutes(c.WebRoutesFile)
+
+	r.WriteGraphql(c.WebGraphqlFile)
 
 	r.WriteCliArgs(c.CliArgsFile)
 }
@@ -170,6 +177,9 @@ type CallList struct {
 
 func (c *CallList) SortedKeys() []string {
 	res := []string{}
+	if c == nil {
+		return res
+	}
 	for key := range c.List {
 		res = append(res, key)
 	}
@@ -1013,10 +1023,161 @@ export const APIs = {`)
 	L.PanicIf(err, `ioutil.WriteFile failed: `+path)
 }
 
+var graphqlTypes = map[string]string{
+	`int`:     `Int`,
+	`uint64`:  `Int`,
+	`uint32`:  `Int`,
+	`int64`:   `Int`,
+	`float64`: `Float`,
+	`string`:  `String`,
+	`bool`:    `Boolean`,
+}
+
+func (r *RoutesArgs) graphqlType(sf *StructField, imports M.SB) (res string) {
+	typ := graphqlTypes[sf.Type]
+	defer func() {
+		if sf.IsArray {
+			res = `graphql.NewList(` + res + `)`
+		} else if sf.IsMap {
+			// TODO: handle this
+		}
+		res += `, // ` + r.graphqlTypeComment(sf)
+	}()
+	if sf.Type == `Int` && (S.EndsWith(sf.Name, `By`) || S.EndsWith(sf.Name, `Id`)) {
+		return `graphql.ID`
+	}
+	if typ == `` {
+		if S.Contains(sf.Type, `.`) {
+			pkgName := S.LeftOf(sf.Type, `.`)
+			imports[r.ProjectName+`/model/m`+pkgName[2:]+`/`+pkgName] = true
+			return pkgName + `.GraphqlType` + S.RightOf(sf.Type, `.`)
+		} else {
+			L.Print(`TODO: please handle graphql type`, sf)
+		}
+		return `graphql.String`
+	}
+	return `graphql.` + typ
+}
+
+func (r *RoutesArgs) graphqlTypeComment(sf *StructField) string {
+	if sf.IsArray {
+		return ` []` + sf.Type
+	}
+	if sf.IsMap {
+		return ` map[?]` + sf.Type // TODO: check real case of this
+	}
+	return sf.Type
+}
+
 func (r *RoutesArgs) IncStatisticsCalls(methodName string, param *CallParam) {
 	m := NewCallList(r.funcStatistics[methodName])
 	m.List[param.ToString()] = param
 	r.funcStatistics[methodName] = m
+}
+
+func (r *RoutesArgs) WriteGraphql(path string) {
+	buf := bytes.Buffer{}
+	buf.WriteString(`
+package main
+
+import (`)
+
+	imports := M.SB{`github.com/graphql-go/graphql`: true}
+
+	cBuf := bytes.Buffer{}
+	cBuf.WriteString(`
+)
+
+// can be hit using with /graphql
+`)
+	cBuf.WriteString(`
+var graphqlQueries = graphql.NewObject(graphql.ObjectConfig{
+	Name: "Query",
+	Fields: graphql.Fields{`)
+
+	wBuf := bytes.Buffer{}
+	sortedMethods := r.methodsPkgMap.SortedKeys()
+	for _, methodName := range sortedMethods {
+		if methodName == `XXX` {
+			continue
+		}
+
+		toBuf := &wBuf
+		rqDeps := r.funcNewRqList[methodName].SortedKeys()
+		wcDeps := r.funcNewWcList[methodName].SortedKeys()
+		if len(rqDeps) > 0 && len(wcDeps) == 0 {
+			toBuf = &cBuf
+		}
+		L.Print(methodName, rqDeps, wcDeps)
+
+		toBuf.WriteString(`
+		` + S.BT(methodName) + `: &graphql.Field{
+			Type: graphql.NewObject(graphql.ObjectConfig{
+				Name: ` + S.BT(methodName+`Out`) + `,
+				Fields: graphql.Fields{`)
+
+		outs := r.outputFieldsByMethod[methodName]
+		for _, out := range outs {
+			toBuf.WriteString(`
+					` + S.BT(out.Name) + `: &graphql.Field{
+						Type: ` + r.graphqlType(&out, imports) + `
+					},`)
+		}
+
+		toBuf.WriteString(`
+				},
+			}),
+			Args: graphql.FieldConfigArgument{`)
+
+		ins := r.inputFieldsByMethod[methodName]
+
+		for _, in := range ins {
+			toBuf.WriteString(`
+				` + S.BT(in.Name) + `: &graphql.ArgumentConfig{
+					Type: ` + r.graphqlType(&in, imports) + `
+				},`)
+		}
+
+		toBuf.WriteString(`
+			}, // ` + methodName + `In
+			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+				return nil, nil
+			},
+		},`)
+
+	}
+
+	cBuf.WriteString(`
+	},
+})
+
+var graphqlMutations = graphql.NewObject(graphql.ObjectConfig{
+	Name: "Mutation",
+	Fields: graphql.Fields{` + wBuf.String() + `
+	},
+})
+
+var graphqlSchema, _ = graphql.NewSchema(graphql.SchemaConfig{
+	Query: graphqlQueries,
+	Mutation: graphqlMutations,
+})
+
+func handleGraphql(in *GraphqlRequest, out *GraphqlResponse) {
+	params := graphql.Params{Schema: graphqlSchema, RequestString: in.Query}
+	out.Result = graphql.Do(params)
+}`)
+
+	// write imports
+	headers := imports.SortedKeys()
+	for _, header := range headers {
+		buf.WriteString(`
+	` + S.BT(header))
+	}
+
+	buf.WriteString(cBuf.String())
+
+	err := ioutil.WriteFile(path, buf.Bytes(), 0644)
+	L.PanicIf(err, `ioutil.WriteFile failed: `+path)
 }
 
 func lowerFirstLetter(s string) string {

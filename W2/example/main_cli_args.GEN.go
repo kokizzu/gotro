@@ -2,11 +2,10 @@ package main
 
 import (
 	"context"
-
-	"os"
-
 	"github.com/kokizzu/gotro/W2/example/conf"
 	"github.com/kokizzu/gotro/W2/example/domain"
+
+	"os"
 )
 
 func cliArgsRunner(args []string) {
@@ -28,6 +27,7 @@ func cliArgsRunner(args []string) {
 		domain.UserProfile_Url:        {},
 		domain.UserRegister_Url:       {},
 		domain.UserResetPassword_Url:  {},
+		domain.XXX_Url:                {},
 	}
 	switch pattern := cliUrlPattern(args[0], patterns); pattern {
 
@@ -98,6 +98,13 @@ func cliArgsRunner(args []string) {
 		in := domain.UserResetPassword_In{}
 		in.FromCli(os.Stdin, tracerCtx)
 		out := vdomain.UserResetPassword(&in)
+		out.ToCli(os.Stdout)
+		in.ToCli(os.Stdout, &out)
+
+	case domain.XXX_Url:
+		in := domain.XXX_In{}
+		in.FromCli(os.Stdin, tracerCtx)
+		out := vdomain.XXX(&in)
 		out.ToCli(os.Stdout)
 		in.ToCli(os.Stdout, &out)
 

@@ -17,6 +17,9 @@
 	handle /api/* { # Go
 		reverse_proxy 127.0.0.1:9090
 	}
+	handle /graphql { # Go
+		reverse_proxy 127.0.0.1:9090
+	}
 
 	handle { # Svelte
 		reverse_proxy 127.0.0.1:3000

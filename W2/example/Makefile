@@ -1,3 +1,4 @@
+######################
 ### local development
 
 compose:
@@ -19,21 +20,28 @@ reverseproxy:
 run:
 	go run *.go cli
 
+##########
 ### setup
 
 setup-deps:
-	curl -sSfL https://raw.githubusercontent.com/cosmtrek/air/master/install.sh | sh -s
+	curl -sSfL https://raw.githubusercontent.com/cosmtrek/air/master/install.sh | sh -s && mv bin/air ~/go/bin
 	go install github.com/alvaroloes/enumer@latest
 	go install github.com/fatih/gomodifytags@latest
 	go install github.com/tinylib/msgp@latest
 	go install github.com/kokizzu/replacer@latest
 
-setup-webserver:
+setup-webserver-ubuntu:
 	sudo apt install -y debian-keyring debian-archive-keyring apt-transport-https
 	curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/gpg.key' | sudo tee /etc/apt/trusted.gpg.d/caddy-stable.asc
 	curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/debian.deb.txt' | sudo tee /etc/apt/sources.list.d/caddy-stable.list
 	sudo apt update
 	sudo apt install caddy
+	curl -fsSL https://deb.nodesource.com/setup_16.x | sudo -E bash -
+	sudo apt-get install -y nodejs
+
+setup-webserver-mac:
+	brew install caddy
+	brew install nodejs
 
 #setup-local-https:
 #	sudo apt install -y libnss3-tools
@@ -43,6 +51,7 @@ setup-webserver:
 	#grep -qxF '127.0.0.1 localapi.candlestick.com' /etc/hosts || echo '127.0.0.1 localapi.candlestick.com' | sudo tee -a /etc/hosts
 	# https://medium.com/@devahmedshendy/traditional-setup-run-local-development-over-https-using-caddy-964884e75232
 
+###############
 ### generators
 
 gen-route:
@@ -57,6 +66,7 @@ gen-apidoc:
 gen-orm:
 	./gen-orm.sh
 
+#############
 ### security
 
 gokart-scan:
@@ -67,6 +77,29 @@ gosec-scan:
 	go install github.com/securego/gosec/v2/cmd/gosec@latest
 	gosec ./...
 
+###########
+### docker
+
+docker-clean:
+	docker stop $$(docker ps -q)
+	docker rm $$(docker ps -a -f status=exited -q)
+	docker system prune -f
+	docker system prune -f --volumes
+
+docker-clean-containers:
+	docker rm -f $$(docker ps -a -q)
+	docker rm $$(docker ps -a -f status=exited -q)
+
+docker-clean-images:
+	docker rmi -f $$(docker images -a -q)
+
+docker-clean-volumes:
+	docker volume rm $$(docker volume ls -q)
+
+docker-clean-networks:
+	docker network prune
+
+###########
 ### backup
 
 backup-ch:

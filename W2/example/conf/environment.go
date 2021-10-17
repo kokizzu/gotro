@@ -10,7 +10,7 @@ import (
 	"github.com/kokizzu/gotro/S"
 )
 
-const PROJECT_NAME = `example` // must be the same as go.mod
+const PROJECT_NAME = `github.com/kokizzu/gotro/W2/example` // must be the same as go.mod
 const API_PREFIX = `/api`
 const MEDIA_SUBDIR = `media/`
 const MAIL_VIEWS_DIR = `/views`
@@ -52,6 +52,11 @@ var (
 
 	UPLOAD_DIR string
 	UPLOAD_URI string
+
+	DOCKER_TLS_VERIFY   string
+	DOCKER_HOST         string
+	DOCKER_CERT_PATH    string
+	DOCKER_MACHINE_NAME string
 )
 
 func LoadFromEnv(ignoreBinary ...interface{}) {

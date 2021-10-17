@@ -5,6 +5,7 @@ import (
 	"github.com/kokizzu/gotro/D/Tt"
 	"github.com/kokizzu/gotro/W2/example/conf"
 	"github.com/kokizzu/gotro/W2/example/model/mAuth"
+	"github.com/kokizzu/gotro/W2/example/model/mStore"
 
 	"github.com/kokizzu/gotro/L"
 )
@@ -21,4 +22,6 @@ func RunMigration() {
 	m.Click = &Ch.Adapter{DB: conf.ConnectClickhouse(), Reconnect: conf.ConnectClickhouse}
 	m.Taran.MigrateTables(mAuth.TarantoolTables)
 	m.Click.MigrateTables(mAuth.ClickhouseTables)
+	m.Taran.MigrateTables(mStore.TarantoolTables)
+	//m.Click.MigrateTables(mStore.ClickhouseTables)
 }

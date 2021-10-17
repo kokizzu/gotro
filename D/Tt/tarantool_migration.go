@@ -61,13 +61,13 @@ const BoxSpacePrefix = `box.space.`
 const IfNotExists = `if_not_exists`
 
 type TableProp struct {
-	Fields  []Field
-	Unique1 string
-	Unique2 string
-	Unique3 string
-	Uniques []string // multicolumn unique
-	Indexes []string
-	Engine  EngineType
+	Fields       []Field
+	Unique1      string
+	Unique2      string
+	Unique3      string
+	Uniques      []string // multicolumn unique
+	Indexes      []string
+	Engine       EngineType
 	HiddenFields []string
 }
 

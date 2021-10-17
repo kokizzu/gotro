@@ -46,11 +46,12 @@ func webApiServer() func(state overseer.State) {
 		app.Use(recover.New())
 		app.Use(cors.New()) // allow from any host
 		app.Get(`/`, func(ctx *fiber.Ctx) error {
-			_, _ = ctx.WriteString(`test`)
+			_, _ = ctx.WriteString(`ok`)
 			return nil
 		})
 		//seedInitialData()
 		domain := webApiInitRoutes(app)
+		webApiInitGraphql(app)
 		runCron(domain)
 		L.Print(conf.AdminTestSessionToken)
 		err := app.Listener(state.Listener)

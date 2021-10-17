@@ -14,6 +14,7 @@ require (
 	github.com/docker/docker v20.10.8+incompatible // indirect
 	github.com/fatih/color v1.10.0
 	github.com/francoispqt/onelog v0.0.0-20190306043706-8c2bb31b10a4
+	github.com/goccy/go-yaml v1.9.4
 	github.com/gofiber/fiber/v2 v2.18.0
 	github.com/google/gops v0.3.19
 	github.com/graphql-go/graphql v0.8.0
@@ -24,6 +25,7 @@ require (
 	github.com/jordan-wright/email v4.0.1-0.20210109023952-943e75fe5223+incompatible
 	github.com/jpillora/overseer v1.1.6
 	github.com/kokizzu/ch-timed-buffer v1.825.1523-0.20210826171319-738868384f38
+	github.com/kokizzu/goproc v1.625.1807
 	github.com/kokizzu/id64 v1.817.1508
 	github.com/kokizzu/lexid v1.731.230
 	github.com/kpango/fastime v1.0.17

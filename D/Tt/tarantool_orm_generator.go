@@ -449,7 +449,7 @@ func GenerateOrm(tables map[TableName]*TableProp) {
 		RQ("	},\n")
 		RQ(")\n\n")
 
-		//// graphql field list 
+		//// graphql field list
 		//RQ(`var GraphqlField` + structName + "List = &graphql.Field{\n")
 		//RQ("	Type: GraphqlType" + structName + ",\n")
 		//RQ("	Description: " + S.BT(`list of `+structName) + ",\n")
@@ -496,20 +496,20 @@ func generateGraphqlQueryField(structName string, uniqueFieldName string, field 
 
 	// graphql field resolver
 	RQ(`func (g *` + structName + `) GraphqlField` + structName + "By" + uniqueFieldName + "WithResolver() *graphql.Field {\n")
-	RQ("	field := GraphqlField" + structName + "By" + uniqueFieldName + "\n")
+	RQ("	field := *GraphqlField" + structName + "By" + uniqueFieldName + "\n")
 	RQ("	field.Resolve = func(p graphql.ResolveParams) (interface{}, error) {\n")
 	RQ("		q := g\n")
-	RQ("		v, ok := p.Args[S.BT(uniqueFieldName)]\n")
+	RQ("		v, ok := p.Args[" + S.BT(S.LowerFirst(uniqueFieldName)) + "]\n")
 	RQ("		if !ok {\n")
-	S.CamelCase()
+	RQ("			v, _ = p.Args[" + S.BT(uniqueFieldName) + "]\n")
 	RQ("		}\n")
-	RQ("		q."+uniqueFieldName+" = "+typeConverter[field.Type]+"(v)\n")
-	RQ("		if q.FindBy"+uniqueFieldName+"() {\n")
+	RQ("		q." + uniqueFieldName + " = " + typeConverter[field.Type] + "(v)\n")
+	RQ("		if q.FindBy" + uniqueFieldName + "() {\n")
 	RQ("			return q, nil\n")
 	RQ("		}\n")
-	RQ("		return []interface{}{}, nil\n")
+	RQ("		return nil, nil\n")
 	RQ("	}\n")
-	RQ("	return field\n")
+	RQ("	return &field\n")
 	RQ("}\n\n")
 
 }
