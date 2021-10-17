@@ -7,13 +7,14 @@ on:
 jobs:
   releases-matrix:
     name: Release Go Binary
-    runs-on: ubuntu-latest
     strategy:
       matrix:
         go-version: [1.17.x] #, 1.16.x 
         # build and publish in parallel: linux/amd64
         goos: [linux]
         goarch: [amd64]
+        os: [ubuntu-latest] #, macos-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
     steps:
       - name: Install Go
         uses: actions/setup-go@v2
@@ -21,7 +22,8 @@ jobs:
           go-version: ${{ matrix.go-version }}
       - uses: actions/checkout@v2
       - name: Run tests
-        run: go test -v -p=1 -timeout=0 ./...
+        run: |
+          cd W2/example && go test ./...
       - uses: wangyoucao577/go-release-action@v1.16
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
