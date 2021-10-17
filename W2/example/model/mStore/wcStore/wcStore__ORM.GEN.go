@@ -29,6 +29,71 @@ func (c *CartItemsMutator) HaveMutation() bool { //nolint:dupl false positive
 	return len(c.mutations) > 0
 }
 
+// Overwrite all columns, error if not exists
+func (c *CartItemsMutator) DoOverwriteById() bool { //nolint:dupl false positive
+	_, err := c.Adapter.Update(c.SpaceName(), c.UniqueIndexId(), A.X{c.Id}, c.ToUpdateArray())
+	return !L.IsError(err, `CartItems.DoOverwriteById failed: `+c.SpaceName())
+}
+
+// Update only mutated, error if not exists, use Find* and Set* methods instead of direct assignment
+func (c *CartItemsMutator) DoUpdateById() bool { //nolint:dupl false positive
+	if !c.HaveMutation() {
+		return true
+	}
+	_, err := c.Adapter.Update(c.SpaceName(), c.UniqueIndexId(), A.X{c.Id}, c.mutations)
+	return !L.IsError(err, `CartItems.DoUpdateById failed: `+c.SpaceName())
+}
+
+func (c *CartItemsMutator) DoDeletePermanentById() bool { //nolint:dupl false positive
+	_, err := c.Adapter.Delete(c.SpaceName(), c.UniqueIndexId(), A.X{c.Id})
+	return !L.IsError(err, `CartItems.DoDeletePermanentById failed: `+c.SpaceName())
+}
+
+// func (c *CartItemsMutator) DoUpsert() bool { //nolint:dupl false positive
+//	_, err := c.Adapter.Upsert(c.SpaceName(), c.ToArray(), A.X{
+//		A.X{`=`, 0, c.Id},
+//		A.X{`=`, 1, c.CreatedAt},
+//		A.X{`=`, 2, c.CreatedBy},
+//		A.X{`=`, 3, c.UpdatedAt},
+//		A.X{`=`, 4, c.UpdatedBy},
+//		A.X{`=`, 5, c.DeletedAt},
+//		A.X{`=`, 6, c.DeletedBy},
+//		A.X{`=`, 7, c.IsDeleted},
+//		A.X{`=`, 8, c.RestoredAt},
+//		A.X{`=`, 9, c.RestoredBy},
+//		A.X{`=`, 10, c.OwnerId},
+//		A.X{`=`, 11, c.InvoiceId},
+//		A.X{`=`, 12, c.ProductId},
+//		A.X{`=`, 13, c.NameCopy},
+//		A.X{`=`, 14, c.PriceCopy},
+//		A.X{`=`, 15, c.Qty},
+//		A.X{`=`, 16, c.Discount},
+//		A.X{`=`, 17, c.SubTotal},
+//		A.X{`=`, 18, c.Info},
+//	})
+//	return !L.IsError(err, `CartItems.DoUpsert failed: `+c.SpaceName())
+// }
+
+// Overwrite all columns, error if not exists
+func (c *CartItemsMutator) DoOverwriteByOwnerIdProductIdInvoiceId() bool { //nolint:dupl false positive
+	_, err := c.Adapter.Update(c.SpaceName(), c.UniqueIndexOwnerIdProductIdInvoiceId(), A.X{c.OwnerId, c.ProductId, c.InvoiceId}, c.ToUpdateArray())
+	return !L.IsError(err, `CartItems.DoOverwriteByOwnerIdProductIdInvoiceId failed: `+c.SpaceName())
+}
+
+// Update only mutated, error if not exists, use Find* and Set* methods instead of direct assignment
+func (c *CartItemsMutator) DoUpdateByOwnerIdProductIdInvoiceId() bool { //nolint:dupl false positive
+	if !c.HaveMutation() {
+		return true
+	}
+	_, err := c.Adapter.Update(c.SpaceName(), c.UniqueIndexOwnerIdProductIdInvoiceId(), A.X{c.OwnerId, c.ProductId, c.InvoiceId}, c.mutations)
+	return !L.IsError(err, `CartItems.DoUpdateByOwnerIdProductIdInvoiceId failed: `+c.SpaceName())
+}
+
+func (c *CartItemsMutator) DoDeletePermanentByOwnerIdProductIdInvoiceId() bool { //nolint:dupl false positive
+	_, err := c.Adapter.Delete(c.SpaceName(), c.UniqueIndexOwnerIdProductIdInvoiceId(), A.X{c.OwnerId, c.ProductId, c.InvoiceId})
+	return !L.IsError(err, `CartItems.DoDeletePermanentByOwnerIdProductIdInvoiceId failed: `+c.SpaceName())
+}
+
 // insert, error if exists
 func (c *CartItemsMutator) DoInsert() bool { //nolint:dupl false positive
 	_, err := c.Adapter.Insert(c.SpaceName(), c.ToArray())
@@ -158,7 +223,7 @@ func (c *CartItemsMutator) SetProductId(val uint64) bool { //nolint:dupl false p
 	return false
 }
 
-func (c *CartItemsMutator) SetNameCopy(val uint64) bool { //nolint:dupl false positive
+func (c *CartItemsMutator) SetNameCopy(val string) bool { //nolint:dupl false positive
 	if val != c.NameCopy {
 		c.mutations = append(c.mutations, A.X{`=`, 13, val})
 		c.NameCopy = val
@@ -167,7 +232,7 @@ func (c *CartItemsMutator) SetNameCopy(val uint64) bool { //nolint:dupl false po
 	return false
 }
 
-func (c *CartItemsMutator) SetPriceCopy(val uint64) bool { //nolint:dupl false positive
+func (c *CartItemsMutator) SetPriceCopy(val int64) bool { //nolint:dupl false positive
 	if val != c.PriceCopy {
 		c.mutations = append(c.mutations, A.X{`=`, 14, val})
 		c.PriceCopy = val
@@ -176,7 +241,7 @@ func (c *CartItemsMutator) SetPriceCopy(val uint64) bool { //nolint:dupl false p
 	return false
 }
 
-func (c *CartItemsMutator) SetQty(val uint64) bool { //nolint:dupl false positive
+func (c *CartItemsMutator) SetQty(val int64) bool { //nolint:dupl false positive
 	if val != c.Qty {
 		c.mutations = append(c.mutations, A.X{`=`, 15, val})
 		c.Qty = val
@@ -194,10 +259,19 @@ func (c *CartItemsMutator) SetDiscount(val uint64) bool { //nolint:dupl false po
 	return false
 }
 
-func (c *CartItemsMutator) SetSubTotal(val uint64) bool { //nolint:dupl false positive
+func (c *CartItemsMutator) SetSubTotal(val int64) bool { //nolint:dupl false positive
 	if val != c.SubTotal {
 		c.mutations = append(c.mutations, A.X{`=`, 17, val})
 		c.SubTotal = val
+		return true
+	}
+	return false
+}
+
+func (c *CartItemsMutator) SetInfo(val string) bool { //nolint:dupl false positive
+	if val != c.Info {
+		c.mutations = append(c.mutations, A.X{`=`, 18, val})
+		c.Info = val
 		return true
 	}
 	return false
@@ -217,6 +291,53 @@ func NewInvoicesMutator(adapter *Tt.Adapter) *InvoicesMutator {
 func (i *InvoicesMutator) HaveMutation() bool { //nolint:dupl false positive
 	return len(i.mutations) > 0
 }
+
+// Overwrite all columns, error if not exists
+func (i *InvoicesMutator) DoOverwriteById() bool { //nolint:dupl false positive
+	_, err := i.Adapter.Update(i.SpaceName(), i.UniqueIndexId(), A.X{i.Id}, i.ToUpdateArray())
+	return !L.IsError(err, `Invoices.DoOverwriteById failed: `+i.SpaceName())
+}
+
+// Update only mutated, error if not exists, use Find* and Set* methods instead of direct assignment
+func (i *InvoicesMutator) DoUpdateById() bool { //nolint:dupl false positive
+	if !i.HaveMutation() {
+		return true
+	}
+	_, err := i.Adapter.Update(i.SpaceName(), i.UniqueIndexId(), A.X{i.Id}, i.mutations)
+	return !L.IsError(err, `Invoices.DoUpdateById failed: `+i.SpaceName())
+}
+
+func (i *InvoicesMutator) DoDeletePermanentById() bool { //nolint:dupl false positive
+	_, err := i.Adapter.Delete(i.SpaceName(), i.UniqueIndexId(), A.X{i.Id})
+	return !L.IsError(err, `Invoices.DoDeletePermanentById failed: `+i.SpaceName())
+}
+
+// func (i *InvoicesMutator) DoUpsert() bool { //nolint:dupl false positive
+//	_, err := i.Adapter.Upsert(i.SpaceName(), i.ToArray(), A.X{
+//		A.X{`=`, 0, i.Id},
+//		A.X{`=`, 1, i.CreatedAt},
+//		A.X{`=`, 2, i.CreatedBy},
+//		A.X{`=`, 3, i.UpdatedAt},
+//		A.X{`=`, 4, i.UpdatedBy},
+//		A.X{`=`, 5, i.DeletedAt},
+//		A.X{`=`, 6, i.DeletedBy},
+//		A.X{`=`, 7, i.IsDeleted},
+//		A.X{`=`, 8, i.RestoredAt},
+//		A.X{`=`, 9, i.RestoredBy},
+//		A.X{`=`, 10, i.OwnerId},
+//		A.X{`=`, 11, i.TotalWeight},
+//		A.X{`=`, 12, i.TotalPrice},
+//		A.X{`=`, 13, i.TotalDiscount},
+//		A.X{`=`, 14, i.DeliveryMethod},
+//		A.X{`=`, 15, i.DeliveryPrice},
+//		A.X{`=`, 16, i.TotalPaid},
+//		A.X{`=`, 17, i.PaidAt},
+//		A.X{`=`, 18, i.PaymentMethod},
+//		A.X{`=`, 19, i.DeadlineAt},
+//		A.X{`=`, 20, i.PromoRuleIds},
+//	})
+//	return !L.IsError(err, `Invoices.DoUpsert failed: `+i.SpaceName())
+// }
 
 // insert, error if exists
 func (i *InvoicesMutator) DoInsert() bool { //nolint:dupl false positive
@@ -405,6 +526,15 @@ func (i *InvoicesMutator) SetDeadlineAt(val uint64) bool { //nolint:dupl false p
 	if val != i.DeadlineAt {
 		i.mutations = append(i.mutations, A.X{`=`, 19, val})
 		i.DeadlineAt = val
+		return true
+	}
+	return false
+}
+
+func (i *InvoicesMutator) SetPromoRuleIds(val string) bool { //nolint:dupl false positive
+	if val != i.PromoRuleIds {
+		i.mutations = append(i.mutations, A.X{`=`, 20, val})
+		i.PromoRuleIds = val
 		return true
 	}
 	return false

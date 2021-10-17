@@ -22,6 +22,7 @@ const (
 	Price                      = `price`
 	InventoryQty               = `inventoryQty`
 	WeightGram                 = `weightGram`
+	Info                       = `info` // promo or other information (eg. product no longer exists)
 )
 
 const (
@@ -44,9 +45,9 @@ const (
 	TotalDiscount  = `totalDiscount`
 	DeliveryMethod = `deliveryMethod`
 	DeliveryPrice  = `deliveryPrice`
-	TotalPaid      = `totalPaid` // TotalPrice - TotalDiscount + DeliveryPrice
+	TotalPaid      = `totalPaid`    // TotalPrice - TotalDiscount + DeliveryPrice
 	PaymentMethod  = `paymentMethod`
-	DeadlineAt     = `deadlineAt` // payment deadline
+	DeadlineAt     = `deadlineAt`   // payment deadline
 	PaidAt         = `paidAt`
 	PromoRuleIds   = `promoRuleIds` // applied rules in separated by space
 )
@@ -122,14 +123,15 @@ var TarantoolTables = map[Tt.TableName]*Tt.TableProp{
 			{OwnerId, Tt.Unsigned},
 			{InvoiceId, Tt.Unsigned},
 			{ProductId, Tt.Unsigned},
-			{NameCopy, Tt.Unsigned},
-			{PriceCopy, Tt.Unsigned},
-			{Qty, Tt.Unsigned},
+			{NameCopy, Tt.String},
+			{PriceCopy, Tt.Integer},
+			{Qty, Tt.Integer}, // negative = refund
 			{Discount, Tt.Unsigned},
-			{SubTotal, Tt.Unsigned},
+			{SubTotal, Tt.Integer}, // negative = refund
+			{Info, Tt.String},
 		},
 		Unique1: Id,
-		Indexes: []string{OwnerId, ProductId, InvoiceId},
+		Uniques: []string{OwnerId, ProductId, InvoiceId},
 	},
 	TableInvoices: {
 		Fields: []Tt.Field{

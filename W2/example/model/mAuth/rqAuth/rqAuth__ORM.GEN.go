@@ -21,10 +21,10 @@ import (
 // go:generate msgp -tests=false -file rqAuth__ORM.GEN.go -o rqAuth__MSG.GEN.go
 
 type Sessions struct {
-	Adapter      *Tt.Adapter `json:"-" msg:"-" query:"-" form:"-"`
-	SessionToken string
-	UserId       uint64
-	ExpiredAt    int64
+	Adapter      *Tt.Adapter `json:"-" msg:"-" query:"-" form:"-" long:"adapter"`
+	SessionToken string      `json:"sessionToken" form:"sessionToken" query:"sessionToken" long:"sessionToken" msg:"sessionToken"`
+	UserId       uint64      `json:"userId,string" form:"userId" query:"userId" long:"userId" msg:"userId"`
+	ExpiredAt    int64       `json:"expiredAt" form:"expiredAt" query:"expiredAt" long:"expiredAt" msg:"expiredAt"`
 }
 
 func NewSessions(adapter *Tt.Adapter) *Sessions {
@@ -165,25 +165,25 @@ var GraphqlTypeSessions = graphql.NewObject(
 // DO NOT EDIT, will be overwritten by github.com/kokizzu/D/Tt/tarantool_orm_generator.go
 
 type Users struct {
-	Adapter            *Tt.Adapter `json:"-" msg:"-" query:"-" form:"-"`
-	Id                 uint64
-	Email              string
-	Password           string
-	CreatedAt          int64
-	CreatedBy          uint64
-	UpdatedAt          int64
-	UpdatedBy          uint64
-	DeletedAt          int64
-	DeletedBy          uint64
-	IsDeleted          bool
-	RestoredAt         int64
-	RestoredBy         uint64
-	PasswordSetAt      int64
-	SecretCode         string
-	SecretCodeAt       int64
-	VerificationSentAt int64
-	VerifiedAt         int64
-	LastLoginAt        int64
+	Adapter            *Tt.Adapter `json:"-" msg:"-" query:"-" form:"-" long:"adapter"`
+	Id                 uint64      `json:"id,string" form:"id" query:"id" long:"id" msg:"id"`
+	Email              string      `json:"email" form:"email" query:"email" long:"email" msg:"email"`
+	Password           string      `json:"password" form:"password" query:"password" long:"password" msg:"password"`
+	CreatedAt          int64       `json:"createdAt" form:"createdAt" query:"createdAt" long:"createdAt" msg:"createdAt"`
+	CreatedBy          uint64      `json:"createdBy,string" form:"createdBy" query:"createdBy" long:"createdBy" msg:"createdBy"`
+	UpdatedAt          int64       `json:"updatedAt" form:"updatedAt" query:"updatedAt" long:"updatedAt" msg:"updatedAt"`
+	UpdatedBy          uint64      `json:"updatedBy,string" form:"updatedBy" query:"updatedBy" long:"updatedBy" msg:"updatedBy"`
+	DeletedAt          int64       `json:"deletedAt" form:"deletedAt" query:"deletedAt" long:"deletedAt" msg:"deletedAt"`
+	DeletedBy          uint64      `json:"deletedBy,string" form:"deletedBy" query:"deletedBy" long:"deletedBy" msg:"deletedBy"`
+	IsDeleted          bool        `json:"isDeleted" form:"isDeleted" query:"isDeleted" long:"isDeleted" msg:"isDeleted"`
+	RestoredAt         int64       `json:"restoredAt" form:"restoredAt" query:"restoredAt" long:"restoredAt" msg:"restoredAt"`
+	RestoredBy         uint64      `json:"restoredBy,string" form:"restoredBy" query:"restoredBy" long:"restoredBy" msg:"restoredBy"`
+	PasswordSetAt      int64       `json:"passwordSetAt" form:"passwordSetAt" query:"passwordSetAt" long:"passwordSetAt" msg:"passwordSetAt"`
+	SecretCode         string      `json:"secretCode" form:"secretCode" query:"secretCode" long:"secretCode" msg:"secretCode"`
+	SecretCodeAt       int64       `json:"secretCodeAt" form:"secretCodeAt" query:"secretCodeAt" long:"secretCodeAt" msg:"secretCodeAt"`
+	VerificationSentAt int64       `json:"verificationSentAt" form:"verificationSentAt" query:"verificationSentAt" long:"verificationSentAt" msg:"verificationSentAt"`
+	VerifiedAt         int64       `json:"verifiedAt" form:"verifiedAt" query:"verifiedAt" long:"verifiedAt" msg:"verifiedAt"`
+	LastLoginAt        int64       `json:"lastLoginAt" form:"lastLoginAt" query:"lastLoginAt" long:"lastLoginAt" msg:"lastLoginAt"`
 }
 
 func NewUsers(adapter *Tt.Adapter) *Users {

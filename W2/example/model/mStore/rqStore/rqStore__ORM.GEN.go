@@ -21,25 +21,26 @@ import (
 // go:generate msgp -tests=false -file rqStore__ORM.GEN.go -o rqStore__MSG.GEN.go
 
 type CartItems struct {
-	Adapter    *Tt.Adapter `json:"-" msg:"-" query:"-" form:"-"`
-	Id         uint64
-	CreatedAt  int64
-	CreatedBy  uint64
-	UpdatedAt  int64
-	UpdatedBy  uint64
-	DeletedAt  int64
-	DeletedBy  uint64
-	IsDeleted  bool
-	RestoredAt int64
-	RestoredBy uint64
-	OwnerId    uint64
-	InvoiceId  uint64
-	ProductId  uint64
-	NameCopy   uint64
-	PriceCopy  uint64
-	Qty        uint64
-	Discount   uint64
-	SubTotal   uint64
+	Adapter    *Tt.Adapter `json:"-" msg:"-" query:"-" form:"-" long:"adapter"`
+	Id         uint64      `json:"id,string" form:"id" query:"id" long:"id" msg:"id"`
+	CreatedAt  int64       `json:"createdAt" form:"createdAt" query:"createdAt" long:"createdAt" msg:"createdAt"`
+	CreatedBy  uint64      `json:"createdBy,string" form:"createdBy" query:"createdBy" long:"createdBy" msg:"createdBy"`
+	UpdatedAt  int64       `json:"updatedAt" form:"updatedAt" query:"updatedAt" long:"updatedAt" msg:"updatedAt"`
+	UpdatedBy  uint64      `json:"updatedBy,string" form:"updatedBy" query:"updatedBy" long:"updatedBy" msg:"updatedBy"`
+	DeletedAt  int64       `json:"deletedAt" form:"deletedAt" query:"deletedAt" long:"deletedAt" msg:"deletedAt"`
+	DeletedBy  uint64      `json:"deletedBy,string" form:"deletedBy" query:"deletedBy" long:"deletedBy" msg:"deletedBy"`
+	IsDeleted  bool        `json:"isDeleted" form:"isDeleted" query:"isDeleted" long:"isDeleted" msg:"isDeleted"`
+	RestoredAt int64       `json:"restoredAt" form:"restoredAt" query:"restoredAt" long:"restoredAt" msg:"restoredAt"`
+	RestoredBy uint64      `json:"restoredBy,string" form:"restoredBy" query:"restoredBy" long:"restoredBy" msg:"restoredBy"`
+	OwnerId    uint64      `json:"ownerId,string" form:"ownerId" query:"ownerId" long:"ownerId" msg:"ownerId"`
+	InvoiceId  uint64      `json:"invoiceId,string" form:"invoiceId" query:"invoiceId" long:"invoiceId" msg:"invoiceId"`
+	ProductId  uint64      `json:"productId,string" form:"productId" query:"productId" long:"productId" msg:"productId"`
+	NameCopy   string      `json:"nameCopy" form:"nameCopy" query:"nameCopy" long:"nameCopy" msg:"nameCopy"`
+	PriceCopy  int64       `json:"priceCopy" form:"priceCopy" query:"priceCopy" long:"priceCopy" msg:"priceCopy"`
+	Qty        int64       `json:"qty" form:"qty" query:"qty" long:"qty" msg:"qty"`
+	Discount   uint64      `json:"discount" form:"discount" query:"discount" long:"discount" msg:"discount"`
+	SubTotal   int64       `json:"subTotal" form:"subTotal" query:"subTotal" long:"subTotal" msg:"subTotal"`
+	Info       string      `json:"info" form:"info" query:"info" long:"info" msg:"info"`
 }
 
 func NewCartItems(adapter *Tt.Adapter) *CartItems {
@@ -52,6 +53,67 @@ func (c *CartItems) SpaceName() string { //nolint:dupl false positive
 
 func (c *CartItems) sqlTableName() string { //nolint:dupl false positive
 	return `"cartItems"`
+}
+
+func (c *CartItems) UniqueIndexId() string { //nolint:dupl false positive
+	return `id`
+}
+
+func (c *CartItems) FindById() bool { //nolint:dupl false positive
+	res, err := c.Adapter.Select(c.SpaceName(), c.UniqueIndexId(), 0, 1, tarantool.IterEq, A.X{c.Id})
+	if L.IsError(err, `CartItems.FindById failed: `+c.SpaceName()) {
+		return false
+	}
+	rows := res.Tuples()
+	if len(rows) == 1 {
+		c.FromArray(rows[0])
+		return true
+	}
+	return false
+}
+
+var GraphqlFieldCartItemsById = &graphql.Field{
+	Type:        GraphqlTypeCartItems,
+	Description: `list of CartItems`,
+	Args: graphql.FieldConfigArgument{
+		`Id`: &graphql.ArgumentConfig{
+			Type: graphql.Int,
+		},
+	},
+}
+
+func (g *CartItems) GraphqlFieldCartItemsByIdWithResolver() *graphql.Field {
+	field := *GraphqlFieldCartItemsById
+	field.Resolve = func(p graphql.ResolveParams) (interface{}, error) {
+		q := g
+		v, ok := p.Args[`id`]
+		if !ok {
+			v, _ = p.Args[`Id`]
+		}
+		q.Id = X.ToU(v)
+		if q.FindById() {
+			return q, nil
+		}
+		return nil, nil
+	}
+	return &field
+}
+
+func (c *CartItems) UniqueIndexOwnerIdProductIdInvoiceId() string { //nolint:dupl false positive
+	return `ownerId__productId__invoiceId`
+}
+
+func (c *CartItems) FindByOwnerIdProductIdInvoiceId() bool { //nolint:dupl false positive
+	res, err := c.Adapter.Select(c.SpaceName(), c.UniqueIndexOwnerIdProductIdInvoiceId(), 0, 1, tarantool.IterEq, A.X{c.OwnerId, c.ProductId, c.InvoiceId})
+	if L.IsError(err, `CartItems.FindByOwnerIdProductIdInvoiceId failed: `+c.SpaceName()) {
+		return false
+	}
+	rows := res.Tuples()
+	if len(rows) == 1 {
+		c.FromArray(rows[0])
+		return true
+	}
+	return false
 }
 
 func (c *CartItems) sqlSelectAllFields() string { //nolint:dupl false positive
@@ -73,6 +135,7 @@ func (c *CartItems) sqlSelectAllFields() string { //nolint:dupl false positive
 	, "qty"
 	, "discount"
 	, "subTotal"
+	, "info"
 	`
 }
 
@@ -96,6 +159,7 @@ func (c *CartItems) ToUpdateArray() A.X { //nolint:dupl false positive
 		A.X{`=`, 15, c.Qty},
 		A.X{`=`, 16, c.Discount},
 		A.X{`=`, 17, c.SubTotal},
+		A.X{`=`, 18, c.Info},
 	}
 }
 
@@ -243,6 +307,14 @@ func (c *CartItems) sqlSubTotal() string { //nolint:dupl false positive
 	return `"subTotal"`
 }
 
+func (c *CartItems) IdxInfo() int { //nolint:dupl false positive
+	return 18
+}
+
+func (c *CartItems) sqlInfo() string { //nolint:dupl false positive
+	return `"info"`
+}
+
 func (c *CartItems) ToArray() A.X { //nolint:dupl false positive
 	return A.X{
 		c.Id,         // 0
@@ -263,6 +335,7 @@ func (c *CartItems) ToArray() A.X { //nolint:dupl false positive
 		c.Qty,        // 15
 		c.Discount,   // 16
 		c.SubTotal,   // 17
+		c.Info,       // 18
 	}
 }
 
@@ -280,11 +353,12 @@ func (c *CartItems) FromArray(a A.X) *CartItems { //nolint:dupl false positive
 	c.OwnerId = X.ToU(a[10])
 	c.InvoiceId = X.ToU(a[11])
 	c.ProductId = X.ToU(a[12])
-	c.NameCopy = X.ToU(a[13])
-	c.PriceCopy = X.ToU(a[14])
-	c.Qty = X.ToU(a[15])
+	c.NameCopy = X.ToS(a[13])
+	c.PriceCopy = X.ToI(a[14])
+	c.Qty = X.ToI(a[15])
 	c.Discount = X.ToU(a[16])
-	c.SubTotal = X.ToU(a[17])
+	c.SubTotal = X.ToI(a[17])
+	c.Info = X.ToS(a[18])
 	return c
 }
 
@@ -340,7 +414,7 @@ var GraphqlTypeCartItems = graphql.NewObject(
 				Type: graphql.ID,
 			},
 			`nameCopy`: &graphql.Field{
-				Type: graphql.Int,
+				Type: graphql.String,
 			},
 			`priceCopy`: &graphql.Field{
 				Type: graphql.Int,
@@ -354,6 +428,9 @@ var GraphqlTypeCartItems = graphql.NewObject(
 			`subTotal`: &graphql.Field{
 				Type: graphql.Int,
 			},
+			`info`: &graphql.Field{
+				Type: graphql.String,
+			},
 		},
 	},
 )
@@ -361,27 +438,28 @@ var GraphqlTypeCartItems = graphql.NewObject(
 // DO NOT EDIT, will be overwritten by github.com/kokizzu/D/Tt/tarantool_orm_generator.go
 
 type Invoices struct {
-	Adapter        *Tt.Adapter `json:"-" msg:"-" query:"-" form:"-"`
-	Id             uint64
-	CreatedAt      int64
-	CreatedBy      uint64
-	UpdatedAt      int64
-	UpdatedBy      uint64
-	DeletedAt      int64
-	DeletedBy      uint64
-	IsDeleted      bool
-	RestoredAt     int64
-	RestoredBy     uint64
-	OwnerId        uint64
-	TotalWeight    uint64
-	TotalPrice     uint64
-	TotalDiscount  uint64
-	DeliveryMethod uint64
-	DeliveryPrice  uint64
-	TotalPaid      uint64
-	PaidAt         uint64
-	PaymentMethod  uint64
-	DeadlineAt     uint64
+	Adapter        *Tt.Adapter `json:"-" msg:"-" query:"-" form:"-" long:"adapter"`
+	Id             uint64      `json:"id,string" form:"id" query:"id" long:"id" msg:"id"`
+	CreatedAt      int64       `json:"createdAt" form:"createdAt" query:"createdAt" long:"createdAt" msg:"createdAt"`
+	CreatedBy      uint64      `json:"createdBy,string" form:"createdBy" query:"createdBy" long:"createdBy" msg:"createdBy"`
+	UpdatedAt      int64       `json:"updatedAt" form:"updatedAt" query:"updatedAt" long:"updatedAt" msg:"updatedAt"`
+	UpdatedBy      uint64      `json:"updatedBy,string" form:"updatedBy" query:"updatedBy" long:"updatedBy" msg:"updatedBy"`
+	DeletedAt      int64       `json:"deletedAt" form:"deletedAt" query:"deletedAt" long:"deletedAt" msg:"deletedAt"`
+	DeletedBy      uint64      `json:"deletedBy,string" form:"deletedBy" query:"deletedBy" long:"deletedBy" msg:"deletedBy"`
+	IsDeleted      bool        `json:"isDeleted" form:"isDeleted" query:"isDeleted" long:"isDeleted" msg:"isDeleted"`
+	RestoredAt     int64       `json:"restoredAt" form:"restoredAt" query:"restoredAt" long:"restoredAt" msg:"restoredAt"`
+	RestoredBy     uint64      `json:"restoredBy,string" form:"restoredBy" query:"restoredBy" long:"restoredBy" msg:"restoredBy"`
+	OwnerId        uint64      `json:"ownerId,string" form:"ownerId" query:"ownerId" long:"ownerId" msg:"ownerId"`
+	TotalWeight    uint64      `json:"totalWeight" form:"totalWeight" query:"totalWeight" long:"totalWeight" msg:"totalWeight"`
+	TotalPrice     uint64      `json:"totalPrice" form:"totalPrice" query:"totalPrice" long:"totalPrice" msg:"totalPrice"`
+	TotalDiscount  uint64      `json:"totalDiscount" form:"totalDiscount" query:"totalDiscount" long:"totalDiscount" msg:"totalDiscount"`
+	DeliveryMethod uint64      `json:"deliveryMethod" form:"deliveryMethod" query:"deliveryMethod" long:"deliveryMethod" msg:"deliveryMethod"`
+	DeliveryPrice  uint64      `json:"deliveryPrice" form:"deliveryPrice" query:"deliveryPrice" long:"deliveryPrice" msg:"deliveryPrice"`
+	TotalPaid      uint64      `json:"totalPaid" form:"totalPaid" query:"totalPaid" long:"totalPaid" msg:"totalPaid"`
+	PaidAt         uint64      `json:"paidAt" form:"paidAt" query:"paidAt" long:"paidAt" msg:"paidAt"`
+	PaymentMethod  uint64      `json:"paymentMethod" form:"paymentMethod" query:"paymentMethod" long:"paymentMethod" msg:"paymentMethod"`
+	DeadlineAt     uint64      `json:"deadlineAt" form:"deadlineAt" query:"deadlineAt" long:"deadlineAt" msg:"deadlineAt"`
+	PromoRuleIds   string      `json:"promoRuleIds" form:"promoRuleIds" query:"promoRuleIds" long:"promoRuleIds" msg:"promoRuleIds"`
 }
 
 func NewInvoices(adapter *Tt.Adapter) *Invoices {
@@ -394,6 +472,50 @@ func (i *Invoices) SpaceName() string { //nolint:dupl false positive
 
 func (i *Invoices) sqlTableName() string { //nolint:dupl false positive
 	return `"invoices"`
+}
+
+func (i *Invoices) UniqueIndexId() string { //nolint:dupl false positive
+	return `id`
+}
+
+func (i *Invoices) FindById() bool { //nolint:dupl false positive
+	res, err := i.Adapter.Select(i.SpaceName(), i.UniqueIndexId(), 0, 1, tarantool.IterEq, A.X{i.Id})
+	if L.IsError(err, `Invoices.FindById failed: `+i.SpaceName()) {
+		return false
+	}
+	rows := res.Tuples()
+	if len(rows) == 1 {
+		i.FromArray(rows[0])
+		return true
+	}
+	return false
+}
+
+var GraphqlFieldInvoicesById = &graphql.Field{
+	Type:        GraphqlTypeInvoices,
+	Description: `list of Invoices`,
+	Args: graphql.FieldConfigArgument{
+		`Id`: &graphql.ArgumentConfig{
+			Type: graphql.Int,
+		},
+	},
+}
+
+func (g *Invoices) GraphqlFieldInvoicesByIdWithResolver() *graphql.Field {
+	field := *GraphqlFieldInvoicesById
+	field.Resolve = func(p graphql.ResolveParams) (interface{}, error) {
+		q := g
+		v, ok := p.Args[`id`]
+		if !ok {
+			v, _ = p.Args[`Id`]
+		}
+		q.Id = X.ToU(v)
+		if q.FindById() {
+			return q, nil
+		}
+		return nil, nil
+	}
+	return &field
 }
 
 func (i *Invoices) sqlSelectAllFields() string { //nolint:dupl false positive
@@ -417,6 +539,7 @@ func (i *Invoices) sqlSelectAllFields() string { //nolint:dupl false positive
 	, "paidAt"
 	, "paymentMethod"
 	, "deadlineAt"
+	, "promoRuleIds"
 	`
 }
 
@@ -442,6 +565,7 @@ func (i *Invoices) ToUpdateArray() A.X { //nolint:dupl false positive
 		A.X{`=`, 17, i.PaidAt},
 		A.X{`=`, 18, i.PaymentMethod},
 		A.X{`=`, 19, i.DeadlineAt},
+		A.X{`=`, 20, i.PromoRuleIds},
 	}
 }
 
@@ -605,6 +729,14 @@ func (i *Invoices) sqlDeadlineAt() string { //nolint:dupl false positive
 	return `"deadlineAt"`
 }
 
+func (i *Invoices) IdxPromoRuleIds() int { //nolint:dupl false positive
+	return 20
+}
+
+func (i *Invoices) sqlPromoRuleIds() string { //nolint:dupl false positive
+	return `"promoRuleIds"`
+}
+
 func (i *Invoices) ToArray() A.X { //nolint:dupl false positive
 	return A.X{
 		i.Id,             // 0
@@ -627,6 +759,7 @@ func (i *Invoices) ToArray() A.X { //nolint:dupl false positive
 		i.PaidAt,         // 17
 		i.PaymentMethod,  // 18
 		i.DeadlineAt,     // 19
+		i.PromoRuleIds,   // 20
 	}
 }
 
@@ -651,6 +784,7 @@ func (i *Invoices) FromArray(a A.X) *Invoices { //nolint:dupl false positive
 	i.PaidAt = X.ToU(a[17])
 	i.PaymentMethod = X.ToU(a[18])
 	i.DeadlineAt = X.ToU(a[19])
+	i.PromoRuleIds = X.ToS(a[20])
 	return i
 }
 
@@ -726,6 +860,9 @@ var GraphqlTypeInvoices = graphql.NewObject(
 			`deadlineAt`: &graphql.Field{
 				Type: graphql.Int,
 			},
+			`promoRuleIds`: &graphql.Field{
+				Type: graphql.String,
+			},
 		},
 	},
 )
@@ -733,22 +870,22 @@ var GraphqlTypeInvoices = graphql.NewObject(
 // DO NOT EDIT, will be overwritten by github.com/kokizzu/D/Tt/tarantool_orm_generator.go
 
 type Products struct {
-	Adapter      *Tt.Adapter `json:"-" msg:"-" query:"-" form:"-"`
-	Id           uint64
-	CreatedAt    int64
-	CreatedBy    uint64
-	UpdatedAt    int64
-	UpdatedBy    uint64
-	DeletedAt    int64
-	DeletedBy    uint64
-	IsDeleted    bool
-	RestoredAt   int64
-	RestoredBy   uint64
-	Sku          string
-	Name         string
-	Price        uint64
-	InventoryQty uint64
-	WeightGram   uint64
+	Adapter      *Tt.Adapter `json:"-" msg:"-" query:"-" form:"-" long:"adapter"`
+	Id           uint64      `json:"id,string" form:"id" query:"id" long:"id" msg:"id"`
+	CreatedAt    int64       `json:"createdAt" form:"createdAt" query:"createdAt" long:"createdAt" msg:"createdAt"`
+	CreatedBy    uint64      `json:"createdBy,string" form:"createdBy" query:"createdBy" long:"createdBy" msg:"createdBy"`
+	UpdatedAt    int64       `json:"updatedAt" form:"updatedAt" query:"updatedAt" long:"updatedAt" msg:"updatedAt"`
+	UpdatedBy    uint64      `json:"updatedBy,string" form:"updatedBy" query:"updatedBy" long:"updatedBy" msg:"updatedBy"`
+	DeletedAt    int64       `json:"deletedAt" form:"deletedAt" query:"deletedAt" long:"deletedAt" msg:"deletedAt"`
+	DeletedBy    uint64      `json:"deletedBy,string" form:"deletedBy" query:"deletedBy" long:"deletedBy" msg:"deletedBy"`
+	IsDeleted    bool        `json:"isDeleted" form:"isDeleted" query:"isDeleted" long:"isDeleted" msg:"isDeleted"`
+	RestoredAt   int64       `json:"restoredAt" form:"restoredAt" query:"restoredAt" long:"restoredAt" msg:"restoredAt"`
+	RestoredBy   uint64      `json:"restoredBy,string" form:"restoredBy" query:"restoredBy" long:"restoredBy" msg:"restoredBy"`
+	Sku          string      `json:"sku" form:"sku" query:"sku" long:"sku" msg:"sku"`
+	Name         string      `json:"name" form:"name" query:"name" long:"name" msg:"name"`
+	Price        uint64      `json:"price" form:"price" query:"price" long:"price" msg:"price"`
+	InventoryQty uint64      `json:"inventoryQty" form:"inventoryQty" query:"inventoryQty" long:"inventoryQty" msg:"inventoryQty"`
+	WeightGram   uint64      `json:"weightGram" form:"weightGram" query:"weightGram" long:"weightGram" msg:"weightGram"`
 }
 
 func NewProducts(adapter *Tt.Adapter) *Products {
@@ -1086,24 +1223,24 @@ var GraphqlTypeProducts = graphql.NewObject(
 // DO NOT EDIT, will be overwritten by github.com/kokizzu/D/Tt/tarantool_orm_generator.go
 
 type Promos struct {
-	Adapter         *Tt.Adapter `json:"-" msg:"-" query:"-" form:"-"`
-	Id              uint64
-	CreatedAt       int64
-	CreatedBy       uint64
-	UpdatedAt       int64
-	UpdatedBy       uint64
-	DeletedAt       int64
-	DeletedBy       uint64
-	IsDeleted       bool
-	RestoredAt      int64
-	RestoredBy      uint64
-	StartAt         int64
-	EndAt           int64
-	ProductId       uint64
-	ProductCount    uint64
-	FreeProductId   uint64
-	DiscountCount   uint64
-	DiscountPercent float64
+	Adapter         *Tt.Adapter `json:"-" msg:"-" query:"-" form:"-" long:"adapter"`
+	Id              uint64      `json:"id,string" form:"id" query:"id" long:"id" msg:"id"`
+	CreatedAt       int64       `json:"createdAt" form:"createdAt" query:"createdAt" long:"createdAt" msg:"createdAt"`
+	CreatedBy       uint64      `json:"createdBy,string" form:"createdBy" query:"createdBy" long:"createdBy" msg:"createdBy"`
+	UpdatedAt       int64       `json:"updatedAt" form:"updatedAt" query:"updatedAt" long:"updatedAt" msg:"updatedAt"`
+	UpdatedBy       uint64      `json:"updatedBy,string" form:"updatedBy" query:"updatedBy" long:"updatedBy" msg:"updatedBy"`
+	DeletedAt       int64       `json:"deletedAt" form:"deletedAt" query:"deletedAt" long:"deletedAt" msg:"deletedAt"`
+	DeletedBy       uint64      `json:"deletedBy,string" form:"deletedBy" query:"deletedBy" long:"deletedBy" msg:"deletedBy"`
+	IsDeleted       bool        `json:"isDeleted" form:"isDeleted" query:"isDeleted" long:"isDeleted" msg:"isDeleted"`
+	RestoredAt      int64       `json:"restoredAt" form:"restoredAt" query:"restoredAt" long:"restoredAt" msg:"restoredAt"`
+	RestoredBy      uint64      `json:"restoredBy,string" form:"restoredBy" query:"restoredBy" long:"restoredBy" msg:"restoredBy"`
+	StartAt         int64       `json:"startAt" form:"startAt" query:"startAt" long:"startAt" msg:"startAt"`
+	EndAt           int64       `json:"endAt" form:"endAt" query:"endAt" long:"endAt" msg:"endAt"`
+	ProductId       uint64      `json:"productId,string" form:"productId" query:"productId" long:"productId" msg:"productId"`
+	ProductCount    uint64      `json:"productCount" form:"productCount" query:"productCount" long:"productCount" msg:"productCount"`
+	FreeProductId   uint64      `json:"freeProductId,string" form:"freeProductId" query:"freeProductId" long:"freeProductId" msg:"freeProductId"`
+	DiscountCount   uint64      `json:"discountCount" form:"discountCount" query:"discountCount" long:"discountCount" msg:"discountCount"`
+	DiscountPercent float64     `json:"discountPercent" form:"discountPercent" query:"discountPercent" long:"discountPercent" msg:"discountPercent"`
 }
 
 func NewPromos(adapter *Tt.Adapter) *Promos {

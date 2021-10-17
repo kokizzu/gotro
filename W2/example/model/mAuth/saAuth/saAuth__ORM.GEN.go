@@ -32,14 +32,14 @@ var Preparators = map[Ch.TableName]chBuffer.Preparator{
 }
 
 type UserLogs struct {
-	Adapter   *Ch.Adapter `json:"-" msg:"-" query:"-" form:"-"`
-	CreatedAt time.Time
-	RequestId uint64
-	ActorId   uint64
-	Error     string
-	IpAddr4   string
-	IpAddr6   string
-	UserAgent string
+	Adapter   *Ch.Adapter `json:"-" msg:"-" query:"-" form:"-" long:"adapter"`
+	CreatedAt time.Time   `json:"createdAt" form:"createdAt" query:"createdAt" long:"createdAt" msg:"createdAt"`
+	RequestId uint64      `json:"requestId,string" form:"requestId" query:"requestId" long:"requestId" msg:"requestId"`
+	ActorId   uint64      `json:"actorId,string" form:"actorId" query:"actorId" long:"actorId" msg:"actorId"`
+	Error     string      `json:"error" form:"error" query:"error" long:"error" msg:"error"`
+	IpAddr4   string      `json:"ipAddr4" form:"ipAddr4" query:"ipAddr4" long:"ipAddr4" msg:"ipAddr4"`
+	IpAddr6   string      `json:"ipAddr6" form:"ipAddr6" query:"ipAddr6" long:"ipAddr6" msg:"ipAddr6"`
+	UserAgent string      `json:"userAgent" form:"userAgent" query:"userAgent" long:"userAgent" msg:"userAgent"`
 }
 
 func NewUserLogs(adapter *Ch.Adapter) *UserLogs {
