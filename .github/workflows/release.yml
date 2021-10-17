@@ -24,12 +24,13 @@ jobs:
       - name: Run tests
         run: |
           cd W2/example && go test ./...
-      - uses: wangyoucao577/go-release-action@v1.16
+      - name: create release
+        uses: wangyoucao577/go-release-action@v1.20
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           goos: ${{ matrix.goos }}
           goarch: ${{ matrix.goarch }}
           project_path: "./W2/example"
           binary_name: "example.exe"
-          ldflags: "-s -w"
+          #ldflags: "-s -w"
           extra_files: README.md
