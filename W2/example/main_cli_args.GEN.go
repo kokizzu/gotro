@@ -19,6 +19,9 @@ func cliArgsRunner(args []string) {
 	)
 
 	patterns := map[string]map[string]int{
+		domain.StoreCartItemsAdd_Url:  {},
+		domain.StoreInvoice_Url:       {},
+		domain.StoreProducts_Url:      {},
 		domain.UserChangeEmail_Url:    {},
 		domain.UserChangePassword_Url: {},
 		domain.UserConfirmEmail_Url:   {},
@@ -32,6 +35,27 @@ func cliArgsRunner(args []string) {
 		domain.XXX_Url:                {},
 	}
 	switch pattern := cliUrlPattern(args[0], patterns); pattern {
+
+	case domain.StoreCartItemsAdd_Url:
+		in := domain.StoreCartItemsAdd_In{}
+		in.FromCli(os.Stdin, tracerCtx)
+		out := vdomain.StoreCartItemsAdd(&in)
+		out.ToCli(os.Stdout)
+		in.ToCli(os.Stdout, &out)
+
+	case domain.StoreInvoice_Url:
+		in := domain.StoreInvoice_In{}
+		in.FromCli(os.Stdin, tracerCtx)
+		out := vdomain.StoreInvoice(&in)
+		out.ToCli(os.Stdout)
+		in.ToCli(os.Stdout, &out)
+
+	case domain.StoreProducts_Url:
+		in := domain.StoreProducts_In{}
+		in.FromCli(os.Stdin, tracerCtx)
+		out := vdomain.StoreProducts(&in)
+		out.ToCli(os.Stdout)
+		in.ToCli(os.Stdout, &out)
 
 	case domain.UserChangeEmail_Url:
 		in := domain.UserChangeEmail_In{}

@@ -1142,24 +1142,18 @@ var graphqlType` + methodName + `Out = graphql.NewObject(graphql.ObjectConfig{
 
 		// response common
 		tBuf.WriteString(`
-		"debug": &graphql.Field{
-			Type: graphql.String,
-		},
-		"StatusCode": &graphql.Field{
-			Type: graphql.Int,
-		},
-		"error": &graphql.Field{
-			Type: graphql.String,
-		},
-		"SessionToken": &graphql.Field{
-			Type: graphql.String,
+		"ResponseCommon": &graphql.Field{
+			Type: graphqlTypeResponseCommon,
 		},`)
 
 		// other custom fields
 		outs := r.outputFieldsByMethod[methodName]
 		for _, out := range outs {
+			if out.Name == `sessionToken` {
+				continue
+			}
 			tBuf.WriteString(`
-		` + S.BT(out.Name) + `: &graphql.Field{
+		` + S.BT(lowerFirstLetter(out.Name)) + `: &graphql.Field{
 			Type: ` + r.graphqlType(&out, imports, types) + `
 		},`)
 		}
@@ -1174,11 +1168,14 @@ var graphqlType` + methodName + `Out = graphql.NewObject(graphql.ObjectConfig{
 				Type: graphqlType` + methodName + `Out,
 				Args: graphql.FieldConfigArgument{`)
 
+		toBuf.WriteString(`
+					` + S.BT(`debug`) + `: &graphql.ArgumentConfig{
+						Type: graphql.Boolean,
+					},`)
 		ins := r.inputFieldsByMethod[methodName]
-
 		for _, in := range ins {
 			toBuf.WriteString(`
-					` + S.BT(in.Name) + `: &graphql.ArgumentConfig{
+					` + S.BT(S.LowerFirst(in.Name)) + `: &graphql.ArgumentConfig{
 						Type: ` + r.graphqlType(&in, imports, types) + `
 					},`)
 		}
@@ -1196,11 +1193,16 @@ var graphqlType` + methodName + `Out = graphql.NewObject(graphql.ObjectConfig{
 					rc := p.Context.Value(RequestCommonKey).(*domain.RequestCommon)
 					in := domain.` + methodName + `_In{RequestCommon: *rc}
 					err = mapstructure.Decode(p.Args, &in)
-					res = d.` + methodName + `(&in)
-					if rc.Debug {
-						L.Describe(res)
+					out := d.` + methodName + `(&in)
+					err = graphqlWrapError(err, out.Error)
+					if in.Debug {
+						backup := in.TracerContext
+						in.TracerContext = nil
+						out.Debug = X.ToJson(in)
+						in.TracerContext = backup
 					}
-					L.Describe(res)
+					res = out
+					//L.Describe(res)
 					return
 				},
 			},`)

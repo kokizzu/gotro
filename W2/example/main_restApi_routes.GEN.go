@@ -17,6 +17,51 @@ func webApiInitRoutes(app *fiber.App) *domain.Domain {
 		vdomain = domain.NewDomain()
 	)
 
+	app.All(conf.API_PREFIX+domain.StoreCartItemsAdd_Url, func(ctx *fiber.Ctx) error {
+		url := domain.StoreCartItemsAdd_Url
+		tracerCtx, span := conf.T.Start(ctx.Context(), url, trace.WithSpanKind(trace.SpanKindServer))
+		defer span.End()
+
+		in := domain.StoreCartItemsAdd_In{}
+		if err := webApiParseInput(ctx, &in.RequestCommon, &in, url); err != nil {
+			return err
+		}
+		in.FromFiberCtx(ctx, tracerCtx)
+		out := vdomain.StoreCartItemsAdd(&in)
+		out.ToFiberCtx(ctx, &in.RequestCommon, &in)
+		return in.ToFiberCtx(ctx, out)
+	})
+
+	app.All(conf.API_PREFIX+domain.StoreInvoice_Url, func(ctx *fiber.Ctx) error {
+		url := domain.StoreInvoice_Url
+		tracerCtx, span := conf.T.Start(ctx.Context(), url, trace.WithSpanKind(trace.SpanKindServer))
+		defer span.End()
+
+		in := domain.StoreInvoice_In{}
+		if err := webApiParseInput(ctx, &in.RequestCommon, &in, url); err != nil {
+			return err
+		}
+		in.FromFiberCtx(ctx, tracerCtx)
+		out := vdomain.StoreInvoice(&in)
+		out.ToFiberCtx(ctx, &in.RequestCommon, &in)
+		return in.ToFiberCtx(ctx, out)
+	})
+
+	app.All(conf.API_PREFIX+domain.StoreProducts_Url, func(ctx *fiber.Ctx) error {
+		url := domain.StoreProducts_Url
+		tracerCtx, span := conf.T.Start(ctx.Context(), url, trace.WithSpanKind(trace.SpanKindServer))
+		defer span.End()
+
+		in := domain.StoreProducts_In{}
+		if err := webApiParseInput(ctx, &in.RequestCommon, &in, url); err != nil {
+			return err
+		}
+		in.FromFiberCtx(ctx, tracerCtx)
+		out := vdomain.StoreProducts(&in)
+		out.ToFiberCtx(ctx, &in.RequestCommon, &in)
+		return in.ToFiberCtx(ctx, out)
+	})
+
 	app.All(conf.API_PREFIX+domain.UserChangeEmail_Url, func(ctx *fiber.Ctx) error {
 		url := domain.UserChangeEmail_Url
 		tracerCtx, span := conf.T.Start(ctx.Context(), url, trace.WithSpanKind(trace.SpanKindServer))

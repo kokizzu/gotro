@@ -4,9 +4,9 @@ import (
 	"context"
 	"github.com/gofiber/fiber/v2"
 	"github.com/graphql-go/graphql"
-	"github.com/kokizzu/gotro/L"
 	"github.com/kokizzu/gotro/W2/example/conf"
 	"github.com/kokizzu/gotro/W2/example/domain"
+	"github.com/pkg/errors"
 	"go.opentelemetry.io/otel/trace"
 	"net/http"
 )
@@ -14,7 +14,6 @@ import (
 type Inputs struct {
 	OperationName string                 `json:"operationName" form:"operationName" query:"operationName"`
 	Query         string                 `json:"query" form:"query" query:"query"`
-	Mutation      string                 `json:"mutation" form:"mutation" query:"mutation"`
 	Variables     map[string]interface{} `json:"variables" form:"variables" query:"variables"`
 }
 
@@ -27,8 +26,36 @@ type GraphqlRequest struct {
 
 type GraphqlResponse struct {
 	domain.ResponseCommon
-	Inputs
 	*graphql.Result
+}
+
+var graphqlTypeResponseCommon = graphql.NewObject(graphql.ObjectConfig{
+	Name: `ResponseCommon`,
+	Fields: graphql.Fields{
+		"debug": &graphql.Field{
+			Type: graphql.String,
+		},
+		"statusCode": &graphql.Field{
+			Type: graphql.Int,
+		},
+		"error": &graphql.Field{
+			Type: graphql.String,
+		},
+		"sessionToken": &graphql.Field{
+			Type: graphql.String,
+		},
+	},
+})
+
+func graphqlWrapError(err error, newErr string) error {
+	if newErr != "" {
+		if err != nil {
+			return errors.Wrap(err, newErr)
+		} else {
+			return errors.New(newErr)
+		}
+	}
+	return nil
 }
 
 func webApiInitGraphql(app *fiber.App, d *domain.Domain) {
@@ -58,12 +85,12 @@ func webApiInitGraphql(app *fiber.App, d *domain.Domain) {
 			OperationName:  in.OperationName,
 			VariableValues: in.Variables,
 		}
-		out.Result = graphql.Do(params)
-		L.Describe(out)
+		res := graphql.Do(params)
+		out.Result = res
+		//L.Describe(in)
 		out.ToFiberCtx(ctx, &in.RequestCommon, &in)
-		out.Inputs = in.Inputs
-		L.Describe(out)
-		err := ctx.JSON(out)
+		// ^ only for setting session and print debug, the rest has no impact
+		err := ctx.JSON(res)
 		return err
 	})
 }
@@ -93,7 +120,7 @@ const graphqlTemplate = `<!DOCTYPE html>
 		<script src="https://unpkg.com/graphiql/graphiql.min.js"	type="application/javascript"></script>
 		<script>
 			var fetcher = GraphiQL.createFetcher({
-				url: '/graphql',
+				url: '/graphql?debug=true'
 			});
 			ReactDOM.render(
 				React.createElement(GraphiQL, {

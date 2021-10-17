@@ -7,6 +7,7 @@ import (
 	"github.com/kokizzu/gotro/L"
 	"github.com/kokizzu/gotro/W2/example/domain"
 	"github.com/kokizzu/gotro/W2/example/model/mAuth/rqAuth"
+	"github.com/kokizzu/gotro/W2/example/model/mStore/rqStore"
 	"github.com/kokizzu/gotro/X"
 	"github.com/mitchellh/mapstructure"
 	"github.com/pkg/errors"
@@ -19,13 +20,53 @@ func initGraphqlSchemaResolver(d *domain.Domain) graphql.Schema {
 	var graphqlQueries = graphql.NewObject(graphql.ObjectConfig{
 		Name: "query",
 		Fields: graphql.Fields{
+			`StoreProducts`: &graphql.Field{
+				Type: graphqlTypeStoreProductsOut,
+				Args: graphql.FieldConfigArgument{
+					`debug`: &graphql.ArgumentConfig{
+						Type: graphql.Boolean,
+					},
+					`limit`: &graphql.ArgumentConfig{
+						Type: graphql.Int, // uint32
+					},
+					`offset`: &graphql.ArgumentConfig{
+						Type: graphql.Int, // uint32
+					},
+				}, // StoreProductsIn
+				Resolve: func(p graphql.ResolveParams) (res interface{}, err error) {
+					defer func() {
+						rErr := recover()
+						if rErr != nil {
+							L.Describe(rErr)
+							err = errors.Wrap(err, X.ToS(rErr))
+						}
+					}()
+					rc := p.Context.Value(RequestCommonKey).(*domain.RequestCommon)
+					in := domain.StoreProducts_In{RequestCommon: *rc}
+					err = mapstructure.Decode(p.Args, &in)
+					out := d.StoreProducts(&in)
+					err = graphqlWrapError(err, out.Error)
+					if in.Debug {
+						backup := in.TracerContext
+						in.TracerContext = nil
+						out.Debug = X.ToJson(in)
+						in.TracerContext = backup
+					}
+					res = out
+					//L.Describe(res)
+					return
+				},
+			},
 			`UserList`: &graphql.Field{
 				Type: graphqlTypeUserListOut,
 				Args: graphql.FieldConfigArgument{
-					`Limit`: &graphql.ArgumentConfig{
+					`debug`: &graphql.ArgumentConfig{
+						Type: graphql.Boolean,
+					},
+					`limit`: &graphql.ArgumentConfig{
 						Type: graphql.Int, // uint32
 					},
-					`Offset`: &graphql.ArgumentConfig{
+					`offset`: &graphql.ArgumentConfig{
 						Type: graphql.Int, // uint32
 					},
 				}, // UserListIn
@@ -40,17 +81,25 @@ func initGraphqlSchemaResolver(d *domain.Domain) graphql.Schema {
 					rc := p.Context.Value(RequestCommonKey).(*domain.RequestCommon)
 					in := domain.UserList_In{RequestCommon: *rc}
 					err = mapstructure.Decode(p.Args, &in)
-					res = d.UserList(&in)
-					if rc.Debug {
-						L.Describe(res)
+					out := d.UserList(&in)
+					err = graphqlWrapError(err, out.Error)
+					if in.Debug {
+						backup := in.TracerContext
+						in.TracerContext = nil
+						out.Debug = X.ToJson(in)
+						in.TracerContext = backup
 					}
-					L.Describe(res)
+					res = out
+					//L.Describe(res)
 					return
 				},
 			},
 			`UserProfile`: &graphql.Field{
 				Type: graphqlTypeUserProfileOut,
 				Args: graphql.FieldConfigArgument{
+					`debug`: &graphql.ArgumentConfig{
+						Type: graphql.Boolean,
+					},
 					`sessionToken`: &graphql.ArgumentConfig{
 						Type: graphql.String, // string
 					},
@@ -66,11 +115,16 @@ func initGraphqlSchemaResolver(d *domain.Domain) graphql.Schema {
 					rc := p.Context.Value(RequestCommonKey).(*domain.RequestCommon)
 					in := domain.UserProfile_In{RequestCommon: *rc}
 					err = mapstructure.Decode(p.Args, &in)
-					res = d.UserProfile(&in)
-					if rc.Debug {
-						L.Describe(res)
+					out := d.UserProfile(&in)
+					err = graphqlWrapError(err, out.Error)
+					if in.Debug {
+						backup := in.TracerContext
+						in.TracerContext = nil
+						out.Debug = X.ToJson(in)
+						in.TracerContext = backup
 					}
-					L.Describe(res)
+					res = out
+					//L.Describe(res)
 					return
 				},
 			},
@@ -80,9 +134,81 @@ func initGraphqlSchemaResolver(d *domain.Domain) graphql.Schema {
 	var graphqlMutations = graphql.NewObject(graphql.ObjectConfig{
 		Name: "Mutation",
 		Fields: graphql.Fields{
+			`StoreCartItemsAdd`: &graphql.Field{
+				Type: graphqlTypeStoreCartItemsAddOut,
+				Args: graphql.FieldConfigArgument{
+					`debug`: &graphql.ArgumentConfig{
+						Type: graphql.Boolean,
+					},
+					`productId`: &graphql.ArgumentConfig{
+						Type: graphql.Int, // uint64
+					},
+					`productQty`: &graphql.ArgumentConfig{
+						Type: graphql.Int, // int64
+					},
+				}, // StoreCartItemsAddIn
+				Resolve: func(p graphql.ResolveParams) (res interface{}, err error) {
+					defer func() {
+						rErr := recover()
+						if rErr != nil {
+							L.Describe(rErr)
+							err = errors.Wrap(err, X.ToS(rErr))
+						}
+					}()
+					rc := p.Context.Value(RequestCommonKey).(*domain.RequestCommon)
+					in := domain.StoreCartItemsAdd_In{RequestCommon: *rc}
+					err = mapstructure.Decode(p.Args, &in)
+					out := d.StoreCartItemsAdd(&in)
+					err = graphqlWrapError(err, out.Error)
+					if in.Debug {
+						backup := in.TracerContext
+						in.TracerContext = nil
+						out.Debug = X.ToJson(in)
+						in.TracerContext = backup
+					}
+					res = out
+					//L.Describe(res)
+					return
+				},
+			},
+			`StoreInvoice`: &graphql.Field{
+				Type: graphqlTypeStoreInvoiceOut,
+				Args: graphql.FieldConfigArgument{
+					`debug`: &graphql.ArgumentConfig{
+						Type: graphql.Boolean,
+					},
+				}, // StoreInvoiceIn
+				Resolve: func(p graphql.ResolveParams) (res interface{}, err error) {
+					defer func() {
+						rErr := recover()
+						if rErr != nil {
+							L.Describe(rErr)
+							err = errors.Wrap(err, X.ToS(rErr))
+						}
+					}()
+					rc := p.Context.Value(RequestCommonKey).(*domain.RequestCommon)
+					in := domain.StoreInvoice_In{RequestCommon: *rc}
+					err = mapstructure.Decode(p.Args, &in)
+					out := d.StoreInvoice(&in)
+					err = graphqlWrapError(err, out.Error)
+					if in.Debug {
+						backup := in.TracerContext
+						in.TracerContext = nil
+						out.Debug = X.ToJson(in)
+						in.TracerContext = backup
+					}
+					res = out
+					//L.Describe(res)
+					return
+				},
+			},
 			`UserChangeEmail`: &graphql.Field{
 				Type: graphqlTypeUserChangeEmailOut,
-				Args: graphql.FieldConfigArgument{}, // UserChangeEmailIn
+				Args: graphql.FieldConfigArgument{
+					`debug`: &graphql.ArgumentConfig{
+						Type: graphql.Boolean,
+					},
+				}, // UserChangeEmailIn
 				Resolve: func(p graphql.ResolveParams) (res interface{}, err error) {
 					defer func() {
 						rErr := recover()
@@ -94,21 +220,29 @@ func initGraphqlSchemaResolver(d *domain.Domain) graphql.Schema {
 					rc := p.Context.Value(RequestCommonKey).(*domain.RequestCommon)
 					in := domain.UserChangeEmail_In{RequestCommon: *rc}
 					err = mapstructure.Decode(p.Args, &in)
-					res = d.UserChangeEmail(&in)
-					if rc.Debug {
-						L.Describe(res)
+					out := d.UserChangeEmail(&in)
+					err = graphqlWrapError(err, out.Error)
+					if in.Debug {
+						backup := in.TracerContext
+						in.TracerContext = nil
+						out.Debug = X.ToJson(in)
+						in.TracerContext = backup
 					}
-					L.Describe(res)
+					res = out
+					//L.Describe(res)
 					return
 				},
 			},
 			`UserChangePassword`: &graphql.Field{
 				Type: graphqlTypeUserChangePasswordOut,
 				Args: graphql.FieldConfigArgument{
-					`Password`: &graphql.ArgumentConfig{
+					`debug`: &graphql.ArgumentConfig{
+						Type: graphql.Boolean,
+					},
+					`password`: &graphql.ArgumentConfig{
 						Type: graphql.String, // string
 					},
-					`NewPassword`: &graphql.ArgumentConfig{
+					`newPassword`: &graphql.ArgumentConfig{
 						Type: graphql.String, // string
 					},
 					`sessionToken`: &graphql.ArgumentConfig{
@@ -126,17 +260,26 @@ func initGraphqlSchemaResolver(d *domain.Domain) graphql.Schema {
 					rc := p.Context.Value(RequestCommonKey).(*domain.RequestCommon)
 					in := domain.UserChangePassword_In{RequestCommon: *rc}
 					err = mapstructure.Decode(p.Args, &in)
-					res = d.UserChangePassword(&in)
-					if rc.Debug {
-						L.Describe(res)
+					out := d.UserChangePassword(&in)
+					err = graphqlWrapError(err, out.Error)
+					if in.Debug {
+						backup := in.TracerContext
+						in.TracerContext = nil
+						out.Debug = X.ToJson(in)
+						in.TracerContext = backup
 					}
-					L.Describe(res)
+					res = out
+					//L.Describe(res)
 					return
 				},
 			},
 			`UserConfirmEmail`: &graphql.Field{
 				Type: graphqlTypeUserConfirmEmailOut,
-				Args: graphql.FieldConfigArgument{}, // UserConfirmEmailIn
+				Args: graphql.FieldConfigArgument{
+					`debug`: &graphql.ArgumentConfig{
+						Type: graphql.Boolean,
+					},
+				}, // UserConfirmEmailIn
 				Resolve: func(p graphql.ResolveParams) (res interface{}, err error) {
 					defer func() {
 						rErr := recover()
@@ -148,21 +291,29 @@ func initGraphqlSchemaResolver(d *domain.Domain) graphql.Schema {
 					rc := p.Context.Value(RequestCommonKey).(*domain.RequestCommon)
 					in := domain.UserConfirmEmail_In{RequestCommon: *rc}
 					err = mapstructure.Decode(p.Args, &in)
-					res = d.UserConfirmEmail(&in)
-					if rc.Debug {
-						L.Describe(res)
+					out := d.UserConfirmEmail(&in)
+					err = graphqlWrapError(err, out.Error)
+					if in.Debug {
+						backup := in.TracerContext
+						in.TracerContext = nil
+						out.Debug = X.ToJson(in)
+						in.TracerContext = backup
 					}
-					L.Describe(res)
+					res = out
+					//L.Describe(res)
 					return
 				},
 			},
 			`UserForgotPassword`: &graphql.Field{
 				Type: graphqlTypeUserForgotPasswordOut,
 				Args: graphql.FieldConfigArgument{
-					`Email`: &graphql.ArgumentConfig{
+					`debug`: &graphql.ArgumentConfig{
+						Type: graphql.Boolean,
+					},
+					`email`: &graphql.ArgumentConfig{
 						Type: graphql.String, // string
 					},
-					`ChangePassCallback`: &graphql.ArgumentConfig{
+					`changePassCallback`: &graphql.ArgumentConfig{
 						Type: graphql.String, // string
 					},
 				}, // UserForgotPasswordIn
@@ -177,21 +328,29 @@ func initGraphqlSchemaResolver(d *domain.Domain) graphql.Schema {
 					rc := p.Context.Value(RequestCommonKey).(*domain.RequestCommon)
 					in := domain.UserForgotPassword_In{RequestCommon: *rc}
 					err = mapstructure.Decode(p.Args, &in)
-					res = d.UserForgotPassword(&in)
-					if rc.Debug {
-						L.Describe(res)
+					out := d.UserForgotPassword(&in)
+					err = graphqlWrapError(err, out.Error)
+					if in.Debug {
+						backup := in.TracerContext
+						in.TracerContext = nil
+						out.Debug = X.ToJson(in)
+						in.TracerContext = backup
 					}
-					L.Describe(res)
+					res = out
+					//L.Describe(res)
 					return
 				},
 			},
 			`UserLogin`: &graphql.Field{
 				Type: graphqlTypeUserLoginOut,
 				Args: graphql.FieldConfigArgument{
-					`Email`: &graphql.ArgumentConfig{
+					`debug`: &graphql.ArgumentConfig{
+						Type: graphql.Boolean,
+					},
+					`email`: &graphql.ArgumentConfig{
 						Type: graphql.String, // string
 					},
-					`Password`: &graphql.ArgumentConfig{
+					`password`: &graphql.ArgumentConfig{
 						Type: graphql.String, // string
 					},
 				}, // UserLoginIn
@@ -206,17 +365,26 @@ func initGraphqlSchemaResolver(d *domain.Domain) graphql.Schema {
 					rc := p.Context.Value(RequestCommonKey).(*domain.RequestCommon)
 					in := domain.UserLogin_In{RequestCommon: *rc}
 					err = mapstructure.Decode(p.Args, &in)
-					res = d.UserLogin(&in)
-					if rc.Debug {
-						L.Describe(res)
+					out := d.UserLogin(&in)
+					err = graphqlWrapError(err, out.Error)
+					if in.Debug {
+						backup := in.TracerContext
+						in.TracerContext = nil
+						out.Debug = X.ToJson(in)
+						in.TracerContext = backup
 					}
-					L.Describe(res)
+					res = out
+					//L.Describe(res)
 					return
 				},
 			},
 			`UserLogout`: &graphql.Field{
 				Type: graphqlTypeUserLogoutOut,
-				Args: graphql.FieldConfigArgument{}, // UserLogoutIn
+				Args: graphql.FieldConfigArgument{
+					`debug`: &graphql.ArgumentConfig{
+						Type: graphql.Boolean,
+					},
+				}, // UserLogoutIn
 				Resolve: func(p graphql.ResolveParams) (res interface{}, err error) {
 					defer func() {
 						rErr := recover()
@@ -228,24 +396,32 @@ func initGraphqlSchemaResolver(d *domain.Domain) graphql.Schema {
 					rc := p.Context.Value(RequestCommonKey).(*domain.RequestCommon)
 					in := domain.UserLogout_In{RequestCommon: *rc}
 					err = mapstructure.Decode(p.Args, &in)
-					res = d.UserLogout(&in)
-					if rc.Debug {
-						L.Describe(res)
+					out := d.UserLogout(&in)
+					err = graphqlWrapError(err, out.Error)
+					if in.Debug {
+						backup := in.TracerContext
+						in.TracerContext = nil
+						out.Debug = X.ToJson(in)
+						in.TracerContext = backup
 					}
-					L.Describe(res)
+					res = out
+					//L.Describe(res)
 					return
 				},
 			},
 			`UserRegister`: &graphql.Field{
 				Type: graphqlTypeUserRegisterOut,
 				Args: graphql.FieldConfigArgument{
-					`UserName`: &graphql.ArgumentConfig{
+					`debug`: &graphql.ArgumentConfig{
+						Type: graphql.Boolean,
+					},
+					`userName`: &graphql.ArgumentConfig{
 						Type: graphql.String, // string
 					},
-					`Email`: &graphql.ArgumentConfig{
+					`email`: &graphql.ArgumentConfig{
 						Type: graphql.String, // string
 					},
-					`Password`: &graphql.ArgumentConfig{
+					`password`: &graphql.ArgumentConfig{
 						Type: graphql.String, // string
 					},
 				}, // UserRegisterIn
@@ -260,24 +436,32 @@ func initGraphqlSchemaResolver(d *domain.Domain) graphql.Schema {
 					rc := p.Context.Value(RequestCommonKey).(*domain.RequestCommon)
 					in := domain.UserRegister_In{RequestCommon: *rc}
 					err = mapstructure.Decode(p.Args, &in)
-					res = d.UserRegister(&in)
-					if rc.Debug {
-						L.Describe(res)
+					out := d.UserRegister(&in)
+					err = graphqlWrapError(err, out.Error)
+					if in.Debug {
+						backup := in.TracerContext
+						in.TracerContext = nil
+						out.Debug = X.ToJson(in)
+						in.TracerContext = backup
 					}
-					L.Describe(res)
+					res = out
+					//L.Describe(res)
 					return
 				},
 			},
 			`UserResetPassword`: &graphql.Field{
 				Type: graphqlTypeUserResetPasswordOut,
 				Args: graphql.FieldConfigArgument{
-					`Password`: &graphql.ArgumentConfig{
+					`debug`: &graphql.ArgumentConfig{
+						Type: graphql.Boolean,
+					},
+					`password`: &graphql.ArgumentConfig{
 						Type: graphql.String, // string
 					},
-					`SecretCode`: &graphql.ArgumentConfig{
+					`secretCode`: &graphql.ArgumentConfig{
 						Type: graphql.String, // string
 					},
-					`Hash`: &graphql.ArgumentConfig{
+					`hash`: &graphql.ArgumentConfig{
 						Type: graphql.String, // string
 					},
 				}, // UserResetPasswordIn
@@ -292,11 +476,16 @@ func initGraphqlSchemaResolver(d *domain.Domain) graphql.Schema {
 					rc := p.Context.Value(RequestCommonKey).(*domain.RequestCommon)
 					in := domain.UserResetPassword_In{RequestCommon: *rc}
 					err = mapstructure.Decode(p.Args, &in)
-					res = d.UserResetPassword(&in)
-					if rc.Debug {
-						L.Describe(res)
+					out := d.UserResetPassword(&in)
+					err = graphqlWrapError(err, out.Error)
+					if in.Debug {
+						backup := in.TracerContext
+						in.TracerContext = nil
+						out.Debug = X.ToJson(in)
+						in.TracerContext = backup
 					}
-					L.Describe(res)
+					res = out
+					//L.Describe(res)
 					return
 				},
 			},
@@ -314,6 +503,9 @@ func initGraphqlSchemaResolver(d *domain.Domain) graphql.Schema {
 }
 
 var graphqlTypes = []graphql.Type{
+	graphqlTypeStoreCartItemsAddOut,
+	graphqlTypeStoreInvoiceOut,
+	graphqlTypeStoreProductsOut,
 	graphqlTypeUserChangeEmailOut,
 	graphqlTypeUserChangePasswordOut,
 	graphqlTypeUserConfirmEmailOut,
@@ -328,39 +520,66 @@ var graphqlTypes = []graphql.Type{
 
 // WARNING: DO NOT edit this file, it would be overwritten by domain/0_generator_test.go
 
+var graphqlTypeStoreCartItemsAddOut = graphql.NewObject(graphql.ObjectConfig{
+	Name: `StoreCartItemsAddOut`,
+	Fields: graphql.Fields{
+		"ResponseCommon": &graphql.Field{
+			Type: graphqlTypeResponseCommon,
+		},
+		`cartItems`: &graphql.Field{
+			Type: graphql.NewList(rqStore.GraphqlTypeCartItems), //  []rqStore.CartItems
+		},
+	},
+})
+var graphqlTypeStoreInvoiceOut = graphql.NewObject(graphql.ObjectConfig{
+	Name: `StoreInvoiceOut`,
+	Fields: graphql.Fields{
+		"ResponseCommon": &graphql.Field{
+			Type: graphqlTypeResponseCommon,
+		},
+		`cartItems`: &graphql.Field{
+			Type: graphql.NewList(rqStore.GraphqlTypeCartItems), //  []rqStore.CartItems
+		},
+		`invoice`: &graphql.Field{
+			Type: rqStore.GraphqlTypeInvoices, // rqStore.Invoices
+		},
+	},
+})
+var graphqlTypeStoreProductsOut = graphql.NewObject(graphql.ObjectConfig{
+	Name: `StoreProductsOut`,
+	Fields: graphql.Fields{
+		"ResponseCommon": &graphql.Field{
+			Type: graphqlTypeResponseCommon,
+		},
+		`limit`: &graphql.Field{
+			Type: graphql.Int, // uint32
+		},
+		`offset`: &graphql.Field{
+			Type: graphql.Int, // uint32
+		},
+		`total`: &graphql.Field{
+			Type: graphql.Int, // uint32
+		},
+		`products`: &graphql.Field{
+			Type: graphql.NewList(rqStore.GraphqlTypeProducts), //  []rqStore.Products
+		},
+	},
+})
 var graphqlTypeUserChangeEmailOut = graphql.NewObject(graphql.ObjectConfig{
 	Name: `UserChangeEmailOut`,
 	Fields: graphql.Fields{
-		"debug": &graphql.Field{
-			Type: graphql.String,
-		},
-		"StatusCode": &graphql.Field{
-			Type: graphql.Int,
-		},
-		"error": &graphql.Field{
-			Type: graphql.String,
-		},
-		"SessionToken": &graphql.Field{
-			Type: graphql.String,
+		"ResponseCommon": &graphql.Field{
+			Type: graphqlTypeResponseCommon,
 		},
 	},
 })
 var graphqlTypeUserChangePasswordOut = graphql.NewObject(graphql.ObjectConfig{
 	Name: `UserChangePasswordOut`,
 	Fields: graphql.Fields{
-		"debug": &graphql.Field{
-			Type: graphql.String,
+		"ResponseCommon": &graphql.Field{
+			Type: graphqlTypeResponseCommon,
 		},
-		"StatusCode": &graphql.Field{
-			Type: graphql.Int,
-		},
-		"error": &graphql.Field{
-			Type: graphql.String,
-		},
-		"SessionToken": &graphql.Field{
-			Type: graphql.String,
-		},
-		`UpdatedAt`: &graphql.Field{
+		`updatedAt`: &graphql.Field{
 			Type: graphql.Int, // int64
 		},
 	},
@@ -368,36 +587,18 @@ var graphqlTypeUserChangePasswordOut = graphql.NewObject(graphql.ObjectConfig{
 var graphqlTypeUserConfirmEmailOut = graphql.NewObject(graphql.ObjectConfig{
 	Name: `UserConfirmEmailOut`,
 	Fields: graphql.Fields{
-		"debug": &graphql.Field{
-			Type: graphql.String,
-		},
-		"StatusCode": &graphql.Field{
-			Type: graphql.Int,
-		},
-		"error": &graphql.Field{
-			Type: graphql.String,
-		},
-		"SessionToken": &graphql.Field{
-			Type: graphql.String,
+		"ResponseCommon": &graphql.Field{
+			Type: graphqlTypeResponseCommon,
 		},
 	},
 })
 var graphqlTypeUserForgotPasswordOut = graphql.NewObject(graphql.ObjectConfig{
 	Name: `UserForgotPasswordOut`,
 	Fields: graphql.Fields{
-		"debug": &graphql.Field{
-			Type: graphql.String,
+		"ResponseCommon": &graphql.Field{
+			Type: graphqlTypeResponseCommon,
 		},
-		"StatusCode": &graphql.Field{
-			Type: graphql.Int,
-		},
-		"error": &graphql.Field{
-			Type: graphql.String,
-		},
-		"SessionToken": &graphql.Field{
-			Type: graphql.String,
-		},
-		`Ok`: &graphql.Field{
+		`ok`: &graphql.Field{
 			Type: graphql.Boolean, // bool
 		},
 	},
@@ -405,28 +606,19 @@ var graphqlTypeUserForgotPasswordOut = graphql.NewObject(graphql.ObjectConfig{
 var graphqlTypeUserListOut = graphql.NewObject(graphql.ObjectConfig{
 	Name: `UserListOut`,
 	Fields: graphql.Fields{
-		"debug": &graphql.Field{
-			Type: graphql.String,
+		"ResponseCommon": &graphql.Field{
+			Type: graphqlTypeResponseCommon,
 		},
-		"StatusCode": &graphql.Field{
-			Type: graphql.Int,
-		},
-		"error": &graphql.Field{
-			Type: graphql.String,
-		},
-		"SessionToken": &graphql.Field{
-			Type: graphql.String,
-		},
-		`Limit`: &graphql.Field{
+		`limit`: &graphql.Field{
 			Type: graphql.Int, // uint32
 		},
-		`Offset`: &graphql.Field{
+		`offset`: &graphql.Field{
 			Type: graphql.Int, // uint32
 		},
-		`Total`: &graphql.Field{
+		`total`: &graphql.Field{
 			Type: graphql.Int, // uint32
 		},
-		`Users`: &graphql.Field{
+		`users`: &graphql.Field{
 			Type: graphql.NewList(rqAuth.GraphqlTypeUsers), //  []rqAuth.Users
 		},
 	},
@@ -434,62 +626,29 @@ var graphqlTypeUserListOut = graphql.NewObject(graphql.ObjectConfig{
 var graphqlTypeUserLoginOut = graphql.NewObject(graphql.ObjectConfig{
 	Name: `UserLoginOut`,
 	Fields: graphql.Fields{
-		"debug": &graphql.Field{
-			Type: graphql.String,
-		},
-		"StatusCode": &graphql.Field{
-			Type: graphql.Int,
-		},
-		"error": &graphql.Field{
-			Type: graphql.String,
-		},
-		"SessionToken": &graphql.Field{
-			Type: graphql.String,
-		},
-		`sessionToken`: &graphql.Field{
-			Type: graphql.String, // string
+		"ResponseCommon": &graphql.Field{
+			Type: graphqlTypeResponseCommon,
 		},
 	},
 })
 var graphqlTypeUserLogoutOut = graphql.NewObject(graphql.ObjectConfig{
 	Name: `UserLogoutOut`,
 	Fields: graphql.Fields{
-		"debug": &graphql.Field{
-			Type: graphql.String,
+		"ResponseCommon": &graphql.Field{
+			Type: graphqlTypeResponseCommon,
 		},
-		"StatusCode": &graphql.Field{
-			Type: graphql.Int,
-		},
-		"error": &graphql.Field{
-			Type: graphql.String,
-		},
-		"SessionToken": &graphql.Field{
-			Type: graphql.String,
-		},
-		`LoggedOut`: &graphql.Field{
+		`loggedOut`: &graphql.Field{
 			Type: graphql.Boolean, // bool
-		},
-		`sessionToken`: &graphql.Field{
-			Type: graphql.String, // string
 		},
 	},
 })
 var graphqlTypeUserProfileOut = graphql.NewObject(graphql.ObjectConfig{
 	Name: `UserProfileOut`,
 	Fields: graphql.Fields{
-		"debug": &graphql.Field{
-			Type: graphql.String,
+		"ResponseCommon": &graphql.Field{
+			Type: graphqlTypeResponseCommon,
 		},
-		"StatusCode": &graphql.Field{
-			Type: graphql.Int,
-		},
-		"error": &graphql.Field{
-			Type: graphql.String,
-		},
-		"SessionToken": &graphql.Field{
-			Type: graphql.String,
-		},
-		`User`: &graphql.Field{
+		`user`: &graphql.Field{
 			Type: rqAuth.GraphqlTypeUsers, // rqAuth.Users
 		},
 	},
@@ -497,22 +656,13 @@ var graphqlTypeUserProfileOut = graphql.NewObject(graphql.ObjectConfig{
 var graphqlTypeUserRegisterOut = graphql.NewObject(graphql.ObjectConfig{
 	Name: `UserRegisterOut`,
 	Fields: graphql.Fields{
-		"debug": &graphql.Field{
-			Type: graphql.String,
+		"ResponseCommon": &graphql.Field{
+			Type: graphqlTypeResponseCommon,
 		},
-		"StatusCode": &graphql.Field{
-			Type: graphql.Int,
-		},
-		"error": &graphql.Field{
-			Type: graphql.String,
-		},
-		"SessionToken": &graphql.Field{
-			Type: graphql.String,
-		},
-		`CreatedAt`: &graphql.Field{
+		`createdAt`: &graphql.Field{
 			Type: graphql.Int, // int64
 		},
-		`UserId`: &graphql.Field{
+		`userId`: &graphql.Field{
 			Type: graphql.Int, // uint64
 		},
 	},
@@ -520,19 +670,10 @@ var graphqlTypeUserRegisterOut = graphql.NewObject(graphql.ObjectConfig{
 var graphqlTypeUserResetPasswordOut = graphql.NewObject(graphql.ObjectConfig{
 	Name: `UserResetPasswordOut`,
 	Fields: graphql.Fields{
-		"debug": &graphql.Field{
-			Type: graphql.String,
+		"ResponseCommon": &graphql.Field{
+			Type: graphqlTypeResponseCommon,
 		},
-		"StatusCode": &graphql.Field{
-			Type: graphql.Int,
-		},
-		"error": &graphql.Field{
-			Type: graphql.String,
-		},
-		"SessionToken": &graphql.Field{
-			Type: graphql.String,
-		},
-		`Ok`: &graphql.Field{
+		`ok`: &graphql.Field{
 			Type: graphql.Boolean, // bool
 		},
 	},

@@ -291,3 +291,20 @@ func (d *Domain) MediaUpload(in *MediaUpload_In) (out MediaUpload_Out) {
 	return
 }
 ```
+
+## Testing GraphQL
+
+After starting `docker-compose up` and `make apiserver`, open [localhost:9090/graphql](//localhost:9090/graphql) and run these query:
+
+```
+mutation _ {
+  UserLogin(email: "root@localhost", password: "test123", debug: true) {
+    ResponseCommon {
+      debug
+      error
+      sessionToken
+      statusCode
+    }
+  }
+}
+```
