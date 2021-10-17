@@ -1107,7 +1107,7 @@ import (`)
 `)
 	cBuf.WriteString(`
 var graphqlQueries = graphql.NewObject(graphql.ObjectConfig{
-	Name: "Query",
+	Name: "query",
 	Fields: graphql.Fields{`)
 
 	wBuf := bytes.Buffer{}
@@ -1129,7 +1129,10 @@ var graphqlQueries = graphql.NewObject(graphql.ObjectConfig{
 		tBuf.WriteString(`
 var graphqlType` + methodName + `Out = graphql.NewObject(graphql.ObjectConfig{
 	Name: ` + S.BT(methodName+`Out`) + `,
-	Fields: graphql.Fields{`)
+	Fields: graphql.Fields{
+		"debug": &graphql.Field{
+			Type: graphql.Boolean,
+		},`) // so it would not be empty
 
 		outs := r.outputFieldsByMethod[methodName]
 		for _, out := range outs {
