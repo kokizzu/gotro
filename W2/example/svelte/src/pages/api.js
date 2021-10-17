@@ -1,6 +1,155 @@
 // can be hit using with /api/[ApiName]
-export const LastUpdatedAt = 1630271387
+export const LastUpdatedAt = 1634497977
 export const APIs = {
+	StoreCartItemsAdd: {
+		in: {
+			productId: 0, // uint64
+			deltaQty: 0, // int64
+			sessionToken: '', //string | user login token
+		}, out: {
+			cartItems: [{
+				id:  '', // uint64
+				createdAt:  0, // int64
+				createdBy:  '', // uint64
+				updatedAt:  0, // int64
+				updatedBy:  '', // uint64
+				deletedAt:  0, // int64
+				deletedBy:  '', // uint64
+				isDeleted:  false, // bool
+				restoredAt:  0, // int64
+				restoredBy:  '', // uint64
+				ownerId:  '', // uint64
+				invoiceId:  '', // uint64
+				productId:  '', // uint64
+				nameCopy:  '', // string
+				priceCopy:  0, // int64
+				qty:  0, // int64
+				discount:  0, // uint64
+				subTotal:  0, // int64
+				info:  '', // string
+			}],
+			total: 0, // uint32
+		}, read: [
+			"Auth.Sessions",
+			"Store.Products",
+		], write: [
+			"Store.CartItems",
+		], stat: [
+		], deps: [
+		], err: [
+			[400, `invalid session token`],
+			[400, `missing session token`],
+			[400, `session missing from database, wrong env?`],
+			[400, `token expired`],
+			[403, `must login`],
+			[403, `session expired or logged out`],
+			[404, `product not found`],
+			[500, `failed add/remove item on cart`],
+			[500, `failed insert to cart`],
+		]
+	},
+	StoreInvoice: {
+		in: {
+			invoiceId: 0, // uint64
+			recalculate: false, // bool
+			doPurchase: false, // bool
+			sessionToken: '', //string | user login token
+		}, out: {
+			cartItems: [{
+				id:  '', // uint64
+				createdAt:  0, // int64
+				createdBy:  '', // uint64
+				updatedAt:  0, // int64
+				updatedBy:  '', // uint64
+				deletedAt:  0, // int64
+				deletedBy:  '', // uint64
+				isDeleted:  false, // bool
+				restoredAt:  0, // int64
+				restoredBy:  '', // uint64
+				ownerId:  '', // uint64
+				invoiceId:  '', // uint64
+				productId:  '', // uint64
+				nameCopy:  '', // string
+				priceCopy:  0, // int64
+				qty:  0, // int64
+				discount:  0, // uint64
+				subTotal:  0, // int64
+				info:  '', // string
+			}],
+			invoice: {
+				id:  '', // uint64
+				createdAt:  0, // int64
+				createdBy:  '', // uint64
+				updatedAt:  0, // int64
+				updatedBy:  '', // uint64
+				deletedAt:  0, // int64
+				deletedBy:  '', // uint64
+				isDeleted:  false, // bool
+				restoredAt:  0, // int64
+				restoredBy:  '', // uint64
+				ownerId:  '', // uint64
+				totalWeight:  0, // uint64
+				totalPrice:  0, // uint64
+				totalDiscount:  0, // uint64
+				deliveryMethod:  0, // uint64
+				deliveryPrice:  0, // uint64
+				totalPaid:  0, // uint64
+				paidAt:  0, // uint64
+				paymentMethod:  0, // uint64
+				deadlineAt:  0, // uint64
+				promoRuleIds:  '', // string
+			},
+		}, read: [
+			"Auth.Sessions",
+			"Store.CartItems",
+			"Store.Products",
+			"Store.Promos",
+		], write: [
+			"Store.CartItems",
+			"Store.Invoices",
+		], stat: [
+		], deps: [
+		], err: [
+			[400, `invalid session token`],
+			[400, `missing session token`],
+			[400, `session missing from database, wrong env?`],
+			[400, `token expired`],
+			[403, `must login`],
+			[403, `session expired or logged out`],
+		]
+	},
+	StoreProducts: {
+		in: {
+			limit: 0, // uint32
+			offset: 0, // uint32
+		}, out: {
+			limit: 0, // uint32
+			offset: 0, // uint32
+			total: 0, // uint32
+			products: [{
+				id:  '', // uint64
+				createdAt:  0, // int64
+				createdBy:  '', // uint64
+				updatedAt:  0, // int64
+				updatedBy:  '', // uint64
+				deletedAt:  0, // int64
+				deletedBy:  '', // uint64
+				isDeleted:  false, // bool
+				restoredAt:  0, // int64
+				restoredBy:  '', // uint64
+				sku:  '', // string
+				name:  '', // string
+				price:  0, // uint64
+				inventoryQty:  0, // uint64
+				weightGram:  0, // uint64
+			}],
+		}, read: [
+			"Store.Products",
+		], write: [
+		], stat: [
+		], deps: [
+		], err: []
+	},
 	UserChangeEmail: {
 		in: {
 		}, out: {
@@ -101,7 +250,6 @@ export const APIs = {
 			email: '', // string
 			password: '', // string
 		}, out: {
-			walletId: '', // string
 			sessionToken: '', //string | login token
 		}, read: [
 			"Auth.Users",
