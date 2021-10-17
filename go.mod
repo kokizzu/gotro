@@ -33,6 +33,7 @@ require (
 	github.com/lib/pq v1.9.0
 	github.com/lightstep/otel-launcher-go v0.20.0
 	github.com/meilisearch/meilisearch-go v0.14.0
+	github.com/mitchellh/mapstructure v1.4.2 // indirect
 	github.com/moby/term v0.0.0-20210619224110-3f7ff695adc6 // indirect
 	github.com/mojura/enkodo v0.5.5
 	github.com/onsi/gomega v1.16.0 // indirect
@@ -40,6 +41,7 @@ require (
 	github.com/opencontainers/runc v1.0.2 // indirect
 	github.com/orcaman/concurrent-map v0.0.0-20210501183033-44dafcb38ecc
 	github.com/ory/dockertest/v3 v3.7.0
+	github.com/pkg/errors v0.9.1 // indirect
 	github.com/rs/zerolog v1.24.0
 	github.com/segmentio/fasthash v1.0.3
 	github.com/stretchr/testify v1.7.0

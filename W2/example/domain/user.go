@@ -85,7 +85,6 @@ type (
 	}
 	UserLogin_Out struct {
 		ResponseCommon
-		WalletId string `json:"walletId,string" form:"walletId" query:"walletId" long:"walletId" msg:"walletId"` // wallet on stardust
 	}
 )
 

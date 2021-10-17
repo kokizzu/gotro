@@ -1,8 +1,10 @@
 package main
 
 import (
+	"context"
 	"github.com/gofiber/fiber/v2"
 	"github.com/graphql-go/graphql"
+	"github.com/kokizzu/gotro/L"
 	"github.com/kokizzu/gotro/W2/example/conf"
 	"github.com/kokizzu/gotro/W2/example/domain"
 	"go.opentelemetry.io/otel/trace"
@@ -16,6 +18,8 @@ type Inputs struct {
 	Variables     map[string]interface{} `json:"variables" form:"variables" query:"variables"`
 }
 
+const RequestCommonKey = `RC`
+
 type GraphqlRequest struct {
 	domain.RequestCommon
 	Inputs
@@ -23,12 +27,15 @@ type GraphqlRequest struct {
 
 type GraphqlResponse struct {
 	domain.ResponseCommon
-	*graphql.Result
 	Inputs
+	*graphql.Result
 }
 
-func webApiInitGraphql(app *fiber.App) {
+func webApiInitGraphql(app *fiber.App, d *domain.Domain) {
 	const url = `/graphql`
+
+	graphqlSchema := initGraphqlSchemaResolver(d)
+
 	app.All(url, func(ctx *fiber.Ctx) error {
 		tracerCtx, span := conf.T.Start(ctx.Context(), url, trace.WithSpanKind(trace.SpanKindServer))
 		defer span.End()
@@ -43,16 +50,18 @@ func webApiInitGraphql(app *fiber.App) {
 			ctx.WriteString(graphqlTemplate)
 		}
 		params := graphql.Params{
-			Context:        ctx.Context(),
+			Context:        context.WithValue(ctx.Context(), RequestCommonKey, &in.RequestCommon),
 			Schema:         graphqlSchema,
 			RequestString:  in.Query,
 			OperationName:  in.OperationName,
 			VariableValues: in.Variables,
 		}
 		out.Result = graphql.Do(params)
+		L.Describe(out)
 		out.ToFiberCtx(ctx, &in.RequestCommon, &in)
 		out.Inputs = in.Inputs
-		err := in.ToFiberCtx(ctx, out)
+		L.Describe(out)
+		err := ctx.JSON(out)
 		if isGet {
 			ctx.Set(`content-type`, `text/html; charset=utf-8`)
 		}

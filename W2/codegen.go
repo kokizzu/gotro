@@ -1092,7 +1092,14 @@ func (r *RoutesArgs) WriteGraphql(path string) {
 
 import (`)
 
-	imports := M.SB{`github.com/graphql-go/graphql`: true}
+	imports := M.SB{
+		`github.com/graphql-go/graphql`:     true,
+		`github.com/mitchellh/mapstructure`: true,
+		`github.com/kokizzu/gotro/L`:        true,
+		`github.com/kokizzu/gotro/X`:        true,
+		`github.com/pkg/errors`:             true,
+		r.ProjectName + `/domain`:           true,
+	}
 	types := M.SB{}
 
 	// type buffer
@@ -1106,9 +1113,11 @@ import (`)
 // can be hit using with /graphql
 `)
 	cBuf.WriteString(`
-var graphqlQueries = graphql.NewObject(graphql.ObjectConfig{
-	Name: "query",
-	Fields: graphql.Fields{`)
+func initGraphqlSchemaResolver(d *domain.Domain) graphql.Schema {
+
+	var graphqlQueries = graphql.NewObject(graphql.ObjectConfig{
+		Name: "query",
+		Fields: graphql.Fields{`)
 
 	wBuf := bytes.Buffer{}
 	sortedMethods := r.methodsPkgMap.SortedKeys()
@@ -1129,11 +1138,24 @@ var graphqlQueries = graphql.NewObject(graphql.ObjectConfig{
 		tBuf.WriteString(`
 var graphqlType` + methodName + `Out = graphql.NewObject(graphql.ObjectConfig{
 	Name: ` + S.BT(methodName+`Out`) + `,
-	Fields: graphql.Fields{
-		"debug": &graphql.Field{
-			Type: graphql.Boolean,
-		},`) // so it would not be empty
+	Fields: graphql.Fields{`)
 
+		// response common
+		tBuf.WriteString(`
+		"debug": &graphql.Field{
+			Type: graphql.String,
+		},
+		"StatusCode": &graphql.Field{
+			Type: graphql.Int,
+		},
+		"error": &graphql.Field{
+			Type: graphql.String,
+		},
+		"SessionToken": &graphql.Field{
+			Type: graphql.String,
+		},`)
+
+		// other custom fields
 		outs := r.outputFieldsByMethod[methodName]
 		for _, out := range outs {
 			tBuf.WriteString(`
@@ -1142,52 +1164,72 @@ var graphqlType` + methodName + `Out = graphql.NewObject(graphql.ObjectConfig{
 		},`)
 		}
 		types[`graphqlType`+methodName+`Out`] = true
+
 		tBuf.WriteString(`
 	},
 })`)
 
 		toBuf.WriteString(`
-		` + S.BT(methodName) + `: &graphql.Field{
-			Type: graphqlType` + methodName + `Out,
-			Args: graphql.FieldConfigArgument{`)
+			` + S.BT(methodName) + `: &graphql.Field{
+				Type: graphqlType` + methodName + `Out,
+				Args: graphql.FieldConfigArgument{`)
 
 		ins := r.inputFieldsByMethod[methodName]
 
 		for _, in := range ins {
 			toBuf.WriteString(`
-				` + S.BT(in.Name) + `: &graphql.ArgumentConfig{
-					Type: ` + r.graphqlType(&in, imports, types) + `
-				},`)
+					` + S.BT(in.Name) + `: &graphql.ArgumentConfig{
+						Type: ` + r.graphqlType(&in, imports, types) + `
+					},`)
 		}
 
 		toBuf.WriteString(`
-			}, // ` + methodName + `In
-			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-				return nil, nil
-			},
-		},`)
+				}, // ` + methodName + `In
+				Resolve: func(p graphql.ResolveParams) (res interface{}, err error) {
+					defer func() {
+						rErr := recover()
+						if rErr != nil {
+							L.Describe(rErr)
+							err = errors.Wrap(err, X.ToS(rErr))
+						}
+					}()
+					rc := p.Context.Value(RequestCommonKey).(*domain.RequestCommon)
+					in := domain.` + methodName + `_In{RequestCommon: *rc}
+					err = mapstructure.Decode(p.Args, &in)
+					res = d.` + methodName + `(&in)
+					if rc.Debug {
+						L.Describe(res)
+					}
+					L.Describe(res)
+					return
+				},
+			},`)
 
 	}
 
 	cBuf.WriteString(`
-	},
-})
+		},
+	}) // end of Queries
 
-var graphqlMutations = graphql.NewObject(graphql.ObjectConfig{
-	Name: "Mutation",
-	Fields: graphql.Fields{` + wBuf.String() + `
-	},
-})
+	var graphqlMutations = graphql.NewObject(graphql.ObjectConfig{
+		Name: "Mutation",
+		Fields: graphql.Fields{` + wBuf.String() + `
+		},
+	}) // end of Mutations
+
+	graphqlSchema, err := graphql.NewSchema(graphql.SchemaConfig{
+		Query: graphqlQueries,
+		Mutation: graphqlMutations,
+		Types: graphqlTypes,
+	})
+	L.PanicIf(err,"failed graphql.NewSchema")
+
+	return graphqlSchema
+}
 
 var graphqlTypes = []graphql.Type{
 	` + A.StrJoin(types.SortedKeys(), ",\n\t") + `,
 }
-
-var graphqlSchema, graphqlSchemaError = graphql.NewSchema(graphql.SchemaConfig{
-	Query: graphqlQueries,
-	Mutation: graphqlMutations,
-	Types: graphqlTypes,
-})
 `)
 
 	// write imports

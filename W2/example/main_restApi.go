@@ -51,7 +51,7 @@ func webApiServer() func(state overseer.State) {
 		})
 		//seedInitialData()
 		domain := webApiInitRoutes(app)
-		webApiInitGraphql(app)
+		webApiInitGraphql(app, domain)
 		runCron(domain)
 		L.Print(conf.AdminTestSessionToken)
 		err := app.Listener(state.Listener)
@@ -64,8 +64,6 @@ func webApiServer() func(state overseer.State) {
 // 2. body
 // 3. params
 func webApiParseInput(ctx *fiber.Ctx, reqCommon *domain.RequestCommon, in interface{}, url string) error {
-	L.PanicIf(graphqlSchemaError, `failed initializing graphqlSchema`)
-
 	body := ctx.Body()
 	path := S.LeftOf(url, `?`) // without API_PREFIX
 	if header, ok := requiredHeader[path]; ok {

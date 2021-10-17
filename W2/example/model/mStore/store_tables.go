@@ -48,6 +48,7 @@ const (
 	PaymentMethod  = `paymentMethod`
 	DeadlineAt     = `deadlineAt` // payment deadline
 	PaidAt         = `paidAt`
+	PromoRuleIds   = `promoRuleIds` // applied rules in separated by space
 )
 
 const (
@@ -152,6 +153,7 @@ var TarantoolTables = map[Tt.TableName]*Tt.TableProp{
 			{PaidAt, Tt.Unsigned},
 			{PaymentMethod, Tt.Unsigned},
 			{DeadlineAt, Tt.Unsigned},
+			{PromoRuleIds, Tt.String},
 		},
 		Unique1: Id,
 		Indexes: []string{OwnerId, PaidAt, DeadlineAt},
