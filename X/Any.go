@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"github.com/goccy/go-yaml"
 	"strconv"
 	"strings"
 	"time"
@@ -639,4 +640,10 @@ func ToMSS(any interface{}) M.SS {
 		return M.SS{}
 	}
 	return val
+}
+
+func ToYaml(any interface{}) string {
+	bytes, err := yaml.Marshal(any)
+	L.IsError(err, `yaml.Marshal`, any)
+	return string(bytes)
 }
