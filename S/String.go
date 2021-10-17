@@ -588,6 +588,22 @@ func ConcatIfNotEmpty(str, sep string) string {
 	return str + sep
 }
 
+// convert to lower only first char
+func LowerFirst(s string) string {
+	for i, v := range s {
+		return string(unicode.ToLower(v)) + s[i+1:]
+	}
+	return ``
+}
+
+// convert to lower only first char
+func UpperFirst(s string) string {
+	for i, v := range s {
+		return string(unicode.ToUpper(v)) + s[i+1:]
+	}
+	return ``
+}
+
 // convert to CamelCase
 // source: https://github.com/iancoleman/strcase
 func CamelCase(s string) string {

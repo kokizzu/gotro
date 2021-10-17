@@ -68,6 +68,7 @@ type TableProp struct {
 	Uniques []string // multicolumn unique
 	Indexes []string
 	Engine  EngineType
+	HiddenFields []string
 }
 
 type Field struct { // https://godoc.org/gopkg.in/vmihailenco/msgpack.v2#pkg-examples

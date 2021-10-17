@@ -16,6 +16,7 @@ require (
 	github.com/francoispqt/onelog v0.0.0-20190306043706-8c2bb31b10a4
 	github.com/gofiber/fiber/v2 v2.18.0
 	github.com/google/gops v0.3.19
+	github.com/graphql-go/graphql v0.8.0
 	github.com/jasonlvhit/gocron v0.0.1
 	github.com/jessevdk/go-flags v1.4.0
 	github.com/jmoiron/sqlx v1.3.1

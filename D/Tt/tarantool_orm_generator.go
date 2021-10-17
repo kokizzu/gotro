@@ -16,12 +16,7 @@ import (
 // quote import
 func qi(importPath string) string {
 	return `
-	` + "`" + importPath + "`"
-}
-
-// backquote
-func bq(importPath string) string {
-	return "`" + importPath + "`"
+	` + S.BT(importPath)
 }
 
 // double quote
@@ -44,11 +39,30 @@ var typeConverter = map[DataType]string{
 	Integer:  `X.ToI`,
 	Boolean:  `X.ToBool`,
 }
+var typeGraphql = map[DataType]string{
+	Unsigned: `Int`,
+	Number:   `Float`,
+	String:   `String`,
+	Integer:  `Int`,
+	Boolean:  `Boolean`,
+}
+
+func TypeGraphql(field Field) string {
+	typ := typeGraphql[field.Type]
+	if typ == `Int` {
+		if S.EndsWith(field.Name, `By`) || S.EndsWith(field.Name, `Id`) {
+			return `ID`
+		}
+	}
+	return typ
+}
 
 const connStruct = `Tt.Adapter`
 const connImport = "\n\n\t`github.com/tarantool/go-tarantool`"
 const iterEq = `tarantool.IterEq`
 const iterAll = `tarantool.IterAll`
+
+const NL = "\n"
 
 const warning = "// DO NOT EDIT, will be overwritten by github.com/kokizzu/D/Tt/tarantool_orm_generator.go\n\n"
 
@@ -111,20 +125,28 @@ func GenerateOrm(tables map[TableName]*TableProp) {
 		WC(str)
 	}
 
-	//BOTH(`// generated: ` + time.Now().String() + "\n")
+	//BOTH(`// generated: ` + time.Now().String() + NL)
 	RQ(`package ` + rqPkgName)
 	WC(`package ` + wcPkgName)
 	BOTH("\n\n")
 	BOTH(warning)
 
-	BOTH(`import (`)
+	// sort by table name to keep the order when regenerating structs
+	tableNames := make([]string, 0, len(tables))
+	for k := range tables {
+		tableNames = append(tableNames, string(k))
+	}
+	sort.Strings(tableNames)
 
 	// import reader
+	BOTH(`import (`)
+
 	RQ(qi(ci.PackageName))
 	RQ(connImport)
 	WC(qi(ci.PackageName + `/` + rqPkgName))
 
-	BOTH("\n")
+	BOTH(NL)
+	RQ(qi(`github.com/graphql-go/graphql`))
 	BOTH(qi(`github.com/kokizzu/gotro/A`))
 	BOTH(qi(this.PackageName)) // github.com/kokizzu/gotro/D/Tt
 	BOTH(qi(`github.com/kokizzu/gotro/L`))
@@ -146,28 +168,23 @@ func GenerateOrm(tables map[TableName]*TableProp) {
 	WC(`//go:generate replacer 'By" form' 'By,string" form' type ` + wcPkgName + "__ORM.GEN.go\n")
 	WC(`// go:generate msgp -tests=false -file ` + wcPkgName + `__ORM.GEN.go -o ` + wcPkgName + `__MSG.GEN.go` + "\n\n")
 
-	// sort by table name to keep the order when regenerating structs
-	tableNames := make([]string, 0, len(tables))
-	for k := range tables {
-		tableNames = append(tableNames, string(k))
-	}
-	sort.Strings(tableNames)
-
 	// for each table generate in order
 	for _, tableName := range tableNames {
 		props := tables[TableName(tableName)]
 		structName := S.CamelCase(tableName)
 		maxLen := 1
+		propTypeByName := map[string]Field{}
 		for _, prop := range props.Fields {
 			l := len(prop.Name) + 1 - strings.Count(prop.Name, `_`)
 			if maxLen < l {
 				maxLen = l
 			}
+			propTypeByName[prop.Name] = prop
 		}
 
 		// mutator struct
 		WC(`type ` + structName + "Mutator struct {\n")
-		WC(`	` + rqPkgName + `.` + structName + "\n")
+		WC(`	` + rqPkgName + `.` + structName + NL)
 		WC("	mutations []A.X\n")
 		WC("}\n\n")
 
@@ -178,10 +195,11 @@ func GenerateOrm(tables map[TableName]*TableProp) {
 
 		// reader struct
 		RQ(`type ` + structName + " struct {\n")
-		RQ("	Adapter *" + connStruct + " `json:" + `"-"` + " msg:" + `"-"` + " query:" + `"-"` + " form:" + `"-"` + "`\n")
+		const none = `"-"`
+		RQ("	Adapter *" + connStruct + " " + S.BT("json:"+none+" msg:"+none+" query:"+none+" form:"+none) + NL)
 		for _, prop := range props.Fields {
 			camel := S.CamelCase(prop.Name)
-			RQ("	" + camel + strings.Repeat(` `, maxLen-len(camel)) + typeTranslator[prop.Type] + "\n")
+			RQ("	" + camel + strings.Repeat(` `, maxLen-len(camel)) + typeTranslator[prop.Type] + NL)
 		}
 		RQ("}\n\n")
 
@@ -198,7 +216,7 @@ func GenerateOrm(tables map[TableName]*TableProp) {
 
 		// sql table name
 		RQ(`func (` + receiverName + ` *` + structName + ") sqlTableName() string { //nolint:dupl false positive\n")
-		RQ("	return `" + `"` + tableName + `"` + "`\n")
+		RQ("	return " + S.BT(S.QQ(tableName)) + NL)
 		RQ("}\n\n")
 
 		// have mutation
@@ -212,10 +230,11 @@ func GenerateOrm(tables map[TableName]*TableProp) {
 			structProp := receiverName + `.` + uniquePropCamel
 
 			RQ(`func (` + receiverName + ` *` + structName + `) UniqueIndex` + uniquePropCamel + "() string { //nolint:dupl false positive\n")
-			RQ("	return `" + props.Unique1 + "`\n")
+			RQ("	return " + S.BT(props.Unique1) + NL)
 			RQ("}\n\n")
 
 			generateMutationByUniqueIndexumns(uniquePropCamel, structProp, receiverName, structName, RQ, WC)
+			generateGraphqlQueryField(structName, uniquePropCamel, propTypeByName[props.Unique1], RQ)
 
 			// upsert template, to be copied when need increment some field
 			WC(`// func (` + receiverName + ` *` + structName + "Mutator) DoUpsert() bool { //nolint:dupl false positive\n")
@@ -234,7 +253,7 @@ func GenerateOrm(tables map[TableName]*TableProp) {
 			structProp := receiverName + `.` + uniquePropCamel
 
 			RQ(`func (` + receiverName + ` *` + structName + `) UniqueIndex` + uniquePropCamel + "() string { //nolint:dupl false positive\n")
-			RQ("	return `" + props.Unique2 + "`\n")
+			RQ("	return " + S.BT(props.Unique2) + NL)
 			RQ("}\n\n")
 
 			generateMutationByUniqueIndexumns(uniquePropCamel, structProp, receiverName, structName, RQ, WC)
@@ -246,7 +265,7 @@ func GenerateOrm(tables map[TableName]*TableProp) {
 			structProp := receiverName + `.` + uniquePropCamel
 
 			RQ(`func (` + receiverName + ` *` + structName + `) UniqueIndex` + uniquePropCamel + "() string { //nolint:dupl false positive\n")
-			RQ("	return `" + props.Unique3 + "`\n")
+			RQ("	return " + S.BT(props.Unique3) + NL)
 			RQ("}\n\n")
 
 			generateMutationByUniqueIndexumns(uniquePropCamel, structProp, receiverName, structName, RQ, WC)
@@ -265,7 +284,7 @@ func GenerateOrm(tables map[TableName]*TableProp) {
 			}
 
 			RQ(`func (` + receiverName + ` *` + structName + `) UniqueIndex` + uniquePropCamel + "() string { //nolint:dupl false positive\n")
-			RQ("	return `" + strings.Join(props.Uniques, `__`) + "`\n")
+			RQ("	return " + S.BT(strings.Join(props.Uniques, `__`)) + NL)
 			RQ("}\n\n")
 
 			generateMutationByUniqueIndexumns(uniquePropCamel, structProps, receiverName, structName, RQ, WC)
@@ -291,7 +310,7 @@ func GenerateOrm(tables map[TableName]*TableProp) {
 		for _, prop := range props.Fields {
 			sqlFields += `, ` + dq(prop.Name) + "\n\t"
 		}
-		RQ(`	return ` + bq(sqlFields[1:]) + "\n")
+		RQ(`	return ` + S.BT(sqlFields[1:]) + NL)
 		RQ("}\n\n")
 
 		// to Update AX
@@ -308,17 +327,17 @@ func GenerateOrm(tables map[TableName]*TableProp) {
 
 			// index functions
 			RQ(`func (` + receiverName + ` *` + structName + ") Idx" + propName + "() int { //nolint:dupl false positive\n")
-			RQ("	return " + X.ToS(idx) + "\n")
+			RQ("	return " + X.ToS(idx) + NL)
 			RQ("}\n\n")
 
 			// column name functions
 			//RQ(`func (` + receiverName + ` *` + structName + ") col" + propName + "() string { //nolint:dupl false positive\n")
-			//RQ("	return `" + prop.Name + "`\n")
+			//RQ("	return " + S.BT(prop.Name) + NL)
 			//RQ("}\n\n")
 
 			// sql column name functions
 			RQ(`func (` + receiverName + ` *` + structName + ") sql" + propName + "() string { //nolint:dupl false positive\n")
-			RQ("	return `" + `"` + prop.Name + `"` + "`\n")
+			RQ("	return " + S.BT(S.QQ(prop.Name)) + NL)
 			RQ("}\n\n")
 
 			// mutator methods
@@ -337,7 +356,7 @@ func GenerateOrm(tables map[TableName]*TableProp) {
 		RQ("	return A.X{\n")
 		for idx, prop := range props.Fields {
 			camel := S.CamelCase(prop.Name)
-			RQ("		" + receiverName + "." + camel + `,` + strings.Repeat(` `, maxLen-len(camel)) + `// ` + X.ToS(idx) + "\n")
+			RQ("		" + receiverName + "." + camel + `,` + strings.Repeat(` `, maxLen-len(camel)) + `// ` + X.ToS(idx) + NL)
 		}
 		RQ("	}\n")
 		RQ("}\n\n")
@@ -347,12 +366,12 @@ func GenerateOrm(tables map[TableName]*TableProp) {
 		for idx, prop := range props.Fields {
 			RQ("	" + receiverName + "." + S.CamelCase(prop.Name) + ` = ` + typeConverter[prop.Type] + "(a[" + X.ToS(idx) + "])\n")
 		}
-		RQ("	return " + receiverName + "\n")
+		RQ("	return " + receiverName + NL)
 		RQ("}\n\n")
 
 		// find many
 		//RQ(`func (` + receiverName + ` *` + structName + ") FindOffsetLimit(offset, limit uint32, idx string) []*" + structName + " { //nolint:dupl false positive\n")
-		//RQ("	var rows []*" + structName + "\n")
+		//RQ("	var rows []*" + structName + NL)
 		//RQ("	res, err := " + receiverName + ".Adapter.Select(" + receiverName + ".SpaceName(), idx, offset, limit, " + iterAll + ", A.X{})\n")
 		//RQ("	if L.IsError(err, `" + structName + ".FindOffsetLimit failed: `+" + receiverName + ".SpaceName()) {\n")
 		//RQ("		return rows\n")
@@ -376,14 +395,14 @@ func GenerateOrm(tables map[TableName]*TableProp) {
 		//// set to min value
 		//WC(`func (`+receiverName+` *` + structName + ") ResetToMax() { //nolint:dupl false positive\n")
 		//for _, prop := range props.Fields {
-		//	WC("	"+receiverName+"." + S.CamelCase(prop.Name) + " = " + maxMap[prop.Type] + "\n")
+		//	WC("	"+receiverName+"." + S.CamelCase(prop.Name) + " = " + maxMap[prop.Type] + NL)
 		//}
 		//WC("}\n\n")
 		//
 		//// set to min value
 		//WC(`func (`+receiverName+` *` + structName + ") ResetToMin() { //nolint:dupl false positive\n")
 		//for _, prop := range props.Fields {
-		//	WC("	"+receiverName+"." + S.CamelCase(prop.Name) + " = " + minMap[prop.Type] + "\n")
+		//	WC("	"+receiverName+"." + S.CamelCase(prop.Name) + " = " + minMap[prop.Type] + NL)
 		//}
 		//WC("}\n\n")
 		//
@@ -392,7 +411,7 @@ func GenerateOrm(tables map[TableName]*TableProp) {
 		//for _, prop := range props.Fields {
 		//	propName := S.CamelCase(prop.Name)
 		//	WC("	if "+receiverName+"." + propName + " > l." + propName + " {\n")
-		//	WC("		"+receiverName+"." + propName + " = l." + propName + "\n")
+		//	WC("		"+receiverName+"." + propName + " = l." + propName + NL)
 		//	WC("	}\n")
 		//}
 		//WC("}\n\n")
@@ -402,10 +421,41 @@ func GenerateOrm(tables map[TableName]*TableProp) {
 		//for _, prop := range props.Fields {
 		//	propName := S.CamelCase(prop.Name)
 		//	WC("	if "+receiverName+"." + propName + " < l." + propName + " {\n")
-		//	WC("		"+receiverName+"." + propName + " = l." + propName + "\n")
+		//	WC("		"+receiverName+"." + propName + " = l." + propName + NL)
 		//	WC("	}\n")
 		//}
 		//WC("}\n\n")
+
+		// graphql type
+		RQ(`var GraphqlType` + structName + " = graphql.NewObject(\n")
+		RQ("	graphql.ObjectConfig{\n")
+		RQ("		Name: " + S.BT(tableName) + ",\n")
+		RQ("		Fields: graphql.Fields{\n")
+
+		hiddenFields := map[string]bool{}
+		for _, fieldName := range props.HiddenFields {
+			hiddenFields[fieldName] = true
+		}
+		for _, field := range props.Fields {
+			if hiddenFields[field.Name] {
+				continue
+			}
+			RQ("			" + S.BT(field.Name) + ": &graphql.Field{\n")
+			RQ("				Type: graphql." + TypeGraphql(field) + ",\n")
+			RQ("			},\n")
+		}
+
+		RQ("		},\n")
+		RQ("	},\n")
+		RQ(")\n\n")
+
+		//// graphql field list 
+		//RQ(`var GraphqlField` + structName + "List = &graphql.Field{\n")
+		//RQ("	Type: GraphqlType" + structName + ",\n")
+		//RQ("	Description: " + S.BT(`list of `+structName) + ",\n")
+		//
+		//RQ("}\n\n")
+
 		BOTH(warning)
 
 	}
@@ -429,6 +479,39 @@ func GenerateOrm(tables map[TableName]*TableProp) {
 	if L.IsError(err, `os.WriteFile failed: `+wcFname) {
 		return
 	}
+}
+
+func generateGraphqlQueryField(structName string, uniqueFieldName string, field Field, RQ func(str string)) {
+
+	// graphql field
+	RQ(`var GraphqlField` + structName + "By" + uniqueFieldName + " = &graphql.Field{\n")
+	RQ("	Type: GraphqlType" + structName + ",\n")
+	RQ("	Description: " + S.BT(`list of `+structName) + ",\n")
+	RQ("	Args: graphql.FieldConfigArgument{\n")
+	RQ("		" + S.BT(uniqueFieldName) + ": &graphql.ArgumentConfig{\n")
+	RQ("			Type: graphql." + TypeGraphql(field) + ",\n")
+	RQ("		},\n")
+	RQ("	},\n")
+	RQ("}\n\n")
+
+	// graphql field resolver
+	RQ(`func (g *` + structName + `) GraphqlField` + structName + "By" + uniqueFieldName + "WithResolver() *graphql.Field {\n")
+	RQ("	field := GraphqlField" + structName + "By" + uniqueFieldName + "\n")
+	RQ("	field.Resolve = func(p graphql.ResolveParams) (interface{}, error) {\n")
+	RQ("		q := g\n")
+	RQ("		v, ok := p.Args[S.BT(uniqueFieldName)]\n")
+	RQ("		if !ok {\n")
+	S.CamelCase()
+	RQ("		}\n")
+	RQ("		q."+uniqueFieldName+" = "+typeConverter[field.Type]+"(v)\n")
+	RQ("		if q.FindBy"+uniqueFieldName+"() {\n")
+	RQ("			return q, nil\n")
+	RQ("		}\n")
+	RQ("		return []interface{}{}, nil\n")
+	RQ("	}\n")
+	RQ("	return field\n")
+	RQ("}\n\n")
+
 }
 
 func generateMutationByUniqueIndexumns(uniqueCamel, structProp, receiverName, structName string, RQ, WC func(str string)) {
@@ -474,4 +557,5 @@ func generateMutationByUniqueIndexumns(uniqueCamel, structProp, receiverName, st
 	WC("	_, err := " + receiverName + ".Adapter.Delete(" + receiverName + ".SpaceName(), " + receiverName + `.UniqueIndex` + uniqueCamel + `(), A.X{` + structProp + "})\n")
 	WC("	return !L.IsError(err, `" + structName + `.DoDeletePermanentBy` + uniqueCamel + " failed: `+" + receiverName + ".SpaceName())\n")
 	WC("}\n\n")
+
 }
