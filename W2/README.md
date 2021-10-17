@@ -4,11 +4,11 @@
 This framework aims to reduce common task that happened during backend API development which are:
 
 1. generating ORM and migrating model
-2. generate for other type of input and output encoding/presentation format (JSON, MsgPack, YAML, JSON5, etc), command line, or different transport (REST, WebSocket, gRPC, CLI, etc)
+2. generate for other type of input and output encoding/presentation format (JSON, MsgPack, YAML, JSON5, GraphQL, etc), command line, or different transport (REST, WebSocket, gRPC, CLI, etc)
 3. generate API documentation and API clients for different programming languages
 4. testable business logic (by untangling `domain/` and decorator/adapter/presentation)
 
-This codegen currently tied to Tarantool (for OLTP use cases), Clickhouse (for OLAP use cases), and Fiber (for web routes) and only tested for generating json using REST transport and plain JS API docs. But you can always create a new codegen for other databases or other web frameworks or other API clients.
+This codegen currently tied to Tarantool (for OLTP use cases), Clickhouse (for OLAP use cases), and Fiber (for web routes) and only tested for generating json using REST/GraphQL transport and plain JS API docs. But you can always create a new codegen for other databases or other web frameworks or other API clients.
 
 ## FAQ
 
