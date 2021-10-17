@@ -23,14 +23,10 @@ jobs:
       - uses: actions/checkout@v2
       - name: Run tests
         run: |
-          cd W2/example && go test ./...
+          cd W2/example && go test ./... && go build
       - name: create release
-        uses: wangyoucao577/go-release-action@v1.20
+        uses: softprops/action-gh-release@v1
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          goos: ${{ matrix.goos }}
-          goarch: ${{ matrix.goarch }}
-          project_path: "./W2/example"
-          binary_name: "example.exe"
-          #ldflags: "-s -w"
-          extra_files: README.md
+          with:
+            files: W2/example/example.exe
