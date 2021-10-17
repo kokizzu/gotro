@@ -32,11 +32,27 @@ func ZT2() string {
 	return `-- ` + fmt.Sprintf("%s:%d %s", file, line, f.Name()) + "\n"
 }
 
-// add single quote in the beginning and the end of string.
+// add single quote in the beginning and the end of string, without escaping.
 //  S.Q(`coba`) // `'coba'`
 //  S.Q(`123`)  // `'123'`
 func Q(str string) string {
 	return `'` + str + `'`
+}
+
+
+// add double quote in the beginning and the end of string, without escaping.
+//  S.Q(`coba`) // `"coba"`
+//  S.Q(`123`)  // `"123"`
+func QQ(str string) string {
+	return `"` + str + `"`
+}
+
+
+// add backtick quote in the beginning and the end of string, without escaping.
+//  S.Q(`coba`) // "`coba`"
+//  S.Q(`123`)  // "`123`"
+func BT(str string) string {
+	return "`" + str + "`"
 }
 
 // replace ` and give double quote (for table names)
