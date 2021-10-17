@@ -1,0 +1,13 @@
+name: Test Pipeline
+
+on: push
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags')
+    steps:
+      - uses: actions/checkout@v2
+      - name: Run Unit Tests
+        run: |
+          cd W2/example && go test ./...
