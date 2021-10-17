@@ -9,16 +9,22 @@ import (
 	"net/http"
 )
 
+type Inputs struct {
+	OperationName string                 `json:"operationName" form:"operationName" query:"operationName"`
+	Query         string                 `json:"query" form:"query" query:"query"`
+	Mutation      string                 `json:"mutation" form:"mutation" query:"mutation"`
+	Variables     map[string]interface{} `json:"variables" form:"variables" query:"variables"`
+}
+
 type GraphqlRequest struct {
 	domain.RequestCommon
-	OperationName string `json:"operationName"`
-	Query         string `json:"query"`
-	Mutation      string `json:"mutation"`
+	Inputs
 }
 
 type GraphqlResponse struct {
 	domain.ResponseCommon
 	*graphql.Result
+	Inputs
 }
 
 func webApiInitGraphql(app *fiber.App) {
@@ -36,8 +42,16 @@ func webApiInitGraphql(app *fiber.App) {
 		if isGet {
 			ctx.WriteString(graphqlTemplate)
 		}
-		handleGraphql(&in, &out)
+		params := graphql.Params{
+			Context:        ctx.Context(),
+			Schema:         graphqlSchema,
+			RequestString:  in.Query,
+			OperationName:  in.OperationName,
+			VariableValues: in.Variables,
+		}
+		out.Result = graphql.Do(params)
 		out.ToFiberCtx(ctx, &in.RequestCommon, &in)
+		out.Inputs = in.Inputs
 		err := in.ToFiberCtx(ctx, out)
 		if isGet {
 			ctx.Set(`content-type`, `text/html; charset=utf-8`)
