@@ -48,6 +48,8 @@ func webApiInitGraphql(app *fiber.App, d *domain.Domain) {
 		out := GraphqlResponse{}
 		if isGet {
 			ctx.WriteString(graphqlTemplate)
+			ctx.Set(`content-type`, `text/html; charset=utf-8`)
+			return nil
 		}
 		params := graphql.Params{
 			Context:        context.WithValue(ctx.Context(), RequestCommonKey, &in.RequestCommon),
@@ -62,9 +64,6 @@ func webApiInitGraphql(app *fiber.App, d *domain.Domain) {
 		out.Inputs = in.Inputs
 		L.Describe(out)
 		err := ctx.JSON(out)
-		if isGet {
-			ctx.Set(`content-type`, `text/html; charset=utf-8`)
-		}
 		return err
 	})
 }
