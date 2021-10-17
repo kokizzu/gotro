@@ -21,12 +21,12 @@ jobs:
         with:
           go-version: ${{ matrix.go-version }}
       - uses: actions/checkout@v2
-      - name: Run tests
+      - name: Run tests and build binary
         run: |
           cd W2/example && go test ./... && go build
       - name: create release
+        # https://github.com/softprops/action-gh-release
         uses: softprops/action-gh-release@v1
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          with:
-            files: W2/example/example.exe
+          files: W2/example/example.exe
