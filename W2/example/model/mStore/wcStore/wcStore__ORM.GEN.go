@@ -75,23 +75,23 @@ func (c *CartItemsMutator) DoDeletePermanentById() bool { //nolint:dupl false po
 // }
 
 // Overwrite all columns, error if not exists
-func (c *CartItemsMutator) DoOverwriteByOwnerIdProductIdInvoiceId() bool { //nolint:dupl false positive
-	_, err := c.Adapter.Update(c.SpaceName(), c.UniqueIndexOwnerIdProductIdInvoiceId(), A.X{c.OwnerId, c.ProductId, c.InvoiceId}, c.ToUpdateArray())
-	return !L.IsError(err, `CartItems.DoOverwriteByOwnerIdProductIdInvoiceId failed: `+c.SpaceName())
+func (c *CartItemsMutator) DoOverwriteByOwnerIdInvoiceIdProductId() bool { //nolint:dupl false positive
+	_, err := c.Adapter.Update(c.SpaceName(), c.UniqueIndexOwnerIdInvoiceIdProductId(), A.X{c.OwnerId, c.InvoiceId, c.ProductId}, c.ToUpdateArray())
+	return !L.IsError(err, `CartItems.DoOverwriteByOwnerIdInvoiceIdProductId failed: `+c.SpaceName())
 }
 
 // Update only mutated, error if not exists, use Find* and Set* methods instead of direct assignment
-func (c *CartItemsMutator) DoUpdateByOwnerIdProductIdInvoiceId() bool { //nolint:dupl false positive
+func (c *CartItemsMutator) DoUpdateByOwnerIdInvoiceIdProductId() bool { //nolint:dupl false positive
 	if !c.HaveMutation() {
 		return true
 	}
-	_, err := c.Adapter.Update(c.SpaceName(), c.UniqueIndexOwnerIdProductIdInvoiceId(), A.X{c.OwnerId, c.ProductId, c.InvoiceId}, c.mutations)
-	return !L.IsError(err, `CartItems.DoUpdateByOwnerIdProductIdInvoiceId failed: `+c.SpaceName())
+	_, err := c.Adapter.Update(c.SpaceName(), c.UniqueIndexOwnerIdInvoiceIdProductId(), A.X{c.OwnerId, c.InvoiceId, c.ProductId}, c.mutations)
+	return !L.IsError(err, `CartItems.DoUpdateByOwnerIdInvoiceIdProductId failed: `+c.SpaceName())
 }
 
-func (c *CartItemsMutator) DoDeletePermanentByOwnerIdProductIdInvoiceId() bool { //nolint:dupl false positive
-	_, err := c.Adapter.Delete(c.SpaceName(), c.UniqueIndexOwnerIdProductIdInvoiceId(), A.X{c.OwnerId, c.ProductId, c.InvoiceId})
-	return !L.IsError(err, `CartItems.DoDeletePermanentByOwnerIdProductIdInvoiceId failed: `+c.SpaceName())
+func (c *CartItemsMutator) DoDeletePermanentByOwnerIdInvoiceIdProductId() bool { //nolint:dupl false positive
+	_, err := c.Adapter.Delete(c.SpaceName(), c.UniqueIndexOwnerIdInvoiceIdProductId(), A.X{c.OwnerId, c.InvoiceId, c.ProductId})
+	return !L.IsError(err, `CartItems.DoDeletePermanentByOwnerIdInvoiceIdProductId failed: `+c.SpaceName())
 }
 
 // insert, error if exists

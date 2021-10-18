@@ -9,7 +9,6 @@ import (
 	"github.com/kokizzu/gotro/W2/example/model/mAuth/wcAuth"
 	"github.com/kokizzu/gotro/W2/example/model/mStore"
 	"github.com/kokizzu/gotro/W2/example/model/mStore/wcStore"
-	"github.com/kokizzu/id64"
 )
 
 type Migrator struct {
@@ -37,7 +36,7 @@ func RunMigration() {
 	product1 := wcStore.NewProductsMutator(m.Taran)
 	product1.SetSku(`120P90`)
 	if !product1.FindBySku() {
-		product1.SetId(id64.UID())
+		product1.SetId(1)
 	}
 	product1.SetName(`Google Home`)
 	product1.SetPrice(49_99)
@@ -47,7 +46,7 @@ func RunMigration() {
 	product2 := wcStore.NewProductsMutator(m.Taran)
 	product2.SetSku(`43N23P`)
 	if !product2.FindBySku() {
-		product2.SetId(id64.UID())
+		product2.SetId(2)
 	}
 	product2.SetName(`MacBook Pro`)
 	product2.SetPrice(5_399_99)
@@ -57,7 +56,7 @@ func RunMigration() {
 	product3 := wcStore.NewProductsMutator(m.Taran)
 	product3.SetSku(`A304SD`)
 	if !product3.FindBySku() {
-		product3.SetId(id64.UID())
+		product3.SetId(3)
 	}
 	product3.SetName(`Alexa Speaker`)
 	product3.SetPrice(109_50)
@@ -67,7 +66,7 @@ func RunMigration() {
 	product4 := wcStore.NewProductsMutator(m.Taran)
 	product4.SetSku(`234234`)
 	if !product4.FindBySku() {
-		product4.SetId(id64.UID())
+		product4.SetId(4)
 	}
 	product4.SetName(`Raspberry Pi B`)
 	product4.SetPrice(30_00)

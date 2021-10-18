@@ -30,7 +30,7 @@ func TestDomain_UserLoginRegisterFlow(t *testing.T) {
 		assert.Empty(t, out.Error)
 	})
 
-	t.Run(`reregister same email should fail`, func(t *testing.T) {
+	t.Run(`re-register same email should fail`, func(t *testing.T) {
 		in := &UserRegister_In{
 			Email:    email,
 			Password: pass,

@@ -48,8 +48,9 @@ type (
 	}
 	StoreCartItemsAdd_Out struct {
 		ResponseCommon
-		CartItems []*rqStore.CartItems
-		Total     uint32
+		CartItems  []*rqStore.CartItems
+		Total      uint32
+		IsOverflow bool
 	}
 )
 
@@ -68,28 +69,47 @@ func (d *Domain) StoreCartItemsAdd(in *StoreCartItemsAdd_In) (out StoreCartItems
 
 	product := rqStore.NewProducts(d.Taran)
 	product.Id = in.ProductId
-	if !product.FindById() && in.DeltaQty < 0 { // error unless removing from cart
-		out.SetError(404, `product not found`)
-		return
-	}
-
-	if !cartItem.FindByOwnerIdProductIdInvoiceId() {
-		newQty := I.Max(0, cartItem.Qty+in.DeltaQty)
-		cartItem.SetQty(newQty)
-		cartItem.Id = id64.UID()
-		if !cartItem.DoUpdateById() {
-			out.SetError(500, `failed add/remove item on cart`)
+	if !product.FindById() {
+		if in.DeltaQty < 0 { // error unless removing from cart
+			out.SetError(404, `product not found`)
 			return
 		}
-	} else {
+	}
+
+	inv := int64(product.InventoryQty)
+	if !cartItem.FindByOwnerIdInvoiceIdProductId() {
+		if in.DeltaQty < 0 {
+			out.SetError(404, `cart item not found`)
+			return
+		}
+
 		newQty := I.Max(0, in.DeltaQty)
+		newQty = I.Min(newQty, inv)
 		cartItem.SetQty(newQty)
+		cartItem.Id = id64.UID()
 		if !cartItem.DoInsert() {
 			out.SetError(500, `failed insert to cart`)
 			return
 		}
+	} else {
+		if cartItem.Qty >= inv && in.DeltaQty > 0 {
+			out.SetError(400, `cannot add more`)
+			return
+		}
+
+		if cartItem.Qty <= 0 && in.DeltaQty < 0 {
+			out.SetError(400, `cannot remove more`)
+			return
+		}
+		newQty := I.Max(0, cartItem.Qty+in.DeltaQty)
+		cartItem.SetQty(newQty)
+		if !cartItem.DoUpdateById() {
+			out.SetError(500, `failed add/remove item on cart`)
+			return
+		}
 	}
 
+	out.IsOverflow = cartItem.Qty >= inv
 	out.CartItems, out.Total = cartItem.FindByOwnerIdInvoiceId()
 
 	return

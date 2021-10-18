@@ -99,13 +99,13 @@ func (g *CartItems) GraphqlFieldCartItemsByIdWithResolver() *graphql.Field {
 	return &field
 }
 
-func (c *CartItems) UniqueIndexOwnerIdProductIdInvoiceId() string { //nolint:dupl false positive
-	return `ownerId__productId__invoiceId`
+func (c *CartItems) UniqueIndexOwnerIdInvoiceIdProductId() string { //nolint:dupl false positive
+	return `ownerId__invoiceId__productId`
 }
 
-func (c *CartItems) FindByOwnerIdProductIdInvoiceId() bool { //nolint:dupl false positive
-	res, err := c.Adapter.Select(c.SpaceName(), c.UniqueIndexOwnerIdProductIdInvoiceId(), 0, 1, tarantool.IterEq, A.X{c.OwnerId, c.ProductId, c.InvoiceId})
-	if L.IsError(err, `CartItems.FindByOwnerIdProductIdInvoiceId failed: `+c.SpaceName()) {
+func (c *CartItems) FindByOwnerIdInvoiceIdProductId() bool { //nolint:dupl false positive
+	res, err := c.Adapter.Select(c.SpaceName(), c.UniqueIndexOwnerIdInvoiceIdProductId(), 0, 1, tarantool.IterEq, A.X{c.OwnerId, c.InvoiceId, c.ProductId})
+	if L.IsError(err, `CartItems.FindByOwnerIdInvoiceIdProductId failed: `+c.SpaceName()) {
 		return false
 	}
 	rows := res.Tuples()

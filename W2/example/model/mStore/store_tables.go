@@ -131,7 +131,7 @@ var TarantoolTables = map[Tt.TableName]*Tt.TableProp{
 			{Info, Tt.String},
 		},
 		Unique1: Id,
-		Uniques: []string{OwnerId, ProductId, InvoiceId},
+		Uniques: []string{OwnerId, InvoiceId, ProductId},
 	},
 	TableInvoices: {
 		Fields: []Tt.Field{
