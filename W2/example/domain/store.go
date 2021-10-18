@@ -187,7 +187,7 @@ func (d *Domain) StoreInvoice(in *StoreInvoice_In) (out StoreInvoice_Out) {
 	out.CartItems, _ = cartItem.FindByOwnerIdInvoiceId()
 	cartItemIdMap := map[uint64]*rqStore.CartItems{}
 	for _, ci := range out.CartItems {
-		cartItemIdMap[ci.Id] = ci
+		cartItemIdMap[ci.ProductId] = ci
 	}
 
 	if in.Recalculate || in.DoPurchase {
@@ -219,7 +219,7 @@ func (d *Domain) StoreInvoice(in *StoreInvoice_In) (out StoreInvoice_Out) {
 				if ci.Qty >= minCount {
 					multiplier := ci.Qty / minCount
 					if promo.FreeProductId > 0 { // got other product for free
-						addFreeProduct(promo.FreeProductId, multiplier, `got `+I.ToS(multiplier)+` free every purchase of `+I.ToS(minCount)+` `+product.Name)
+						addFreeProduct(promo.FreeProductId, multiplier, `got 1 free (total: `+I.ToS(multiplier)+`) every purchase of `+I.ToS(minCount)+` `+product.Name)
 					} else if promo.DiscountPercent > 0 {
 						orig := ci.SubTotal
 						ci.SubTotal = int64(float64(ci.SubTotal) * (100 - promo.DiscountPercent) / 100)
@@ -284,6 +284,14 @@ func (d *Domain) StoreInvoice(in *StoreInvoice_In) (out StoreInvoice_Out) {
 				ci.Discount -= product.Price * uint64(missing)
 			}
 		}
+		out.Invoice = rqStore.Invoices{}
+
+		total := int64(0)
+		for _, ci := range out.CartItems {
+			total += ci.SubTotal
+			out.Invoice.TotalDiscount += ci.Discount
+		}
+		out.Invoice.TotalPaid = uint64(total)
 	}
 
 	return

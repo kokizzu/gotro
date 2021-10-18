@@ -9,6 +9,7 @@ import (
 	"github.com/kokizzu/gotro/W2/example/model/mAuth/wcAuth"
 	"github.com/kokizzu/gotro/W2/example/model/mStore"
 	"github.com/kokizzu/gotro/W2/example/model/mStore/wcStore"
+	"github.com/kpango/fastime"
 )
 
 type Migrator struct {
@@ -73,11 +74,16 @@ func RunMigration() {
 	product4.SetInventoryQty(2)
 	product4.DoReplace()
 
+	past := fastime.UnixNow() - 10000
+	future := fastime.UnixNow() + 10000
+
 	promo1 := wcStore.NewPromosMutator(m.Taran)
 	promo1.SetId(11)
 	promo1.SetProductId(product2.Id)
 	promo1.SetProductCount(1)
 	promo1.SetFreeProductId(product4.Id) // free product4
+	promo1.SetStartAt(past)
+	promo1.SetEndAt(future)
 	promo1.FindById()
 	promo1.DoReplace()
 
@@ -86,6 +92,8 @@ func RunMigration() {
 	promo2.SetProductId(product1.Id)
 	promo2.SetProductCount(3)
 	promo2.SetDiscountCount(1) // free 1
+	promo2.SetStartAt(past)
+	promo2.SetEndAt(future)
 	promo2.FindById()
 	promo2.DoReplace()
 
@@ -94,6 +102,8 @@ func RunMigration() {
 	promo3.SetProductId(product3.Id)
 	promo3.SetProductCount(2)
 	promo3.SetDiscountPercent(10) // 10% to all product3
+	promo3.SetStartAt(past)
+	promo3.SetEndAt(future)
 	promo3.FindById()
 	promo3.DoReplace()
 }

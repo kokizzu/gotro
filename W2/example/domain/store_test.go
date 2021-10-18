@@ -3,13 +3,15 @@ package domain
 import (
 	"testing"
 
+	"github.com/hexops/autogold"
+
+	"github.com/kokizzu/gotro/W2/example/model/mStore/rqStore"
 	"github.com/kokizzu/id64"
 	"github.com/kokizzu/lexid"
 	"github.com/stretchr/testify/assert"
 )
 
-func TestCartFlow(t *testing.T) {
-	d := NewDomain()
+func prepareTestUser(d *Domain, t *testing.T) RequestCommon {
 	name := id64.ID().String()
 	pass := lexid.ID()
 	email := name + testDomain
@@ -32,7 +34,12 @@ func TestCartFlow(t *testing.T) {
 		assert.Empty(t, out.Error)
 		sessionToken = out.SessionToken
 	}
-	rc := NewRC(sessionToken)
+	return NewRC(sessionToken)
+}
+
+func TestCartFlow(t *testing.T) {
+	d := NewDomain()
+	rc := prepareTestUser(d, t)
 
 	t.Run(`add new item to cart`, func(t *testing.T) {
 		in := &StoreCartItemsAdd_In{
@@ -133,50 +140,454 @@ func TestCartFlow(t *testing.T) {
 
 func TestFreeItemPromo(t *testing.T) {
 	// buy N product X, got free M product Y
-	t.Run(`below rule`, func(t *testing.T) {
+	// buy 1 macbook, got 1 free rapsberry pi (stock 2)
+	d := NewDomain()
+	rc := prepareTestUser(d, t)
 
-	})
 	t.Run(`equal rule`, func(t *testing.T) {
-
-	})
-	t.Run(`above rule`, func(t *testing.T) {
-
+		{
+			in := &StoreCartItemsAdd_In{
+				RequestCommon: rc,
+				ProductId:     2,
+				DeltaQty:      1,
+			}
+			_ = d.StoreCartItemsAdd(in)
+		}
+		in := &StoreInvoice_In{
+			RequestCommon: rc,
+			Recalculate:   true,
+		}
+		out := d.StoreInvoice(in)
+		assert.Empty(t, out.Error)
+		for _, ci := range out.CartItems {
+			ci.Id = 0
+			ci.OwnerId = 0
+		}
+		want := autogold.Want("A1", StoreInvoice_Out{
+			CartItems: []*rqStore.CartItems{
+				{
+					ProductId: 2,
+					NameCopy:  "MacBook Pro",
+					PriceCopy: 539999,
+					Qty:       1,
+					SubTotal:  539999,
+				},
+				{
+					ProductId: 4,
+					NameCopy:  "Raspberry Pi B",
+					PriceCopy: 3000,
+					Qty:       1,
+					Discount:  3000,
+					Info: `got 1 free (total: 1) every purchase of 1 MacBook Pro
+				`,
+				},
+			},
+			Invoice: rqStore.Invoices{
+				TotalDiscount: 3000,
+				TotalPaid:     539999,
+			},
+		})
+		want.Equal(t, out)
 	})
 	t.Run(`twice above rule`, func(t *testing.T) {
-
+		{
+			in := &StoreCartItemsAdd_In{
+				RequestCommon: rc,
+				ProductId:     2,
+				DeltaQty:      1,
+			}
+			_ = d.StoreCartItemsAdd(in)
+		}
+		in := &StoreInvoice_In{
+			RequestCommon: rc,
+			Recalculate:   true,
+		}
+		out := d.StoreInvoice(in)
+		assert.Empty(t, out.Error)
+		for _, ci := range out.CartItems {
+			ci.Id = 0
+			ci.OwnerId = 0
+		}
+		want := autogold.Want("A2", StoreInvoice_Out{
+			CartItems: []*rqStore.CartItems{
+				{
+					ProductId: 2,
+					NameCopy:  "MacBook Pro",
+					PriceCopy: 539999,
+					Qty:       2,
+					SubTotal:  1079998,
+				},
+				{
+					ProductId: 4,
+					NameCopy:  "Raspberry Pi B",
+					PriceCopy: 3000,
+					Qty:       2,
+					Discount:  6000,
+					Info: `got 1 free (total: 2) every purchase of 1 MacBook Pro
+				`,
+				},
+			},
+			Invoice: rqStore.Invoices{
+				TotalDiscount: 6000,
+				TotalPaid:     1079998,
+			},
+		})
+		want.Equal(t, out)
 	})
-}
-
-func TestDiscountPercentPromo(t *testing.T) {
-	// buy >= N, discount P %
-
-	t.Run(`below rule`, func(t *testing.T) {
-
-	})
-	t.Run(`equal rule`, func(t *testing.T) {
-
-	})
-	t.Run(`above rule`, func(t *testing.T) {
-
-	})
-	t.Run(`twice above rule`, func(t *testing.T) {
-
+	t.Run(`twice above rule but already purchase 1`, func(t *testing.T) {
+		{
+			in := &StoreCartItemsAdd_In{
+				RequestCommon: rc,
+				ProductId:     4,
+				DeltaQty:      1,
+			}
+			_ = d.StoreCartItemsAdd(in)
+		}
+		in := &StoreInvoice_In{
+			RequestCommon: rc,
+			Recalculate:   true,
+		}
+		out := d.StoreInvoice(in)
+		assert.Empty(t, out.Error)
+		for _, ci := range out.CartItems {
+			ci.Id = 0
+			ci.OwnerId = 0
+		}
+		want := autogold.Want("A3", StoreInvoice_Out{
+			CartItems: []*rqStore.CartItems{
+				{
+					ProductId: 2,
+					NameCopy:  "MacBook Pro",
+					PriceCopy: 539999,
+					Qty:       2,
+					SubTotal:  1079998,
+				},
+				{
+					ProductId: 4,
+					NameCopy:  "Raspberry Pi B",
+					PriceCopy: 3000,
+					Qty:       2,
+					Discount:  3000,
+					SubTotal:  3000,
+					Info: `got 1 free (total: 2) every purchase of 1 MacBook Pro
+				but we don't have enough free item in inventory (missing: 1)
+				`,
+				},
+			},
+			Invoice: rqStore.Invoices{
+				TotalDiscount: 3000,
+				TotalPaid:     1082998,
+			},
+		})
+		want.Equal(t, out)
 	})
 }
 
 func TestDiscountDeductItemPromo(t *testing.T) {
 	// buy N only pay N-M
+	// buy 3 google home, only need to pay 2
+	d := NewDomain()
+	rc := prepareTestUser(d, t)
 
 	t.Run(`below rule`, func(t *testing.T) {
-
+		{
+			in := &StoreCartItemsAdd_In{
+				RequestCommon: rc,
+				ProductId:     1,
+				DeltaQty:      2,
+			}
+			_ = d.StoreCartItemsAdd(in)
+		}
+		in := &StoreInvoice_In{
+			RequestCommon: rc,
+			Recalculate:   true,
+		}
+		out := d.StoreInvoice(in)
+		assert.Empty(t, out.Error)
+		for _, ci := range out.CartItems {
+			ci.Id = 0
+			ci.OwnerId = 0
+		}
+		want := autogold.Want("B1", StoreInvoice_Out{
+			CartItems: []*rqStore.CartItems{
+				{
+					ProductId: 1,
+					NameCopy:  "Google Home",
+					PriceCopy: 4999,
+					Qty:       2,
+					SubTotal:  9998,
+				},
+			},
+			Invoice: rqStore.Invoices{TotalPaid: 9998},
+		})
+		want.Equal(t, out)
 	})
 	t.Run(`equal rule`, func(t *testing.T) {
+		{
+			in := &StoreCartItemsAdd_In{
+				RequestCommon: rc,
+				ProductId:     1,
+				DeltaQty:      1,
+			}
+			_ = d.StoreCartItemsAdd(in)
+		}
+		in := &StoreInvoice_In{
+			RequestCommon: rc,
+			Recalculate:   true,
+		}
+		out := d.StoreInvoice(in)
+		assert.Empty(t, out.Error)
+		for _, ci := range out.CartItems {
+			ci.Id = 0
+			ci.OwnerId = 0
+		}
+		want := autogold.Want("B2", StoreInvoice_Out{
+			CartItems: []*rqStore.CartItems{
+				{
+					ProductId: 1,
+					NameCopy:  "Google Home",
+					PriceCopy: 4999,
+					Qty:       3,
+					Discount:  4999,
+					SubTotal:  9998,
+				},
+			},
+			Invoice: rqStore.Invoices{
+				TotalDiscount: 4999,
+				TotalPaid:     9998,
+			},
+		})
+		want.Equal(t, out)
+	})
+	t.Run(`above rule`, func(t *testing.T) {
+		{
+			in := &StoreCartItemsAdd_In{
+				RequestCommon: rc,
+				ProductId:     1,
+				DeltaQty:      1,
+			}
+			_ = d.StoreCartItemsAdd(in)
+		}
+		in := &StoreInvoice_In{
+			RequestCommon: rc,
+			Recalculate:   true,
+		}
+		out := d.StoreInvoice(in)
+		assert.Empty(t, out.Error)
+		for _, ci := range out.CartItems {
+			ci.Id = 0
+			ci.OwnerId = 0
+		}
+		want := autogold.Want("B3", StoreInvoice_Out{
+			CartItems: []*rqStore.CartItems{
+				{
+					ProductId: 1,
+					NameCopy:  "Google Home",
+					PriceCopy: 4999,
+					Qty:       4,
+					Discount:  4999,
+					SubTotal:  14997,
+				},
+			},
+			Invoice: rqStore.Invoices{
+				TotalDiscount: 4999,
+				TotalPaid:     14997,
+			},
+		})
+		want.Equal(t, out)
+	})
+	t.Run(`twice above rule`, func(t *testing.T) {
+		{
+			in := &StoreCartItemsAdd_In{
+				RequestCommon: rc,
+				ProductId:     1,
+				DeltaQty:      2,
+			}
+			_ = d.StoreCartItemsAdd(in)
+		}
+		in := &StoreInvoice_In{
+			RequestCommon: rc,
+			Recalculate:   true,
+		}
+		out := d.StoreInvoice(in)
+		assert.Empty(t, out.Error)
+		for _, ci := range out.CartItems {
+			ci.Id = 0
+			ci.OwnerId = 0
+		}
+		want := autogold.Want("B4", StoreInvoice_Out{
+			CartItems: []*rqStore.CartItems{
+				{
+					ProductId: 1,
+					NameCopy:  "Google Home",
+					PriceCopy: 4999,
+					Qty:       6,
+					Discount:  9998,
+					SubTotal:  19996,
+				},
+			},
+			Invoice: rqStore.Invoices{
+				TotalDiscount: 9998,
+				TotalPaid:     19996,
+			},
+		})
+		want.Equal(t, out)
+	})
+}
+func TestDiscountPercentPromo(t *testing.T) {
+	// buy >= N, discount P %
+	d := NewDomain()
+	rc := prepareTestUser(d, t)
+
+	t.Run(`below rule`, func(t *testing.T) {
+		{
+			in := &StoreCartItemsAdd_In{
+				RequestCommon: rc,
+				ProductId:     3,
+				DeltaQty:      2,
+			}
+			_ = d.StoreCartItemsAdd(in)
+		}
+		in := &StoreInvoice_In{
+			RequestCommon: rc,
+			Recalculate:   true,
+		}
+		out := d.StoreInvoice(in)
+		assert.Empty(t, out.Error)
+		for _, ci := range out.CartItems {
+			ci.Id = 0
+			ci.OwnerId = 0
+		}
+		want := autogold.Want("C1", StoreInvoice_Out{
+			CartItems: []*rqStore.CartItems{
+				{
+					ProductId: 3,
+					NameCopy:  "Alexa Speaker",
+					PriceCopy: 10950,
+					Qty:       2,
+					Discount:  2190,
+					SubTotal:  19710,
+				},
+			},
+			Invoice: rqStore.Invoices{
+				TotalDiscount: 2190,
+				TotalPaid:     19710,
+			},
+		})
+		want.Equal(t, out)
+	})
+	t.Run(`equal rule`, func(t *testing.T) {
+		{
+			in := &StoreCartItemsAdd_In{
+				RequestCommon: rc,
+				ProductId:     3,
+				DeltaQty:      1,
+			}
+			_ = d.StoreCartItemsAdd(in)
+		}
+		in := &StoreInvoice_In{
+			RequestCommon: rc,
+			Recalculate:   true,
+		}
+		out := d.StoreInvoice(in)
+		assert.Empty(t, out.Error)
+		for _, ci := range out.CartItems {
+			ci.Id = 0
+			ci.OwnerId = 0
+		}
+		want := autogold.Want("C2", StoreInvoice_Out{
+			CartItems: []*rqStore.CartItems{
+				{
+					ProductId: 3,
+					NameCopy:  "Alexa Speaker",
+					PriceCopy: 10950,
+					Qty:       3,
+					Discount:  3285,
+					SubTotal:  29565,
+				},
+			},
+			Invoice: rqStore.Invoices{
+				TotalDiscount: 3285,
+				TotalPaid:     29565,
+			},
+		})
+		want.Equal(t, out)
 
 	})
 	t.Run(`above rule`, func(t *testing.T) {
+		{
+			in := &StoreCartItemsAdd_In{
+				RequestCommon: rc,
+				ProductId:     3,
+				DeltaQty:      1,
+			}
+			_ = d.StoreCartItemsAdd(in)
+		}
+		in := &StoreInvoice_In{
+			RequestCommon: rc,
+			Recalculate:   true,
+		}
+		out := d.StoreInvoice(in)
+		assert.Empty(t, out.Error)
+		for _, ci := range out.CartItems {
+			ci.Id = 0
+			ci.OwnerId = 0
+		}
+		want := autogold.Want("C3", StoreInvoice_Out{
+			CartItems: []*rqStore.CartItems{
+				{
+					ProductId: 3,
+					NameCopy:  "Alexa Speaker",
+					PriceCopy: 10950,
+					Qty:       4,
+					Discount:  4380,
+					SubTotal:  39420,
+				},
+			},
+			Invoice: rqStore.Invoices{
+				TotalDiscount: 4380,
+				TotalPaid:     39420,
+			},
+		})
+		want.Equal(t, out)
 
 	})
 	t.Run(`twice above rule`, func(t *testing.T) {
 
+		{
+			in := &StoreCartItemsAdd_In{
+				RequestCommon: rc,
+				ProductId:     3,
+				DeltaQty:      1,
+			}
+			_ = d.StoreCartItemsAdd(in)
+		}
+		in := &StoreInvoice_In{
+			RequestCommon: rc,
+			Recalculate:   true,
+		}
+		out := d.StoreInvoice(in)
+		assert.Empty(t, out.Error)
+		for _, ci := range out.CartItems {
+			ci.Id = 0
+			ci.OwnerId = 0
+		}
+		want := autogold.Want("C4", StoreInvoice_Out{
+			CartItems: []*rqStore.CartItems{
+				{
+					ProductId: 3,
+					NameCopy:  "Alexa Speaker",
+					PriceCopy: 10950,
+					Qty:       5,
+					Discount:  5475,
+					SubTotal:  49275,
+				},
+			},
+			Invoice: rqStore.Invoices{
+				TotalDiscount: 5475,
+				TotalPaid:     49275,
+			},
+		})
+		want.Equal(t, out)
 	})
 }
