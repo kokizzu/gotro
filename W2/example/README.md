@@ -309,6 +309,3 @@ mutation _ {
 }
 ```
 
-## TODO
-
-- add unit test for store example

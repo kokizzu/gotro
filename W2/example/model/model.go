@@ -100,7 +100,7 @@ func RunMigration() {
 	promo3 := wcStore.NewPromosMutator(m.Taran)
 	promo3.SetId(13)
 	promo3.SetProductId(product3.Id)
-	promo3.SetProductCount(2)
+	promo3.SetProductCount(3)
 	promo3.SetDiscountPercent(10) // 10% to all product3
 	promo3.SetStartAt(past)
 	promo3.SetEndAt(future)

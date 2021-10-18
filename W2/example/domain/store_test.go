@@ -468,15 +468,10 @@ func TestDiscountPercentPromo(t *testing.T) {
 					NameCopy:  "Alexa Speaker",
 					PriceCopy: 10950,
 					Qty:       2,
-					Discount:  2190,
-					SubTotal:  19710,
-					Info:      "discount 10% for 2 purchase\n",
+					SubTotal:  21900,
 				},
 			},
-			Invoice: rqStore.Invoices{
-				TotalDiscount: 2190,
-				TotalPaid:     19710,
-			},
+			Invoice: rqStore.Invoices{TotalPaid: 21900},
 		})
 		want.Equal(t, out)
 	})
@@ -508,7 +503,7 @@ func TestDiscountPercentPromo(t *testing.T) {
 					Qty:       3,
 					Discount:  3285,
 					SubTotal:  29565,
-					Info:      "discount 10% for 2 purchase\n",
+					Info:      "discount 10% for 3 purchase\n",
 				},
 			},
 			Invoice: rqStore.Invoices{
@@ -547,7 +542,7 @@ func TestDiscountPercentPromo(t *testing.T) {
 					Qty:       4,
 					Discount:  4380,
 					SubTotal:  39420,
-					Info:      "discount 10% for 2 purchase\n",
+					Info:      "discount 10% for 3 purchase\n",
 				},
 			},
 			Invoice: rqStore.Invoices{
@@ -587,7 +582,7 @@ func TestDiscountPercentPromo(t *testing.T) {
 					Qty:       5,
 					Discount:  5475,
 					SubTotal:  49275,
-					Info:      "discount 10% for 2 purchase\n",
+					Info:      "discount 10% for 3 purchase\n",
 				},
 			},
 			Invoice: rqStore.Invoices{
