@@ -179,7 +179,7 @@ func TestFreeItemPromo(t *testing.T) {
 					Qty:       1,
 					Discount:  3000,
 					Info: `got 1 free (total: 1) every purchase of 1 MacBook Pro
-				`,
+`,
 				},
 			},
 			Invoice: rqStore.Invoices{
@@ -224,7 +224,7 @@ func TestFreeItemPromo(t *testing.T) {
 					Qty:       2,
 					Discount:  6000,
 					Info: `got 1 free (total: 2) every purchase of 1 MacBook Pro
-				`,
+`,
 				},
 			},
 			Invoice: rqStore.Invoices{
@@ -271,7 +271,7 @@ func TestFreeItemPromo(t *testing.T) {
 					SubTotal:  3000,
 					Info: `got 1 free (total: 2) every purchase of 1 MacBook Pro
 				but we don't have enough free item in inventory (missing: 1)
-				`,
+`,
 				},
 			},
 			Invoice: rqStore.Invoices{
