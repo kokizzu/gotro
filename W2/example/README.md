@@ -309,3 +309,7 @@ mutation _ {
 }
 ```
 
+## TODOs:
+
+- add more tests (eg. multiple cart)
+- generate graphql schema with relationship to other model (and max nested and rate limiter)
