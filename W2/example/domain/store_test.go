@@ -255,14 +255,14 @@ func TestFreeItemPromo(t *testing.T) {
 		}
 		want := autogold.Want("A3", StoreInvoice_Out{
 			CartItems: []*rqStore.CartItems{
-				{
+				&rqStore.CartItems{
 					ProductId: 2,
 					NameCopy:  "MacBook Pro",
 					PriceCopy: 539999,
 					Qty:       2,
 					SubTotal:  1079998,
 				},
-				{
+				&rqStore.CartItems{
 					ProductId: 4,
 					NameCopy:  "Raspberry Pi B",
 					PriceCopy: 3000,
@@ -270,7 +270,7 @@ func TestFreeItemPromo(t *testing.T) {
 					Discount:  3000,
 					SubTotal:  3000,
 					Info: `got 1 free (total: 2) every purchase of 1 MacBook Pro
-				but we don't have enough free item in inventory (missing: 1)
+but we don't have enough free item in inventory (missing: 1)
 `,
 				},
 			},
@@ -343,13 +343,14 @@ func TestDiscountDeductItemPromo(t *testing.T) {
 		}
 		want := autogold.Want("B2", StoreInvoice_Out{
 			CartItems: []*rqStore.CartItems{
-				{
+				&rqStore.CartItems{
 					ProductId: 1,
 					NameCopy:  "Google Home",
 					PriceCopy: 4999,
 					Qty:       3,
 					Discount:  4999,
 					SubTotal:  9998,
+					Info:      "discount 1 for every 3 purchase\n",
 				},
 			},
 			Invoice: rqStore.Invoices{
@@ -380,13 +381,14 @@ func TestDiscountDeductItemPromo(t *testing.T) {
 		}
 		want := autogold.Want("B3", StoreInvoice_Out{
 			CartItems: []*rqStore.CartItems{
-				{
+				&rqStore.CartItems{
 					ProductId: 1,
 					NameCopy:  "Google Home",
 					PriceCopy: 4999,
 					Qty:       4,
 					Discount:  4999,
 					SubTotal:  14997,
+					Info:      "discount 1 for every 3 purchase\n",
 				},
 			},
 			Invoice: rqStore.Invoices{
@@ -417,13 +419,14 @@ func TestDiscountDeductItemPromo(t *testing.T) {
 		}
 		want := autogold.Want("B4", StoreInvoice_Out{
 			CartItems: []*rqStore.CartItems{
-				{
+				&rqStore.CartItems{
 					ProductId: 1,
 					NameCopy:  "Google Home",
 					PriceCopy: 4999,
 					Qty:       6,
 					Discount:  9998,
 					SubTotal:  19996,
+					Info:      "discount 1 for every 3 purchase\n",
 				},
 			},
 			Invoice: rqStore.Invoices{
@@ -460,13 +463,14 @@ func TestDiscountPercentPromo(t *testing.T) {
 		}
 		want := autogold.Want("C1", StoreInvoice_Out{
 			CartItems: []*rqStore.CartItems{
-				{
+				&rqStore.CartItems{
 					ProductId: 3,
 					NameCopy:  "Alexa Speaker",
 					PriceCopy: 10950,
 					Qty:       2,
 					Discount:  2190,
 					SubTotal:  19710,
+					Info:      "discount 10% for 2 purchase\n",
 				},
 			},
 			Invoice: rqStore.Invoices{
@@ -497,13 +501,14 @@ func TestDiscountPercentPromo(t *testing.T) {
 		}
 		want := autogold.Want("C2", StoreInvoice_Out{
 			CartItems: []*rqStore.CartItems{
-				{
+				&rqStore.CartItems{
 					ProductId: 3,
 					NameCopy:  "Alexa Speaker",
 					PriceCopy: 10950,
 					Qty:       3,
 					Discount:  3285,
 					SubTotal:  29565,
+					Info:      "discount 10% for 2 purchase\n",
 				},
 			},
 			Invoice: rqStore.Invoices{
@@ -535,13 +540,14 @@ func TestDiscountPercentPromo(t *testing.T) {
 		}
 		want := autogold.Want("C3", StoreInvoice_Out{
 			CartItems: []*rqStore.CartItems{
-				{
+				&rqStore.CartItems{
 					ProductId: 3,
 					NameCopy:  "Alexa Speaker",
 					PriceCopy: 10950,
 					Qty:       4,
 					Discount:  4380,
 					SubTotal:  39420,
+					Info:      "discount 10% for 2 purchase\n",
 				},
 			},
 			Invoice: rqStore.Invoices{
@@ -574,13 +580,14 @@ func TestDiscountPercentPromo(t *testing.T) {
 		}
 		want := autogold.Want("C4", StoreInvoice_Out{
 			CartItems: []*rqStore.CartItems{
-				{
+				&rqStore.CartItems{
 					ProductId: 3,
 					NameCopy:  "Alexa Speaker",
 					PriceCopy: 10950,
 					Qty:       5,
 					Discount:  5475,
 					SubTotal:  49275,
+					Info:      "discount 10% for 2 purchase\n",
 				},
 			},
 			Invoice: rqStore.Invoices{

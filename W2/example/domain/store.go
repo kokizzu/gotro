@@ -1,6 +1,7 @@
 package domain
 
 import (
+	"github.com/kokizzu/gotro/F"
 	"github.com/kokizzu/gotro/I"
 	"github.com/kokizzu/gotro/W2/example/model/mStore/rqStore"
 	"github.com/kokizzu/gotro/W2/example/model/mStore/wcStore"
@@ -224,13 +225,13 @@ func (d *Domain) StoreInvoice(in *StoreInvoice_In) (out StoreInvoice_Out) {
 						orig := ci.SubTotal
 						ci.SubTotal = int64(float64(ci.SubTotal) * (100 - promo.DiscountPercent) / 100)
 						ci.Discount = uint64(orig - ci.SubTotal)
+						ci.Info += "discount "+F.ToS(promo.DiscountPercent)+"% for "+I.ToS(minCount)+" purchase\n"
 					} else if promo.DiscountCount > 0 {
-						if ci.Qty >= minCount {
 							// eg. buy 3, 3rd one is discount, then buy 6, 3rd and 6th is discount
 							orig := ci.SubTotal
 							ci.SubTotal = ci.PriceCopy * (ci.Qty - int64(promo.DiscountCount)*multiplier)
 							ci.Discount = uint64(orig - ci.SubTotal)
-						}
+							ci.Info += "discount "+I.UToS(promo.DiscountCount)+" for every "+I.ToS(minCount)+" purchase\n"
 					}
 				}
 			}
