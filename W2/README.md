@@ -88,3 +88,6 @@ svelte/src/pages/api.js --> used for generating API client
 
 ![image](https://user-images.githubusercontent.com/1061610/131266708-44935872-e34a-4538-885a-6056946c9482.png)
 
+## TODO
+
+- censor fields (eg. password, access tokens)
