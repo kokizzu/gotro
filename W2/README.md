@@ -90,4 +90,4 @@ svelte/src/pages/api.js --> used for generating API client
 
 ## TODO
 
-- censor fields (eg. password, access tokens)
+- censor fields from GraphQL codegen (eg. password, access tokens)
