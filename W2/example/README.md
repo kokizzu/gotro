@@ -296,7 +296,7 @@ func (d *Domain) MediaUpload(in *MediaUpload_In) (out MediaUpload_Out) {
 
 After starting `docker-compose up` and `make apiserver`, open [localhost:9090/graphql](//localhost:9090/graphql) and run these query:
 
-```
+```graphql
 mutation _ {
   UserLogin(email: "root@localhost", password: "test123", debug: true) {
     ResponseCommon {
