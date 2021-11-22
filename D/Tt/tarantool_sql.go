@@ -64,14 +64,10 @@ func (a *Adapter) ExecSql(query string, parameters ...MSX) map[interface{}]inter
 }
 
 func (a *Adapter) QuerySql(query string, callback func(row []interface{}), parameters ...MSX) []interface{} {
-	start := time.Now()
-	defer func() {
-		dur := time.Since(start)
-		log.Printf("QuerySql done in %v\n", dur)
-	}()
+	if DebugPerf {
+		defer L.TimeTrack(time.Now(), query)
+	}
 	kv := a.ExecSql(query, parameters...)
-	dur := time.Since(start)
-	log.Printf("ExecSql done in %v\n", dur)
 	rows, ok := kv[`rows`].([]interface{})
 	if ok {
 		for _, v := range rows {
@@ -81,3 +77,5 @@ func (a *Adapter) QuerySql(query string, callback func(row []interface{}), param
 	}
 	return nil
 }
+
+var DebugPerf = false
