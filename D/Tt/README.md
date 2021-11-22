@@ -307,7 +307,7 @@ func (p *UsersMutator) SetEncryptPassword(password string) bool {
 
 9. to initialize automatic migration, just create `model/run_migration.go`
 
-```
+```go
 func RunMigration() {
 	L.Print(`run migration..`)
 	tt := &Tt.Adapter{Connection: ConnectTarantool(), Reconnect: ConnectTarantool}
@@ -318,7 +318,7 @@ func RunMigration() {
 
 then call it on `main`
 
-```
+```go
 func main() {
 	model.RunMigration()
 }
