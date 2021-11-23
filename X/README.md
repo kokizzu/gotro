@@ -9,7 +9,7 @@
 
 ```go
 func ArrToIntArr(any_arr []interface{}) []int64
-```go
+```
 Convert array of any data type to array of int64
 
     var m4 []interface{}
@@ -20,7 +20,7 @@ Convert array of any data type to array of int64
 
 ```go
 func ArrToStrArr(any_arr []interface{}) []string
-```go
+```
 convert array of any data type to array of string
 
     var m4 []interface{}
@@ -31,13 +31,13 @@ convert array of any data type to array of string
 
 ```go
 func ToAX(any interface{}) A.X
-```go
+```
 
 #### func  ToArr
 
 ```go
 func ToArr(any interface{}) []interface{}
-```go
+```
 convert any data type to array of any
 
     var m3 interface{}
@@ -48,7 +48,7 @@ convert any data type to array of any
 
 ```go
 func ToBool(any interface{}) bool
-```go
+```
 convert any data type to bool
 
     var m interface{}
@@ -59,7 +59,7 @@ convert any data type to bool
 
 ```go
 func ToByte(any interface{}) byte
-```go
+```
 convert any data type to int8
 
     var m interface{}
@@ -70,7 +70,7 @@ convert any data type to int8
 
 ```go
 func ToF(any interface{}) float64
-```go
+```
 Convert any data type to float64
 
     var m interface{}
@@ -81,7 +81,7 @@ Convert any data type to float64
 
 ```go
 func ToI(any interface{}) int64
-```go
+```
 convert any data type to int64
 
     var m interface{}
@@ -92,20 +92,20 @@ convert any data type to int64
 
 ```go
 func ToJson(any interface{}) string
-```go
+```
 convert to standard json text
 
 #### func  ToJson5
 
 ```go
 func ToJson5(any interface{}) string
-```go
+```
 
 #### func  ToJsonPretty
 
 ```go
 func ToJsonPretty(any interface{}) string
-```go
+```
 convert to beautiful json text
 
     m:= []interface {}{true,`1`,23,`wabcd`}
@@ -121,19 +121,19 @@ convert to beautiful json text
 
 ```go
 func ToMSS(any interface{}) M.SS
-```go
+```
 
 #### func  ToMSX
 
 ```go
 func ToMSX(any interface{}) M.SX
-```go
+```
 
 #### func  ToS
 
 ```go
 func ToS(any interface{}) string
-```go
+```
 convert any data type to string
 
     var m interface{}
@@ -144,14 +144,14 @@ convert any data type to string
 
 ```go
 func ToTime(any interface{}) time.Time
-```go
+```
 convert any to time
 
 #### func  ToU
 
 ```go
 func ToU(any interface{}) uint64
-```go
+```
 convert any data type to uint
 
     var m interface{}
@@ -162,4 +162,4 @@ convert any data type to uint
 
 ```go
 func ToYaml(any interface{}) string
-```go
+```

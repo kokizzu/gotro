@@ -9,28 +9,28 @@
 
 ```go
 func FloatExist(arr []float64, val float64) bool
-```go
+```
 check if float exists on array
 
 #### func  IntAppendIfNotExists
 
 ```go
 func IntAppendIfNotExists(arr []int64, str int64) []int64
-```go
+```
 Append if not exists
 
 #### func  IntContains
 
 ```go
 func IntContains(arr []int64, str int64) bool
-```go
+```
 Append int64 to array of string if not exists
 
 #### func  IntJoin
 
 ```go
 func IntJoin(arr []int64, sep string) string
-```go
+```
 combine int64s in the array of int64 with the chosen string separator
 
     m1:= []int64{123,456}
@@ -40,35 +40,35 @@ combine int64s in the array of int64 with the chosen string separator
 
 ```go
 func IntsAppendIfNotExists(arr []int64, ints []int64) []int64
-```go
+```
 Append slices if not exists
 
 #### func  ParseEmail
 
 ```go
 func ParseEmail(str_emails, each_name string) []string
-```go
+```
 split, add alias, and concat emails with name
 
 #### func  StrAppendIfNotExists
 
 ```go
 func StrAppendIfNotExists(arr []string, str string) []string
-```go
+```
 Append if not exists
 
 #### func  StrContains
 
 ```go
 func StrContains(arr []string, str string) bool
-```go
+```
 Append string to array of string if not exists
 
 #### func  StrJoin
 
 ```go
 func StrJoin(arr []string, sep string) string
-```go
+```
 combine strings in the array of string with the chosen string separator
 
     m1:= []string{`satu`,`dua`}
@@ -78,7 +78,7 @@ combine strings in the array of string with the chosen string separator
 
 ```go
 func StrToInt(arr []string) []int64
-```go
+```
 
     Convert array of string to array of int64
 func main() {
@@ -94,14 +94,14 @@ convert string list to integer list
 
 ```go
 func StrsAppendIfNotExists(arr []string, strs []string) []string
-```go
+```
 Append slices if not exists
 
 #### func  ToJson
 
 ```go
 func ToJson(arr []interface{}) string
-```go
+```
 convert map array of string to JSON string type
 
     m:= []interface{}{123,`abc`}
@@ -111,7 +111,7 @@ convert map array of string to JSON string type
 
 ```go
 func UIntJoin(arr []uint64, sep string) string
-```go
+```
 combine uint64s in the array of int64 with the chosen string separator
 
     m1:= []uint64{123,456}
@@ -121,7 +121,7 @@ combine uint64s in the array of int64 with the chosen string separator
 
 ```go
 type MSX []map[string]interface{}
-```go
+```
 
 array (slice) of map with string key and any value
 
@@ -135,7 +135,7 @@ array (slice) of map with string key and any value
 
 ```go
 type X []interface{}
-```go
+```
 
 array (slice) of anything
 

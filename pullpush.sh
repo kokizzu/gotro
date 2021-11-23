@@ -10,8 +10,6 @@ fi
 for x in A B C F I L M S T X; do
   godocdown $x > $x/README.md
   replacer gotro/$x github.com/kokizzu/gotro/$x '# ' $x/README.md
-  replacer '```' '```go' '# ' $x/README.md
-  replacer '```gogo' '```go' '# ' $x/README.md
 done
 
 # format indentation

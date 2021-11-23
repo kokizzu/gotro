@@ -9,7 +9,7 @@
 
 ```go
 func ToS(b bool) string
-```go
+```
 converts boolean type to string type, writing "true" or "false"
 
     B.ToS(2 > 1)  // "true"
