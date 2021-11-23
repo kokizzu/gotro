@@ -8,6 +8,7 @@ import (
 	"github.com/kokizzu/gotro/A"
 	"github.com/kokizzu/gotro/D/Tt"
 	"github.com/kokizzu/gotro/L"
+	"github.com/kokizzu/gotro/X"
 )
 
 //go:generate gomodifytags -all -add-tags json,form,query,long,msg -transform camelcase --skip-unexported -w -file wcStore__ORM.GEN.go
@@ -96,7 +97,13 @@ func (c *CartItemsMutator) DoDeletePermanentByOwnerIdInvoiceIdProductId() bool {
 
 // insert, error if exists
 func (c *CartItemsMutator) DoInsert() bool { //nolint:dupl false positive
-	_, err := c.Adapter.Insert(c.SpaceName(), c.ToArray())
+	row, err := c.Adapter.Insert(c.SpaceName(), c.ToArray())
+	if err == nil {
+		tup := row.Tuples()
+		if len(tup) > 0 && len(tup[0]) > 0 && tup[0][0] != nil {
+			c.Id = X.ToU(tup[0][0])
+		}
+	}
 	return !L.IsError(err, `CartItems.DoInsert failed: `+c.SpaceName())
 }
 
@@ -341,7 +348,13 @@ func (i *InvoicesMutator) DoDeletePermanentById() bool { //nolint:dupl false pos
 
 // insert, error if exists
 func (i *InvoicesMutator) DoInsert() bool { //nolint:dupl false positive
-	_, err := i.Adapter.Insert(i.SpaceName(), i.ToArray())
+	row, err := i.Adapter.Insert(i.SpaceName(), i.ToArray())
+	if err == nil {
+		tup := row.Tuples()
+		if len(tup) > 0 && len(tup[0]) > 0 && tup[0][0] != nil {
+			i.Id = X.ToU(tup[0][0])
+		}
+	}
 	return !L.IsError(err, `Invoices.DoInsert failed: `+i.SpaceName())
 }
 
@@ -616,9 +629,35 @@ func (p *ProductsMutator) DoDeletePermanentBySku() bool { //nolint:dupl false po
 	return !L.IsError(err, `Products.DoDeletePermanentBySku failed: `+p.SpaceName())
 }
 
+// Overwrite all columns, error if not exists
+func (p *ProductsMutator) DoOverwriteBySku() bool { //nolint:dupl false positive
+	_, err := p.Adapter.Update(p.SpaceName(), p.UniqueIndexSku(), A.X{p.Sku}, p.ToUpdateArray())
+	return !L.IsError(err, `Products.DoOverwriteBySku failed: `+p.SpaceName())
+}
+
+// Update only mutated, error if not exists, use Find* and Set* methods instead of direct assignment
+func (p *ProductsMutator) DoUpdateBySku() bool { //nolint:dupl false positive
+	if !p.HaveMutation() {
+		return true
+	}
+	_, err := p.Adapter.Update(p.SpaceName(), p.UniqueIndexSku(), A.X{p.Sku}, p.mutations)
+	return !L.IsError(err, `Products.DoUpdateBySku failed: `+p.SpaceName())
+}
+
+func (p *ProductsMutator) DoDeletePermanentBySku() bool { //nolint:dupl false positive
+	_, err := p.Adapter.Delete(p.SpaceName(), p.UniqueIndexSku(), A.X{p.Sku})
+	return !L.IsError(err, `Products.DoDeletePermanentBySku failed: `+p.SpaceName())
+}
+
 // insert, error if exists
 func (p *ProductsMutator) DoInsert() bool { //nolint:dupl false positive
-	_, err := p.Adapter.Insert(p.SpaceName(), p.ToArray())
+	row, err := p.Adapter.Insert(p.SpaceName(), p.ToArray())
+	if err == nil {
+		tup := row.Tuples()
+		if len(tup) > 0 && len(tup[0]) > 0 && tup[0][0] != nil {
+			p.Id = X.ToU(tup[0][0])
+		}
+	}
 	return !L.IsError(err, `Products.DoInsert failed: `+p.SpaceName())
 }
 
@@ -823,7 +862,13 @@ func (p *PromosMutator) DoDeletePermanentById() bool { //nolint:dupl false posit
 
 // insert, error if exists
 func (p *PromosMutator) DoInsert() bool { //nolint:dupl false positive
-	_, err := p.Adapter.Insert(p.SpaceName(), p.ToArray())
+	row, err := p.Adapter.Insert(p.SpaceName(), p.ToArray())
+	if err == nil {
+		tup := row.Tuples()
+		if len(tup) > 0 && len(tup[0]) > 0 && tup[0][0] != nil {
+			p.Id = X.ToU(tup[0][0])
+		}
+	}
 	return !L.IsError(err, `Promos.DoInsert failed: `+p.SpaceName())
 }
 

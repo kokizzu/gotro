@@ -1,5 +1,5 @@
 // can be hit using with /api/[ApiName]
-export const LastUpdatedAt = 1634497977
+export const LastUpdatedAt = 1637658775
 export const APIs = {
 	StoreCartItemsAdd: {
 		in: {
@@ -29,6 +29,7 @@ export const APIs = {
 				info:  '', // string
 			}],
 			total: 0, // uint32
+			isOverflow: false, // bool
 		}, read: [
 			"Auth.Sessions",
 			"Store.Products",
@@ -37,12 +38,15 @@ export const APIs = {
 		], stat: [
 		], deps: [
 		], err: [
+			[400, `cannot add more`],
+			[400, `cannot remove more`],
 			[400, `invalid session token`],
 			[400, `missing session token`],
 			[400, `session missing from database, wrong env?`],
 			[400, `token expired`],
 			[403, `must login`],
 			[403, `session expired or logged out`],
+			[404, `cart item not found`],
 			[404, `product not found`],
 			[500, `failed add/remove item on cart`],
 			[500, `failed insert to cart`],

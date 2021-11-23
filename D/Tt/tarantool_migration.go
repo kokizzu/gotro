@@ -60,15 +60,19 @@ const (
 const BoxSpacePrefix = `box.space.`
 const IfNotExists = `if_not_exists`
 
+const IdCol = `id`
+
 type TableProp struct {
-	Fields       []Field
-	Unique1      string
-	Unique2      string
-	Unique3      string
-	Uniques      []string // multicolumn unique
-	Indexes      []string
-	Engine       EngineType
-	HiddenFields []string
+	Fields          []Field
+	Unique1         string
+	Unique2         string
+	Unique3         string
+	Uniques         []string // multicolumn unique
+	Indexes         []string
+	Engine          EngineType
+	HiddenFields    []string
+	AutoIncrementId bool // "id" column will be used to generate sequence, can only be created at beginning
+	GenGraphqlType  bool
 }
 
 type Field struct { // https://godoc.org/gopkg.in/vmihailenco/msgpack.v2#pkg-examples
@@ -85,6 +89,7 @@ type Index struct {
 	Parts       []string `msgpack:"parts"`
 	IfNotExists bool     `msgpack:"if_not_exists"`
 	Unique      bool     `msgpack:"unique"`
+	Sequence    string   `msgpack:"sequence,omitempty"`
 }
 
 type MSX map[string]interface{}
@@ -96,7 +101,8 @@ type Adapter struct {
 
 func (a *Adapter) UpsertTable(tableName TableName, prop *TableProp) bool {
 	if DEBUG {
-		L.Print(`---------------------------------------------------------`)
+		L.Print(`---UpsertTable-Start-` + tableName + `----------------------------------------------------`)
+		defer L.Print(`---UpsertTable-End-` + tableName + `-------------------------------------------------------`)
 	}
 	if prop.Engine == `` {
 		prop.Engine = Vinyl
@@ -109,17 +115,36 @@ func (a *Adapter) UpsertTable(tableName TableName, prop *TableProp) bool {
 	}
 	// create one field unique index
 	a.ExecBoxSpace(string(tableName)+`:format`, A.X{})
-	if prop.Unique1 != `` {
+	if prop.AutoIncrementId {
+		if len(prop.Fields) < 1 || prop.Fields[0].Name != IdCol || prop.Fields[0].Type != Unsigned {
+			panic(`must create Unsigned id field on first field to use AutoIncrementId`)
+		}
+		
+		seqName := string(tableName) + `_`+IdCol
+		a.ExecTarantoolVerbose(`box.schema.sequence.create`, A.X{
+			seqName,
+		})
+		a.ExecBoxSpace(string(tableName)+`:create_index`, A.X{
+			IdCol, Index{
+				Sequence:    seqName,
+				Parts:       []string{IdCol},
+				IfNotExists: true,
+				Unique:      true,
+			},
+		})
+	}
+	// only create unique if not "id"
+	if prop.Unique1 != `` && !(prop.AutoIncrementId && prop.Unique1 == IdCol) {
 		a.ExecBoxSpace(string(tableName)+`:create_index`, A.X{
 			prop.Unique1, Index{Parts: []string{prop.Unique1}, IfNotExists: true, Unique: true},
 		})
 	}
-	if prop.Unique2 != `` {
+	if prop.Unique2 != `` && !(prop.AutoIncrementId && prop.Unique2 == IdCol) {
 		a.ExecBoxSpace(string(tableName)+`:create_index`, A.X{
 			prop.Unique2, Index{Parts: []string{prop.Unique2}, IfNotExists: true, Unique: true},
 		})
 	}
-	if prop.Unique3 != `` {
+	if prop.Unique3 != `` && !(prop.AutoIncrementId && prop.Unique2 == IdCol) {
 		a.ExecBoxSpace(string(tableName)+`:create_index`, A.X{
 			prop.Unique3, Index{Parts: []string{prop.Unique3}, IfNotExists: true, Unique: true},
 		})

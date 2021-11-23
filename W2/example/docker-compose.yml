@@ -2,7 +2,7 @@ version: "3.3"
 
 services:
   clickhouse1:
-    image: yandex/clickhouse-server:21.3.3.14
+    image: yandex/clickhouse-server:latest # 21.8.11.4
     ports:
       - 8123:8123
       - 9000:9000
@@ -14,7 +14,7 @@ services:
 #      - ./config/local.xml:/etc/clickhouse-server/config.d/local.xml
   
   tarantool1:
-    image: tarantool/tarantool:2.8.2 
+    image: tarantool/tarantool:latest # 2.8.2 
     # x.x.0 = alpha, x.x.1 = beta, x.x.2+ = stable, latest not always stable
 #    volumes:
 #      - ./tarantool-data:/usr/local/share/tarantool

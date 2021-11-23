@@ -83,8 +83,9 @@ var TarantoolTables = map[Tt.TableName]*Tt.TableProp{
 			{InventoryQty, Tt.Unsigned},
 			{WeightGram, Tt.Unsigned},
 		},
-		Unique1: Id,
+		AutoIncrementId: true,
 		Unique2: Sku,
+		Unique1: Sku,
 	},
 	TablePromos: {
 		Fields: []Tt.Field{
@@ -106,7 +107,7 @@ var TarantoolTables = map[Tt.TableName]*Tt.TableProp{
 			{DiscountCount, Tt.Unsigned},
 			{DiscountPercent, Tt.Number},
 		},
-		Unique1: Id,
+		AutoIncrementId: true,
 	},
 	TableCartItems: {
 		Fields: []Tt.Field{
@@ -130,7 +131,7 @@ var TarantoolTables = map[Tt.TableName]*Tt.TableProp{
 			{SubTotal, Tt.Integer}, // negative = refund
 			{Info, Tt.String},
 		},
-		Unique1: Id,
+		AutoIncrementId: true,
 		Uniques: []string{OwnerId, InvoiceId, ProductId},
 	},
 	TableInvoices: {
@@ -157,7 +158,7 @@ var TarantoolTables = map[Tt.TableName]*Tt.TableProp{
 			{DeadlineAt, Tt.Unsigned},
 			{PromoRuleIds, Tt.String},
 		},
-		Unique1: Id,
+		AutoIncrementId: true,
 		Indexes: []string{OwnerId, PaidAt, DeadlineAt},
 	},
 }

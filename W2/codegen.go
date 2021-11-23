@@ -34,6 +34,8 @@ type GeneratorConfig struct {
 	CliArgsFile    string // cli args handler generated file
 	ApiDocsFile    string // apidocs generated file
 
+	GenGraphQl bool
+
 	ThirdParties []string
 }
 
@@ -54,7 +56,9 @@ func GenerateFiberAndCli(c *GeneratorConfig) {
 
 	r.WriteWebRoutes(c.WebRoutesFile)
 
-	r.WriteGraphql(c.WebGraphqlFile)
+	if c.GenGraphQl {
+		r.WriteGraphql(c.WebGraphqlFile)
+	}
 
 	r.WriteCliArgs(c.CliArgsFile)
 }

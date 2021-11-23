@@ -7,7 +7,6 @@ import (
 
 	"github.com/tarantool/go-tarantool"
 
-	"github.com/graphql-go/graphql"
 	"github.com/kokizzu/gotro/A"
 	"github.com/kokizzu/gotro/D/Tt"
 	"github.com/kokizzu/gotro/L"
@@ -54,33 +53,6 @@ func (s *Sessions) FindBySessionToken() bool { //nolint:dupl false positive
 		return true
 	}
 	return false
-}
-
-var GraphqlFieldSessionsBySessionToken = &graphql.Field{
-	Type:        GraphqlTypeSessions,
-	Description: `list of Sessions`,
-	Args: graphql.FieldConfigArgument{
-		`SessionToken`: &graphql.ArgumentConfig{
-			Type: graphql.String,
-		},
-	},
-}
-
-func (g *Sessions) GraphqlFieldSessionsBySessionTokenWithResolver() *graphql.Field {
-	field := *GraphqlFieldSessionsBySessionToken
-	field.Resolve = func(p graphql.ResolveParams) (interface{}, error) {
-		q := g
-		v, ok := p.Args[`sessionToken`]
-		if !ok {
-			v, _ = p.Args[`SessionToken`]
-		}
-		q.SessionToken = X.ToS(v)
-		if q.FindBySessionToken() {
-			return q, nil
-		}
-		return nil, nil
-	}
-	return &field
 }
 
 func (s *Sessions) sqlSelectAllFields() string { //nolint:dupl false positive
@@ -145,23 +117,6 @@ func (s *Sessions) Total() int64 { //nolint:dupl false positive
 	return 0
 }
 
-var GraphqlTypeSessions = graphql.NewObject(
-	graphql.ObjectConfig{
-		Name: `sessions`,
-		Fields: graphql.Fields{
-			`sessionToken`: &graphql.Field{
-				Type: graphql.String,
-			},
-			`userId`: &graphql.Field{
-				Type: graphql.ID,
-			},
-			`expiredAt`: &graphql.Field{
-				Type: graphql.Int,
-			},
-		},
-	},
-)
-
 // DO NOT EDIT, will be overwritten by github.com/kokizzu/D/Tt/tarantool_orm_generator.go
 
 type Users struct {
@@ -213,33 +168,6 @@ func (u *Users) FindById() bool { //nolint:dupl false positive
 		return true
 	}
 	return false
-}
-
-var GraphqlFieldUsersById = &graphql.Field{
-	Type:        GraphqlTypeUsers,
-	Description: `list of Users`,
-	Args: graphql.FieldConfigArgument{
-		`Id`: &graphql.ArgumentConfig{
-			Type: graphql.Int,
-		},
-	},
-}
-
-func (g *Users) GraphqlFieldUsersByIdWithResolver() *graphql.Field {
-	field := *GraphqlFieldUsersById
-	field.Resolve = func(p graphql.ResolveParams) (interface{}, error) {
-		q := g
-		v, ok := p.Args[`id`]
-		if !ok {
-			v, _ = p.Args[`Id`]
-		}
-		q.Id = X.ToU(v)
-		if q.FindById() {
-			return q, nil
-		}
-		return nil, nil
-	}
-	return &field
 }
 
 func (u *Users) UniqueIndexEmail() string { //nolint:dupl false positive
@@ -449,8 +377,12 @@ func (u *Users) sqlLastLoginAt() string { //nolint:dupl false positive
 }
 
 func (u *Users) ToArray() A.X { //nolint:dupl false positive
+	var id interface{} = nil
+	if u.Id != 0 {
+		id = u.Id
+	}
 	return A.X{
-		u.Id,                 // 0
+		id,
 		u.Email,              // 1
 		u.Password,           // 2
 		u.CreatedAt,          // 3
@@ -500,61 +432,5 @@ func (u *Users) Total() int64 { //nolint:dupl false positive
 	}
 	return 0
 }
-
-var GraphqlTypeUsers = graphql.NewObject(
-	graphql.ObjectConfig{
-		Name: `users`,
-		Fields: graphql.Fields{
-			`id`: &graphql.Field{
-				Type: graphql.Int,
-			},
-			`email`: &graphql.Field{
-				Type: graphql.String,
-			},
-			`createdAt`: &graphql.Field{
-				Type: graphql.Int,
-			},
-			`createdBy`: &graphql.Field{
-				Type: graphql.ID,
-			},
-			`updatedAt`: &graphql.Field{
-				Type: graphql.Int,
-			},
-			`updatedBy`: &graphql.Field{
-				Type: graphql.ID,
-			},
-			`deletedAt`: &graphql.Field{
-				Type: graphql.Int,
-			},
-			`deletedBy`: &graphql.Field{
-				Type: graphql.ID,
-			},
-			`isDeleted`: &graphql.Field{
-				Type: graphql.Boolean,
-			},
-			`restoredAt`: &graphql.Field{
-				Type: graphql.Int,
-			},
-			`restoredBy`: &graphql.Field{
-				Type: graphql.ID,
-			},
-			`passwordSetAt`: &graphql.Field{
-				Type: graphql.Int,
-			},
-			`secretCodeAt`: &graphql.Field{
-				Type: graphql.Int,
-			},
-			`verificationSentAt`: &graphql.Field{
-				Type: graphql.Int,
-			},
-			`verifiedAt`: &graphql.Field{
-				Type: graphql.Int,
-			},
-			`lastLoginAt`: &graphql.Field{
-				Type: graphql.Int,
-			},
-		},
-	},
-)
 
 // DO NOT EDIT, will be overwritten by github.com/kokizzu/D/Tt/tarantool_orm_generator.go

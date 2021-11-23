@@ -1,15 +1,17 @@
-package Tt
+package wcZzz
 
 import (
 	"fmt"
-	"log"
-	"os"
-	"testing"
-
+	"github.com/kokizzu/gotro/D/Tt"
+	"github.com/kokizzu/gotro/D/Tt/mZzz"
 	"github.com/kokizzu/gotro/L"
+	"github.com/kpango/fastime"
 	"github.com/ory/dockertest/v3"
 	"github.com/stretchr/testify/assert"
 	"github.com/tarantool/go-tarantool"
+	"log"
+	"os"
+	"testing"
 )
 
 var globalPool *dockertest.Pool
@@ -76,75 +78,18 @@ func TestMain(m *testing.M) {
 	})
 }
 
-func TestMigration(t *testing.T) {
-	a := Adapter{dbConn, reconnect}
-	const tableName = `test1`
-	t.Run(`create test table`, func(t *testing.T) {
-		ok := a.UpsertTable(tableName, &TableProp{
-			Fields: []Field{
-				{`id`, Unsigned},
-				{`name`, String},
-			},
-			Unique1: `id`,
-			Engine:  Vinyl,
-		})
+func TestAutoIncrement(t *testing.T) {
+	a := &Tt.Adapter{dbConn, reconnect}
+	t.Run(`test zzz table`, func(t *testing.T) {
+		ok := a.UpsertTable(mZzz.TableZzz, mZzz.TarantoolTables[mZzz.TableZzz])
 		assert.True(t, ok)
 	})
-	t.Run(`add column test table`, func(t *testing.T) {
-		ok := a.UpsertTable(tableName, &TableProp{
-			Fields: []Field{
-				{`id`, Unsigned},
-				{`name`, String},
-				{`age`, Integer},
-			},
-			Unique1: `id`,
-			Engine:  Vinyl,
-		})
+	t.Run(`test insert auto increment`, func(t *testing.T) {
+		zzz := NewZzzMutator(a)
+		now := fastime.Now().Unix()
+		zzz.CreatedAt = now
+		ok := zzz.DoInsert()
 		assert.True(t, ok)
-	})
-	t.Run(`add 2 columns test table`, func(t *testing.T) {
-		ok := a.UpsertTable(tableName, &TableProp{
-			Fields: []Field{
-				{`id`, Unsigned},
-				{`name`, String},
-				{`age`, Integer},
-				{`a`, Unsigned},
-				{`b`, Integer},
-			},
-			Unique1: `id`,
-			Engine:  Vinyl,
-		})
-		assert.True(t, ok)
-	})
-	t.Run(`auto increment`, func(t *testing.T) {
-		ok := a.UpsertTable(tableName, &TableProp{
-			Fields: []Field{
-				{`id`, Unsigned},
-				{`name`, String},
-				{`age`, Integer},
-				{`a`, Unsigned},
-				{`b`, Integer},
-			},
-			Unique1:         `id`,
-			Engine:          Vinyl,
-			AutoIncrementId: true,
-		})
-		assert.True(t, ok)
-	})
-	t.Run(`auto increment`, func(t *testing.T) {
-		ok := a.UpsertTable(tableName, &TableProp{
-			Fields: []Field{
-				{`id`, Unsigned},
-				{`name`, String},
-				{`age`, Integer},
-				{`a`, Unsigned},
-				{`b`, Integer},
-			},
-			Unique1:         `id`,
-			Engine:          Vinyl,
-			Uniques: []string{`a`,`b`},
-			AutoIncrementId: true,
-		})
-		assert.True(t, ok)
+		assert.Greater(t, zzz.Id, uint64(0))
 	})
 }

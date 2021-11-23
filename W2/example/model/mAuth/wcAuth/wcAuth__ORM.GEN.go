@@ -8,6 +8,7 @@ import (
 	"github.com/kokizzu/gotro/A"
 	"github.com/kokizzu/gotro/D/Tt"
 	"github.com/kokizzu/gotro/L"
+	"github.com/kokizzu/gotro/X"
 )
 
 //go:generate gomodifytags -all -add-tags json,form,query,long,msg -transform camelcase --skip-unexported -w -file wcAuth__ORM.GEN.go
@@ -29,6 +30,15 @@ func (s *SessionsMutator) HaveMutation() bool { //nolint:dupl false positive
 	return len(s.mutations) > 0
 }
 
+// func (s *SessionsMutator) DoUpsert() bool { //nolint:dupl false positive
+//	_, err := s.Adapter.Upsert(s.SpaceName(), s.ToArray(), A.X{
+//		A.X{`=`, 0, s.SessionToken},
+//		A.X{`=`, 1, s.UserId},
+//		A.X{`=`, 2, s.ExpiredAt},
+//	})
+//	return !L.IsError(err, `Sessions.DoUpsert failed: `+s.SpaceName())
+// }
+
 // Overwrite all columns, error if not exists
 func (s *SessionsMutator) DoOverwriteBySessionToken() bool { //nolint:dupl false positive
 	_, err := s.Adapter.Update(s.SpaceName(), s.UniqueIndexSessionToken(), A.X{s.SessionToken}, s.ToUpdateArray())
@@ -48,15 +58,6 @@ func (s *SessionsMutator) DoDeletePermanentBySessionToken() bool { //nolint:dupl
 	_, err := s.Adapter.Delete(s.SpaceName(), s.UniqueIndexSessionToken(), A.X{s.SessionToken})
 	return !L.IsError(err, `Sessions.DoDeletePermanentBySessionToken failed: `+s.SpaceName())
 }
-
-// func (s *SessionsMutator) DoUpsert() bool { //nolint:dupl false positive
-//	_, err := s.Adapter.Upsert(s.SpaceName(), s.ToArray(), A.X{
-//		A.X{`=`, 0, s.SessionToken},
-//		A.X{`=`, 1, s.UserId},
-//		A.X{`=`, 2, s.ExpiredAt},
-//	})
-//	return !L.IsError(err, `Sessions.DoUpsert failed: `+s.SpaceName())
-// }
 
 // insert, error if exists
 func (s *SessionsMutator) DoInsert() bool { //nolint:dupl false positive
@@ -178,7 +179,13 @@ func (u *UsersMutator) DoDeletePermanentByEmail() bool { //nolint:dupl false pos
 
 // insert, error if exists
 func (u *UsersMutator) DoInsert() bool { //nolint:dupl false positive
-	_, err := u.Adapter.Insert(u.SpaceName(), u.ToArray())
+	row, err := u.Adapter.Insert(u.SpaceName(), u.ToArray())
+	if err == nil {
+		tup := row.Tuples()
+		if len(tup) > 0 && len(tup[0]) > 0 && tup[0][0] != nil {
+			u.Id = X.ToU(tup[0][0])
+		}
+	}
 	return !L.IsError(err, `Users.DoInsert failed: `+u.SpaceName())
 }
 

@@ -7,7 +7,6 @@ import (
 
 	"github.com/tarantool/go-tarantool"
 
-	"github.com/graphql-go/graphql"
 	"github.com/kokizzu/gotro/A"
 	"github.com/kokizzu/gotro/D/Tt"
 	"github.com/kokizzu/gotro/L"
@@ -70,33 +69,6 @@ func (c *CartItems) FindById() bool { //nolint:dupl false positive
 		return true
 	}
 	return false
-}
-
-var GraphqlFieldCartItemsById = &graphql.Field{
-	Type:        GraphqlTypeCartItems,
-	Description: `list of CartItems`,
-	Args: graphql.FieldConfigArgument{
-		`Id`: &graphql.ArgumentConfig{
-			Type: graphql.Int,
-		},
-	},
-}
-
-func (g *CartItems) GraphqlFieldCartItemsByIdWithResolver() *graphql.Field {
-	field := *GraphqlFieldCartItemsById
-	field.Resolve = func(p graphql.ResolveParams) (interface{}, error) {
-		q := g
-		v, ok := p.Args[`id`]
-		if !ok {
-			v, _ = p.Args[`Id`]
-		}
-		q.Id = X.ToU(v)
-		if q.FindById() {
-			return q, nil
-		}
-		return nil, nil
-	}
-	return &field
 }
 
 func (c *CartItems) UniqueIndexOwnerIdInvoiceIdProductId() string { //nolint:dupl false positive
@@ -316,8 +288,12 @@ func (c *CartItems) sqlInfo() string { //nolint:dupl false positive
 }
 
 func (c *CartItems) ToArray() A.X { //nolint:dupl false positive
+	var id interface{} = nil
+	if c.Id != 0 {
+		id = c.Id
+	}
 	return A.X{
-		c.Id,         // 0
+		id,
 		c.CreatedAt,  // 1
 		c.CreatedBy,  // 2
 		c.UpdatedAt,  // 3
@@ -369,71 +345,6 @@ func (c *CartItems) Total() int64 { //nolint:dupl false positive
 	}
 	return 0
 }
-
-var GraphqlTypeCartItems = graphql.NewObject(
-	graphql.ObjectConfig{
-		Name: `cartItems`,
-		Fields: graphql.Fields{
-			`id`: &graphql.Field{
-				Type: graphql.Int,
-			},
-			`createdAt`: &graphql.Field{
-				Type: graphql.Int,
-			},
-			`createdBy`: &graphql.Field{
-				Type: graphql.ID,
-			},
-			`updatedAt`: &graphql.Field{
-				Type: graphql.Int,
-			},
-			`updatedBy`: &graphql.Field{
-				Type: graphql.ID,
-			},
-			`deletedAt`: &graphql.Field{
-				Type: graphql.Int,
-			},
-			`deletedBy`: &graphql.Field{
-				Type: graphql.ID,
-			},
-			`isDeleted`: &graphql.Field{
-				Type: graphql.Boolean,
-			},
-			`restoredAt`: &graphql.Field{
-				Type: graphql.Int,
-			},
-			`restoredBy`: &graphql.Field{
-				Type: graphql.ID,
-			},
-			`ownerId`: &graphql.Field{
-				Type: graphql.ID,
-			},
-			`invoiceId`: &graphql.Field{
-				Type: graphql.ID,
-			},
-			`productId`: &graphql.Field{
-				Type: graphql.ID,
-			},
-			`nameCopy`: &graphql.Field{
-				Type: graphql.String,
-			},
-			`priceCopy`: &graphql.Field{
-				Type: graphql.Int,
-			},
-			`qty`: &graphql.Field{
-				Type: graphql.Int,
-			},
-			`discount`: &graphql.Field{
-				Type: graphql.Int,
-			},
-			`subTotal`: &graphql.Field{
-				Type: graphql.Int,
-			},
-			`info`: &graphql.Field{
-				Type: graphql.String,
-			},
-		},
-	},
-)
 
 // DO NOT EDIT, will be overwritten by github.com/kokizzu/D/Tt/tarantool_orm_generator.go
 
@@ -489,33 +400,6 @@ func (i *Invoices) FindById() bool { //nolint:dupl false positive
 		return true
 	}
 	return false
-}
-
-var GraphqlFieldInvoicesById = &graphql.Field{
-	Type:        GraphqlTypeInvoices,
-	Description: `list of Invoices`,
-	Args: graphql.FieldConfigArgument{
-		`Id`: &graphql.ArgumentConfig{
-			Type: graphql.Int,
-		},
-	},
-}
-
-func (g *Invoices) GraphqlFieldInvoicesByIdWithResolver() *graphql.Field {
-	field := *GraphqlFieldInvoicesById
-	field.Resolve = func(p graphql.ResolveParams) (interface{}, error) {
-		q := g
-		v, ok := p.Args[`id`]
-		if !ok {
-			v, _ = p.Args[`Id`]
-		}
-		q.Id = X.ToU(v)
-		if q.FindById() {
-			return q, nil
-		}
-		return nil, nil
-	}
-	return &field
 }
 
 func (i *Invoices) sqlSelectAllFields() string { //nolint:dupl false positive
@@ -738,8 +622,12 @@ func (i *Invoices) sqlPromoRuleIds() string { //nolint:dupl false positive
 }
 
 func (i *Invoices) ToArray() A.X { //nolint:dupl false positive
+	var id interface{} = nil
+	if i.Id != 0 {
+		id = i.Id
+	}
 	return A.X{
-		i.Id,             // 0
+		id,
 		i.CreatedAt,      // 1
 		i.CreatedBy,      // 2
 		i.UpdatedAt,      // 3
@@ -796,77 +684,6 @@ func (i *Invoices) Total() int64 { //nolint:dupl false positive
 	return 0
 }
 
-var GraphqlTypeInvoices = graphql.NewObject(
-	graphql.ObjectConfig{
-		Name: `invoices`,
-		Fields: graphql.Fields{
-			`id`: &graphql.Field{
-				Type: graphql.Int,
-			},
-			`createdAt`: &graphql.Field{
-				Type: graphql.Int,
-			},
-			`createdBy`: &graphql.Field{
-				Type: graphql.ID,
-			},
-			`updatedAt`: &graphql.Field{
-				Type: graphql.Int,
-			},
-			`updatedBy`: &graphql.Field{
-				Type: graphql.ID,
-			},
-			`deletedAt`: &graphql.Field{
-				Type: graphql.Int,
-			},
-			`deletedBy`: &graphql.Field{
-				Type: graphql.ID,
-			},
-			`isDeleted`: &graphql.Field{
-				Type: graphql.Boolean,
-			},
-			`restoredAt`: &graphql.Field{
-				Type: graphql.Int,
-			},
-			`restoredBy`: &graphql.Field{
-				Type: graphql.ID,
-			},
-			`ownerId`: &graphql.Field{
-				Type: graphql.ID,
-			},
-			`totalWeight`: &graphql.Field{
-				Type: graphql.Int,
-			},
-			`totalPrice`: &graphql.Field{
-				Type: graphql.Int,
-			},
-			`totalDiscount`: &graphql.Field{
-				Type: graphql.Int,
-			},
-			`deliveryMethod`: &graphql.Field{
-				Type: graphql.Int,
-			},
-			`deliveryPrice`: &graphql.Field{
-				Type: graphql.Int,
-			},
-			`totalPaid`: &graphql.Field{
-				Type: graphql.Int,
-			},
-			`paidAt`: &graphql.Field{
-				Type: graphql.Int,
-			},
-			`paymentMethod`: &graphql.Field{
-				Type: graphql.Int,
-			},
-			`deadlineAt`: &graphql.Field{
-				Type: graphql.Int,
-			},
-			`promoRuleIds`: &graphql.Field{
-				Type: graphql.String,
-			},
-		},
-	},
-)
-
 // DO NOT EDIT, will be overwritten by github.com/kokizzu/D/Tt/tarantool_orm_generator.go
 
 type Products struct {
@@ -917,31 +734,21 @@ func (p *Products) FindById() bool { //nolint:dupl false positive
 	return false
 }
 
-var GraphqlFieldProductsById = &graphql.Field{
-	Type:        GraphqlTypeProducts,
-	Description: `list of Products`,
-	Args: graphql.FieldConfigArgument{
-		`Id`: &graphql.ArgumentConfig{
-			Type: graphql.Int,
-		},
-	},
+func (p *Products) UniqueIndexSku() string { //nolint:dupl false positive
+	return `sku`
 }
 
-func (g *Products) GraphqlFieldProductsByIdWithResolver() *graphql.Field {
-	field := *GraphqlFieldProductsById
-	field.Resolve = func(p graphql.ResolveParams) (interface{}, error) {
-		q := g
-		v, ok := p.Args[`id`]
-		if !ok {
-			v, _ = p.Args[`Id`]
-		}
-		q.Id = X.ToU(v)
-		if q.FindById() {
-			return q, nil
-		}
-		return nil, nil
+func (p *Products) FindBySku() bool { //nolint:dupl false positive
+	res, err := p.Adapter.Select(p.SpaceName(), p.UniqueIndexSku(), 0, 1, tarantool.IterEq, A.X{p.Sku})
+	if L.IsError(err, `Products.FindBySku failed: `+p.SpaceName()) {
+		return false
 	}
-	return &field
+	rows := res.Tuples()
+	if len(rows) == 1 {
+		p.FromArray(rows[0])
+		return true
+	}
+	return false
 }
 
 func (p *Products) UniqueIndexSku() string { //nolint:dupl false positive
@@ -1121,8 +928,12 @@ func (p *Products) sqlWeightGram() string { //nolint:dupl false positive
 }
 
 func (p *Products) ToArray() A.X { //nolint:dupl false positive
+	var id interface{} = nil
+	if p.Id != 0 {
+		id = p.Id
+	}
 	return A.X{
-		p.Id,           // 0
+		id,
 		p.CreatedAt,    // 1
 		p.CreatedBy,    // 2
 		p.UpdatedAt,    // 3
@@ -1166,59 +977,6 @@ func (p *Products) Total() int64 { //nolint:dupl false positive
 	}
 	return 0
 }
-
-var GraphqlTypeProducts = graphql.NewObject(
-	graphql.ObjectConfig{
-		Name: `products`,
-		Fields: graphql.Fields{
-			`id`: &graphql.Field{
-				Type: graphql.Int,
-			},
-			`createdAt`: &graphql.Field{
-				Type: graphql.Int,
-			},
-			`createdBy`: &graphql.Field{
-				Type: graphql.ID,
-			},
-			`updatedAt`: &graphql.Field{
-				Type: graphql.Int,
-			},
-			`updatedBy`: &graphql.Field{
-				Type: graphql.ID,
-			},
-			`deletedAt`: &graphql.Field{
-				Type: graphql.Int,
-			},
-			`deletedBy`: &graphql.Field{
-				Type: graphql.ID,
-			},
-			`isDeleted`: &graphql.Field{
-				Type: graphql.Boolean,
-			},
-			`restoredAt`: &graphql.Field{
-				Type: graphql.Int,
-			},
-			`restoredBy`: &graphql.Field{
-				Type: graphql.ID,
-			},
-			`sku`: &graphql.Field{
-				Type: graphql.String,
-			},
-			`name`: &graphql.Field{
-				Type: graphql.String,
-			},
-			`price`: &graphql.Field{
-				Type: graphql.Int,
-			},
-			`inventoryQty`: &graphql.Field{
-				Type: graphql.Int,
-			},
-			`weightGram`: &graphql.Field{
-				Type: graphql.Int,
-			},
-		},
-	},
-)
 
 // DO NOT EDIT, will be overwritten by github.com/kokizzu/D/Tt/tarantool_orm_generator.go
 
@@ -1270,33 +1028,6 @@ func (p *Promos) FindById() bool { //nolint:dupl false positive
 		return true
 	}
 	return false
-}
-
-var GraphqlFieldPromosById = &graphql.Field{
-	Type:        GraphqlTypePromos,
-	Description: `list of Promos`,
-	Args: graphql.FieldConfigArgument{
-		`Id`: &graphql.ArgumentConfig{
-			Type: graphql.Int,
-		},
-	},
-}
-
-func (g *Promos) GraphqlFieldPromosByIdWithResolver() *graphql.Field {
-	field := *GraphqlFieldPromosById
-	field.Resolve = func(p graphql.ResolveParams) (interface{}, error) {
-		q := g
-		v, ok := p.Args[`id`]
-		if !ok {
-			v, _ = p.Args[`Id`]
-		}
-		q.Id = X.ToU(v)
-		if q.FindById() {
-			return q, nil
-		}
-		return nil, nil
-	}
-	return &field
 }
 
 func (p *Promos) sqlSelectAllFields() string { //nolint:dupl false positive
@@ -1479,8 +1210,12 @@ func (p *Promos) sqlDiscountPercent() string { //nolint:dupl false positive
 }
 
 func (p *Promos) ToArray() A.X { //nolint:dupl false positive
+	var id interface{} = nil
+	if p.Id != 0 {
+		id = p.Id
+	}
 	return A.X{
-		p.Id,              // 0
+		id,
 		p.CreatedAt,       // 1
 		p.CreatedBy,       // 2
 		p.UpdatedAt,       // 3
@@ -1528,64 +1263,5 @@ func (p *Promos) Total() int64 { //nolint:dupl false positive
 	}
 	return 0
 }
-
-var GraphqlTypePromos = graphql.NewObject(
-	graphql.ObjectConfig{
-		Name: `promos`,
-		Fields: graphql.Fields{
-			`id`: &graphql.Field{
-				Type: graphql.Int,
-			},
-			`createdAt`: &graphql.Field{
-				Type: graphql.Int,
-			},
-			`createdBy`: &graphql.Field{
-				Type: graphql.ID,
-			},
-			`updatedAt`: &graphql.Field{
-				Type: graphql.Int,
-			},
-			`updatedBy`: &graphql.Field{
-				Type: graphql.ID,
-			},
-			`deletedAt`: &graphql.Field{
-				Type: graphql.Int,
-			},
-			`deletedBy`: &graphql.Field{
-				Type: graphql.ID,
-			},
-			`isDeleted`: &graphql.Field{
-				Type: graphql.Boolean,
-			},
-			`restoredAt`: &graphql.Field{
-				Type: graphql.Int,
-			},
-			`restoredBy`: &graphql.Field{
-				Type: graphql.ID,
-			},
-			`startAt`: &graphql.Field{
-				Type: graphql.Int,
-			},
-			`endAt`: &graphql.Field{
-				Type: graphql.Int,
-			},
-			`productId`: &graphql.Field{
-				Type: graphql.ID,
-			},
-			`productCount`: &graphql.Field{
-				Type: graphql.Int,
-			},
-			`freeProductId`: &graphql.Field{
-				Type: graphql.ID,
-			},
-			`discountCount`: &graphql.Field{
-				Type: graphql.Int,
-			},
-			`discountPercent`: &graphql.Field{
-				Type: graphql.Float,
-			},
-		},
-	},
-)
 
 // DO NOT EDIT, will be overwritten by github.com/kokizzu/D/Tt/tarantool_orm_generator.go
