@@ -1,6 +1,6 @@
 # F
 --
-    import "gotro/F"
+    import "github.com/kokizzu/gotro/F"
 
 
 ## Usage
@@ -9,7 +9,7 @@
 
 ```go
 func If(b bool, yes float64) float64
-```
+```go
 simplified ternary operator (bool ? val : 0), returns second argument, if the
 condition (first arg) is true, returns 0 if not
 
@@ -20,7 +20,7 @@ condition (first arg) is true, returns 0 if not
 
 ```go
 func IfElse(b bool, yes, no float64) float64
-```
+```go
 ternary operator (bool ? val1 : val2), returns second argument if the condition
 (first arg) is true, third argument if not
 
@@ -30,14 +30,14 @@ ternary operator (bool ? val1 : val2), returns second argument if the condition
 
 ```go
 func ToDateStr(num float64) string
-```
+```go
 convert float64 unix to `YYYY-MM-DD`
 
 #### func  ToIsoDateStr
 
 ```go
 func ToIsoDateStr(num float64) string
-```
+```go
 convert to ISO-8601 string
 
     F.ToIsoDateStr(0) // `1970-01-01T00:00:00`
@@ -46,7 +46,7 @@ convert to ISO-8601 string
 
 ```go
 func ToS(num float64) string
-```
+```go
 convert float64 to string
 
     F.ToS(3.1284)) // `3.1284`
@@ -55,7 +55,7 @@ convert float64 to string
 
 ```go
 func ToStr(num float64) string
-```
+```go
 convert float64 to string with 2 digits behind the decimal point
 
     F.ToStr(3.1284)) // `3.13`

@@ -1,6 +1,6 @@
 # I
 --
-    import "gotro/I"
+    import "github.com/kokizzu/gotro/I"
 
 
 ## Usage
@@ -9,7 +9,7 @@
 
 ```go
 func If(b bool, yes int64) int64
-```
+```go
 simplified ternary operator (bool ? val : 0), returns second argument, if the
 condition (first arg) is true, returns 0 if not
 
@@ -20,7 +20,7 @@ condition (first arg) is true, returns 0 if not
 
 ```go
 func IfElse(b bool, yes, no int64) int64
-```
+```go
 ternary operator (bool ? val1 : val2), returns second argument if the condition
 (first arg) is true, third argument if not
 
@@ -31,7 +31,7 @@ ternary operator (bool ? val1 : val2), returns second argument if the condition
 
 ```go
 func IfZero(val1, val2 int64) int64
-```
+```go
 simplified ternary operator (bool ? val1==0 : val2), returns second argument, if
 val1 (first arg) is zero, returns val2 if not
 
@@ -42,7 +42,7 @@ val1 (first arg) is zero, returns val2 if not
 
 ```go
 func IsZero(val1, val2 int) int
-```
+```go
 simplified ternary operator (bool ? val1==0 : val2), returns second argument, if
 val1 (first arg) is zero, returns val2 if not
 
@@ -53,7 +53,7 @@ val1 (first arg) is zero, returns val2 if not
 
 ```go
 func Max(a, b int64) int64
-```
+```go
 int64 max of two values
 
     I.Max(int64(3),int64(4)) // 4
@@ -62,7 +62,7 @@ int64 max of two values
 
 ```go
 func MaxOf(a, b int) int
-```
+```go
 int max of two values
 
     I.MaxOf(3,4) // 4
@@ -71,7 +71,7 @@ int max of two values
 
 ```go
 func Min(a, b int64) int64
-```
+```go
 int64 min of two values
 
     I.Min(int64(3),int64(4)) // 3
@@ -80,7 +80,7 @@ int64 min of two values
 
 ```go
 func MinOf(a, b int) int
-```
+```go
 int min of two values
 
     I.MinOf(3,4) // 3
@@ -89,7 +89,7 @@ int min of two values
 
 ```go
 func PadZero(num int64, length int) string
-```
+```go
 converts int64 (first arg) to string with zero padded with maximum length
 I.PadZero(123,5) // `00123`
 
@@ -97,7 +97,7 @@ I.PadZero(123,5) // `00123`
 
 ```go
 func Roman(num int64) string
-```
+```go
 convert int64 to roman number
 
     I.ToRoman(16)) // output "XVI"
@@ -106,7 +106,7 @@ convert int64 to roman number
 
 ```go
 func ToEnglishNum(num int64) string
-```
+```go
 format ordinal number suffix such as st, nd, rd, and th.
 
     I.ToEnglishNum(241)) // `241st`
@@ -117,7 +117,7 @@ format ordinal number suffix such as st, nd, rd, and th.
 
 ```go
 func ToS(num int64) string
-```
+```go
 convert int64 to string
 
     I.ToS(int64(1234)) // `1234`
@@ -126,7 +126,7 @@ convert int64 to string
 
 ```go
 func ToStr(num int) string
-```
+```go
 convert int to string
 
     I.ToStr(1234) // `1234`
@@ -135,7 +135,7 @@ convert int to string
 
 ```go
 func UIf(b bool, yes uint64) uint64
-```
+```go
 simplified ternary operator (bool ? val : 0), returns second argument, if the
 condition (first arg) is true, returns 0 if not
 
@@ -146,7 +146,7 @@ condition (first arg) is true, returns 0 if not
 
 ```go
 func UIfElse(b bool, yes, no uint64) uint64
-```
+```go
 ternary operator (bool ? val1 : val2), returns second argument if the condition
 (first arg) is true, third argument if not
 
@@ -157,7 +157,7 @@ ternary operator (bool ? val1 : val2), returns second argument if the condition
 
 ```go
 func UIfZero(val1, val2 uint64) uint64
-```
+```go
 simplified ternary operator (bool ? val1==0 : val2), returns second argument, if
 val1 (first arg) is zero, returns val2 if not
 
@@ -168,7 +168,7 @@ val1 (first arg) is zero, returns val2 if not
 
 ```go
 func UIsZero(val1, val2 uint) uint
-```
+```go
 simplified ternary operator (bool ? val1==0 : val2), returns second argument, if
 val1 (first arg) is zero, returns val2 if not
 
@@ -179,7 +179,7 @@ val1 (first arg) is zero, returns val2 if not
 
 ```go
 func UMax(a, b uint64) uint64
-```
+```go
 uint64 max of two values
 
     I.UMax(uint64(3),uint64(4)) // 4
@@ -188,7 +188,7 @@ uint64 max of two values
 
 ```go
 func UMaxOf(a, b uint) uint
-```
+```go
 uint max of two values
 
     I.MaxOf(3,4) // 4
@@ -197,7 +197,7 @@ uint max of two values
 
 ```go
 func UMin(a, b uint64) uint64
-```
+```go
 uint64 min of two values
 
     I.UMin(uint64(3),uint64(4)) // 3
@@ -206,7 +206,7 @@ uint64 min of two values
 
 ```go
 func UMinOf(a, b uint) uint
-```
+```go
 uint min of two values
 
     I.MinOf(3,4) // 3
@@ -215,7 +215,7 @@ uint min of two values
 
 ```go
 func UToS(num uint64) string
-```
+```go
 convert uint64 to string
 
     I.UToS(uint64(1234)) // `1234`
@@ -224,7 +224,7 @@ convert uint64 to string
 
 ```go
 func UToStr(num uint) string
-```
+```go
 convert int to string
 
     I.UToStr(uint(1234)) // `1234`

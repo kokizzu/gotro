@@ -7,16 +7,12 @@ if [ $# -eq 0 ] ; then
 fi
 
 # generate documentation
-godocdown A > A/README.md
-godocdown B > B/README.md
-godocdown C > C/README.md
-godocdown F > F/README.md
-godocdown I > I/README.md
-godocdown L > L/README.md
-godocdown M > M/README.md
-godocdown S > S/README.md
-godocdown T > T/README.md
-godocdown X > X/README.md
+for x in A B C F I L M S T X; do
+  godocdown $x > $x/README.md
+  replacer gotro/$x github.com/kokizzu/gotro/$x '# ' $x/README.md
+  replacer '```' '```go' '# ' $x/README.md
+  replacer '```gogo' '```go' '# ' $x/README.md
+done
 
 # format indentation
 go fmt ./...
