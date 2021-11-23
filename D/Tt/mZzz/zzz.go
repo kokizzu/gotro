@@ -3,9 +3,9 @@ package mZzz
 import "github.com/kokizzu/gotro/D/Tt"
 
 const (
-	TableZzz Tt.TableName = `zzz`
-	Id                    = `id`
-	CreatedAt                  = `created_at`
+	TableZzz  Tt.TableName = `zzz`
+	Id                     = `id`
+	CreatedAt              = `created_at`
 )
 
 var TarantoolTables = map[Tt.TableName]*Tt.TableProp{
@@ -16,7 +16,7 @@ var TarantoolTables = map[Tt.TableName]*Tt.TableProp{
 			{Id, Tt.Unsigned},
 			{CreatedAt, Tt.Integer},
 		},
-		Engine:  Tt.Memtx,
+		Engine:          Tt.Memtx,
 		AutoIncrementId: true,
 	},
 }

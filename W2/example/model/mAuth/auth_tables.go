@@ -60,9 +60,9 @@ var TarantoolTables = map[Tt.TableName]*Tt.TableProp{
 			{LastLoginAt, Tt.Integer},
 		},
 		AutoIncrementId: true,
-		Unique1:      Email,
-		Indexes:      []string{IsDeleted, SecretCode},
-		HiddenFields: []string{Password, SecretCode},
+		Unique1:         Email,
+		Indexes:         []string{IsDeleted, SecretCode},
+		HiddenFields:    []string{Password, SecretCode},
 	},
 	TableSessions: {
 		Fields: []Tt.Field{

@@ -751,23 +751,6 @@ func (p *Products) FindBySku() bool { //nolint:dupl false positive
 	return false
 }
 
-func (p *Products) UniqueIndexSku() string { //nolint:dupl false positive
-	return `sku`
-}
-
-func (p *Products) FindBySku() bool { //nolint:dupl false positive
-	res, err := p.Adapter.Select(p.SpaceName(), p.UniqueIndexSku(), 0, 1, tarantool.IterEq, A.X{p.Sku})
-	if L.IsError(err, `Products.FindBySku failed: `+p.SpaceName()) {
-		return false
-	}
-	rows := res.Tuples()
-	if len(rows) == 1 {
-		p.FromArray(rows[0])
-		return true
-	}
-	return false
-}
-
 func (p *Products) sqlSelectAllFields() string { //nolint:dupl false positive
 	return ` "id"
 	, "createdAt"

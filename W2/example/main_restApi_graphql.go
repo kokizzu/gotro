@@ -1,14 +1,10 @@
 package main
 
 import (
-	"context"
 	"github.com/gofiber/fiber/v2"
 	"github.com/graphql-go/graphql"
-	"github.com/kokizzu/gotro/W2/example/conf"
 	"github.com/kokizzu/gotro/W2/example/domain"
 	"github.com/pkg/errors"
-	"go.opentelemetry.io/otel/trace"
-	"net/http"
 )
 
 type Inputs struct {
@@ -59,40 +55,40 @@ func graphqlWrapError(err error, newErr string) error {
 }
 
 func webApiInitGraphql(app *fiber.App, d *domain.Domain) {
-	const url = `/graphql`
-
-	graphqlSchema := initGraphqlSchemaResolver(d)
-
-	app.All(url, func(ctx *fiber.Ctx) error {
-		tracerCtx, span := conf.T.Start(ctx.Context(), url, trace.WithSpanKind(trace.SpanKindServer))
-		defer span.End()
-		isGet := string(ctx.Request().Header.Method()) == http.MethodGet
-		in := GraphqlRequest{}
-		if err := webApiParseInput(ctx, &in.RequestCommon, &in, url); err != nil {
-			return err
-		}
-		in.FromFiberCtx(ctx, tracerCtx)
-		out := GraphqlResponse{}
-		if isGet {
-			ctx.WriteString(graphqlTemplate)
-			ctx.Set(`content-type`, `text/html; charset=utf-8`)
-			return nil
-		}
-		params := graphql.Params{
-			Context:        context.WithValue(ctx.Context(), RequestCommonKey, &in.RequestCommon),
-			Schema:         graphqlSchema,
-			RequestString:  in.Query,
-			OperationName:  in.OperationName,
-			VariableValues: in.Variables,
-		}
-		res := graphql.Do(params)
-		out.Result = res
-		//L.Describe(in)
-		out.ToFiberCtx(ctx, &in.RequestCommon, &in)
-		// ^ only for setting session and print debug, the rest has no impact
-		err := ctx.JSON(res)
-		return err
-	})
+	//const url = `/graphql`
+	//
+	//graphqlSchema := initGraphqlSchemaResolver(d)
+	//
+	//app.All(url, func(ctx *fiber.Ctx) error {
+	//	tracerCtx, span := conf.T.Start(ctx.Context(), url, trace.WithSpanKind(trace.SpanKindServer))
+	//	defer span.End()
+	//	isGet := string(ctx.Request().Header.Method()) == http.MethodGet
+	//	in := GraphqlRequest{}
+	//	if err := webApiParseInput(ctx, &in.RequestCommon, &in, url); err != nil {
+	//		return err
+	//	}
+	//	in.FromFiberCtx(ctx, tracerCtx)
+	//	out := GraphqlResponse{}
+	//	if isGet {
+	//		ctx.WriteString(graphqlTemplate)
+	//		ctx.Set(`content-type`, `text/html; charset=utf-8`)
+	//		return nil
+	//	}
+	//	params := graphql.Params{
+	//		Context:        context.WithValue(ctx.Context(), RequestCommonKey, &in.RequestCommon),
+	//		Schema:         graphqlSchema,
+	//		RequestString:  in.Query,
+	//		OperationName:  in.OperationName,
+	//		VariableValues: in.Variables,
+	//	}
+	//	res := graphql.Do(params)
+	//	out.Result = res
+	//	//L.Describe(in)
+	//	out.ToFiberCtx(ctx, &in.RequestCommon, &in)
+	//	// ^ only for setting session and print debug, the rest has no impact
+	//	err := ctx.JSON(res)
+	//	return err
+	//})
 }
 
 const graphqlTemplate = `<!DOCTYPE html>

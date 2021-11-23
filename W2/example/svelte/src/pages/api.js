@@ -1,5 +1,5 @@
 // can be hit using with /api/[ApiName]
-export const LastUpdatedAt = 1637658775
+export const LastUpdatedAt = 1637659021
 export const APIs = {
 	StoreCartItemsAdd: {
 		in: {

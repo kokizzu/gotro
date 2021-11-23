@@ -142,7 +142,7 @@ func TestMigration(t *testing.T) {
 			},
 			Unique1:         `id`,
 			Engine:          Vinyl,
-			Uniques: []string{`a`,`b`},
+			Uniques:         []string{`a`, `b`},
 			AutoIncrementId: true,
 		})
 		assert.True(t, ok)

@@ -84,8 +84,7 @@ var TarantoolTables = map[Tt.TableName]*Tt.TableProp{
 			{WeightGram, Tt.Unsigned},
 		},
 		AutoIncrementId: true,
-		Unique2: Sku,
-		Unique1: Sku,
+		Unique1:         Sku,
 	},
 	TablePromos: {
 		Fields: []Tt.Field{
@@ -132,7 +131,7 @@ var TarantoolTables = map[Tt.TableName]*Tt.TableProp{
 			{Info, Tt.String},
 		},
 		AutoIncrementId: true,
-		Uniques: []string{OwnerId, InvoiceId, ProductId},
+		Uniques:         []string{OwnerId, InvoiceId, ProductId},
 	},
 	TableInvoices: {
 		Fields: []Tt.Field{
@@ -159,7 +158,7 @@ var TarantoolTables = map[Tt.TableName]*Tt.TableProp{
 			{PromoRuleIds, Tt.String},
 		},
 		AutoIncrementId: true,
-		Indexes: []string{OwnerId, PaidAt, DeadlineAt},
+		Indexes:         []string{OwnerId, PaidAt, DeadlineAt},
 	},
 }
 

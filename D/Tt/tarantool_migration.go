@@ -119,8 +119,8 @@ func (a *Adapter) UpsertTable(tableName TableName, prop *TableProp) bool {
 		if len(prop.Fields) < 1 || prop.Fields[0].Name != IdCol || prop.Fields[0].Type != Unsigned {
 			panic(`must create Unsigned id field on first field to use AutoIncrementId`)
 		}
-		
-		seqName := string(tableName) + `_`+IdCol
+
+		seqName := string(tableName) + `_` + IdCol
 		a.ExecTarantoolVerbose(`box.schema.sequence.create`, A.X{
 			seqName,
 		})
@@ -138,11 +138,20 @@ func (a *Adapter) UpsertTable(tableName TableName, prop *TableProp) bool {
 		a.ExecBoxSpace(string(tableName)+`:create_index`, A.X{
 			prop.Unique1, Index{Parts: []string{prop.Unique1}, IfNotExists: true, Unique: true},
 		})
+		if prop.Unique2 != `` && prop.Unique1 == prop.Unique2 {
+			panic(`Unique1 and Unique2 must be unique`)
+		}
+		if prop.Unique3 != `` && prop.Unique1 == prop.Unique3 {
+			panic(`Unique1 and Unique3 must be unique`)
+		}
 	}
 	if prop.Unique2 != `` && !(prop.AutoIncrementId && prop.Unique2 == IdCol) {
 		a.ExecBoxSpace(string(tableName)+`:create_index`, A.X{
 			prop.Unique2, Index{Parts: []string{prop.Unique2}, IfNotExists: true, Unique: true},
 		})
+		if prop.Unique3 != `` && prop.Unique2 == prop.Unique3 {
+			panic(`Unique2 and Unique3 must be unique`)
+		}
 	}
 	if prop.Unique3 != `` && !(prop.AutoIncrementId && prop.Unique2 == IdCol) {
 		a.ExecBoxSpace(string(tableName)+`:create_index`, A.X{

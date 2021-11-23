@@ -3,14 +3,14 @@ package rqZzz
 // DO NOT EDIT, will be overwritten by github.com/kokizzu/D/Tt/tarantool_orm_generator.go
 
 import (
-	`github.com/kokizzu/gotro/D/Tt/mZzz`
+	"github.com/kokizzu/gotro/D/Tt/mZzz"
 
-	`github.com/tarantool/go-tarantool`
+	"github.com/tarantool/go-tarantool"
 
-	`github.com/kokizzu/gotro/A`
-	`github.com/kokizzu/gotro/D/Tt`
-	`github.com/kokizzu/gotro/L`
-	`github.com/kokizzu/gotro/X`
+	"github.com/kokizzu/gotro/A"
+	"github.com/kokizzu/gotro/D/Tt"
+	"github.com/kokizzu/gotro/L"
+	"github.com/kokizzu/gotro/X"
 )
 
 //go:generate gomodifytags -all -add-tags json,form,query,long,msg -transform camelcase --skip-unexported -w -file rqZzz__ORM.GEN.go
@@ -20,7 +20,7 @@ import (
 // go:generate msgp -tests=false -file rqZzz__ORM.GEN.go -o rqZzz__MSG.GEN.go
 
 type Zzz struct {
-	Adapter *Tt.Adapter `json:"-" msg:"-" query:"-" form:"-"`
+	Adapter   *Tt.Adapter `json:"-" msg:"-" query:"-" form:"-"`
 	Id        uint64
 	CreatedAt int64
 }
@@ -101,7 +101,7 @@ func (z *Zzz) FromArray(a A.X) *Zzz { //nolint:dupl false positive
 }
 
 func (z *Zzz) Total() int64 { //nolint:dupl false positive
-	rows := z.Adapter.CallBoxSpace(z.SpaceName() + `:count`, A.X{})
+	rows := z.Adapter.CallBoxSpace(z.SpaceName()+`:count`, A.X{})
 	if len(rows) > 0 && len(rows[0]) > 0 {
 		return X.ToI(rows[0][0])
 	}
@@ -109,4 +109,3 @@ func (z *Zzz) Total() int64 { //nolint:dupl false positive
 }
 
 // DO NOT EDIT, will be overwritten by github.com/kokizzu/D/Tt/tarantool_orm_generator.go
-

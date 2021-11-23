@@ -629,26 +629,6 @@ func (p *ProductsMutator) DoDeletePermanentBySku() bool { //nolint:dupl false po
 	return !L.IsError(err, `Products.DoDeletePermanentBySku failed: `+p.SpaceName())
 }
 
-// Overwrite all columns, error if not exists
-func (p *ProductsMutator) DoOverwriteBySku() bool { //nolint:dupl false positive
-	_, err := p.Adapter.Update(p.SpaceName(), p.UniqueIndexSku(), A.X{p.Sku}, p.ToUpdateArray())
-	return !L.IsError(err, `Products.DoOverwriteBySku failed: `+p.SpaceName())
-}
-
-// Update only mutated, error if not exists, use Find* and Set* methods instead of direct assignment
-func (p *ProductsMutator) DoUpdateBySku() bool { //nolint:dupl false positive
-	if !p.HaveMutation() {
-		return true
-	}
-	_, err := p.Adapter.Update(p.SpaceName(), p.UniqueIndexSku(), A.X{p.Sku}, p.mutations)
-	return !L.IsError(err, `Products.DoUpdateBySku failed: `+p.SpaceName())
-}
-
-func (p *ProductsMutator) DoDeletePermanentBySku() bool { //nolint:dupl false positive
-	_, err := p.Adapter.Delete(p.SpaceName(), p.UniqueIndexSku(), A.X{p.Sku})
-	return !L.IsError(err, `Products.DoDeletePermanentBySku failed: `+p.SpaceName())
-}
-
 // insert, error if exists
 func (p *ProductsMutator) DoInsert() bool { //nolint:dupl false positive
 	row, err := p.Adapter.Insert(p.SpaceName(), p.ToArray())
