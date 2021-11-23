@@ -6,6 +6,18 @@ if [ $# -eq 0 ] ; then
   exit
 fi
 
+# generate documentation
+godocdown A > A/README.md
+godocdown B > B/README.md
+godocdown C > C/README.md
+godocdown F > F/README.md
+godocdown I > I/README.md
+godocdown L > L/README.md
+godocdown M > M/README.md
+godocdown S > S/README.md
+godocdown T > T/README.md
+godocdown X > X/README.md
+
 # format indentation
 go fmt ./...
 echo "codes formatted.."

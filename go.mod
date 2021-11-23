@@ -34,7 +34,7 @@ require (
 	github.com/lib/pq v1.9.0
 	github.com/lightstep/otel-launcher-go v0.20.0
 	github.com/meilisearch/meilisearch-go v0.14.0
-	github.com/mitchellh/mapstructure v1.4.2
+	github.com/mitchellh/mapstructure v1.4.2 // indirect
 	github.com/moby/term v0.0.0-20210619224110-3f7ff695adc6 // indirect
 	github.com/mojura/enkodo v0.5.5
 	github.com/onsi/gomega v1.16.0 // indirect

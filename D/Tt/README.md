@@ -102,7 +102,7 @@ var TarantoolTables = map[Tt.TableName]*Tt.TableProp{
 			{VerifiedAt, Tt.Integer},
 			{LastLoginAt, Tt.Integer},
 		},
-		Unique1: Id,
+		AutoIncrementId: true,
 		Unique2: Email,
 		Indexes: []string{IsDeleted, SecretCode},
 	},
