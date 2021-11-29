@@ -1,6 +1,15 @@
 // can be hit using with /api/[ApiName]
-export const LastUpdatedAt = 1637659021
+export const LastUpdatedAt = 1638166591
 export const APIs = {
+	Health: {
+		in: {
+		}, out: {
+		}, read: [
+		], write: [
+		], stat: [
+		], deps: [
+		], err: []
+	},
 	StoreCartItemsAdd: {
 		in: {
 			productId: 0, // uint64

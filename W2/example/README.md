@@ -292,6 +292,18 @@ func (d *Domain) MediaUpload(in *MediaUpload_In) (out MediaUpload_Out) {
 }
 ```
 
+## Testing with CURL
+
+```shell
+alias time='/usr/bin/time -f "\nCPU: %Us\tReal: %es\tRAM: %MKB"'
+time curl -X POST -H 'content-type: application/json' -d '{"email":"root@gmail.com","password":"123"}' http://localhost:9090/api/UserLogin
+time curl -X POST -H 'content-type: application/json' -d '{"email":"root@gmail.com","password":"123","userName":"kokizzu"}' http://localhost:9090/api/UserRegister
+
+cd; go install github.com/rakyll/hey@latest
+hey -c 50 -n 200 http://localhost:9090/api/health
+hey -c 1000 -n 100000 http://localhost:9090/api/UserLogin\?email\=root@gmail.com
+```
+
 ## Testing GraphQL
 
 After starting `docker-compose up` and `make apiserver`, open [localhost:9090/graphql](//localhost:9090/graphql) and run these query:
