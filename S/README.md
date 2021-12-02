@@ -127,6 +127,9 @@ func DecodeCB63(str string) (int64, bool)
 ```
 convert custom base-63 encoding to int64
 
+    S.DecodeCB63(`--0`) // 1, true
+    S.DecodeCB64(`(*&#$`) // 0, false
+
 #### func  EncodeCB63
 
 ```go
@@ -140,8 +143,8 @@ positive integer only
     11..36  A..Z
     37      _
     38..63  a..z
-    S.EncodeCB63(11) // `A`
-    S.EncodeCB63(1)) // `1`
+    S.EncodeCB63(11,1) // `A`
+    S.EncodeCB63(1,3) // `--0`
 
 #### func  EncryptPassword
 
