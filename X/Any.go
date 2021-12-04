@@ -52,11 +52,59 @@ func ToU(any interface{}) uint64 {
 	case uint32:
 		return uint64(v)
 	case uint64:
-		return uint64(v)
+		return v
 	case float32:
 		return uint64(v)
 	case float64:
 		return uint64(v)
+	case *int:
+		if v != nil {
+			return uint64(*v)
+		}
+	case *uint:
+		if v != nil {
+			return uint64(*v)
+		}
+	case *int8:
+		if v != nil {
+			return uint64(*v)
+		}
+	case *int16:
+		if v != nil {
+			return uint64(*v)
+		}
+	case *int32:
+		if v != nil {
+			return uint64(*v)
+		}
+	case *int64:
+		if v != nil {
+			return uint64(*v)
+		}
+	case *uint8:
+		if v != nil {
+			return uint64(*v)
+		}
+	case *uint16:
+		if v != nil {
+			return uint64(*v)
+		}
+	case *uint32:
+		if v != nil {
+			return uint64(*v)
+		}
+	case *uint64:
+		if v != nil {
+			return *v
+		}
+	case *float32:
+		if v != nil {
+			return uint64(*v)
+		}
+	case *float64:
+		if v != nil {
+			return uint64(*v)
+		}
 	case bool:
 		if v {
 			return 1
@@ -117,6 +165,54 @@ func ToByte(any interface{}) byte {
 		return byte(v)
 	case float64:
 		return byte(v)
+	case *int:
+		if v != nil {
+			return byte(*v)
+		}
+	case *uint:
+		if v != nil {
+			return byte(*v)
+		}
+	case *int8:
+		if v != nil {
+			return byte(*v)
+		}
+	case *int16:
+		if v != nil {
+			return byte(*v)
+		}
+	case *int32:
+		if v != nil {
+			return byte(*v)
+		}
+	case *int64:
+		if v != nil {
+			return byte(*v)
+		}
+	case *uint8:
+		if v != nil {
+			return *v
+		}
+	case *uint16:
+		if v != nil {
+			return byte(*v)
+		}
+	case *uint32:
+		if v != nil {
+			return byte(*v)
+		}
+	case *uint64:
+		if v != nil {
+			return byte(*v)
+		}
+	case *float32:
+		if v != nil {
+			return byte(*v)
+		}
+	case *float64:
+		if v != nil {
+			return byte(*v)
+		}
 	case bool:
 		if v {
 			return 1
@@ -178,6 +274,54 @@ func ToI(any interface{}) int64 {
 		return int64(v)
 	case float64:
 		return int64(v)
+	case *int:
+		if v != nil {
+			return int64(*v)
+		}
+	case *uint:
+		if v != nil {
+			return int64(*v)
+		}
+	case *int8:
+		if v != nil {
+			return int64(*v)
+		}
+	case *int16:
+		if v != nil {
+			return int64(*v)
+		}
+	case *int32:
+		if v != nil {
+			return int64(*v)
+		}
+	case *int64:
+		if v != nil {
+			return *v
+		}
+	case *uint8:
+		if v != nil {
+			return int64(*v)
+		}
+	case *uint16:
+		if v != nil {
+			return int64(*v)
+		}
+	case *uint32:
+		if v != nil {
+			return int64(*v)
+		}
+	case *uint64:
+		if v != nil {
+			return int64(*v)
+		}
+	case *float32:
+		if v != nil {
+			return int64(*v)
+		}
+	case *float64:
+		if v != nil {
+			return int64(*v)
+		}
 	case bool:
 		if v {
 			return 1
@@ -239,6 +383,54 @@ func ToF(any interface{}) float64 {
 		return float64(v)
 	case float32:
 		return float64(v)
+	case *int:
+		if v != nil {
+			return float64(*v)
+		}
+	case *uint:
+		if v != nil {
+			return float64(*v)
+		}
+	case *int8:
+		if v != nil {
+			return float64(*v)
+		}
+	case *int16:
+		if v != nil {
+			return float64(*v)
+		}
+	case *int32:
+		if v != nil {
+			return float64(*v)
+		}
+	case *int64:
+		if v != nil {
+			return float64(*v)
+		}
+	case *uint8:
+		if v != nil {
+			return float64(*v)
+		}
+	case *uint16:
+		if v != nil {
+			return float64(*v)
+		}
+	case *uint32:
+		if v != nil {
+			return float64(*v)
+		}
+	case *uint64:
+		if v != nil {
+			return float64(*v)
+		}
+	case *float32:
+		if v != nil {
+			return float64(*v)
+		}
+	case *float64:
+		if v != nil {
+			return float64(*v)
+		}
 	case bool:
 		if v {
 			return 1
@@ -284,7 +476,7 @@ func ToS(any interface{}) string {
 	case int32:
 		return strconv.FormatInt(int64(v), 10)
 	case int64:
-		return strconv.FormatInt(int64(v), 10)
+		return strconv.FormatInt(v, 10)
 	case uint:
 		return strconv.FormatInt(int64(v), 10)
 	case uint8:
@@ -299,6 +491,55 @@ func ToS(any interface{}) string {
 		return strconv.FormatFloat(float64(v), 'f', -1, 64)
 	case float64:
 		return strconv.FormatFloat(float64(v), 'f', -1, 64)
+
+	case *int:
+		if v != nil {
+			return strconv.FormatInt(int64(*v), 10)
+		}
+	case *uint:
+		if v != nil {
+			return strconv.FormatInt(int64(*v), 10)
+		}
+	case *int8:
+		if v != nil {
+			return strconv.FormatInt(int64(*v), 10)
+		}
+	case *int16:
+		if v != nil {
+			return strconv.FormatInt(int64(*v), 10)
+		}
+	case *int32:
+		if v != nil {
+			return strconv.FormatInt(int64(*v), 10)
+		}
+	case *int64:
+		if v != nil {
+			return strconv.FormatInt(int64(*v), 10)
+		}
+	case *uint8:
+		if v != nil {
+			return strconv.FormatInt(int64(*v), 10)
+		}
+	case *uint16:
+		if v != nil {
+			return strconv.FormatInt(int64(*v), 10)
+		}
+	case *uint32:
+		if v != nil {
+			return strconv.FormatInt(int64(*v), 10)
+		}
+	case *uint64:
+		if v != nil {
+			return strconv.FormatInt(int64(*v), 10)
+		}
+	case *float32:
+		if v != nil {
+			return strconv.FormatFloat(float64(*v), 'f', -1, 64)
+		}
+	case *float64:
+		if v != nil {
+			return strconv.FormatFloat(float64(*v), 'f', -1, 64)
+		}
 	case bool:
 		if v {
 			return `true`
@@ -320,11 +561,25 @@ func ToTime(any interface{}) time.Time {
 	if any == nil {
 		return time.Time{}
 	}
-	val, ok := any.(time.Time)
-	if L.CheckIf(!ok, `Can't convert to time.Time`, any) {
-		return time.Time{}
+	switch v := any.(type) {
+	case time.Time:
+		return v
+	case *time.Time:
+		if v != nil {
+			return *v
+		}
+	case []byte: // "YYYY-MM-DD HH:MM:SS.MMMMMM"
+		res, err := parseDateTime(v, time.UTC)
+		L.IsError(err, `Can't convert to time.Time from []byte`, any)
+		return res
+	case string: // "YYYY-MM-DD HH:MM:SS.MMMMMM"
+		res, err := parseDateTime([]byte(v), time.UTC)
+		L.IsError(err, `Can't convert to time.Time from string`, any)
+		return res
+	default:
+		L.CheckIf(false, `Can't convert to time.Time`, any)
 	}
-	return val
+	return time.Time{}
 }
 
 // convert any data type to bool
@@ -363,6 +618,54 @@ func ToBool(any interface{}) bool {
 		return v != 0
 	case float64:
 		return v != 0
+	case *int:
+		if v != nil {
+			return *v == 0
+		}
+	case *uint:
+		if v != nil {
+			return *v == 0
+		}
+	case *int8:
+		if v != nil {
+			return *v == 0
+		}
+	case *int16:
+		if v != nil {
+			return *v == 0
+		}
+	case *int32:
+		if v != nil {
+			return *v == 0
+		}
+	case *int64:
+		if v != nil {
+			return *v == 0
+		}
+	case *uint8:
+		if v != nil {
+			return *v == 0
+		}
+	case *uint16:
+		if v != nil {
+			return *v == 0
+		}
+	case *uint32:
+		if v != nil {
+			return *v == 0
+		}
+	case *uint64:
+		if v != nil {
+			return *v == 0
+		}
+	case *float32:
+		if v != nil {
+			return *v == 0
+		}
+	case *float64:
+		if v != nil {
+			return *v == 0
+		}
 	case fmt.Stringer:
 		val := v.String()
 		val = strings.TrimSpace(strings.ToLower(val))
