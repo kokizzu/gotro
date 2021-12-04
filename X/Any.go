@@ -126,6 +126,10 @@ func ToU(any interface{}) uint64 {
 			return uint64(val)
 		}
 		L.ParentDescribe(`Can't convert to uint64`, any)
+	case *interface{}:
+		if v != nil {
+			return ToU(*v)
+		}
 	default:
 		L.ParentDescribe(`Can't convert to uint64`, any)
 	}
@@ -234,6 +238,10 @@ func ToByte(any interface{}) byte {
 			return byte(val)
 		}
 		L.ParentDescribe(`Can't convert to byte`, any)
+	case *interface{}:
+		if v != nil {
+			return ToByte(*v)
+		}
 	default:
 		L.ParentDescribe(`Can't convert to byte`, any)
 	}
@@ -334,7 +342,7 @@ func ToI(any interface{}) int64 {
 		if val, err := strconv.ParseFloat(string(v), 64); err == nil {
 			return int64(val)
 		}
-		L.ParentDescribe(`Can't convert to int64`, any)
+		L.ParentDescribe(`Can't convert to int64 from []byte`, any)
 	case string:
 		if val, err := strconv.ParseInt(v, 10, 64); err == nil {
 			return val
@@ -342,7 +350,11 @@ func ToI(any interface{}) int64 {
 		if val, err := strconv.ParseFloat(v, 64); err == nil {
 			return int64(val)
 		}
-		L.ParentDescribe(`Can't convert to int64`, any)
+		L.ParentDescribe(`Can't convert to int64 from string`, any)
+	case *interface{}:
+		if v != nil {
+			return ToI(*v)
+		}
 	default:
 		L.ParentDescribe(`Can't convert to int64`, any)
 	}
@@ -446,6 +458,10 @@ func ToF(any interface{}) float64 {
 			return val
 		}
 		L.ParentDescribe(`Can't convert to float64`, any)
+	case *interface{}:
+		if v != nil {
+			return ToF(*v)
+		}
 	default:
 		L.ParentDescribe(`Can't convert to float64`, any)
 	}
@@ -491,7 +507,6 @@ func ToS(any interface{}) string {
 		return strconv.FormatFloat(float64(v), 'f', -1, 64)
 	case float64:
 		return strconv.FormatFloat(float64(v), 'f', -1, 64)
-
 	case *int:
 		if v != nil {
 			return strconv.FormatInt(int64(*v), 10)
@@ -550,6 +565,10 @@ func ToS(any interface{}) string {
 			return ``
 		}
 		return v.String()
+	case *interface{}:
+		if v != nil {
+			return ToS(*v)
+		}
 	default:
 		return ToJson5(v)
 	}
@@ -576,6 +595,22 @@ func ToTime(any interface{}) time.Time {
 		res, err := parseDateTime([]byte(v), time.UTC)
 		L.IsError(err, `Can't convert to time.Time from string`, any)
 		return res
+	case *[]byte: // "YYYY-MM-DD HH:MM:SS.MMMMMM"
+		if v != nil {
+			res, err := parseDateTime(*v, time.UTC)
+			L.IsError(err, `Can't convert to time.Time from []byte`, any)
+			return res
+		}
+	case *string: // "YYYY-MM-DD HH:MM:SS.MMMMMM"
+		if v != nil {
+			res, err := parseDateTime([]byte(*v), time.UTC)
+			L.IsError(err, `Can't convert to time.Time from []byte`, any)
+			return res
+		}
+	case *interface{}:
+		if v != nil {
+			return ToTime(*v)
+		}
 	default:
 		L.CheckIf(false, `Can't convert to time.Time`, any)
 	}
