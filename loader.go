@@ -7,7 +7,7 @@ import (
 	_ "github.com/kokizzu/gotro/D"
 	_ "github.com/kokizzu/gotro/D/Ch"
 	_ "github.com/kokizzu/gotro/D/Du"
-	_ "github.com/kokizzu/gotro/D/Ms"
+	//	_ "github.com/kokizzu/gotro/D/Ms" // broken
 	_ "github.com/kokizzu/gotro/D/Pg"
 	_ "github.com/kokizzu/gotro/D/Rd"
 	_ "github.com/kokizzu/gotro/D/Tt"
