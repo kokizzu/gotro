@@ -10,6 +10,7 @@ import (
 	"sort"
 	"strconv"
 	"strings"
+	"time"
 )
 
 // Map support package
@@ -299,6 +300,8 @@ func (json SX) GetInt(key string) int64 {
 		return int64(v)
 	case float64:
 		return int64(v)
+	case time.Duration:
+		return int64(v)
 	case bool:
 		if v {
 			return 1
@@ -352,10 +355,12 @@ func (json SX) GetUint(key string) uint64 {
 	case uint32:
 		return uint64(v)
 	case uint64:
-		return uint64(v)
+		return v
 	case float32:
 		return uint64(v)
 	case float64:
+		return uint64(v)
+	case time.Duration:
 		return uint64(v)
 	case bool:
 		if v {
@@ -412,6 +417,8 @@ func (json SX) GetFloat(key string) float64 {
 	case uint64:
 		return float64(v)
 	case float32:
+		return float64(v)
+	case time.Duration:
 		return float64(v)
 	case bool:
 		if v {

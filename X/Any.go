@@ -57,6 +57,8 @@ func ToU(any interface{}) uint64 {
 		return uint64(v)
 	case float64:
 		return uint64(v)
+	case time.Duration:
+		return uint64(v)
 	case *int:
 		if v != nil {
 			return uint64(*v)
@@ -168,6 +170,8 @@ func ToByte(any interface{}) byte {
 	case float32:
 		return byte(v)
 	case float64:
+		return byte(v)
+	case time.Duration:
 		return byte(v)
 	case *int:
 		if v != nil {
@@ -282,6 +286,8 @@ func ToI(any interface{}) int64 {
 		return int64(v)
 	case float64:
 		return int64(v)
+	case time.Duration:
+		return int64(v)
 	case *int:
 		if v != nil {
 			return int64(*v)
@@ -394,6 +400,8 @@ func ToF(any interface{}) float64 {
 	case uint64:
 		return float64(v)
 	case float32:
+		return float64(v)
+	case time.Duration:
 		return float64(v)
 	case *int:
 		if v != nil {
