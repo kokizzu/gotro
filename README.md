@@ -50,12 +50,12 @@ this already includes session loading and template rendering (real-life use case
 
 ## Contributors
 
-- Devin Yonas
-- Dikaimin Simon
-- Dimas Yudha P
-- Michael Lim
-- Pham Hoang Tien
-- Rizal Widyarta Gowandy
+- [Devin Yonas](//github.com/davey06)
+- [Dikaimin Simon](//github.com/dikaimins)
+- [Dimas Yudha P](//github.com/dhiemaz)
+- [Michael Lim](//github.com/shaolim)
+- [Pham Hoang Tien](//github.com/PhamHoangTien1987)
+- [Rizal Widyarta Gowandy](//github.com/rizalgowandy)
 
 ## TODO
 
@@ -72,7 +72,6 @@ this already includes session loading and template rendering (real-life use case
   - [GridDB](//griddb.net/en) <-- high-write
   - [GunDB](//gundb.github.io)
   - [IceFireDB](//github.com/gitsrc/IceFireDB) <-- high-write (redis-compatible)
-  - [InfluxDB](//docs.influxdata.com/influxdb)
   - [LocustDB](//github.com/cswinter/LocustDB) <-- OLAP use-cases
   - [NebulaGraph](//nebula-graph.io)
   - [OrientDB](//orientdb.com)
