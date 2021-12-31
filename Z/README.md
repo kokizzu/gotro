@@ -91,3 +91,9 @@ str := FromString(`i like #{char}`).Str(M.SX{
 })
 str == `i like Rem`
 ```
+
+## Performance Optimization Tips
+
+- build/load the template once (`Z.ParseFile` or `Z.FromString`), call `.Render` multiple times
+- preallocate `bytes.Buffer` so it won't need to resize 
+- for static values, use another caching library like `bigcache` so no need to call `.Render` again and again, the render itself is fast `O(n)` where `n` is the bytes, but the serialization to JSON string might be slow.
