@@ -58,7 +58,7 @@ make setup-webserver
 # install dependencies for web frontend (Svelte with Vite build system): localhost:3000
 make webclient
 
-# start dependencies (Tarantool, Clickhouse, mailhog): localhost:3301, localhost:9000, localhost:1025
+# start dependencies (Tarantool, Clickhouse, Mailhog): localhost:3301, localhost:9000, localhost:1025
 make compose
 
 # run api server (Go with Air auto-recompile): localhost:9090
@@ -124,11 +124,12 @@ x.DoInsert() or x.DoReplace() // calling DoUpdateBy*() will do nothing, since mu
 ## TODOs
 
 - Add SEO pre-render: [Rendora](//github.com/rendora/rendora)
-- Add search-engine: [TypeSense](//typesense.org/) example
+- Add search-engine: [TypeSense](//typesense.org/) or [MeiliSearch](//www.meilisearch.com) for single node
 - Add more persisted cache option: [IceFireDB](https://github.com/gitsrc/IceFireDB) or [Aerospike](//aerospike.com/)
-- Add external storage upload example (minio? wasabi?)
-- Replace LightStep with [SigNoz](//github.com/SigNoz/signoz), [tutorial](//dev.to/signoz/monitor-your-golang-application-with-opentelemetry-and-signoz-3fli) and/or [datav](//github.com/datav-io/datav)
-- Add more deployment script with [LXC/LXD share](//bobcares.com/blog/how-to-setup-high-density-vps-hosting-using-lxc-linux-containers-and-lxd/) for single server multi-tenant
+- Add external [storage upload](//kokizzu.blogspot.com/2021/12/storage-service-with-cdn.html) example (minio? wasabi?)
+- Replace LightStep with [SigNoz](//github.com/SigNoz/signoz), [tutorial](//dev.to/signoz/monitor-your-golang-application-with-opentelemetry-and-signoz-3fli) and/or [datav](//github.com/datav-io/datav) or just dump it to Clickhouse directly and MQ like [RedPanda](//vectorized.io) as fallback
+- Add Analytics: [Jitsu](//jitsu.com/) or [Materialize](//materialize.com)
+- Add more deployment script with [LXC/LXD share](//bobcares.com/blog/how-to-setup-high-density-vps-hosting-using-lxc-linux-containers-and-lxd/) for single server multi-tenant or [LXD-Compose](//mottainaici.github.io/lxd-compose-docs/docs/)
 - Add backup scripts for Tarantool and Clickhouse
 
 ## File Upload Example
