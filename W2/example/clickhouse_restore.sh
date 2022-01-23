@@ -8,6 +8,7 @@ if [[ -z "${CHB_BIN}" ]] ; then
 	cd clickhouse-backup/
 	sudo mv clickhouse-backup /usr/local/bin
 	sudo mkdir -p /etc/clickhouse-backup
+	sed -e '/^ *skip_tables:/b ins' -e b -e ':ins' -e 'a\'$'\n''  - information_schema.\*\n  - INFORMATION_SCHEMA.\*' -e ': done' -e 'n;b done' config.yml
 	sudo mv config.yml /etc/clickhouse-backup
 	sudo chown ${USER} /etc/clickhouse-backup
 	clickhouse-backup -v
@@ -26,4 +27,4 @@ sudo mkdir -p /var/lib/clickhouse/backup/
 sudo chown clickhouse:clickhouse /var/lib/clickhouse/backup
 sudo tar xvfz ${LAST_BACKUP} -C /var/lib/clickhouse/backup/
 
-sudo clickhouse-backup restore `sudo clickhouse-backup list | cut -d ' ' -f 1`
+sudo clickhouse-backup restore --rm `sudo clickhouse-backup list | cut -d ' ' -f 1`

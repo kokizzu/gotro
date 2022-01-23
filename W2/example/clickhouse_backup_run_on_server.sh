@@ -10,6 +10,7 @@ if [[ -z "${CHB_BIN}" ]] ; then
 	cd clickhouse-backup/
 	echo $SUDOPASS | sudo mv clickhouse-backup /usr/local/bin
   sudo mkdir -p /etc/clickhouse-backup
+  sed -e '/^ *skip_tables:/b ins' -e b -e ':ins' -e 'a\'$'\n''  - information_schema.\*\n  - INFORMATION_SCHEMA.\*' -e ': done' -e 'n;b done' config.yml
 	sudo mv config.yml /etc/clickhouse-backup
 	sudo chown ${USER} /etc/clickhouse-backup
 	clickhouse-backup -v
