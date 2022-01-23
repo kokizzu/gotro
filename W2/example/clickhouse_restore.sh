@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 set -x 
+set -e
 
 CHB_BIN="$(which clickhouse-backup)"
 if [[ -z "${CHB_BIN}" ]] ; then
@@ -27,4 +28,7 @@ sudo mkdir -p /var/lib/clickhouse/backup/
 sudo chown clickhouse:clickhouse /var/lib/clickhouse/backup
 sudo tar xvfz ${LAST_BACKUP} -C /var/lib/clickhouse/backup/
 
-sudo clickhouse-backup restore --rm `sudo clickhouse-backup list | cut -d ' ' -f 1`
+#sudo clickhouse-backup restore --rm `sudo clickhouse-backup list | cut -d ' ' -f 1`
+
+export LOG_LEVEL=debug
+sudo bash -c "clickhouse-backup restore --rm $(sudo clickhouse-backup list local | cut -d ' ' -f 1)"
