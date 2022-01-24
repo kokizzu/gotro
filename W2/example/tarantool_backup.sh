@@ -1,18 +1,19 @@
 #!/usr/bin/env bash
 set -x
-CONNSTR=myusername:mysecretpassword@10.204.28.21:3301
-SERVERUSER="ubuntu"
-SERVERHOST="10.204.28.21"
+CONN_STR=myusername:mysecretpassword@10.204.28.21:3301
+SERVER_USER="ubuntu"
+SERVER_HOST="10.204.28.21"
 SSHPORT=22
 
-BACKDATE=$(date '+%Y%m%d_%H%M%S')
-BACKDIR=./backup/tt_${BACKDATE}
+BACKUP_DATE=$(date '+%Y%m%d_%H%M%S')
+BACKUP_DIR=./backup/tt_${BACKUP_DATE}
 
-echo 'box.backup.start()' | tarantoolctl connect $CONNSTR #> ./backup/tt.log
+echo 'box.snapshot()' | tarantoolctl connect $CONN_STR
+echo 'box.backup.start()' | tarantoolctl connect $CONN_STR #> ./backup/tt.log
 #cat ./backup/tt.log | grep '/var/lib/tarantool/' | cut -d '/' -f 5 > ./backup/tt_snapshot.txt
-mkdir -p ${BACKDIR}
-rsync -avP -e "ssh -p ${SSHPORT}" $SERVERUSER@$SERVERHOST:/home/$SERVERUSER/tarantool-data ${BACKDIR} # --files-from=./backup/tt_snapshot.txt
-echo 'box.backup.stop()' | tarantoolctl connect $CONNSTR 
+mkdir -p $BACKUP_DIR
+rsync -avP -e "ssh -p ${SSHPORT}" $SERVER_USER@$SERVER_HOST:/home/$SERVER_USER/tarantool-data $BACKUP_DIR # --files-from=./backup/tt_snapshot.txt
+echo 'box.backup.stop()' | tarantoolctl connect $CONN_STR 
 
-tar cvfz ./backup/tt_backup_${BACKDATE}.tgz -C ${BACKDIR} .
-rm -rf ${BACKDIR}
+tar cvfz ./backup/tt_backup_${BACKUP_DATE}.tgz -C $BACKUP_DIR .
+rm -rf $BACKUP_DIR
