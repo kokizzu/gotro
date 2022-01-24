@@ -33,3 +33,10 @@ sudo tar xvfz ${LAST_BACKUP} -C /var/lib/clickhouse/backup/
 #sudo clickhouse-backup restore --rm `sudo clickhouse-backup list | cut -d ' ' -f 1`
 
 sudo bash -c "LOG_LEVEL=debug clickhouse-backup restore --rm $(sudo clickhouse-backup list local | cut -d ' ' -f 1)"
+
+echo '# if failed, uninstall clickhouse:
+sudo apt purge clickhouse-server
+sudo rm -rf /var/lib/clickhouse
+sudo apt install clickhouse-server
+'
+
