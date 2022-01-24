@@ -132,12 +132,12 @@ func (a *Adapter) MigrateTables(tables map[TableName]*TableProp) {
 func (a *Adapter) AlterMissingColumns(tableName TableName, props *TableProp) bool {
 	query := `
 SELECT
-    name,
-    type,
-    position
+    "name",
+    "type",
+    "position"
 FROM system.columns
-WHERE table = ?
-ORDER BY 3`
+WHERE "table" = '$1'
+ORDER BY "position"`
 	rows, err := a.Query(query, tableName)
 	if L.IsError(err, `a.Query error: `+query) {
 		return false

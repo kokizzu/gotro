@@ -4,7 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 
-	_ "github.com/ClickHouse/clickhouse-go"
+	_ "github.com/ClickHouse/clickhouse-go/v2"
 	"github.com/kokizzu/gotro/L"
 	"github.com/tarantool/go-tarantool"
 )

@@ -22,7 +22,7 @@ import (
 	"database/sql"
 	"fmt"
 
-	_ "github.com/ClickHouse/clickhouse-go"
+	_ "github.com/ClickHouse/clickhouse-go/v2"
 )
 
 func ConnectClickhouse() *sql.DB {

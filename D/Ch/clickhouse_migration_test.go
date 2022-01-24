@@ -8,7 +8,7 @@ import (
 	"log"
 	"os"
 
-	_ "github.com/ClickHouse/clickhouse-go"
+	_ "github.com/ClickHouse/clickhouse-go/v2"
 	"github.com/kokizzu/gotro/L"
 	"github.com/ory/dockertest/v3"
 	"github.com/stretchr/testify/assert"

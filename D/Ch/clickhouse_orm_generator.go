@@ -50,7 +50,7 @@ var typeConverter = map[DataType]string{
 }
 
 const connStruct = `Ch.Adapter`
-const connImport = "\n\n\t_ `github.com/ClickHouse/clickhouse-go`"
+const connImport = "\n\n\t_ `github.com/ClickHouse/clickhouse-go/v2`"
 const buffImport = "\n\tchBuffer `github.com/kokizzu/ch-timed-buffer`"
 
 const warning = "// DO NOT EDIT, will be overwritten by github.com/kokizzu/Ch/clickhouse_orm_generator.go\n\n"

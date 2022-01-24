@@ -25,7 +25,7 @@ func TestNegativeEqualsIgnoreCaseFunc(t *testing.T) {
 	result := EqualsIgnoreCase(firstInput, secondInput)
 
 	if result {
-		t.Error(`%s %s should not equal`, firstInput, secondInput)
+		t.Errorf(`%s %s should not equal`, firstInput, secondInput)
 	}
 }
 

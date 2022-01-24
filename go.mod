@@ -3,7 +3,8 @@ module github.com/kokizzu/gotro
 go 1.16
 
 require (
-	github.com/ClickHouse/clickhouse-go v1.4.5
+	github.com/ClickHouse/clickhouse-go v1.5.2 // indirect
+	github.com/ClickHouse/clickhouse-go/v2 v2.0.0-beta.2
 	github.com/OneOfOne/cmap v0.0.0-20170825200327-ccaef7657ab8
 	github.com/allegro/bigcache v1.2.1
 	github.com/andybalholm/brotli v1.0.4 // indirect
@@ -13,6 +14,7 @@ require (
 	github.com/docker/docker v20.10.12+incompatible // indirect
 	github.com/fatih/color v1.13.0
 	github.com/francoispqt/onelog v0.0.0-20190306043706-8c2bb31b10a4
+	github.com/go-ole/go-ole v1.2.5 // indirect
 	github.com/goccy/go-yaml v1.9.5
 	github.com/gofiber/fiber/v2 v2.18.0
 	github.com/google/gops v0.3.19
@@ -32,7 +34,6 @@ require (
 	github.com/kpango/fastime v1.0.17
 	github.com/kr/pretty v0.3.0
 	github.com/lib/pq v1.10.4
-	github.com/lightstep/otel-launcher-go v0.20.0
 	github.com/mattn/go-colorable v0.1.12 // indirect
 	github.com/meilisearch/meilisearch-go v0.14.0
 	github.com/mitchellh/mapstructure v1.4.3 // indirect
@@ -56,11 +57,12 @@ require (
 	github.com/xeipuuv/gojsonpointer v0.0.0-20190905194746-02993c407bfb // indirect
 	github.com/yosuke-furukawa/json5 v0.1.1
 	github.com/zeebo/xxh3 v0.13.0
-	go.opentelemetry.io/otel v0.20.0
-	go.opentelemetry.io/otel/trace v0.20.0
+	go.opentelemetry.io/otel v1.3.0
+	go.opentelemetry.io/otel/trace v1.3.0
 	golang.org/x/crypto v0.0.0-20220112180741-5e0467b6c7ce
 	golang.org/x/net v0.0.0-20220114011407-0dd24b26b47d // indirect
 	golang.org/x/sys v0.0.0-20220114195835-da31bd327af9 // indirect
 	google.golang.org/protobuf v1.27.1 // indirect
+	gopkg.in/check.v1 v1.0.0-20200902074654-038fdea0a05b // indirect
 	gopkg.in/redis.v5 v5.2.9
 )

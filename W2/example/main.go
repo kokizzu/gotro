@@ -13,7 +13,7 @@ import (
 	"github.com/joho/godotenv"
 
 	"github.com/google/gops/agent"
-	"github.com/lightstep/otel-launcher-go/launcher"
+	//"github.com/lightstep/otel-launcher-go/launcher"
 )
 
 var log *zerolog.Logger
@@ -37,16 +37,16 @@ func main() {
 
 	if !cliMode {
 		// telemetry
-		ls := launcher.ConfigureOpentelemetry(
-			launcher.WithAccessToken(conf.LIGHTSTEP_ACCESS_TOKEN),
-			launcher.WithServiceName(conf.PROJECT_NAME),
-			launcher.WithServiceVersion("v0.0.1"), // TODO: get from command line $(git rev-parse --verify HEAD)
-			launcher.WithResourceAttributes(map[string]string{
-				"service.mode":           conf.SERVICE_MODE,
-				"deployment.environment": conf.ENV,
-			}),
-		)
-		defer ls.Shutdown()
+		//ls := launcher.ConfigureOpentelemetry(
+		//	launcher.WithAccessToken(conf.LIGHTSTEP_ACCESS_TOKEN),
+		//	launcher.WithServiceName(conf.PROJECT_NAME),
+		//	launcher.WithServiceVersion("v0.0.1"), // TODO: get from command line $(git rev-parse --verify HEAD)
+		//	launcher.WithResourceAttributes(map[string]string{
+		//		"service.mode":           conf.SERVICE_MODE,
+		//		"deployment.environment": conf.ENV,
+		//	}),
+		//)
+		//defer ls.Shutdown()
 
 		// gops
 		err := agent.Listen(agent.Options{})

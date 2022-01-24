@@ -18,11 +18,11 @@ func TestInit(t *testing.T) {
 
 func testOk(t *testing.T, ok bool, oldv int64, newv int64, cb63 string, print bool) bool {
 	if !ok {
-		t.Errorf(`Error decoding [%s] back to integer, source: %i`, cb63, oldv)
+		t.Errorf(`Error decoding [%s] back to integer, source: %d`, cb63, oldv)
 		return false
 	}
 	if newv != oldv {
-		t.Errorf(`Invalid decoding [%s] back to integer, should be: %i, got: %i`, cb63, oldv, newv)
+		t.Errorf(`Invalid decoding [%s] back to integer, should be: %d, got: %d`, cb63, oldv, newv)
 		return false
 	}
 	if print {
@@ -33,11 +33,11 @@ func testOk(t *testing.T, ok bool, oldv int64, newv int64, cb63 string, print bo
 
 func testOk2(t *testing.T, ok bool, oldv string, newv string, cb63 int64, print bool) bool {
 	if !ok {
-		t.Errorf(`Error encoding %i back to string, source: [%s]`, cb63, oldv)
+		t.Errorf(`Error encoding %d back to string, source: [%s]`, cb63, oldv)
 		return false
 	}
 	if newv != oldv {
-		t.Errorf(`Invalid encoding %i back to string, should be: [%s], got: [%s]`, cb63, oldv, newv)
+		t.Errorf(`Invalid encoding %d back to string, should be: [%s], got: [%s]`, cb63, oldv, newv)
 		return false
 	}
 	if print {

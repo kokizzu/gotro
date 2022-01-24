@@ -7,7 +7,7 @@ import (
 	"github.com/kokizzu/gotro/W2/example/model/mAuth"
 	"time"
 
-	_ "github.com/ClickHouse/clickhouse-go"
+	_ "github.com/ClickHouse/clickhouse-go/v2"
 	chBuffer "github.com/kokizzu/ch-timed-buffer"
 
 	"github.com/kokizzu/gotro/A"
