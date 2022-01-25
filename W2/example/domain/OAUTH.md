@@ -22,7 +22,17 @@ TODO
 
 ## Yahoo
 
-TODO. yahoo does not support multiple domain, does not support IP, so we have to create one by one.
+doc:
+https://developer.yahoo.com/oauth2/guide/flows_authcode/
+
+1. open https://developer.yahoo.com/apps/
+2. create an app, fill your appname, description, homepage url and redirect url
+3. fill homepage url with `http://127.0.0.1`
+4. fill redirect uri with `https://127.0.0.1/api/UserOauth` and `https://localhost/api/UserOauth`
+
+note:
+- the redirect uri doesn't support http, so use caddy to run https local
+- yahoo does not support multiple domain, does not support IP, so we have to create one by one.
 
 ## Steam
 
