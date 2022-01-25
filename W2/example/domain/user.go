@@ -1,15 +1,12 @@
 package domain
 
 import (
-	"time"
-
 	"github.com/kokizzu/gotro/S"
 	"github.com/kokizzu/gotro/W2/example/conf"
 	"github.com/kokizzu/gotro/W2/example/model/mAuth/rqAuth"
 	"github.com/kokizzu/gotro/W2/example/model/mAuth/wcAuth"
 	"github.com/kokizzu/gotro/X"
 	"github.com/kokizzu/id64"
-	"github.com/kpango/fastime"
 	"github.com/vburenin/nsync"
 )
 
@@ -89,36 +86,6 @@ type (
 )
 
 const UserLogin_Url = `/UserLogin`
-
-func (d *Domain) expireSession(sessionToken string) bool {
-	if sessionToken == `` {
-		return false
-	}
-	session := wcAuth.NewSessionsMutator(d.Taran)
-	session.SessionToken = sessionToken
-	now := fastime.UnixNow()
-	if session.FindBySessionToken() {
-		if session.ExpiredAt > now {
-			session.SetExpiredAt(now)
-			session.DoUpdateBySessionToken()
-		}
-		return true
-	}
-	return false
-}
-
-func (d *Domain) createSession(userId uint64, email, userAgent string) *wcAuth.SessionsMutator {
-	session := wcAuth.NewSessionsMutator(d.Taran)
-	session.UserId = userId
-	sess := conf.Session{
-		UserId:    userId,
-		Email:     email,
-		ExpiredAt: time.Now().AddDate(0, 0, conf.CookieDays).Unix(),
-	}
-	session.SessionToken = sess.Encrypt(userAgent)
-	session.ExpiredAt = sess.ExpiredAt
-	return session
-}
 
 func (d *Domain) UserLogin(in *UserLogin_In) (out UserLogin_Out) {
 	user := rqAuth.NewUsers(d.Taran)

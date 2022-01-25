@@ -8,11 +8,11 @@ import (
 	"github.com/kokizzu/id64"
 )
 
-//go:generate gomodifytags -all -add-tags json,form,query,long,msg -transform camelcase --skip-unexported -w -file template.go
-//go:generate replacer 'Id" form' 'Id,string" form' type template.go
-//go:generate replacer 'json:"id"' 'json:id,string" form' type template.go
-//go:generate replacer 'By" form' 'By,string" form' type template.go
-// go:generate msgp -tests=false -file template.go -o template__MSG.GEN.go
+//go:generate gomodifytags -all -add-tags json,form,query,long,msg -transform camelcase --skip-unexported -w -file store.go
+//go:generate replacer 'Id" form' 'Id,string" form' type store.go
+//go:generate replacer 'json:"id"' 'json:id,string" form' type store.go
+//go:generate replacer 'By" form' 'By,string" form' type store.go
+// go:generate msgp -tests=false -file store.go -o store__MSG.GEN.go
 
 type (
 	StoreProducts_In struct {

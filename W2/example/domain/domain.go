@@ -98,7 +98,7 @@ func (d *Domain) mustAdmin(token string, userAgent string, out *ResponseCommon) 
 		return nil
 	}
 	if !conf.Admins[sess.Email] {
-		out.SetError(403, `must be admin: `+sess.Email)
+		out.SetError(403, `must be admin`)
 		return nil
 	}
 	return sess

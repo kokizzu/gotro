@@ -1,5 +1,5 @@
 // can be hit using with /api/[ApiName]
-export const LastUpdatedAt = 1643081754
+export const LastUpdatedAt = 1643087682
 export const APIs = {
 	Health: {
 		in: {
@@ -209,14 +209,17 @@ export const APIs = {
 	UserExternalLogin: {
 		in: {
 			provider: '', // string
+			noCsrf: false, // bool
 		}, out: {
 			link: '', // string
+			sessionToken: '', //string | login token
 		}, read: [
 		], write: [
 		], stat: [
 		], deps: [
 		], err: [
-			[400, "Invalid host for oauth"],
+			[400, `provider not set`],
+			[500, `host not configured with oauth`],
 		]
 	},
 	UserForgotPassword: {
@@ -303,15 +306,47 @@ export const APIs = {
 	},
 	UserOauth: {
 		in: {
-			provider: '', // string
+			state: '', // string
+			code: '', // string
 		}, out: {
-			link: '', // string
+			oauthUser: 0, // M.SX
+			email: '', // string
+			currentUser: {
+				id:  '', // uint64
+				email:  '', // string
+				password:  '', // string
+				createdAt:  0, // int64
+				createdBy:  '', // uint64
+				updatedAt:  0, // int64
+				updatedBy:  '', // uint64
+				deletedAt:  0, // int64
+				deletedBy:  '', // uint64
+				isDeleted:  false, // bool
+				restoredAt:  0, // int64
+				restoredBy:  '', // uint64
+				passwordSetAt:  0, // int64
+				secretCode:  '', // string
+				secretCodeAt:  0, // int64
+				verificationSentAt:  0, // int64
+				verifiedAt:  0, // int64
+				lastLoginAt:  0, // int64
+			},
+			sessionToken: '', //string | login token
 		}, read: [
 		], write: [
+			"Auth.Sessions",
+			"Auth.Users",
 		], stat: [
 		], deps: [
 		], err: [
-			[400, "Invalid host for oauth"],
+			[400, `invalid CSRF oauth state`],
+			[400, `provider not set`],
+			[451, `failed to register this user: `],
+			[500, `cannot create session`],
+			[500, `cannot encrypt password`],
+			[500, `failed exchange oauth token`],
+			[500, `host not configured with oauth`],
+			[500, `missing email from oauth provider`],
 		]
 	},
 	UserProfile: {
