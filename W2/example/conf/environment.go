@@ -2,13 +2,15 @@ package conf
 
 import (
 	"errors"
+	"os"
+	"strings"
+
 	"github.com/joho/godotenv"
 	"github.com/kokizzu/gotro/L"
 	"github.com/kokizzu/gotro/S"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/google"
-	"os"
-	"strings"
+	"golang.org/x/oauth2/yahoo"
 )
 
 const PROJECT_NAME = `github.com/kokizzu/gotro/W2/example` // must be the same as go.mod
@@ -60,13 +62,20 @@ var (
 	OAUTH_URLS          []string
 	OAUTH_CALLBACK_PATH string
 
-	GPLUS_SCOPES       []string
 	GPLUS_CLIENTID     string
 	GPLUS_CLIENTSECRET string
+	GPLUS_SCOPES       []string
+
+	YAHOO_APPID        string
+	YAHOO_CLIENTID     string
+	YAHOO_CLIENTSECRET string
+	YAHOO_SCOPES       []string
 
 	GPLUS_OAUTH_PROVIDERS map[string]*oauth2.Config
+	YAHOO_OAUTH_PROVIDERS map[string]*oauth2.Config
 
 	GPLUS_USERINFO_ENDPOINT string
+	YAHOO_USERINFO_ENDPOINT string
 )
 
 func strArr(envName string, separator string) []string {
@@ -124,6 +133,22 @@ func LoadFromEnv(ignoreBinary ...interface{}) {
 			RedirectURL:  url + OAUTH_CALLBACK_PATH,
 			Scopes:       GPLUS_SCOPES,
 			Endpoint:     google.Endpoint,
+		}
+	}
+
+	YAHOO_APPID = os.Getenv(`YAHOO_APPID`)
+	YAHOO_CLIENTID = os.Getenv(`YAHOO_CLIENTID`)
+	YAHOO_CLIENTSECRET = os.Getenv(`YAHOO_CLIENTSECRET`)
+	YAHOO_SCOPES = strArr(`YAHOO_SCOPES`, `,`)
+	
+	YAHOO_OAUTH_PROVIDERS = map[string]*oauth2.Config{}
+	for _, url := range OAUTH_URLS {
+		YAHOO_OAUTH_PROVIDERS[url] = &oauth2.Config{
+			ClientID:     YAHOO_CLIENTID,
+			ClientSecret: YAHOO_CLIENTSECRET,
+			RedirectURL:  url + OAUTH_CALLBACK_PATH,
+			Scopes:       YAHOO_SCOPES,
+			Endpoint:     yahoo.Endpoint,
 		}
 	}
 

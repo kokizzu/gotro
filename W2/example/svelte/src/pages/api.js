@@ -1,5 +1,5 @@
 // can be hit using with /api/[ApiName]
-export const LastUpdatedAt = 1643087682
+export const LastUpdatedAt = 1643103234
 export const APIs = {
 	Health: {
 		in: {
@@ -12,7 +12,7 @@ export const APIs = {
 	},
 	StoreCartItemsAdd: {
 		in: {
-			productId: 0, // uint64
+			productId: '', // uint64
 			deltaQty: 0, // int64
 			sessionToken: '', //string | user login token
 		}, out: {
@@ -63,7 +63,7 @@ export const APIs = {
 	},
 	StoreInvoice: {
 		in: {
-			invoiceId: 0, // uint64
+			invoiceId: '', // uint64
 			recalculate: false, // bool
 			doPurchase: false, // bool
 			sessionToken: '', //string | user login token
@@ -209,7 +209,6 @@ export const APIs = {
 	UserExternalLogin: {
 		in: {
 			provider: '', // string
-			noCsrf: false, // bool
 		}, out: {
 			link: '', // string
 			sessionToken: '', //string | login token
@@ -219,6 +218,7 @@ export const APIs = {
 		], deps: [
 		], err: [
 			[400, `provider not set`],
+			[500, `host not configured with oauth: `],
 			[500, `host not configured with oauth`],
 		]
 	},
@@ -345,6 +345,7 @@ export const APIs = {
 			[500, `cannot create session`],
 			[500, `cannot encrypt password`],
 			[500, `failed exchange oauth token`],
+			[500, `host not configured with oauth: `],
 			[500, `host not configured with oauth`],
 			[500, `missing email from oauth provider`],
 		]

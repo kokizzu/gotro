@@ -1,6 +1,10 @@
 package domain
 
 import (
+	"fmt"
+	"io/ioutil"
+	"net/http"
+
 	"github.com/kokizzu/gotro/L"
 	"github.com/kokizzu/gotro/M"
 	"github.com/kokizzu/gotro/S"
@@ -10,8 +14,6 @@ import (
 	"github.com/kokizzu/gotro/X"
 	"github.com/kokizzu/id64"
 	"github.com/kokizzu/lexid"
-	"io/ioutil"
-	"net/http"
 )
 
 //go:generate gomodifytags -all -add-tags json,form,query,long,msg -transform camelcase --skip-unexported -w -file oauth.go
@@ -22,6 +24,7 @@ import (
 
 const (
 	Google = `google`
+	Yahoo  = `yahoo`
 )
 
 type (
@@ -50,6 +53,14 @@ func (d *Domain) UserExternalLogin(in *UserExternalLogin_In) (out UserExternalLo
 		}
 		out.Link = gProvider.AuthCodeURL(csrfState)
 		//fmt.Println(out.Link)
+	case Yahoo:
+		yProvider := conf.YAHOO_OAUTH_PROVIDERS[in.Host]
+		if yProvider == nil {
+			out.SetError(500, `host not configured with oauth: `+in.Host)
+			return
+		}
+		out.Link = yProvider.AuthCodeURL(csrfState)
+		fmt.Println(out.Link)
 	default:
 		out.SetError(400, `provider not set`)
 	}
@@ -130,6 +141,35 @@ func (d *Domain) UserOauth(in *UserOauth_In) (out UserOauth_Out) {
 		}
 		out.OauthUser = fetchJson(client, conf.GPLUS_USERINFO_ENDPOINT, &out.ResponseCommon)
 		// example: {"email":"","email_verified":true,"family_name":"","gender":"","given_name":"","locale":"en-GB","name":"","picture":"http://","profile":"http://","sub":"number"};
+
+		out.Email = out.OauthUser.GetStr(`email`)
+		if out.HasError() {
+			return
+		}
+	case Yahoo:
+		yProvider := conf.YAHOO_OAUTH_PROVIDERS[in.Host]
+		if yProvider == nil {
+			out.SetError(500, `host not configured with oauth: `+in.Host)
+			return
+		}
+		token, err := yProvider.Exchange(in.TracerContext, in.Code)
+		if err != nil {
+			out.SetError(500, `failed exchange oauth token`)
+			return
+		}
+		L.Describe(token)
+		client := yProvider.Client(in.TracerContext, token)
+		out.OauthUser = fetchJson(client, `https://api.login.yahoo.com/openid/v1/userinfo`, &out.ResponseCommon)
+		/* example: {
+		  "sub": "FSVIDUW3D7FSVIDUW3D72F2F",
+		  "name": "Jane Doe",
+		  "given_name": "Jane",
+		  "family_name": "Doe",
+		  "preferred_username": "j.doe",
+		  "email": "janedoe@example.com",
+		  "picture": "http://example.com/janedoe/me.jpg"
+		  "profile_images": []
+		} */
 
 		out.Email = out.OauthUser.GetStr(`email`)
 		if out.HasError() {

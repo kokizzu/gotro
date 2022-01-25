@@ -13,7 +13,7 @@ import (
 	"github.com/kokizzu/gotro/W2/example/model/mAuth/rqAuth"
 	"github.com/kokizzu/gotro/W2/example/model/mAuth/saAuth"
 
-	"github.com/kokizzu/ch-timed-buffer"
+	chBuffer "github.com/kokizzu/ch-timed-buffer"
 	"github.com/kokizzu/gotro/L"
 	"github.com/kpango/fastime"
 )

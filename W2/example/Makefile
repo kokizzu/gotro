@@ -37,6 +37,9 @@ setup-webserver-ubuntu:
 	curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/debian.deb.txt' | sudo tee /etc/apt/sources.list.d/caddy-stable.list
 	sudo apt update
 	sudo apt install caddy
+	sudo systemctl stop caddy
+	sudo systemctl disable caddy
+	sudo setcap 'cap_net_bind_service=+ep' `which caddy`
 	curl -fsSL https://deb.nodesource.com/setup_16.x | sudo -E bash -
 	sudo apt-get install -y nodejs
 
