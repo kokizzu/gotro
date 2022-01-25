@@ -33,8 +33,13 @@ type DockerComposeConf struct { // https://zhwt.github.io/yaml-to-go/
 			} `yaml:"ulimits"`
 		} `yaml:"clickhouse1"`
 		Tarantool1 struct {
-			Image string   `yaml:"image"`
-			Ports []string `yaml:"ports"`
+			Image       string `yaml:"image"`
+			Environment struct {
+				TARANTOOLUSERNAME     string `yaml:"TARANTOOL_USER_NAME"`
+				TARANTOOLUSERPASSWORD string `yaml:"TARANTOOL_USER_PASSWORD"`
+			} `yaml:"environment"`
+			Volumes []string `yaml:"volumes"`
+			Ports   []string `yaml:"ports"`
 		} `yaml:"tarantool1"`
 		Mailhog struct {
 			Image string   `yaml:"image"`
@@ -144,6 +149,11 @@ func TestMain(t *testing.M) {
 				L.Print(rec, err)
 			}()
 			conf.TARANTOOL_PORT = res.GetPort("3301/tcp")
+
+			// override conf to use guest
+			conf.TARANTOOL_USER = `guest`
+			conf.TARANTOOL_PASS = ``
+
 			L.Print(`connecting`, conf.TARANTOOL_HOST, conf.TARANTOOL_PORT)
 			conf.ConnectTarantool()
 			return

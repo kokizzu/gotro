@@ -1,5 +1,5 @@
 // can be hit using with /api/[ApiName]
-export const LastUpdatedAt = 1638166591
+export const LastUpdatedAt = 1643081754
 export const APIs = {
 	Health: {
 		in: {
@@ -206,6 +206,19 @@ export const APIs = {
 		], deps: [
 		], err: []
 	},
+	UserExternalLogin: {
+		in: {
+			provider: '', // string
+		}, out: {
+			link: '', // string
+		}, read: [
+		], write: [
+		], stat: [
+		], deps: [
+		], err: [
+			[400, "Invalid host for oauth"],
+		]
+	},
 	UserForgotPassword: {
 		in: {
 			email: '', // string
@@ -287,6 +300,19 @@ export const APIs = {
 		], stat: [
 		], deps: [
 		], err: []
+	},
+	UserOauth: {
+		in: {
+			provider: '', // string
+		}, out: {
+			link: '', // string
+		}, read: [
+		], write: [
+		], stat: [
+		], deps: [
+		], err: [
+			[400, "Invalid host for oauth"],
+		]
 	},
 	UserProfile: {
 		in: {

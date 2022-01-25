@@ -34,6 +34,7 @@ type RequestCommon struct {
 	Debug         bool              `json:"debug,omitempty" form:"debug" query:"debug" long:"debug" msg:"debug"`
 	Header        string            `json:"header,omitempty" form:"header" query:"header" long:"header" msg:"header"`
 	RawBody       string            `json:"rawBody,omitempty" form:"rawBody" query:"rawBody" long:"rawBody" msg:"rawBody"`
+	Host          string            `json:"host" form:"host" query:"host" long:"host" msg:"host"`
 }
 
 func (l *RequestCommon) ToFiberCtx(ctx *fiber.Ctx, out interface{}) error {
@@ -73,6 +74,7 @@ func (l *RequestCommon) FromFiberCtx(ctx *fiber.Ctx, tracerCtx context.Context) 
 	l.SessionToken = ctx.Cookies(conf.CookieName, l.SessionToken)
 	l.UserAgent = string(ctx.Request().Header.UserAgent())
 	l.IpAddress = ctx.IP()
+	l.Host = ctx.Protocol() + `://` + ctx.Hostname()
 	l.Now = fastime.UnixNow()
 	// TODO: check ctx.Accepts()
 	//ctx.Request().URI().RequestURI()

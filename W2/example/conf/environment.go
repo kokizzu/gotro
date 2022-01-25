@@ -2,12 +2,13 @@ package conf
 
 import (
 	"errors"
-	"os"
-	"strings"
-
 	"github.com/joho/godotenv"
 	"github.com/kokizzu/gotro/L"
 	"github.com/kokizzu/gotro/S"
+	"golang.org/x/oauth2"
+	"golang.org/x/oauth2/google"
+	"os"
+	"strings"
 )
 
 const PROJECT_NAME = `github.com/kokizzu/gotro/W2/example` // must be the same as go.mod
@@ -29,8 +30,6 @@ var (
 	CLICKHOUSE_PORT string
 	CLICKHOUSE_USER string
 	CLICKHOUSE_PASS string
-
-	LIGHTSTEP_ACCESS_TOKEN string
 
 	WEBAPI_HOSTPORT string
 	WEBAPI_EXEPATH  string
@@ -57,7 +56,23 @@ var (
 	DOCKER_HOST         string
 	DOCKER_CERT_PATH    string
 	DOCKER_MACHINE_NAME string
+
+	OAUTH_URLS          []string
+	OAUTH_CALLBACK_PATH string
+
+	GPLUS_SCOPES       []string
+	GPLUS_CLIENTID     string
+	GPLUS_CLIENTSECRET string
+
+	GPLUS_OAUTH_PROVIDERS map[string]*oauth2.Config
+
+	GPLUS_USERINFO_ENDPOINT string
 )
+
+func strArr(envName string, separator string) []string {
+	str := os.Getenv(envName)
+	return S.Split(str, separator)
+}
 
 func LoadFromEnv(ignoreBinary ...interface{}) {
 	// TODO: change to loop from struct's tag and print the result
@@ -70,8 +85,6 @@ func LoadFromEnv(ignoreBinary ...interface{}) {
 	CLICKHOUSE_PORT = S.IfEmpty(os.Getenv(`CLICKHOUSE_PORT`), `9000`)
 	CLICKHOUSE_USER = os.Getenv(`CLICKHOUSE_USER`)
 	CLICKHOUSE_PASS = os.Getenv(`CLICKHOUSE_PASS`)
-
-	LIGHTSTEP_ACCESS_TOKEN = os.Getenv(`LIGHTSTEP_ACCESS_TOKEN`)
 
 	WEBAPI_HOSTPORT = S.IfEmpty(os.Getenv(`WEBAPI_HOSTPORT`), `:3000`)
 	WEBAPI_EXEPATH = S.IfEmpty(os.Getenv(`WEBAPI_EXEPATH`), `./`+PROJECT_NAME+`.exe`)
@@ -93,6 +106,25 @@ func LoadFromEnv(ignoreBinary ...interface{}) {
 	ENV = S.IfEmpty(os.Getenv(`ENV`), `dev`)
 	if ENV == `dev` {
 		DEBUG_MODE = true
+	}
+
+	// OpenID/OAuth
+	OAUTH_URLS = strArr(`OAUTH_URLS`, `,`)
+	OAUTH_CALLBACK_PATH = os.Getenv(`OAUTH_CALLBACK_PATH`)
+
+	GPLUS_CLIENTID = os.Getenv(`GPLUS_CLIENTID`)
+	GPLUS_CLIENTSECRET = os.Getenv(`GPLUS_CLIENTSECRET`)
+	GPLUS_SCOPES = strArr(`GPLUS_SCOPES`, `,`)
+
+	GPLUS_OAUTH_PROVIDERS = map[string]*oauth2.Config{}
+	for _, url := range OAUTH_URLS {
+		GPLUS_OAUTH_PROVIDERS[url] = &oauth2.Config{
+			ClientID:     GPLUS_CLIENTID,
+			ClientSecret: GPLUS_CLIENTSECRET,
+			RedirectURL:  url + OAUTH_CALLBACK_PATH,
+			Scopes:       GPLUS_SCOPES,
+			Endpoint:     google.Endpoint,
+		}
 	}
 
 	if len(ignoreBinary) == 0 {

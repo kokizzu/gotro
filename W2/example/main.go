@@ -30,6 +30,7 @@ func main() {
 		return
 	}
 	cliMode := args[1] == `run` || args[1] == `cmd` || args[1] == `cli`
+
 	conf.SERVICE_MODE = B.ToS(cliMode)
 	conf.LoadFromEnv(cliMode)
 

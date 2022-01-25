@@ -6,3 +6,4 @@ bin/
 svelte/dist/
 svelte/node_modules/
 backup
+.env.override
