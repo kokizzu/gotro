@@ -1,6 +1,14 @@
 package domain
 
 import (
+	"io/ioutil"
+	"log"
+	"net"
+	"os"
+	"strings"
+	"testing"
+	"time"
+
 	"github.com/goccy/go-yaml"
 	"github.com/kokizzu/goproc"
 	"github.com/kokizzu/gotro/L"
@@ -10,13 +18,6 @@ import (
 	"github.com/kokizzu/gotro/W2/example/model/mAuth/wcAuth"
 	"github.com/kpango/fastime"
 	"github.com/ory/dockertest/v3"
-	"io/ioutil"
-	"log"
-	"net"
-	"os"
-	"strings"
-	"testing"
-	"time"
 )
 
 type DockerComposeConf struct { // https://zhwt.github.io/yaml-to-go/

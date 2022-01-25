@@ -54,12 +54,12 @@ func (d *Domain) UserExternalLogin(in *UserExternalLogin_In) (out UserExternalLo
 		out.Link = gProvider.AuthCodeURL(csrfState)
 		//fmt.Println(out.Link)
 	case Yahoo:
-		gProvider := conf.YAHOO_OAUTH_PROVIDERS[in.Host]
-		if gProvider == nil {
+		yProvider := conf.YAHOO_OAUTH_PROVIDERS[in.Host]
+		if yProvider == nil {
 			out.SetError(500, `host not configured with oauth: `+in.Host)
 			return
 		}
-		out.Link = gProvider.AuthCodeURL(csrfState)
+		out.Link = yProvider.AuthCodeURL(csrfState)
 		fmt.Println(out.Link)
 	default:
 		out.SetError(400, `provider not set`)
@@ -146,24 +146,28 @@ func (d *Domain) UserOauth(in *UserOauth_In) (out UserOauth_Out) {
 			return
 		}
 	case Yahoo:
-		gProvider := conf.YAHOO_OAUTH_PROVIDERS[in.Host]
-		if gProvider == nil {
+		yProvider := conf.YAHOO_OAUTH_PROVIDERS[in.Host]
+		if yProvider == nil {
 			out.SetError(500, `host not configured with oauth: `+in.Host)
 			return
 		}
-		token, err := gProvider.Exchange(in.TracerContext, in.Code)
+		token, err := yProvider.Exchange(in.TracerContext, in.Code)
 		if err != nil {
 			out.SetError(500, `failed exchange oauth token`)
 			return
 		}
-		client := gProvider.Client(in.TracerContext, token)
-		if conf.YAHOO_USERINFO_ENDPOINT == `` {
-			// no need to refetch userinfo_endpoint
-			json := fetchJson(client, `https://api.login.yahoo.com/openid/v1/userinfo`, &out.ResponseCommon)
-			conf.YAHOO_USERINFO_ENDPOINT = json.GetStr(`userinfo_endpoint`)
-		}
-		out.OauthUser = fetchJson(client, conf.YAHOO_USERINFO_ENDPOINT, &out.ResponseCommon)
-		// example: {"email":"","email_verified":true,"family_name":"","gender":"","given_name":"","locale":"en-GB","name":"","picture":"http://","profile":"http://","sub":"number"};
+		L.Describe(token)
+		client := yProvider.Client(in.TracerContext, token)
+		out.OauthUser = fetchJson(client, `https://api.login.yahoo.com/openid/v1/userinfo`, &out.ResponseCommon)
+		/* example: {
+		  "sub": "FSVIDUW3D7FSVIDUW3D72F2F",
+		  "name": "Jane Doe",
+		  "given_name": "Jane",
+		  "family_name": "Doe",
+		  "preferred_username": "j.doe",
+		  "email": "janedoe@example.com",
+		  "picture": "http://example.com/janedoe/me.jpg"
+		} */
 	default:
 		out.SetError(400, `provider not set`)
 		return
