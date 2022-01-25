@@ -1,5 +1,5 @@
 // can be hit using with /api/[ApiName]
-export const LastUpdatedAt = 1643095278
+export const LastUpdatedAt = 1643103234
 export const APIs = {
 	Health: {
 		in: {
