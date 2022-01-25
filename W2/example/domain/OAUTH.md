@@ -22,7 +22,9 @@ TODO
 
 ## Yahoo
 
-TODO. yahoo does not support multiple domain, does not support IP, so we have to create one by one.
+NOTE: yahoo does not support multiple domain, does not support IP, so we have to create one by one.
+
+1. 
 
 ## Steam
 
