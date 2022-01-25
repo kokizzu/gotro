@@ -50,10 +50,11 @@ this already includes session loading and template rendering (real-life use case
 
 ## Contributors
 
-- [Devin Yonas](//github.com/davey06)
+- [Marcelinus Devin Yonas](//github.com/davey06)
 - [Dikaimin Simon](//github.com/dikaimins)
-- [Dimas Yudha P](//github.com/dhiemaz)
+- [Dimas Yudha Prawira](//github.com/dhiemaz)
 - [Michael Lim](//github.com/shaolim)
+- [Muhammad Andri Juliansyah Putra](//github.com/MuhAndriJP)
 - [Pham Hoang Tien](//github.com/PhamHoangTien1987)
 - [Rizal Widyarta Gowandy](//github.com/rizalgowandy)
 
