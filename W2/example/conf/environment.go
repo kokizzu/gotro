@@ -124,12 +124,6 @@ func LoadFromEnv(ignoreBinary ...interface{}) {
 	GPLUS_CLIENTID = os.Getenv(`GPLUS_CLIENTID`)
 	GPLUS_CLIENTSECRET = os.Getenv(`GPLUS_CLIENTSECRET`)
 	GPLUS_SCOPES = strArr(`GPLUS_SCOPES`, `,`)
-	YAHOO_SCOPES = strArr(`YAHOO_SCOPES`, `,`)
-
-	YAHOO_APPID = os.Getenv(`YAHOO_APPID`)
-	YAHOO_CLIENTID = os.Getenv(`YAHOO_CLIENTID`)
-	YAHOO_CLIENTSECRET = os.Getenv(`YAHOO_CLIENTSECRET`)
-	YAHOO_SCOPES = strArr(`YAHOO_SCOPES`, `,`)
 
 	GPLUS_OAUTH_PROVIDERS = map[string]*oauth2.Config{}
 	for _, url := range OAUTH_URLS {
@@ -142,6 +136,11 @@ func LoadFromEnv(ignoreBinary ...interface{}) {
 		}
 	}
 
+	YAHOO_APPID = os.Getenv(`YAHOO_APPID`)
+	YAHOO_CLIENTID = os.Getenv(`YAHOO_CLIENTID`)
+	YAHOO_CLIENTSECRET = os.Getenv(`YAHOO_CLIENTSECRET`)
+	YAHOO_SCOPES = strArr(`YAHOO_SCOPES`, `,`)
+	
 	YAHOO_OAUTH_PROVIDERS = map[string]*oauth2.Config{}
 	for _, url := range OAUTH_URLS {
 		YAHOO_OAUTH_PROVIDERS[url] = &oauth2.Config{
