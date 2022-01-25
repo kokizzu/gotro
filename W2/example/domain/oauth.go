@@ -141,6 +141,7 @@ func (d *Domain) UserOauth(in *UserOauth_In) (out UserOauth_Out) {
 		}
 		out.OauthUser = fetchJson(client, conf.GPLUS_USERINFO_ENDPOINT, &out.ResponseCommon)
 		// example: {"email":"","email_verified":true,"family_name":"","gender":"","given_name":"","locale":"en-GB","name":"","picture":"http://","profile":"http://","sub":"number"};
+
 		out.Email = out.OauthUser.GetStr(`email`)
 		if out.HasError() {
 			return
@@ -167,7 +168,13 @@ func (d *Domain) UserOauth(in *UserOauth_In) (out UserOauth_Out) {
 		  "preferred_username": "j.doe",
 		  "email": "janedoe@example.com",
 		  "picture": "http://example.com/janedoe/me.jpg"
+		  "profile_images": []
 		} */
+
+		out.Email = out.OauthUser.GetStr(`email`)
+		if out.HasError() {
+			return
+		}
 	default:
 		out.SetError(400, `provider not set`)
 		return
