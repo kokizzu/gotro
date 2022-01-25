@@ -3,7 +3,7 @@
 	#auto_https disable_redirects
 	log {
 		output stdout
-		level DEBUG
+		#level DEBUG
 	}
 	local_certs
 }

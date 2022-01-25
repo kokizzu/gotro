@@ -62,13 +62,14 @@ var (
 	OAUTH_URLS          []string
 	OAUTH_CALLBACK_PATH string
 
-	GPLUS_SCOPES       []string
 	GPLUS_CLIENTID     string
 	GPLUS_CLIENTSECRET string
+	GPLUS_SCOPES       []string
 
 	YAHOO_APPID        string
 	YAHOO_CLIENTID     string
 	YAHOO_CLIENTSECRET string
+	YAHOO_SCOPES       []string
 
 	GPLUS_OAUTH_PROVIDERS map[string]*oauth2.Config
 	YAHOO_OAUTH_PROVIDERS map[string]*oauth2.Config
@@ -127,6 +128,7 @@ func LoadFromEnv(ignoreBinary ...interface{}) {
 	YAHOO_APPID = os.Getenv(`YAHOO_APPID`)
 	YAHOO_CLIENTID = os.Getenv(`YAHOO_CLIENTID`)
 	YAHOO_CLIENTSECRET = os.Getenv(`YAHOO_CLIENTSECRET`)
+	YAHOO_SCOPES = strArr(`YAHOO_SCOPES`, `,`)
 
 	GPLUS_OAUTH_PROVIDERS = map[string]*oauth2.Config{}
 	for _, url := range OAUTH_URLS {
@@ -145,6 +147,7 @@ func LoadFromEnv(ignoreBinary ...interface{}) {
 			ClientID:     YAHOO_CLIENTID,
 			ClientSecret: YAHOO_CLIENTSECRET,
 			RedirectURL:  url + OAUTH_CALLBACK_PATH,
+			Scopes:       YAHOO_SCOPES,
 			Endpoint:     yahoo.Endpoint,
 		}
 	}
