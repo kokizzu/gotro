@@ -135,6 +135,10 @@ type ResponseCommon struct {
 	Debug        interface{} `json:"debug,omitempty" form:"debug" query:"debug" long:"debug" msg:"debug"`
 }
 
+func (o *ResponseCommon) HasError() bool {
+	return o.StatusCode >= 400 || len(o.Error) > 0
+}
+
 func (o *ResponseCommon) SetError(code int, errStr string) {
 	o.StatusCode = code
 	o.Error = errStr

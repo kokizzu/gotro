@@ -2,6 +2,7 @@ package conf
 
 import (
 	"errors"
+	"fmt"
 	"os"
 	"strings"
 
@@ -147,6 +148,9 @@ func LoadFromEnv(ignoreBinary ...interface{}) {
 			RedirectURL:  url + OAUTH_CALLBACK_PATH,
 			Endpoint:     yahoo.Endpoint,
 		}
+		fmt.Println("===============================================================================")
+		fmt.Println(YAHOO_CLIENTID)
+		fmt.Println(YAHOO_CLIENTSECRET)
 	}
 
 	if len(ignoreBinary) == 0 {

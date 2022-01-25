@@ -8,11 +8,11 @@ import (
 	"github.com/kokizzu/id64"
 )
 
-//go:generate gomodifytags -all -add-tags json,form,query,long,msg -transform camelcase --skip-unexported -w -file template.go
-//go:generate replacer 'Id" form' 'Id,string" form' type template.go
-//go:generate replacer 'json:"id"' 'json:id,string" form' type template.go
-//go:generate replacer 'By" form' 'By,string" form' type template.go
-// go:generate msgp -tests=false -file template.go -o template__MSG.GEN.go
+//go:generate gomodifytags -all -add-tags json,form,query,long,msg -transform camelcase --skip-unexported -w -file store.go
+//go:generate replacer 'Id" form' 'Id,string" form' type store.go
+//go:generate replacer 'json:"id"' 'json:id,string" form' type store.go
+//go:generate replacer 'By" form' 'By,string" form' type store.go
+// go:generate msgp -tests=false -file store.go -o store__MSG.GEN.go
 
 type (
 	StoreProducts_In struct {
@@ -22,10 +22,10 @@ type (
 	}
 	StoreProducts_Out struct {
 		ResponseCommon
-		Limit    uint32 `json:"limit" form:"limit" query:"limit" long:"limit" msg:"limit"`
-		Offset   uint32 `json:"offset" form:"offset" query:"offset" long:"offset" msg:"offset"`
-		Total    uint32 `json:"total" form:"total" query:"total" long:"total" msg:"total"`
-		Products []*rqStore.Products
+		Limit    uint32              `json:"limit" form:"limit" query:"limit" long:"limit" msg:"limit"`
+		Offset   uint32              `json:"offset" form:"offset" query:"offset" long:"offset" msg:"offset"`
+		Total    uint32              `json:"total" form:"total" query:"total" long:"total" msg:"total"`
+		Products []*rqStore.Products `json:"products" form:"products" query:"products" long:"products" msg:"products"`
 	}
 )
 
@@ -43,15 +43,15 @@ func (d *Domain) StoreProducts(in *StoreProducts_In) (out StoreProducts_Out) {
 type (
 	StoreCartItemsAdd_In struct {
 		RequestCommon
-		ProductId uint64
-		DeltaQty  int64
+		ProductId uint64 `json:"productId,string" form:"productId" query:"productId" long:"productId" msg:"productId"`
+		DeltaQty  int64  `json:"deltaQty" form:"deltaQty" query:"deltaQty" long:"deltaQty" msg:"deltaQty"`
 		// -n remove from cart, +n add to cart
 	}
 	StoreCartItemsAdd_Out struct {
 		ResponseCommon
-		CartItems  []*rqStore.CartItems
-		Total      uint32
-		IsOverflow bool
+		CartItems  []*rqStore.CartItems `json:"cartItems" form:"cartItems" query:"cartItems" long:"cartItems" msg:"cartItems"`
+		Total      uint32               `json:"total" form:"total" query:"total" long:"total" msg:"total"`
+		IsOverflow bool                 `json:"isOverflow" form:"isOverflow" query:"isOverflow" long:"isOverflow" msg:"isOverflow"`
 	}
 )
 
@@ -119,14 +119,14 @@ func (d *Domain) StoreCartItemsAdd(in *StoreCartItemsAdd_In) (out StoreCartItems
 type (
 	StoreInvoice_In struct {
 		RequestCommon
-		InvoiceId   uint64
-		Recalculate bool
-		DoPurchase  bool
+		InvoiceId   uint64 `json:"invoiceId,string" form:"invoiceId" query:"invoiceId" long:"invoiceId" msg:"invoiceId"`
+		Recalculate bool   `json:"recalculate" form:"recalculate" query:"recalculate" long:"recalculate" msg:"recalculate"`
+		DoPurchase  bool   `json:"doPurchase" form:"doPurchase" query:"doPurchase" long:"doPurchase" msg:"doPurchase"`
 	}
 	StoreInvoice_Out struct {
 		ResponseCommon
-		CartItems []*rqStore.CartItems
-		Invoice   rqStore.Invoices
+		CartItems []*rqStore.CartItems `json:"cartItems" form:"cartItems" query:"cartItems" long:"cartItems" msg:"cartItems"`
+		Invoice   rqStore.Invoices     `json:"invoice" form:"invoice" query:"invoice" long:"invoice" msg:"invoice"`
 	}
 )
 
@@ -162,8 +162,8 @@ func (d *Domain) StoreInvoice(in *StoreInvoice_In) (out StoreInvoice_Out) {
 
 	// free product map
 	type FreeInfo struct {
-		Count int64
-		Label string
+		Count int64  `json:"count" form:"count" query:"count" long:"count" msg:"count"`
+		Label string `json:"label" form:"label" query:"label" long:"label" msg:"label"`
 	}
 	freeProductsMap := map[uint64]*FreeInfo{}
 	addFreeProduct := func(productId uint64, count int64, label string) {

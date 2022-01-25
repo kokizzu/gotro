@@ -13,7 +13,7 @@ import (
 	"github.com/kokizzu/gotro/W2/example/model/mAuth/rqAuth"
 	"github.com/kokizzu/gotro/W2/example/model/mAuth/saAuth"
 
-	"github.com/kokizzu/ch-timed-buffer"
+	chBuffer "github.com/kokizzu/ch-timed-buffer"
 	"github.com/kokizzu/gotro/L"
 	"github.com/kpango/fastime"
 )
@@ -98,7 +98,7 @@ func (d *Domain) mustAdmin(token string, userAgent string, out *ResponseCommon) 
 		return nil
 	}
 	if !conf.Admins[sess.Email] {
-		out.SetError(403, `must be admin: `+sess.Email)
+		out.SetError(403, `must be admin`)
 		return nil
 	}
 	return sess
