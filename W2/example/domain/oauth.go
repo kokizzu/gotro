@@ -231,24 +231,41 @@ func (d *Domain) UserOauth(in *UserOauth_In) (out UserOauth_Out) {
 		client := ghProvider.Client(in.TracerContext, token)
 		out.OauthUser = fetchJsonMap(client, `https://api.github.com/user`, &out.ResponseCommon)
 		/*	example:
-			[
-				{
-					email	"user@email.com"
-					emails{
-						0{
-							email		"user@email.com"
-							primary		true
-							verified	true
-							visibility	"private"
-						}1{
-							email		"12345+user@users.noreply.github.com"
-							primary		false
-							verified	true
-							visibility	null
-						}
-					}
-				}
-			]*/
+			{
+			  "avatar_url":"https://avatars.githubusercontent.com/u/1061610?v=4",
+			  "bio":"xxx xxx",
+			  "blog":"http://xxx.blogspot.com",
+			  "company":"xxx xxx",
+			  "created_at":"2011-09-19T09:46:30Z",
+			  "email":"xxx@gmail.com",
+			  "events_url":"https://api.github.com/users/kokizzu/events{/privacy}",
+			  "followers":85,
+			  "followers_url":"https://api.github.com/users/kokizzu/followers",
+			  "following":10,
+			  "following_url":"https://api.github.com/users/xxx/following{/other_user}",
+			  "gists_url":"https://api.github.com/users/kokizzu/gists{/gist_id}",
+			  "gravatar_id":"",
+			  "hireable":true,
+			  "html_url":"https://github.com/xxx",
+			  "id":1061610,
+			  "location":"xxx, Indonesia",
+			  "login":"xxx",
+			  "name":"xxx xxx",
+			  "node_id":"MDQ6VXNlcjEwNjE2MTA=",
+			  "organizations_url":"https://api.github.com/users/xxx/orgs",
+			  "public_gists":47,
+			  "public_repos":1951,
+			  "received_events_url":"https://api.github.com/users/xxx/received_events",
+			  "repos_url":"https://api.github.com/users/xxx/repos",
+			  "site_admin":false,
+			  "starred_url":"https://api.github.com/users/xxx/starred{/owner}{/repo}",
+			  "subscriptions_url":"https://api.github.com/users/xxx/subscriptions",
+			  "twitter_username":null,
+			  "type":"User",
+			  "updated_at":"2022-01-24T15:11:08Z",
+			  "url":"https://api.github.com/users/xxx"
+			}
+		*/
 		if out.HasError() {
 			return
 		}
