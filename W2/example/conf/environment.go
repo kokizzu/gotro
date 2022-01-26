@@ -80,9 +80,7 @@ var (
 	YAHOO_OAUTH_PROVIDERS  map[string]*oauth2.Config
 	GITHUB_OAUTH_PROVIDERS map[string]*oauth2.Config
 
-	GPLUS_USERINFO_ENDPOINT  string
-	YAHOO_USERINFO_ENDPOINT  string
-	GITHUB_USERINFO_ENDPOINT string
+	GPLUS_USERINFO_ENDPOINT string
 )
 
 func strArr(envName string, separator string) []string {

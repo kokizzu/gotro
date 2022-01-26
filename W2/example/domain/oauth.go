@@ -196,15 +196,7 @@ func (d *Domain) UserOauth(in *UserOauth_In) (out UserOauth_Out) {
 			return
 		}
 		client := ghProvider.Client(in.TracerContext, token)
-		if conf.GITHUB_USERINFO_ENDPOINT == `` {
-			// no need to refetch userinfo_endpoint
-			json := fetchJson(client, `https://api.github.com/user`, &out.ResponseCommon)
-			conf.GITHUB_USERINFO_ENDPOINT = json.GetStr(`userinfo_endpoint`)
-			if out.HasError() {
-				return
-			}
-		}
-		out.OauthUser = fetchJson(client, conf.GITHUB_USERINFO_ENDPOINT, &out.ResponseCommon)
+		out.OauthUser = fetchJson(client, `https://api.github.com/user/emails`, &out.ResponseCommon)
 		// example: {"email":"","email_verified":true,"family_name":"","gender":"","given_name":"","locale":"en-GB","name":"","picture":"http://","profile":"http://","sub":"number"};
 
 		out.Email = out.OauthUser.GetStr(`email`)
