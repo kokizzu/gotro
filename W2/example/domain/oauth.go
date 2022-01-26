@@ -2,9 +2,10 @@ package domain
 
 import (
 	"fmt"
-	"github.com/kokizzu/gotro/A"
 	"io/ioutil"
 	"net/http"
+
+	"github.com/kokizzu/gotro/A"
 
 	"github.com/kokizzu/gotro/L"
 	"github.com/kokizzu/gotro/M"
@@ -170,8 +171,18 @@ func (d *Domain) UserOauth(in *UserOauth_In) (out UserOauth_Out) {
 			}
 		}
 		out.OauthUser = fetchJsonMap(client, conf.GPLUS_USERINFO_ENDPOINT, &out.ResponseCommon)
-		// example: {"email":"","email_verified":true,"family_name":"","gender":"","given_name":"","locale":"en-GB","name":"","picture":"http://","profile":"http://","sub":"number"};
-
+		/* {
+		"email":			"",
+		"email_verified":	true,
+		"family_name":		"",
+		"gender":			"",
+		"given_name":		"",
+		"locale":			"en-GB",
+		"name":				"",
+		"picture":			"http://",
+		"profile":			"http://",
+		"sub":				"number"};
+		*/
 		out.Email = out.OauthUser.GetStr(Email)
 		if out.HasError() {
 			return
@@ -190,15 +201,16 @@ func (d *Domain) UserOauth(in *UserOauth_In) (out UserOauth_Out) {
 		L.Describe(token)
 		client := yProvider.Client(in.TracerContext, token)
 		out.OauthUser = fetchJsonMap(client, `https://api.login.yahoo.com/openid/v1/userinfo`, &out.ResponseCommon)
-		/* example: {
-		  "sub": "FSVIDUW3D7FSVIDUW3D72F2F",
-		  "name": "Jane Doe",
-		  "given_name": "Jane",
-		  "family_name": "Doe",
+		/* example:
+		{
+		  "sub": 				"FSVIDUW3D7FSVIDUW3D72F2F",
+		  "name": 				"Jane Doe",
+		  "given_name": 		"Jane",
+		  "family_name": 		"Doe",
 		  "preferred_username": "j.doe",
-		  "email": "janedoe@example.com",
-		  "picture": "http://example.com/janedoe/me.jpg"
-		  "profile_images": []
+		  "email": 				"janedoe@example.com",
+		  "picture": 			"http://example.com/janedoe/me.jpg"
+		  "profile_images": 	[]
 		} */
 
 		out.Email = out.OauthUser.GetStr(Email)
@@ -218,7 +230,25 @@ func (d *Domain) UserOauth(in *UserOauth_In) (out UserOauth_Out) {
 		}
 		client := ghProvider.Client(in.TracerContext, token)
 		out.OauthUser = fetchJsonMap(client, `https://api.github.com/user`, &out.ResponseCommon)
-		// example: TODO GANTI
+		/*	example:
+			[
+				{
+					email	"user@email.com"
+					emails{
+						0{
+							email		"user@email.com"
+							primary		true
+							verified	true
+							visibility	"private"
+						}1{
+							email		"12345+user@users.noreply.github.com"
+							primary		false
+							verified	true
+							visibility	null
+						}
+					}
+				}
+			]*/
 		if out.HasError() {
 			return
 		}
@@ -228,21 +258,22 @@ func (d *Domain) UserOauth(in *UserOauth_In) (out UserOauth_Out) {
 			/* example:
 			[
 			  {
-				email: 'johndoe100@gmail.com',
-				primary: true,
-				verified: true,
+				email: 		'johndoe100@gmail.com',
+				primary: 	true,
+				verified: 	true,
 				visibility: 'public'
 			  },
 			  {
-				email: 'johndoe111@domain.com',
-				primary: false,
-				verified: true,
+				email: 		'johndoe111@domain.com',
+				primary: 	false,
+				verified: 	true,
 				visibility: null
 			  }
 			] */
 			if out.HasError() {
 				return
 			}
+			out.OauthUser.Set(`emails`, emails)
 			for _, emailObj := range emails {
 				out.OauthUser.Set(Email, X.ToS(emailObj[Email]))
 				break
