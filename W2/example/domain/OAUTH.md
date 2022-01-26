@@ -23,11 +23,22 @@ note:
 - Yahoo doesn't support http Redirect URIs, so use Caddy to run https locally
 - yahoo does not support multiple origin domain nor IP, so we have to create one by one
 
-## Facebook
-
-TODO
-
 ## Github
+
+1. Login to your github account
+2. Go to [settings > developer setting > oauth apps](https://github.com/settings/developers) > [new apps](https://github.com/settings/applications/new)
+3. Fill your app name, homepage url, description, auth callback url.
+4. fill homepage url with `http://127.0.0.1`
+5. fill callback url with `http://localhost/api/UserOauth`
+6. Click generate `Client Secret` and don't forget to copy
+7. Submit `Update Application`
+8. put the ClientID and ClientSecret to `.env`
+
+note:
+- If you forgot copy client secret, you can delete first older cilent secret and generate again, then copy, submit app
+- Github only allow add 1 callback url per app
+
+## Facebook
 
 TODO
 
@@ -44,6 +55,7 @@ TODO
 1. start the apiserver (`make apiserver`), then hit one of these url to retrieve the login link
 [http://localhost:9090/api/UserExternalLogin?provider=google](http://localhost:9090/api/UserExternalLogin?provider=google)
 [http://localhost:9090/api/UserExternalLogin?provider=yahoo](http://localhost:9090/api/UserExternalLogin?provider=yahoo)
+[http://localhost:9090/api/UserExternalLogin?provider=github](http://localhost:9090/api/UserExternalLogin?provider=github)
 
 2. login with your gmail/yahoo, then it would give a response like this:
 
@@ -53,4 +65,8 @@ TODO
 
 ```json
 {"sessionToken":"0QCUkl01IP7~-----1~0|8c72df957ed26b3aefe1c9b46753769587247af21583bccfe723facde8c7cef88311f43ad3e7c711ecbf3daa797313d24474afe41a8545961ffbb54a|0T0mT4j4Koq","error":"","status":0,"oauthUser":{"email":"xxx@gmail.com","email_verified":false,"family_name":"xxx","gender":"notDisclosed","given_name":"xxx","locale":"id-ID","name":"xxx xxx","nickname":"xxx","picture":"https://s.yimg.com/ag/images/default_user_profile_pic_192sq.jpg","profile_images":{"image128":"https://s.yimg.com/ag/images/default_user_profile_pic_128sq.jpg","image192":"https://s.yimg.com/ag/images/default_user_profile_pic_192sq.jpg","image32":"https://s.yimg.com/ag/images/default_user_profile_pic_32sq.jpg","image64":"https://s.yimg.com/ag/images/default_user_profile_pic_64sq.jpg"},"sub":"3ZQ6ACERLUCI5WMDFQYNHYIRKU"},"email":"xxx@gmail.com","currentUser":{"id":"144428372796112898","email":"xxx@gmail.com","password":"$2a$10$onkM0VBO90l3DBiRh2sqTeegZKE3JcKIWxzS3clb5rKDI.kjQAIqC","createdAt":0,"createdBy":"0","updatedAt":0,"updatedBy":"0","deletedAt":0,"deletedBy":"0","isDeleted":false,"restoredAt":0,"restoredBy":"0","passwordSetAt":0,"secretCode":"","secretCodeAt":0,"verificationSentAt":0,"verifiedAt":0,"lastLoginAt":0}}
+```
+
+```json
+{"sessionToken":"0QCoP86SSqc~-----1~0|f8456f10afc192206a02c7474253eb039401d7272cd72db0ee22e1d3b3a303d669a43ef225aebb79a5e4e61c5501371468a1d0849a8c89c89715da85|0T0mT4j4Koq","error":"","status":0,"oauthUser":{"avatar_url":"https://avatars.githubusercontent.com/u/1061610?v=4","bio":"Remote Programmer","blog":"http://xxx.blogspot.com","company":"Remote Programmer","created_at":"2011-09-19T09:46:30Z","email":"xxx@gmail.com","events_url":"https://api.github.com/users/xxx/events{/privacy}","followers":85,"followers_url":"https://api.github.com/users/xxx/followers","following":10,"following_url":"https://api.github.com/users/xxx/following{/other_user}","gists_url":"https://api.github.com/users/xxx/gists{/gist_id}","gravatar_id":"","hireable":true,"html_url":"https://github.com/xxx","id":1061610,"location":"Bali, Indonesia","login":"xxx","name":"xxx xxx","node_id":"MDQ6VXNlcjEwNjE2MTA=","organizations_url":"https://api.github.com/users/xxx/orgs","public_gists":47,"public_repos":1951,"received_events_url":"https://api.github.com/users/xxx/received_events","repos_url":"https://api.github.com/users/xxx/repos","site_admin":false,"starred_url":"https://api.github.com/users/xxx/starred{/owner}{/repo}","subscriptions_url":"https://api.github.com/users/xxx/subscriptions","twitter_username":null,"type":"User","updated_at":"2022-01-24T15:11:08Z","url":"https://api.github.com/users/xxx"},"email":"xxx@gmail.com","currentUser":{"id":"144428372796112898","email":"xxx@gmail.com","password":"$2a$10$onkM0VBO90l3DBiRh2sqTeegZKE3JcKIWxzS3clb5rKDI.kjQAIqC","createdAt":0,"createdBy":"0","updatedAt":0,"updatedBy":"0","deletedAt":0,"deletedBy":"0","isDeleted":false,"restoredAt":0,"restoredBy":"0","passwordSetAt":0,"secretCode":"","secretCodeAt":0,"verificationSentAt":0,"verifiedAt":0,"lastLoginAt":0}}
 ```
