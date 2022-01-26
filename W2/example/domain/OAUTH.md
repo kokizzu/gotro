@@ -26,7 +26,7 @@ note:
 ## Github
 
 1. Login to your github account
-2. Go to settings > developer setting > oauth apps > new apps
+2. Go to [settings > developer setting > oauth apps](https://github.com/settings/developers) > [new apps](https://github.com/settings/applications/new)
 3. Fill your app name, homepage url, description, auth callback url.
 4. fill homepage url with `http://127.0.0.1`
 5. fill callback url with `http://localhost/api/UserOauth`
