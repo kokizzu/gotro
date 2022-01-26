@@ -29,7 +29,17 @@ TODO
 
 ## Github
 
-TODO
+1. Login to your github account
+2. Go to settings > developer setting > oauth apps > new apps
+3. Fill your app name, homepage url, description, auth callback url.
+4. fill homepage url with `http://127.0.0.1`
+5. fill callback url with `http://127.0.0.1/api/UserOauth` and `http://localhost/api/UserOauth`
+6. Click generate `Client Secret` and don't forget to copy
+7. Submit `Update Application`
+8. put the ClientID and ClientSecret to `.env`
+
+note:
+- If you forgot copy client secret, you can delete first older cilent secret and generate again, then copy, submit app
 
 ## Twitter
 

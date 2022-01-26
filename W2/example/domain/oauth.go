@@ -25,6 +25,7 @@ import (
 const (
 	Google = `google`
 	Yahoo  = `yahoo`
+	Github = `github`
 )
 
 type (
@@ -60,6 +61,14 @@ func (d *Domain) UserExternalLogin(in *UserExternalLogin_In) (out UserExternalLo
 			return
 		}
 		out.Link = yProvider.AuthCodeURL(csrfState)
+		fmt.Println(out.Link)
+	case Github:
+		ghProvider := conf.GITHUB_OAUTH_PROVIDERS[in.Host]
+		if ghProvider == nil {
+			out.SetError(500, `host not configured with oauth: `+in.Host)
+			return
+		}
+		out.Link = ghProvider.AuthCodeURL(csrfState)
 		fmt.Println(out.Link)
 	default:
 		out.SetError(400, `provider not set`)
@@ -170,6 +179,33 @@ func (d *Domain) UserOauth(in *UserOauth_In) (out UserOauth_Out) {
 		  "picture": "http://example.com/janedoe/me.jpg"
 		  "profile_images": []
 		} */
+
+		out.Email = out.OauthUser.GetStr(`email`)
+		if out.HasError() {
+			return
+		}
+	case Github:
+		ghProvider := conf.GITHUB_OAUTH_PROVIDERS[in.Host]
+		if ghProvider == nil {
+			out.SetError(500, `host not configured with oauth`)
+			return
+		}
+		token, err := ghProvider.Exchange(in.TracerContext, in.Code)
+		if err != nil {
+			out.SetError(500, `failed exchange oauth token`)
+			return
+		}
+		client := ghProvider.Client(in.TracerContext, token)
+		if conf.GITHUB_USERINFO_ENDPOINT == `` {
+			// no need to refetch userinfo_endpoint
+			json := fetchJson(client, `https://api.github.com/user`, &out.ResponseCommon)
+			conf.GITHUB_USERINFO_ENDPOINT = json.GetStr(`userinfo_endpoint`)
+			if out.HasError() {
+				return
+			}
+		}
+		out.OauthUser = fetchJson(client, conf.GITHUB_USERINFO_ENDPOINT, &out.ResponseCommon)
+		// example: {"email":"","email_verified":true,"family_name":"","gender":"","given_name":"","locale":"en-GB","name":"","picture":"http://","profile":"http://","sub":"number"};
 
 		out.Email = out.OauthUser.GetStr(`email`)
 		if out.HasError() {
