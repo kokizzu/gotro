@@ -2,6 +2,7 @@ package domain
 
 import (
 	"fmt"
+	"github.com/kokizzu/gotro/A"
 	"io/ioutil"
 	"net/http"
 
@@ -26,6 +27,8 @@ const (
 	Google = `google`
 	Yahoo  = `yahoo`
 	Github = `github`
+
+	Email = `email`
 )
 
 type (
@@ -76,7 +79,25 @@ func (d *Domain) UserExternalLogin(in *UserExternalLogin_In) (out UserExternalLo
 	return
 }
 
-func fetchJson(client *http.Client, url string, res *ResponseCommon) (json M.SX) {
+func fetchJsonArr(client *http.Client, url string, res *ResponseCommon) (json A.MSX) {
+	resp, err := client.Get(url)
+	if L.IsError(err, `failed fetch url %s`, url) {
+		res.SetError(500, `failed fetch url`)
+		return
+	}
+	defer resp.Body.Close()
+	body, err := ioutil.ReadAll(resp.Body)
+	if L.IsError(err, `failed read body`) {
+		res.SetError(500, `failed read body`)
+		return
+	}
+	bodyStr := string(body)
+	json = S.JsonToObjArr(bodyStr)
+	L.Describe(json)
+	return
+}
+
+func fetchJsonMap(client *http.Client, url string, res *ResponseCommon) (json M.SX) {
 	resp, err := client.Get(url)
 	if L.IsError(err, `failed fetch url %s`, url) {
 		res.SetError(500, `failed fetch url`)
@@ -92,12 +113,12 @@ func fetchJson(client *http.Client, url string, res *ResponseCommon) (json M.SX)
 	json = S.JsonToMap(bodyStr)
 	L.Describe(json)
 	err2 := json.GetStr(`error`)
-	if L.CheckIf(err2 != ``, `fetchJson %s: %#v`, err2, json) {
+	if L.CheckIf(err2 != ``, `fetchJsonMap %s: %#v`, err2, json) {
 		res.SetError(500, `error key set from json response`)
 		return
 	}
 	err3 := json.GetStr(`type`)
-	if L.CheckIf(err3 == `OAuthException`, `fetchJson %s: %#v`, err3, json) {
+	if L.CheckIf(err3 == `OAuthException`, `fetchJsonMap %s: %#v`, err3, json) {
 		res.SetError(500, `object type from json respons is OAuthException`)
 		return
 	}
@@ -142,16 +163,16 @@ func (d *Domain) UserOauth(in *UserOauth_In) (out UserOauth_Out) {
 		client := gProvider.Client(in.TracerContext, token)
 		if conf.GPLUS_USERINFO_ENDPOINT == `` {
 			// no need to refetch userinfo_endpoint
-			json := fetchJson(client, `https://accounts.google.com/.well-known/openid-configuration`, &out.ResponseCommon)
+			json := fetchJsonMap(client, `https://accounts.google.com/.well-known/openid-configuration`, &out.ResponseCommon)
 			conf.GPLUS_USERINFO_ENDPOINT = json.GetStr(`userinfo_endpoint`)
 			if out.HasError() {
 				return
 			}
 		}
-		out.OauthUser = fetchJson(client, conf.GPLUS_USERINFO_ENDPOINT, &out.ResponseCommon)
+		out.OauthUser = fetchJsonMap(client, conf.GPLUS_USERINFO_ENDPOINT, &out.ResponseCommon)
 		// example: {"email":"","email_verified":true,"family_name":"","gender":"","given_name":"","locale":"en-GB","name":"","picture":"http://","profile":"http://","sub":"number"};
 
-		out.Email = out.OauthUser.GetStr(`email`)
+		out.Email = out.OauthUser.GetStr(Email)
 		if out.HasError() {
 			return
 		}
@@ -168,7 +189,7 @@ func (d *Domain) UserOauth(in *UserOauth_In) (out UserOauth_Out) {
 		}
 		L.Describe(token)
 		client := yProvider.Client(in.TracerContext, token)
-		out.OauthUser = fetchJson(client, `https://api.login.yahoo.com/openid/v1/userinfo`, &out.ResponseCommon)
+		out.OauthUser = fetchJsonMap(client, `https://api.login.yahoo.com/openid/v1/userinfo`, &out.ResponseCommon)
 		/* example: {
 		  "sub": "FSVIDUW3D7FSVIDUW3D72F2F",
 		  "name": "Jane Doe",
@@ -180,7 +201,7 @@ func (d *Domain) UserOauth(in *UserOauth_In) (out UserOauth_Out) {
 		  "profile_images": []
 		} */
 
-		out.Email = out.OauthUser.GetStr(`email`)
+		out.Email = out.OauthUser.GetStr(Email)
 		if out.HasError() {
 			return
 		}
@@ -196,10 +217,39 @@ func (d *Domain) UserOauth(in *UserOauth_In) (out UserOauth_Out) {
 			return
 		}
 		client := ghProvider.Client(in.TracerContext, token)
-		out.OauthUser = fetchJson(client, `https://api.github.com/user/emails`, &out.ResponseCommon)
-		// example: {"email":"","email_verified":true,"family_name":"","gender":"","given_name":"","locale":"en-GB","name":"","picture":"http://","profile":"http://","sub":"number"};
+		out.OauthUser = fetchJsonMap(client, `https://api.github.com/user`, &out.ResponseCommon)
+		// example: TODO GANTI
+		if out.HasError() {
+			return
+		}
 
-		out.Email = out.OauthUser.GetStr(`email`)
+		if out.OauthUser.GetStr(Email) == `` {
+			emails := fetchJsonArr(client, `https://api.github.com/user/emails`, &out.ResponseCommon)
+			/* example:
+			[
+			  {
+				email: 'johndoe100@gmail.com',
+				primary: true,
+				verified: true,
+				visibility: 'public'
+			  },
+			  {
+				email: 'johndoe111@domain.com',
+				primary: false,
+				verified: true,
+				visibility: null
+			  }
+			] */
+			if out.HasError() {
+				return
+			}
+			for _, emailObj := range emails {
+				out.OauthUser.Set(Email, X.ToS(emailObj[Email]))
+				break
+			}
+		}
+
+		out.Email = out.OauthUser.GetStr(Email)
 		if out.HasError() {
 			return
 		}
