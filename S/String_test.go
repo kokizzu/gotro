@@ -1,8 +1,9 @@
 package S
 
 import (
-	"github.com/kokizzu/gotro/L"
 	"testing"
+
+	"github.com/kokizzu/gotro/L"
 )
 
 // Testing positive case function EqualsIgnoreCase //

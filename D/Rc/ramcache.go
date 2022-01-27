@@ -9,7 +9,7 @@ import (
 
 	"time"
 
-	"github.com/orcaman/concurrent-map"
+	cmap "github.com/orcaman/concurrent-map"
 )
 
 type RamCache struct {

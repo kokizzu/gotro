@@ -4,10 +4,11 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"github.com/goccy/go-yaml"
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/goccy/go-yaml"
 
 	"github.com/kokizzu/gotro/A"
 	"github.com/kokizzu/gotro/B"

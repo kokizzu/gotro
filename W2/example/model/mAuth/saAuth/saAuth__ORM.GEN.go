@@ -4,8 +4,9 @@ package saAuth
 
 import (
 	"database/sql"
-	"github.com/kokizzu/gotro/W2/example/model/mAuth"
 	"time"
+
+	"github.com/kokizzu/gotro/W2/example/model/mAuth"
 
 	_ "github.com/ClickHouse/clickhouse-go/v2"
 	chBuffer "github.com/kokizzu/ch-timed-buffer"

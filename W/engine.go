@@ -3,6 +3,10 @@ package W
 import (
 	"bytes"
 	"fmt"
+	"io/ioutil"
+	"os"
+	"time"
+
 	"github.com/OneOfOne/cmap"
 	"github.com/buaazp/fasthttprouter"
 	"github.com/kokizzu/gotro/A"
@@ -16,9 +20,6 @@ import (
 	"github.com/tdewolff/minify/css"
 	"github.com/tdewolff/minify/js"
 	"github.com/valyala/fasthttp"
-	"io/ioutil"
-	"os"
-	"time"
 )
 
 type Action func(controller *Context)

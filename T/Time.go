@@ -2,11 +2,12 @@ package T
 
 // Time support package
 import (
+	"math/rand"
+	"time"
+
 	"github.com/kokizzu/gotro/F"
 	"github.com/kokizzu/gotro/I"
 	"github.com/kokizzu/gotro/L"
-	"math/rand"
-	"time"
 )
 
 const ISO = `2006-01-02T15:04:05.999999`

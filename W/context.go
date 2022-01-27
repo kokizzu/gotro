@@ -4,15 +4,16 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"mime/multipart"
+	"net/http"
+	"path/filepath"
+
 	"github.com/kokizzu/gotro/L"
 	"github.com/kokizzu/gotro/M"
 	"github.com/kokizzu/gotro/S"
 	"github.com/kokizzu/gotro/T"
 	"github.com/kokizzu/gotro/X"
 	"github.com/valyala/fasthttp"
-	"mime/multipart"
-	"net/http"
-	"path/filepath"
 )
 
 var strPost = []byte(`POST`)

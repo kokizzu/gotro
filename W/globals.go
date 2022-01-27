@@ -1,8 +1,9 @@
 package W
 
 import (
-	"github.com/kokizzu/gotro/M"
 	"os"
+
+	"github.com/kokizzu/gotro/M"
 )
 
 var Mailers map[string]*SmtpConfig // used in mailer.go

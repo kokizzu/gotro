@@ -1,13 +1,14 @@
 package W
 
 import (
+	"math/rand"
+	"time"
+
 	"github.com/kokizzu/gotro/L"
 	"github.com/kokizzu/gotro/M"
 	"github.com/kokizzu/gotro/S"
 	"github.com/kokizzu/gotro/T"
 	"github.com/valyala/fasthttp"
-	"math/rand"
-	"time"
 )
 
 type SessionConnector interface {

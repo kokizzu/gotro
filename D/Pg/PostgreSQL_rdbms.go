@@ -3,6 +3,8 @@ package Pg
 import (
 	"bytes"
 	"errors"
+	"time"
+
 	"github.com/jmoiron/sqlx"
 	"github.com/kokizzu/gotro/A"
 	"github.com/kokizzu/gotro/D"
@@ -12,7 +14,6 @@ import (
 	"github.com/kokizzu/gotro/S"
 	"github.com/kokizzu/gotro/W"
 	"github.com/kokizzu/gotro/X"
-	"time"
 )
 
 ///////////

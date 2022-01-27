@@ -2,13 +2,14 @@ package Pg
 
 import (
 	"fmt"
+	"time"
+
 	"github.com/OneOfOne/cmap"
 	"github.com/kokizzu/gotro/A"
 	"github.com/kokizzu/gotro/L"
 	"github.com/kokizzu/gotro/M"
 	"github.com/kokizzu/gotro/T"
 	"github.com/kokizzu/gotro/W"
-	"time"
 )
 
 // cached query module, all queries will be cached for TTL seconds per ram_key, expired per ram bucket

@@ -2,11 +2,12 @@ package S
 
 import (
 	"fmt"
+	"runtime"
+	"strconv"
+
 	"github.com/kokizzu/gotro/A"
 	"github.com/kokizzu/gotro/B"
 	"github.com/kokizzu/gotro/I"
-	"runtime"
-	"strconv"
 )
 
 // TODO: find out how backspace \b null \0 character processed on common SQL

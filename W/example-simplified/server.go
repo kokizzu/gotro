@@ -2,17 +2,18 @@ package main
 
 import (
 	"fmt"
+	"math/rand"
+	"os"
+	"runtime"
+	"strings"
+	"time"
+
 	"github.com/kokizzu/gotro/D/Rd"
 	"github.com/kokizzu/gotro/F"
 	"github.com/kokizzu/gotro/L"
 	"github.com/kokizzu/gotro/M"
 	"github.com/kokizzu/gotro/W"
 	"github.com/kokizzu/gotro/X"
-	"math/rand"
-	"os"
-	"runtime"
-	"strings"
-	"time"
 )
 
 var VERSION string

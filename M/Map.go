@@ -4,13 +4,14 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"github.com/kokizzu/gotro/I"
-	"github.com/kokizzu/gotro/L"
-	"github.com/kokizzu/gotro/S"
 	"sort"
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/kokizzu/gotro/I"
+	"github.com/kokizzu/gotro/L"
+	"github.com/kokizzu/gotro/S"
 )
 
 // Map support package

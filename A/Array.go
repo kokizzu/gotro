@@ -3,10 +3,11 @@ package A
 import (
 	"bytes"
 	"encoding/json"
-	"github.com/kokizzu/gotro/I"
-	"github.com/kokizzu/gotro/L"
 	"strconv"
 	"strings"
+
+	"github.com/kokizzu/gotro/I"
+	"github.com/kokizzu/gotro/L"
 )
 
 // Array support package

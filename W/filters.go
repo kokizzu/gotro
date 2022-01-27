@@ -3,12 +3,13 @@ package W
 import (
 	"errors"
 	"fmt"
+	"runtime"
+	"time"
+
 	"github.com/fatih/color"
 	"github.com/kokizzu/gotro/I"
 	"github.com/kokizzu/gotro/L"
 	"github.com/kokizzu/gotro/S"
-	"runtime"
-	"time"
 )
 
 func PanicFilter(ctx *Context) {

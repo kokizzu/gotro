@@ -2,6 +2,7 @@ package Pg
 
 import (
 	"database/sql"
+
 	"github.com/kokizzu/gotro/M"
 	"github.com/kokizzu/gotro/S"
 	"github.com/kokizzu/gotro/X"

@@ -2,6 +2,10 @@ package wcZzz
 
 import (
 	"fmt"
+	"log"
+	"os"
+	"testing"
+
 	"github.com/kokizzu/gotro/D/Tt"
 	"github.com/kokizzu/gotro/D/Tt/mZzz"
 	"github.com/kokizzu/gotro/L"
@@ -9,9 +13,6 @@ import (
 	"github.com/ory/dockertest/v3"
 	"github.com/stretchr/testify/assert"
 	"github.com/tarantool/go-tarantool"
-	"log"
-	"os"
-	"testing"
 )
 
 var globalPool *dockertest.Pool

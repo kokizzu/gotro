@@ -3,7 +3,6 @@ package W2
 import (
 	"bytes"
 	"fmt"
-	"github.com/kokizzu/gotro/A"
 	"go/ast"
 	"go/parser"
 	"go/token"
@@ -12,6 +11,8 @@ import (
 	"path/filepath"
 	"sort"
 	"strings"
+
+	"github.com/kokizzu/gotro/A"
 
 	"github.com/kokizzu/gotro/I"
 	"github.com/kokizzu/gotro/L"

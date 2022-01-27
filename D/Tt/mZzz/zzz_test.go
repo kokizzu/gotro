@@ -1,8 +1,9 @@
 package mZzz
 
 import (
-	"github.com/kokizzu/gotro/D/Tt"
 	"testing"
+
+	"github.com/kokizzu/gotro/D/Tt"
 )
 
 func TestGenerateORM(t *testing.T) {

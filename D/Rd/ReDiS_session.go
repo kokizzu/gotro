@@ -1,14 +1,15 @@
 package Rd
 
 import (
+	"strings"
+	"time"
+
 	"github.com/kokizzu/gotro/D"
 	"github.com/kokizzu/gotro/I"
 	"github.com/kokizzu/gotro/L"
 	"github.com/kokizzu/gotro/M"
 	"github.com/kokizzu/gotro/S"
 	"gopkg.in/redis.v5"
-	"strings"
-	"time"
 )
 
 const DEFAULT_HOST = `127.0.0.1:6379`

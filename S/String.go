@@ -7,12 +7,13 @@ import (
 	"strings"
 
 	"bytes"
+	"math/rand"
+	"unicode"
+
 	"github.com/kokizzu/gotro/C"
 	"github.com/kokizzu/gotro/I"
 	"github.com/kokizzu/gotro/L"
 	"github.com/yosuke-furukawa/json5/encoding/json5"
-	"math/rand"
-	"unicode"
 )
 
 const WebBR = "\n<br/>"

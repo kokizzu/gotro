@@ -1,12 +1,13 @@
 package Du
 
 import (
+	"time"
+
 	"github.com/OneOfOne/cmap"
 	"github.com/kokizzu/gotro/D"
 	"github.com/kokizzu/gotro/M"
 	"github.com/kokizzu/gotro/T"
 	"github.com/kokizzu/gotro/X"
-	"time"
 )
 
 // in memory data session (used when no database installed), gone when program exit

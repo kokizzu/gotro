@@ -2,6 +2,8 @@ package Pg
 
 import (
 	"database/sql"
+	"time"
+
 	"github.com/jmoiron/sqlx"
 	"github.com/kokizzu/gotro/I"
 	"github.com/kokizzu/gotro/L"
@@ -9,7 +11,6 @@ import (
 	"github.com/kokizzu/gotro/S"
 	"github.com/kokizzu/gotro/W"
 	"github.com/kokizzu/gotro/X"
-	"time"
 )
 
 type Tx struct {

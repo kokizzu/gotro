@@ -1,10 +1,11 @@
 package domain
 
 import (
+	"time"
+
 	"github.com/kokizzu/gotro/W2/example/conf"
 	"github.com/kokizzu/gotro/W2/example/model/mAuth/wcAuth"
 	"github.com/kpango/fastime"
-	"time"
 )
 
 func (d *Domain) expireSession(sessionToken string) bool {
