@@ -25,9 +25,11 @@ import (
 // go:generate msgp -tests=false -file oauth.go -o oauth__MSG.GEN.go
 
 const (
-	Google = `google`
-	Yahoo  = `yahoo`
-	Github = `github`
+	Google  = `google`
+	Yahoo   = `yahoo`
+	Github  = `github`
+	Steam   = `steam`
+	Twitter = `twitter`
 
 	Email = `email`
 )
@@ -73,6 +75,22 @@ func (d *Domain) UserExternalLogin(in *UserExternalLogin_In) (out UserExternalLo
 			return
 		}
 		out.Link = ghProvider.AuthCodeURL(csrfState)
+		fmt.Println(out.Link)
+	case Steam:
+		sProvider := conf.STEAM_OAUTH_PROVIDERS[in.Host]
+		if sProvider == nil {
+			out.SetError(500, `host not configured with oauth: `+in.Host)
+			return
+		}
+		out.Link = sProvider.AuthCodeURL(csrfState)
+		fmt.Println(out.Link)
+	case Twitter:
+		tProvider := conf.TWITTER_OAUTH_PROVIDERS[in.Host]
+		if tProvider == nil {
+			out.SetError(500, `host not configured with oauth: `+in.Host)
+			return
+		}
+		out.Link = tProvider.AuthCodeURL(csrfState)
 		fmt.Println(out.Link)
 	default:
 		out.SetError(400, `provider not set`)
@@ -286,6 +304,86 @@ func (d *Domain) UserOauth(in *UserOauth_In) (out UserOauth_Out) {
 				verified: 	true,
 				visibility: null
 			  }
+			] */
+			if out.HasError() {
+				return
+			}
+			out.OauthUser.Set(`emails`, emails)
+			for _, emailObj := range emails {
+				out.OauthUser.Set(Email, X.ToS(emailObj[Email]))
+				break
+			}
+		}
+
+		out.Email = out.OauthUser.GetStr(Email)
+		if out.HasError() {
+			return
+		}
+	case Steam:
+		sProvider := conf.STEAM_OAUTH_PROVIDERS[in.Host]
+		if sProvider == nil {
+			out.SetError(500, `host not configured with oauth`)
+			return
+		}
+		token, err := sProvider.Exchange(in.TracerContext, in.Code)
+		if err != nil {
+			out.SetError(500, `failed exchange oauth token`)
+			return
+		}
+		client := sProvider.Client(in.TracerContext, token)
+		out.OauthUser = fetchJsonMap(client, `https://api.github.com/user`, &out.ResponseCommon)
+		/*	example:
+
+		 */
+		if out.HasError() {
+			return
+		}
+
+		if out.OauthUser.GetStr(Email) == `` {
+			emails := fetchJsonArr(client, `https://api.github.com/user/emails`, &out.ResponseCommon)
+			/* example:
+			[
+
+			] */
+			if out.HasError() {
+				return
+			}
+			out.OauthUser.Set(`emails`, emails)
+			for _, emailObj := range emails {
+				out.OauthUser.Set(Email, X.ToS(emailObj[Email]))
+				break
+			}
+		}
+
+		out.Email = out.OauthUser.GetStr(Email)
+		if out.HasError() {
+			return
+		}
+	case Twitter:
+		tProvider := conf.TWITTER_OAUTH_PROVIDERS[in.Host]
+		if tProvider == nil {
+			out.SetError(500, `host not configured with oauth`)
+			return
+		}
+		token, err := tProvider.Exchange(in.TracerContext, in.Code)
+		if err != nil {
+			out.SetError(500, `failed exchange oauth token`)
+			return
+		}
+		client := tProvider.Client(in.TracerContext, token)
+		out.OauthUser = fetchJsonMap(client, `https://api.twitter.com/1.1/`, &out.ResponseCommon)
+		/*	example:
+
+		 */
+		if out.HasError() {
+			return
+		}
+
+		if out.OauthUser.GetStr(Email) == `` {
+			emails := fetchJsonArr(client, `https://api.github.com/user/emails`, &out.ResponseCommon)
+			/* example:
+			[
+
 			] */
 			if out.HasError() {
 				return

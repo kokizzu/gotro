@@ -44,11 +44,26 @@ TODO
 
 ## Twitter
 
-TODO
+1. Go to (https://developer.twitter.com/en/portal) and login with your twitter account, choose study case if you wanna try, because other case will take several times for verify developer account
+2. Fill all mandatory fields and uncheck field that you dont need
+3. Checkbox developer agreement
+4. Check your email for verification
+5. at (https://developer.twitter.com/en/portal/dashboard), click Project and add app
+6. Choose staging for trial, fill app name, get a key and copy paste to `.env`
+7. at your app, scroll down and click setup at User AUthentication Setting for setup url and callback url
+8. Choose OAUTH V2 and choose type app Web App
+9. Fill Website URL with `http://yourdomain.com`
+10. Fill Callback URI with `http://localhost:9090/api/UserOauth`
+11. Put the ClientID and ClientSecret to `.env`
 
 ## Steam
 
-TODO
+Not yet completely
+1. Visit https://steamcommunity.com/dev/apikey and click register
+2. Fill domain url with `http://127.0.0.1`
+3. Put the API KEY to the `.env`
+
+Note: You must purchase a game at least $5 for get api key
 
 # How to test
 
