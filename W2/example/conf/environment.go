@@ -76,9 +76,17 @@ var (
 	GITHUB_CLIENTSECRET string
 	GITHUB_SCOPES       []string
 
-	GPLUS_OAUTH_PROVIDERS  map[string]*oauth2.Config
-	YAHOO_OAUTH_PROVIDERS  map[string]*oauth2.Config
-	GITHUB_OAUTH_PROVIDERS map[string]*oauth2.Config
+	STEAM_CLIENTSECRET string
+
+	TWITTER_CLIENTID     string
+	TWITTER_CLIENTSECRET string
+	TWITTER_SCOPES       []string
+
+	GPLUS_OAUTH_PROVIDERS   map[string]*oauth2.Config
+	YAHOO_OAUTH_PROVIDERS   map[string]*oauth2.Config
+	GITHUB_OAUTH_PROVIDERS  map[string]*oauth2.Config
+	STEAM_OAUTH_PROVIDERS   map[string]*oauth2.Config
+	TWITTER_OAUTH_PROVIDERS map[string]*oauth2.Config
 
 	GPLUS_USERINFO_ENDPOINT string
 )
@@ -169,6 +177,42 @@ func LoadFromEnv(ignoreBinary ...interface{}) {
 			RedirectURL:  url + OAUTH_CALLBACK_PATH,
 			Scopes:       GITHUB_SCOPES,
 			Endpoint:     github.Endpoint,
+		}
+	}
+
+	TWITTER_CLIENTID = os.Getenv(`TWITTER_CLIENTID`)
+	TWITTER_CLIENTSECRET = os.Getenv(`TWITTER_CLIENTSECRET`)
+	TWITTER_SCOPES = strArr(`TWITTER_SCOPES`, `,`)
+
+	TWITTER_OAUTH_PROVIDERS = map[string]*oauth2.Config{}
+	for _, url := range OAUTH_URLS {
+		TWITTER_OAUTH_PROVIDERS[url] = &oauth2.Config{
+			ClientID:     TWITTER_CLIENTID,
+			ClientSecret: TWITTER_CLIENTSECRET,
+			RedirectURL:  url + OAUTH_CALLBACK_PATH,
+			Scopes:       TWITTER_SCOPES,
+			Endpoint: oauth2.Endpoint{
+				AuthURL: "https://twitter.com/i/oauth2/authorize?code_challenge_method=plain&code_challenge=CODE_CHALLENGE",
+				// the rest not needed, since twitter oauth are not normal
+				// we exchange manually
+			},
+		}
+	}
+
+	STEAM_CLIENTSECRET = os.Getenv(`STEAM_CLIENTSECRET`)
+
+	STEAM_OAUTH_PROVIDERS = map[string]*oauth2.Config{}
+	for _, url := range OAUTH_URLS {
+		STEAM_OAUTH_PROVIDERS[url] = &oauth2.Config{
+			ClientID:     "", // TODO: fill these
+			ClientSecret: STEAM_CLIENTSECRET,
+			Endpoint: oauth2.Endpoint{
+				AuthURL:   "",
+				TokenURL:  "",
+				AuthStyle: 0,
+			},
+			RedirectURL: "",
+			Scopes:      nil,
 		}
 	}
 
