@@ -421,19 +421,35 @@ func (d *Domain) UserOauth(in *UserOauth_In) (out UserOauth_Out) {
 		}
 		L.Describe(token)
 		client := fbProvider.Client(in.TracerContext, token)
-		out.OauthUser = fetchJsonMap(client, `https://api.login.yahoo.com/openid/v1/userinfo`, &out.ResponseCommon)
+		out.OauthUser = fetchJsonMap(client, `https://graph.facebook.com/v12.0/me?fields=email`, &out.ResponseCommon)
 		/* example:
-		{
-		  "sub": 				"FSVIDUW3D7FSVIDUW3D72F2F",
-		  "name": 				"Jane Doe",
-		  "given_name": 		"Jane",
-		  "family_name": 		"Doe",
-		  "preferred_username": "j.doe",
-		  "email": 				"janedoe@example.com",
-		  "picture": 			"http://example.com/janedoe/me.jpg"
-		  "profile_images": 	[]
+		{"sessionToken":"0QEK7-CqXe7~",
+		"error":"",
+		"status":0,
+		"oauthUser":
+			{"email":"user@email.com",
+			"id":"7555273924497687"},
+		"email":"rockxhast_21@yahoo.co.id",
+		"currentUser":
+			{"id":"12345678901112131415",
+			"email":"user@email.com",
+			"password":"$2a$10$",
+			"createdAt":0,
+			"createdBy":"0",
+			"updatedAt":0,
+			"updatedBy":"0",
+			"deletedAt":0,
+			"deletedBy":"0",
+			"isDeleted":false,
+			"restoredAt":0,
+			"restoredBy":"0",
+			"passwordSetAt":0,
+			"secretCode":"",
+			"secretCodeAt":0,
+			"verificationSentAt":0,
+			"verifiedAt":0,
+			"lastLoginAt":0}
 		} */
-
 		out.Email = out.OauthUser.GetStr(Email)
 		if out.HasError() {
 			return

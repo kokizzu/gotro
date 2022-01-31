@@ -45,13 +45,12 @@ note:
 3. Choose the most bottom application type
 4. Fill all fields
 5. at (https://developers.facebook.com/apps/) choose your application that you created
-6. Click Settings > Basic > Fill app domain `http://127.0.0.1` and `http://localhost/`
+6. Click Settings > Basic > Fill app domain `https://127.0.0.1` and `https://localhost/`
 7. Scroll Down at most bottom fill website url `http://localhost:9090/` > Save
 8. Click Settings > Advanced > Scroll down and fill share redirect url with `http://localhost:9090/api/UserOauth` and `http://127.0.0.1:9090/api/UserOauth` > Save
-9. Click Dashboard > Most Bottom > My Product > Click Settings
-10. Fill Valid OAuth Redirect URIs `https://yourdomain/api/UserOauth`
+9. Click Dashboard > Most Bottom > My Product > Click Settings or click Login Facebook dropdown, settings
+10. Fill Valid OAuth Redirect URIs `https://yourdomain/api/UserOauth` example `https://local.benalu.dev/api/UserOauth`
 11. At Settings > Basic > Copy APP ID and APP SECRET to `.env`
-
 
 ## Twitter
 
@@ -82,8 +81,9 @@ Note: You must purchase a game at least $5 for get api key
 [http://localhost:9090/api/UserExternalLogin?provider=google](http://localhost:9090/api/UserExternalLogin?provider=google)
 [http://localhost:9090/api/UserExternalLogin?provider=yahoo](http://localhost:9090/api/UserExternalLogin?provider=yahoo)
 [http://localhost:9090/api/UserExternalLogin?provider=github](http://localhost:9090/api/UserExternalLogin?provider=github)
+[http://localhost:9090/api/UserExternalLogin?provider=facebook](http://localhost:9090/api/UserExternalLogin?provider=facebook)
 
-2. login with your gmail/yahoo, then it would give a response like this:
+2. login with your gmail/yahoo/github/facebook, then it would give a response like this:
 
 ```json
 {"sessionToken":"0QCPcCddiD-~-----2~0|1d372ee5601c427ec97df10fa2bee413660d952e7a0c57d24bba0bf31b50644ca2a2dcb216758c28b488dd4c86a47a41e988c6efbe2a43bcd0794926|0T0mT4j4Koq","error":"","status":0,"OauthUser":{"email":"xxx@gmail.com","email_verified":true,"family_name":"xxx","given_name":"xxx","locale":"en-US","name":"xxx xxx","picture":"https://lh3.googleusercontent.com/a-/AOh14GjfGEGb0xaIbnjdRnZWas3NBhoYdQaCcFb66Pbcag=s96-c","sub":"101959137763910089936"},"Email":"xxx@gmail.com","currentUser":{"id":"144428372796112898","email":"xxx@gmail.com","password":"$2a$10$onkM0VBO90l3DBiRh2sqTeegZKE3JcKIWxzS3clb5rKDI.kjQAIqC","createdAt":0,"createdBy":"0","updatedAt":0,"updatedBy":"0","deletedAt":0,"deletedBy":"0","isDeleted":false,"restoredAt":0,"restoredBy":"0","passwordSetAt":0,"secretCode":"","secretCodeAt":0,"verificationSentAt":0,"verifiedAt":0,"lastLoginAt":0}}
@@ -95,4 +95,8 @@ Note: You must purchase a game at least $5 for get api key
 
 ```json
 {"sessionToken":"0QCoP86SSqc~-----1~0|f8456f10afc192206a02c7474253eb039401d7272cd72db0ee22e1d3b3a303d669a43ef225aebb79a5e4e61c5501371468a1d0849a8c89c89715da85|0T0mT4j4Koq","error":"","status":0,"oauthUser":{"avatar_url":"https://avatars.githubusercontent.com/u/1061610?v=4","bio":"Remote Programmer","blog":"http://xxx.blogspot.com","company":"Remote Programmer","created_at":"2011-09-19T09:46:30Z","email":"xxx@gmail.com","events_url":"https://api.github.com/users/xxx/events{/privacy}","followers":85,"followers_url":"https://api.github.com/users/xxx/followers","following":10,"following_url":"https://api.github.com/users/xxx/following{/other_user}","gists_url":"https://api.github.com/users/xxx/gists{/gist_id}","gravatar_id":"","hireable":true,"html_url":"https://github.com/xxx","id":1061610,"location":"Bali, Indonesia","login":"xxx","name":"xxx xxx","node_id":"MDQ6VXNlcjEwNjE2MTA=","organizations_url":"https://api.github.com/users/xxx/orgs","public_gists":47,"public_repos":1951,"received_events_url":"https://api.github.com/users/xxx/received_events","repos_url":"https://api.github.com/users/xxx/repos","site_admin":false,"starred_url":"https://api.github.com/users/xxx/starred{/owner}{/repo}","subscriptions_url":"https://api.github.com/users/xxx/subscriptions","twitter_username":null,"type":"User","updated_at":"2022-01-24T15:11:08Z","url":"https://api.github.com/users/xxx"},"email":"xxx@gmail.com","currentUser":{"id":"144428372796112898","email":"xxx@gmail.com","password":"$2a$10$onkM0VBO90l3DBiRh2sqTeegZKE3JcKIWxzS3clb5rKDI.kjQAIqC","createdAt":0,"createdBy":"0","updatedAt":0,"updatedBy":"0","deletedAt":0,"deletedBy":"0","isDeleted":false,"restoredAt":0,"restoredBy":"0","passwordSetAt":0,"secretCode":"","secretCodeAt":0,"verificationSentAt":0,"verifiedAt":0,"lastLoginAt":0}}
+```
+
+```json
+{"sessionToken":"0QEK7-CqXe7~","error":"","status":0,"oauthUser":{"email":"user@email.com","id":"7555273924497687"},"email":"rockxhast_21@yahoo.co.id","currentUser":{"id":"12345678901112131415","email":"user@email.com","password":"$2a$10$","createdAt":0,"createdBy":"0","updatedAt":0,"updatedBy":"0","deletedAt":0,"deletedBy":"0","isDeleted":false,"restoredAt":0,"restoredBy":"0","passwordSetAt":0,"secretCode":"","secretCodeAt":0,"verificationSentAt":0,"verifiedAt":0,"lastLoginAt":0}}
 ```
