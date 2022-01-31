@@ -54,6 +54,8 @@ note:
 
 ## Twitter
 
+Not yet completed
+
 1. Go to [developer portal](https://developer.twitter.com/en/portal) and login with your twitter account, choose study option if you wanna try, because the other option will took some time to verify developer account
 2. Fill all mandatory fields and uncheck field that you don't need
 3. Checkbox developer agreement
@@ -68,11 +70,14 @@ note:
 
 ## Steam
 
+Not yet completed
+
 1. Visit [steam developer api key](https://steamcommunity.com/dev/apikey) and click register
 2. Fill domain url with `http://127.0.0.1`
-3. Put the API KEY to the `.env`
+3. contact steam support regarding https://partner.steamgames.com/doc/webapi_overview/oauth to get ClientID
+4. Put the WebAPIKey and ClientID to the `.env`
 
-Note: You must purchase a game at least $5 for get api key
+Note: You must purchase a game at least $5 for get WebApiKey
 
 # How to test
 
@@ -102,6 +107,7 @@ Note: You must purchase a game at least $5 for get api key
 {"sessionToken":"0QCoP86SSqc~-----1~0|f8456f10afc192206a02c7474253eb039401d7272cd72db0ee22e1d3b3a303d669a43ef225aebb79a5e4e61c5501371468a1d0849a8c89c89715da85|0T0mT4j4Koq","error":"","status":0,"oauthUser":{"avatar_url":"https://avatars.githubusercontent.com/u/1061610?v=4","bio":"Remote Programmer","blog":"http://xxx.blogspot.com","company":"Remote Programmer","created_at":"2011-09-19T09:46:30Z","email":"xxx@gmail.com","events_url":"https://api.github.com/users/xxx/events{/privacy}","followers":85,"followers_url":"https://api.github.com/users/xxx/followers","following":10,"following_url":"https://api.github.com/users/xxx/following{/other_user}","gists_url":"https://api.github.com/users/xxx/gists{/gist_id}","gravatar_id":"","hireable":true,"html_url":"https://github.com/xxx","id":1061610,"location":"Bali, Indonesia","login":"xxx","name":"xxx xxx","node_id":"MDQ6VXNlcjEwNjE2MTA=","organizations_url":"https://api.github.com/users/xxx/orgs","public_gists":47,"public_repos":1951,"received_events_url":"https://api.github.com/users/xxx/received_events","repos_url":"https://api.github.com/users/xxx/repos","site_admin":false,"starred_url":"https://api.github.com/users/xxx/starred{/owner}{/repo}","subscriptions_url":"https://api.github.com/users/xxx/subscriptions","twitter_username":null,"type":"User","updated_at":"2022-01-24T15:11:08Z","url":"https://api.github.com/users/xxx"},"email":"xxx@gmail.com","currentUser":{"id":"144428372796112898","email":"xxx@gmail.com","password":"$2a$10$onkM0VBO90l3DBiRh2sqTeegZKE3JcKIWxzS3clb5rKDI.kjQAIqC","createdAt":0,"createdBy":"0","updatedAt":0,"updatedBy":"0","deletedAt":0,"deletedBy":"0","isDeleted":false,"restoredAt":0,"restoredBy":"0","passwordSetAt":0,"secretCode":"","secretCodeAt":0,"verificationSentAt":0,"verifiedAt":0,"lastLoginAt":0}}
 ```
 
+2.4 facebook
 ```json
 {"sessionToken":"0QEK7-CqXe7~","error":"","status":0,"oauthUser":{"email":"xxx@gmail.com","id":"xxx"},"email":"xxx@gmail.com","currentUser":{"id":"xxx","email":"xxx@email.com","password":"$2a$10$","createdAt":0,"createdBy":"0","updatedAt":0,"updatedBy":"0","deletedAt":0,"deletedBy":"0","isDeleted":false,"restoredAt":0,"restoredBy":"0","passwordSetAt":0,"secretCode":"","secretCodeAt":0,"verificationSentAt":0,"verifiedAt":0,"lastLoginAt":0}}
 ```

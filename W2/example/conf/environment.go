@@ -77,6 +77,7 @@ var (
 	GITHUB_CLIENTSECRET string
 	GITHUB_SCOPES       []string
 
+	STEAM_CLIENTID     string
 	STEAM_CLIENTSECRET string
 
 	TWITTER_CLIENTID     string
@@ -183,6 +184,22 @@ func LoadFromEnv(ignoreBinary ...interface{}) {
 			RedirectURL:  url + OAUTH_CALLBACK_PATH,
 			Scopes:       GITHUB_SCOPES,
 			Endpoint:     github.Endpoint,
+		}
+	}
+
+	STEAM_CLIENTID = os.Getenv(`STEAM_CLIENTID`)
+	STEAM_CLIENTSECRET = os.Getenv(`STEAM_CLIENTSECRET`)
+
+	STEAM_OAUTH_PROVIDERS = map[string]*oauth2.Config{}
+	for _, url := range OAUTH_URLS {
+		STEAM_OAUTH_PROVIDERS[url] = &oauth2.Config{
+			ClientID:     STEAM_CLIENTID,
+			ClientSecret: STEAM_CLIENTSECRET,
+			RedirectURL:  url + OAUTH_CALLBACK_PATH,
+			Endpoint: oauth2.Endpoint{
+				AuthURL:  "https://steamcommunity.com/oauth/login",                           // ?response_type=token&client_id=client_id_here&state=whatever_you_want
+				TokenURL: "https://api.steampowered.com/ISteamUserOAuth/GetTokenDetails/v1/", // ?access_token=token
+			},
 		}
 	}
 
