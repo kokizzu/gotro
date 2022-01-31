@@ -40,7 +40,18 @@ note:
 
 ## Facebook
 
-TODO
+1. https://developers.facebook.com/apps
+2. Click Create Application
+3. Choose the most bottom application type
+4. Fill all fields
+5. at (https://developers.facebook.com/apps/) choose your application that you created
+6. Click Settings > Basic > Fill app domain `http://127.0.0.1` and `http://localhost/`
+7. Scroll Down at most bottom fill website url `http://localhost:9090/` > Save
+8. Click Settings > Advanced > Scroll down and fill share redirect url with `http://localhost:9090/api/UserOauth` and `http://127.0.0.1:9090/api/UserOauth` > Save
+9. Click Dashboard > Most Bottom > My Product > Click Settings
+10. Fill Valid OAuth Redirect URIs `https://yourdomain/api/UserOauth`
+11. At Settings > Basic > Copy APP ID and APP SECRET to `.env`
+
 
 ## Twitter
 

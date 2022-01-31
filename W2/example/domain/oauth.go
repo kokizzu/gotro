@@ -25,11 +25,12 @@ import (
 // go:generate msgp -tests=false -file oauth.go -o oauth__MSG.GEN.go
 
 const (
-	Google  = `google`
-	Yahoo   = `yahoo`
-	Github  = `github`
-	Steam   = `steam`
-	Twitter = `twitter`
+	Google   = `google`
+	Yahoo    = `yahoo`
+	Github   = `github`
+	Steam    = `steam`
+	Twitter  = `twitter`
+	Facebook = `facebook`
 
 	Email = `email`
 )
@@ -91,6 +92,14 @@ func (d *Domain) UserExternalLogin(in *UserExternalLogin_In) (out UserExternalLo
 			return
 		}
 		out.Link = tProvider.AuthCodeURL(csrfState)
+		fmt.Println(out.Link)
+	case Facebook:
+		fbProvider := conf.FACEBOOK_OAUTH_PROVIDERS[in.Host]
+		if fbProvider == nil {
+			out.SetError(500, `host not configured with oauth: `+in.Host)
+			return
+		}
+		out.Link = fbProvider.AuthCodeURL(csrfState)
 		fmt.Println(out.Link)
 	default:
 		out.SetError(400, `provider not set`)
@@ -394,6 +403,36 @@ func (d *Domain) UserOauth(in *UserOauth_In) (out UserOauth_Out) {
 				break
 			}
 		}
+
+		out.Email = out.OauthUser.GetStr(Email)
+		if out.HasError() {
+			return
+		}
+	case Facebook:
+		fbProvider := conf.FACEBOOK_OAUTH_PROVIDERS[in.Host]
+		if fbProvider == nil {
+			out.SetError(500, `host not configured with oauth: `+in.Host)
+			return
+		}
+		token, err := fbProvider.Exchange(in.TracerContext, in.Code)
+		if err != nil {
+			out.SetError(500, `failed exchange oauth token`)
+			return
+		}
+		L.Describe(token)
+		client := fbProvider.Client(in.TracerContext, token)
+		out.OauthUser = fetchJsonMap(client, `https://api.login.yahoo.com/openid/v1/userinfo`, &out.ResponseCommon)
+		/* example:
+		{
+		  "sub": 				"FSVIDUW3D7FSVIDUW3D72F2F",
+		  "name": 				"Jane Doe",
+		  "given_name": 		"Jane",
+		  "family_name": 		"Doe",
+		  "preferred_username": "j.doe",
+		  "email": 				"janedoe@example.com",
+		  "picture": 			"http://example.com/janedoe/me.jpg"
+		  "profile_images": 	[]
+		} */
 
 		out.Email = out.OauthUser.GetStr(Email)
 		if out.HasError() {
