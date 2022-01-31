@@ -27,11 +27,12 @@ import (
 // go:generate msgp -tests=false -file oauth.go -o oauth__MSG.GEN.go
 
 const (
-	Google  = `google`
-	Yahoo   = `yahoo`
-	Github  = `github`
-	Steam   = `steam`
-	Twitter = `twitter`
+	Google   = `google`
+	Yahoo    = `yahoo`
+	Github   = `github`
+	Steam    = `steam`
+	Twitter  = `twitter`
+	Facebook = `facebook`
 
 	Email = `email`
 )
@@ -95,6 +96,14 @@ func (d *Domain) UserExternalLogin(in *UserExternalLogin_In) (out UserExternalLo
 		}
 		out.Link = sProvider.AuthCodeURL(csrfState)
 		fmt.Println(out.Link)
+	case Facebook:
+		fbProvider := conf.FACEBOOK_OAUTH_PROVIDERS[in.Host]
+		if fbProvider == nil {
+			out.SetError(500, `host not configured with oauth: `+in.Host)
+			return
+		}
+		out.Link = fbProvider.AuthCodeURL(csrfState)
+		fmt.Println(out.Link)
 	default:
 		out.SetError(400, `provider not set`)
 	}
@@ -122,14 +131,14 @@ func fetchJsonArr(client *http.Client, url string, res *ResponseCommon) (json A.
 func fetchJsonMap(client *http.Client, url string, res *ResponseCommon) (json M.SX) {
 	resp, err := client.Get(url)
 	if L.IsError(err, `failed fetch url %s`, url) {
-		L.Describe(err)
+		L.Print(err)
 		res.SetError(500, `failed fetch url`)
 		return
 	}
 	defer resp.Body.Close()
 	body, err := ioutil.ReadAll(resp.Body)
 	if L.IsError(err, `failed read body`) {
-		L.Describe(err)
+		L.Print(err)
 		res.SetError(500, `failed read body`)
 		return
 	}
@@ -150,11 +159,23 @@ func fetchJsonMap(client *http.Client, url string, res *ResponseCommon) (json M.
 	return
 }
 
+func parseBodyMap(body []byte) (res M.SX) {
+	err := json.Unmarshal(body, &res)
+	if err != nil {
+		L.Describe(string(body))
+		return
+	}
+	L.Describe(string(body))
+	L.Describe(res)
+	return
+}
+
 type (
 	UserOauth_In struct {
 		RequestCommon
-		State string `json:"state" form:"state" query:"state" long:"state" msg:"state"`
-		Code  string `json:"code" form:"code" query:"code" long:"code" msg:"code"`
+		State       string `json:"state" form:"state" query:"state" long:"state" msg:"state"`
+		Code        string `json:"code" form:"code" query:"code" long:"code" msg:"code"`
+		AccessToken string
 	}
 	UserOauth_Out struct {
 		ResponseCommon
@@ -195,22 +216,24 @@ func (d *Domain) UserOauth(in *UserOauth_In) (out UserOauth_Out) {
 			}
 		}
 		out.OauthUser = fetchJsonMap(client, conf.GPLUS_USERINFO_ENDPOINT, &out.ResponseCommon)
-		/* {
-		"email":			"",
-		"email_verified":	true,
-		"family_name":		"",
-		"gender":			"",
-		"given_name":		"",
-		"locale":			"en-GB",
-		"name":				"",
-		"picture":			"http://",
-		"profile":			"http://",
-		"sub":				"number"};
-		*/
+		/* example:
+		{
+			"email":			"",
+			"email_verified":	true,
+			"family_name":		"",
+			"gender":			"",
+			"given_name":		"",
+			"locale":			"en-GB",
+			"name":				"",
+			"picture":			"http://",
+			"profile":			"http://",
+			"sub":				"number"
+		} */
 		out.Email = out.OauthUser.GetStr(Email)
 		if out.HasError() {
 			return
 		}
+
 	case Yahoo:
 		yProvider := conf.YAHOO_OAUTH_PROVIDERS[in.Host]
 		if yProvider == nil {
@@ -241,6 +264,7 @@ func (d *Domain) UserOauth(in *UserOauth_In) (out UserOauth_Out) {
 		if out.HasError() {
 			return
 		}
+
 	case Github:
 		ghProvider := conf.GITHUB_OAUTH_PROVIDERS[in.Host]
 		if ghProvider == nil {
@@ -288,8 +312,7 @@ func (d *Domain) UserOauth(in *UserOauth_In) (out UserOauth_Out) {
 			  "type":"User",
 			  "updated_at":"2022-01-24T15:11:08Z",
 			  "url":"https://api.github.com/users/xxx"
-			}
-		*/
+			} */
 		if out.HasError() {
 			return
 		}
@@ -299,16 +322,16 @@ func (d *Domain) UserOauth(in *UserOauth_In) (out UserOauth_Out) {
 			/* example:
 			[
 			  {
-				email: 		'johndoe100@gmail.com',
-				primary: 	true,
-				verified: 	true,
-				visibility: 'public'
+			    email: 		'johndoe100@gmail.com',
+			    primary: 	true,
+			    verified: 	true,
+			    visibility: 'public'
 			  },
 			  {
-				email: 		'johndoe111@domain.com',
-				primary: 	false,
-				verified: 	true,
-				visibility: null
+			    email: 		'johndoe111@domain.com',
+			    primary: 	false,
+			    verified: 	true,
+			    visibility: null
 			  }
 			] */
 			if out.HasError() {
@@ -325,6 +348,7 @@ func (d *Domain) UserOauth(in *UserOauth_In) (out UserOauth_Out) {
 		if out.HasError() {
 			return
 		}
+
 	case Twitter:
 		tProvider := conf.TWITTER_OAUTH_PROVIDERS[in.Host]
 		if tProvider == nil {
@@ -343,28 +367,24 @@ func (d *Domain) UserOauth(in *UserOauth_In) (out UserOauth_Out) {
 			`code_verifier`: state[1],
 		}).Post(`https://api.twitter.com/2/oauth2/token`)
 		if err != nil {
-			L.Describe(err)
+			L.Print(err)
 			out.SetError(500, `failed exchange oauth token`)
 			return
 		}
 		body := res.Body()
 		/* example:
 		{
-			"token_type":"bearer",
-			"expires_in":7200,
-			"access_token":"Q0V2QUQyN25OLXh1bVdBWUxxxxxxx2NDM1NDk1ODM0NDE6MToxOmF0OjE",
-			"scope":"users.read"
+		  "token_type":"bearer",
+		  "expires_in":7200,
+		  "access_token":"Q0V2QUQyN25OLXh1bVdBWUxxxxxDM0NDE6MToxOmF0OjE",
+		  "scope":"users.read"
 		}
 		*/
-		token := M.SX{}
-		err = json.Unmarshal(body, &token)
-		if err != nil {
-			L.Describe(string(body))
-			out.SetError(500, `failed parse oauth token`)
+		token := parseBodyMap(res.Body())
+		if token == nil {
+			out.SetError(500, `failed parse oauth token body`)
 			return
 		}
-		L.Describe(string(body))
-		L.Describe(token)
 		accessToken := token.GetStr(`access_token`)
 
 		res, err = r.R().
@@ -375,46 +395,69 @@ func (d *Domain) UserOauth(in *UserOauth_In) (out UserOauth_Out) {
 			out.SetError(500, `failed fetch user info`)
 			return
 		}
-		body = res.Body()
-		L.Print(string(body))
+		userInfo := parseBodyMap(res.Body())
+		if userInfo == nil {
+			out.SetError(500, `failed parse user info body`)
+			return
+		}
 		/*	example:
 			{
 			  "title": "Unauthorized",
 			  "type": "about:blank",
 			  "status": 401,
 			  "detail": "Unauthorized"
-			}
-		*/
+			} */
 		// TODO: continue this: https://stackoverflow.com/questions/70915572/retrieving-e-mail-from-twitter-oauth2
 		// TODO: replace with find user email by twitter id
 		out.Email = out.OauthUser.GetStr(Email)
-		if out.HasError() {
-			return
-		}
+
 	case Steam:
-		sProvider := conf.STEAM_OAUTH_PROVIDERS[in.Host]
-		if sProvider == nil {
-			out.SetError(500, `host not configured with oauth`)
-			return
-		}
-		token, err := sProvider.Exchange(in.TracerContext, in.Code)
+		// TODO: continue this, probably not needed to call exchange, since access_token already given at redirect_url
+		r := resty.New()
+		res, err := r.R().Get(`https://api.steampowered.com/ISteamUserOAuth/GetTokenDetails/v1/?access_token=` + in.AccessToken)
 		if err != nil {
-			out.SetError(500, `failed exchange oauth token`)
+			L.Print(err)
+			out.SetError(500, `failed fetch oauth token info`)
 			return
 		}
-		client := sProvider.Client(in.TracerContext, token)
-		out.OauthUser = fetchJsonMap(client, `https://api.github.com/user`, &out.ResponseCommon)
+		tokenDetail := parseBodyMap(res.Body())
+		if tokenDetail == nil {
+			out.SetError(500, `failed parse token detail body`)
+			return
+		}
 		/*	example:
 
 		 */
 		if out.HasError() {
 			return
 		}
+		// TODO: replace with find user email by steam id
+		out.Email = out.OauthUser.GetStr(Email)
 
+	case Facebook:
+		fbProvider := conf.FACEBOOK_OAUTH_PROVIDERS[in.Host]
+		if fbProvider == nil {
+			out.SetError(500, `host not configured with oauth: `+in.Host)
+			return
+		}
+		token, err := fbProvider.Exchange(in.TracerContext, in.Code)
+		if err != nil {
+			out.SetError(500, `failed exchange oauth token`)
+			return
+		}
+		L.Describe(token)
+		client := fbProvider.Client(in.TracerContext, token)
+		out.OauthUser = fetchJsonMap(client, `https://graph.facebook.com/v12.0/me?fields=email`, &out.ResponseCommon)
+		/* example:
+		{
+		  "email":"xxx@email.com",
+		  "id":"7555273924497687"
+		} */
 		out.Email = out.OauthUser.GetStr(Email)
 		if out.HasError() {
 			return
 		}
+
 	default:
 		out.SetError(400, `provider not set`)
 		return
