@@ -3,11 +3,9 @@ module github.com/kokizzu/gotro
 go 1.16
 
 require (
-	github.com/ClickHouse/clickhouse-go v1.5.2 // indirect
-	github.com/ClickHouse/clickhouse-go/v2 v2.0.0-beta.10
+	github.com/ClickHouse/clickhouse-go/v2 v2.0.0-beta.12
 	github.com/OneOfOne/cmap v0.0.0-20170825200327-ccaef7657ab8
 	github.com/allegro/bigcache v1.2.1
-	github.com/andybalholm/brotli v1.0.4 // indirect
 	github.com/buaazp/fasthttprouter v0.1.1
 	github.com/containerd/continuity v0.2.2 // indirect
 	github.com/docker/cli v20.10.12+incompatible // indirect
@@ -16,6 +14,7 @@ require (
 	github.com/francoispqt/gojay v1.2.13 // indirect
 	github.com/francoispqt/onelog v0.0.0-20190306043706-8c2bb31b10a4
 	github.com/go-logr/stdr v1.2.2 // indirect
+	github.com/go-ole/go-ole v1.2.6 // indirect
 	github.com/goccy/go-yaml v1.9.5
 	github.com/gofiber/fiber/v2 v2.25.0
 	github.com/google/go-cmp v0.5.7 // indirect
@@ -49,11 +48,8 @@ require (
 	github.com/orcaman/concurrent-map v1.0.0
 	github.com/ory/dockertest/v3 v3.8.1
 	github.com/pkg/errors v0.9.1
-	github.com/rogpeppe/go-internal v1.8.1 // indirect
 	github.com/rs/zerolog v1.26.1
 	github.com/segmentio/fasthash v1.0.3
-	github.com/shirou/gopsutil/v3 v3.21.12 // indirect
-	github.com/stretchr/objx v0.3.0 // indirect
 	github.com/stretchr/testify v1.7.0
 	github.com/tarantool/go-tarantool v0.0.0-20220113162241-9c9a68e09870
 	github.com/tdewolff/minify v2.3.6+incompatible
@@ -70,8 +66,8 @@ require (
 	golang.org/x/oauth2 v0.0.0-20210220000619-9bb904979d93
 	golang.org/x/sys v0.0.0-20220114195835-da31bd327af9 // indirect
 	golang.org/x/tools v0.1.9 // indirect
-	google.golang.org/protobuf v1.27.1 // indirect
 	gopkg.in/check.v1 v1.0.0-20200902074654-038fdea0a05b // indirect
 	gopkg.in/redis.v5 v5.2.9
+	gopkg.in/resty.v1 v1.12.0
 	mvdan.cc/gofumpt v0.2.1 // indirect
 )
