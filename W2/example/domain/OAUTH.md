@@ -44,6 +44,8 @@ TODO
 
 ## Twitter
 
+Not yet completed
+
 1. Go to (https://developer.twitter.com/en/portal) and login with your twitter account, choose study case if you wanna try, because other case will take several times for verify developer account
 2. Fill all mandatory fields and uncheck field that you dont need
 3. Checkbox developer agreement
@@ -58,12 +60,14 @@ TODO
 
 ## Steam
 
-Not yet completely
+Not yet completed
+
 1. Visit https://steamcommunity.com/dev/apikey and click register
 2. Fill domain url with `http://127.0.0.1`
-3. Put the API KEY to the `.env`
+3. contact steam support regarding https://partner.steamgames.com/doc/webapi_overview/oauth to get ClientID
+4. Put the WebAPIKey and ClientID to the `.env`
 
-Note: You must purchase a game at least $5 for get api key
+Note: You must purchase a game at least $5 for get WebApiKey
 
 # How to test
 
