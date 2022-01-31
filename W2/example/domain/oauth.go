@@ -1,7 +1,9 @@
 package domain
 
 import (
+	"encoding/json"
 	"fmt"
+	"gopkg.in/resty.v1"
 	"io/ioutil"
 	"net/http"
 
@@ -76,14 +78,6 @@ func (d *Domain) UserExternalLogin(in *UserExternalLogin_In) (out UserExternalLo
 		}
 		out.Link = ghProvider.AuthCodeURL(csrfState)
 		fmt.Println(out.Link)
-	case Steam:
-		sProvider := conf.STEAM_OAUTH_PROVIDERS[in.Host]
-		if sProvider == nil {
-			out.SetError(500, `host not configured with oauth: `+in.Host)
-			return
-		}
-		out.Link = sProvider.AuthCodeURL(csrfState)
-		fmt.Println(out.Link)
 	case Twitter:
 		tProvider := conf.TWITTER_OAUTH_PROVIDERS[in.Host]
 		if tProvider == nil {
@@ -91,6 +85,15 @@ func (d *Domain) UserExternalLogin(in *UserExternalLogin_In) (out UserExternalLo
 			return
 		}
 		out.Link = tProvider.AuthCodeURL(csrfState)
+		out.Link = S.Replace(out.Link, `CODE_CHALLENGE`, out.SessionToken)
+		fmt.Println(out.Link)
+	case Steam:
+		sProvider := conf.STEAM_OAUTH_PROVIDERS[in.Host]
+		if sProvider == nil {
+			out.SetError(500, `host not configured with oauth: `+in.Host)
+			return
+		}
+		out.Link = sProvider.AuthCodeURL(csrfState)
 		fmt.Println(out.Link)
 	default:
 		out.SetError(400, `provider not set`)
@@ -119,16 +122,19 @@ func fetchJsonArr(client *http.Client, url string, res *ResponseCommon) (json A.
 func fetchJsonMap(client *http.Client, url string, res *ResponseCommon) (json M.SX) {
 	resp, err := client.Get(url)
 	if L.IsError(err, `failed fetch url %s`, url) {
+		L.Describe(err)
 		res.SetError(500, `failed fetch url`)
 		return
 	}
 	defer resp.Body.Close()
 	body, err := ioutil.ReadAll(resp.Body)
 	if L.IsError(err, `failed read body`) {
+		L.Describe(err)
 		res.SetError(500, `failed read body`)
 		return
 	}
 	bodyStr := string(body)
+	L.Print(bodyStr)
 	json = S.JsonToMap(bodyStr)
 	L.Describe(json)
 	err2 := json.GetStr(`error`)
@@ -325,36 +331,62 @@ func (d *Domain) UserOauth(in *UserOauth_In) (out UserOauth_Out) {
 			out.SetError(500, `host not configured with oauth`)
 			return
 		}
-		token, err := tProvider.Exchange(in.TracerContext, in.Code)
+		// exchange, because there's PKCE we cannot use standard library
+		// use: https://developer.twitter.com/en/docs/authentication/oauth-2-0/user-access-token
+		r := resty.New()
+		r.SetBasicAuth(conf.TWITTER_CLIENTID, conf.TWITTER_CLIENTSECRET)
+		res, err := r.R().SetBody(map[string]interface{}{
+			`code`:          in.Code,
+			`grant_type`:    `authorization_code`,
+			`client_id`:     conf.TWITTER_CLIENTID,
+			`redirect_uri`:  tProvider.RedirectURL,
+			`code_verifier`: state[1],
+		}).Post(`https://api.twitter.com/2/oauth2/token`)
 		if err != nil {
+			L.Describe(err)
 			out.SetError(500, `failed exchange oauth token`)
 			return
 		}
-		client := tProvider.Client(in.TracerContext, token)
-		out.OauthUser = fetchJsonMap(client, `https://api.twitter.com/1.1/`, &out.ResponseCommon)
-		/*	example:
-
-		 */
-		if out.HasError() {
+		body := res.Body()
+		/* example:
+		{
+			"token_type":"bearer",
+			"expires_in":7200,
+			"access_token":"Q0V2QUQyN25OLXh1bVdBWUxxxxxxx2NDM1NDk1ODM0NDE6MToxOmF0OjE",
+			"scope":"users.read"
+		}
+		*/
+		token := M.SX{}
+		err = json.Unmarshal(body, &token)
+		if err != nil {
+			L.Describe(string(body))
+			out.SetError(500, `failed parse oauth token`)
 			return
 		}
+		L.Describe(string(body))
+		L.Describe(token)
+		accessToken := token.GetStr(`access_token`)
 
-		if out.OauthUser.GetStr(Email) == `` {
-			emails := fetchJsonArr(client, `https://api.github.com/user/emails`, &out.ResponseCommon)
-			/* example:
-			[
-
-			] */
-			if out.HasError() {
-				return
-			}
-			out.OauthUser.Set(`emails`, emails)
-			for _, emailObj := range emails {
-				out.OauthUser.Set(Email, X.ToS(emailObj[Email]))
-				break
-			}
+		res, err = r.R().
+			SetHeader(`Authorization`, `Bearer `+accessToken).
+			Get(`https://api.twitter.com/2/users/me`)
+		if err != nil {
+			L.Print(err)
+			out.SetError(500, `failed fetch user info`)
+			return
 		}
-
+		body = res.Body()
+		L.Print(string(body))
+		/*	example:
+			{
+			  "title": "Unauthorized",
+			  "type": "about:blank",
+			  "status": 401,
+			  "detail": "Unauthorized"
+			}
+		*/
+		// TODO: continue this: https://stackoverflow.com/questions/70915572/retrieving-e-mail-from-twitter-oauth2
+		// TODO: replace with find user email by twitter id
 		out.Email = out.OauthUser.GetStr(Email)
 		if out.HasError() {
 			return
