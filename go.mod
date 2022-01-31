@@ -37,6 +37,7 @@ require (
 	github.com/kpango/fastime v1.0.17
 	github.com/kr/pretty v0.3.0
 	github.com/lib/pq v1.10.4
+	github.com/markbates/goth v1.69.0 // indirect
 	github.com/mattn/go-colorable v0.1.12 // indirect
 	github.com/meilisearch/meilisearch-go v0.14.0
 	github.com/mitchellh/mapstructure v1.4.3 // indirect
