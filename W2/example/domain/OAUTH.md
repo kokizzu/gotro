@@ -40,7 +40,17 @@ note:
 
 ## Facebook
 
-TODO
+1. https://developers.facebook.com/apps
+2. Click Create Application
+3. Choose the most bottom application type
+4. Fill all fields
+5. at (https://developers.facebook.com/apps/) choose your application that you created
+6. Click Settings > Basic > Fill app domain `https://127.0.0.1` and `https://localhost/`
+7. Scroll Down at most bottom fill website url `http://localhost:9090/` > Save
+8. Click Settings > Advanced > Scroll down and fill share redirect url with `http://localhost:9090/api/UserOauth` and `http://127.0.0.1:9090/api/UserOauth` > Save
+9. Click Dashboard > Most Bottom > My Product > Click Settings or click Login Facebook dropdown, settings
+10. Fill Valid OAuth Redirect URIs `https://yourdomain/api/UserOauth` example `https://local.benalu.dev/api/UserOauth`
+11. At Settings > Basic > Copy APP ID and APP SECRET to `.env`
 
 ## Twitter
 
@@ -75,7 +85,7 @@ Note: You must purchase a game at least $5 for get WebApiKey
 [http://localhost:9090/api/UserExternalLogin?provider=google](http://localhost:9090/api/UserExternalLogin?provider=google)
 [http://localhost:9090/api/UserExternalLogin?provider=yahoo](http://localhost:9090/api/UserExternalLogin?provider=yahoo)
 [http://localhost:9090/api/UserExternalLogin?provider=github](http://localhost:9090/api/UserExternalLogin?provider=github)
-[http://localhost:9090/api/UserExternalLogin?provider=twitter](http://localhost:9090/api/UserExternalLogin?provider=twitter)
+[http://localhost:9090/api/UserExternalLogin?provider=facebook](http://localhost:9090/api/UserExternalLogin?provider=facebook)
 
 2. login with your one of the OAuth above, then it would give a response like this:
 
@@ -98,7 +108,6 @@ Note: You must purchase a game at least $5 for get WebApiKey
 ```
 
 2.4 facebook
-
 ```json
-
+{"sessionToken":"0QEK7-CqXe7~","error":"","status":0,"oauthUser":{"email":"xxx@gmail.com","id":"xxx"},"email":"xxx@gmail.com","currentUser":{"id":"xxx","email":"xxx@email.com","password":"$2a$10$","createdAt":0,"createdBy":"0","updatedAt":0,"updatedBy":"0","deletedAt":0,"deletedBy":"0","isDeleted":false,"restoredAt":0,"restoredBy":"0","passwordSetAt":0,"secretCode":"","secretCodeAt":0,"verificationSentAt":0,"verifiedAt":0,"lastLoginAt":0}}
 ```

@@ -9,6 +9,7 @@ import (
 	"github.com/kokizzu/gotro/L"
 	"github.com/kokizzu/gotro/S"
 	"golang.org/x/oauth2"
+	"golang.org/x/oauth2/facebook"
 	"golang.org/x/oauth2/github"
 	"golang.org/x/oauth2/google"
 	"golang.org/x/oauth2/yahoo"
@@ -83,11 +84,16 @@ var (
 	TWITTER_CLIENTSECRET string
 	TWITTER_SCOPES       []string
 
-	GPLUS_OAUTH_PROVIDERS   map[string]*oauth2.Config
-	YAHOO_OAUTH_PROVIDERS   map[string]*oauth2.Config
-	GITHUB_OAUTH_PROVIDERS  map[string]*oauth2.Config
-	STEAM_OAUTH_PROVIDERS   map[string]*oauth2.Config
-	TWITTER_OAUTH_PROVIDERS map[string]*oauth2.Config
+	FACEBOOK_APPID     string
+	FACEBOOK_APPSECRET string
+	FACEBOOK_SCOPES    []string
+
+	GPLUS_OAUTH_PROVIDERS    map[string]*oauth2.Config
+	YAHOO_OAUTH_PROVIDERS    map[string]*oauth2.Config
+	GITHUB_OAUTH_PROVIDERS   map[string]*oauth2.Config
+	STEAM_OAUTH_PROVIDERS    map[string]*oauth2.Config
+	TWITTER_OAUTH_PROVIDERS  map[string]*oauth2.Config
+	FACEBOOK_OAUTH_PROVIDERS map[string]*oauth2.Config
 
 	GPLUS_USERINFO_ENDPOINT string
 )
@@ -224,12 +230,26 @@ func LoadFromEnv(ignoreBinary ...interface{}) {
 			ClientID:     "", // TODO: fill these
 			ClientSecret: STEAM_CLIENTSECRET,
 			Endpoint: oauth2.Endpoint{
-				AuthURL:   "",
-				TokenURL:  "",
-				AuthStyle: 0,
+				AuthURL: "https://steamcommunity.com/oauth/login",
+				// the rest not needed, since steam oauth give access_token directly
 			},
 			RedirectURL: "",
 			Scopes:      nil,
+		}
+	}
+
+	FACEBOOK_APPID = os.Getenv(`FACEBOOK_APPID`)
+	FACEBOOK_APPSECRET = os.Getenv(`FACEBOOK_APPSECRET`)
+	FACEBOOK_SCOPES = strArr(`FACEBOOK_SCOPES`, `,`)
+
+	FACEBOOK_OAUTH_PROVIDERS = map[string]*oauth2.Config{}
+	for _, url := range OAUTH_URLS {
+		FACEBOOK_OAUTH_PROVIDERS[url] = &oauth2.Config{
+			ClientID:     FACEBOOK_APPID,
+			ClientSecret: FACEBOOK_APPSECRET,
+			RedirectURL:  url + OAUTH_CALLBACK_PATH,
+			Scopes:       FACEBOOK_SCOPES,
+			Endpoint:     facebook.Endpoint,
 		}
 	}
 
