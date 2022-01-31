@@ -319,46 +319,6 @@ func (d *Domain) UserOauth(in *UserOauth_In) (out UserOauth_Out) {
 		if out.HasError() {
 			return
 		}
-	case Steam:
-		sProvider := conf.STEAM_OAUTH_PROVIDERS[in.Host]
-		if sProvider == nil {
-			out.SetError(500, `host not configured with oauth`)
-			return
-		}
-		token, err := sProvider.Exchange(in.TracerContext, in.Code)
-		if err != nil {
-			out.SetError(500, `failed exchange oauth token`)
-			return
-		}
-		client := sProvider.Client(in.TracerContext, token)
-		out.OauthUser = fetchJsonMap(client, `https://api.github.com/user`, &out.ResponseCommon)
-		/*	example:
-
-		 */
-		if out.HasError() {
-			return
-		}
-
-		if out.OauthUser.GetStr(Email) == `` {
-			emails := fetchJsonArr(client, `https://api.github.com/user/emails`, &out.ResponseCommon)
-			/* example:
-			[
-
-			] */
-			if out.HasError() {
-				return
-			}
-			out.OauthUser.Set(`emails`, emails)
-			for _, emailObj := range emails {
-				out.OauthUser.Set(Email, X.ToS(emailObj[Email]))
-				break
-			}
-		}
-
-		out.Email = out.OauthUser.GetStr(Email)
-		if out.HasError() {
-			return
-		}
 	case Twitter:
 		tProvider := conf.TWITTER_OAUTH_PROVIDERS[in.Host]
 		if tProvider == nil {
@@ -393,6 +353,30 @@ func (d *Domain) UserOauth(in *UserOauth_In) (out UserOauth_Out) {
 				out.OauthUser.Set(Email, X.ToS(emailObj[Email]))
 				break
 			}
+		}
+
+		out.Email = out.OauthUser.GetStr(Email)
+		if out.HasError() {
+			return
+		}
+	case Steam:
+		sProvider := conf.STEAM_OAUTH_PROVIDERS[in.Host]
+		if sProvider == nil {
+			out.SetError(500, `host not configured with oauth`)
+			return
+		}
+		token, err := sProvider.Exchange(in.TracerContext, in.Code)
+		if err != nil {
+			out.SetError(500, `failed exchange oauth token`)
+			return
+		}
+		client := sProvider.Client(in.TracerContext, token)
+		out.OauthUser = fetchJsonMap(client, `http://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key=%s&steamids=%s`, &out.ResponseCommon)
+		/*	example:
+
+		 */
+		if out.HasError() {
+			return
 		}
 
 		out.Email = out.OauthUser.GetStr(Email)
