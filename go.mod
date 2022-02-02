@@ -3,6 +3,7 @@ module github.com/kokizzu/gotro
 go 1.16
 
 require (
+	cloud.google.com/go v0.67.0 // indirect
 	github.com/ClickHouse/clickhouse-go/v2 v2.0.0-beta.12
 	github.com/OneOfOne/cmap v0.0.0-20170825200327-ccaef7657ab8
 	github.com/allegro/bigcache v1.2.1
@@ -36,7 +37,6 @@ require (
 	github.com/kpango/fastime v1.0.17
 	github.com/kr/pretty v0.3.0
 	github.com/lib/pq v1.10.4
-	github.com/markbates/goth v1.69.0 // indirect
 	github.com/mattn/go-colorable v0.1.12 // indirect
 	github.com/meilisearch/meilisearch-go v0.14.0
 	github.com/mitchellh/mapstructure v1.4.3 // indirect
