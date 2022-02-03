@@ -21,8 +21,10 @@ var log *zerolog.Logger
 func main() {
 	log = conf.InitLogger()
 
-	err := godotenv.Load(`.env`)
+	err := godotenv.Overload(`.env`)
 	L.PanicIf(err, `godotenv.Load .env`)
+	err = godotenv.Overload(`.env.override`)
+	L.PanicIf(err, `godotenv.Load .env.override`)
 
 	args := os.Args
 	if len(args) < 2 {
