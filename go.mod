@@ -51,7 +51,7 @@ require (
 	github.com/rs/zerolog v1.26.1
 	github.com/segmentio/fasthash v1.0.3
 	github.com/stretchr/testify v1.7.0
-	github.com/tarantool/go-tarantool v0.0.0-20220113162241-9c9a68e09870
+	github.com/tarantool/go-tarantool v0.0.0-20220201141139-c84ec853329c
 	github.com/tdewolff/minify v2.3.6+incompatible
 	github.com/tdewolff/test v1.0.6 // indirect
 	github.com/valyala/fasthttp v1.33.0
@@ -61,10 +61,10 @@ require (
 	github.com/zeebo/xxh3 v1.0.1
 	go.opentelemetry.io/otel v1.3.0
 	go.opentelemetry.io/otel/trace v1.3.0
-	golang.org/x/crypto v0.0.0-20220126234351-aa10faf2a1f8
-	golang.org/x/net v0.0.0-20220127074510-2fabfed7e28f // indirect
+	golang.org/x/crypto v0.0.0-20220131195533-30dcbda58838
+	golang.org/x/net v0.0.0-20220127200216-cd36cc0744dd // indirect
 	golang.org/x/oauth2 v0.0.0-20210220000619-9bb904979d93
-	golang.org/x/sys v0.0.0-20220114195835-da31bd327af9 // indirect
+	golang.org/x/sys v0.0.0-20220128215802-99c3d69c2c27 // indirect
 	golang.org/x/tools v0.1.9 // indirect
 	gopkg.in/check.v1 v1.0.0-20200902074654-038fdea0a05b // indirect
 	gopkg.in/redis.v5 v5.2.9
