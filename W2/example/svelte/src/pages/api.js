@@ -1,14 +1,21 @@
 // can be hit using with /api/[ApiName]
-export const LastUpdatedAt = 1643294085
+export const LastUpdatedAt = 1643922504
 export const APIs = {
 	Health: {
 		in: {
 		}, out: {
+			cpuPercent: 0.0, // float32
+			ramPercent: 0.0, // float32
+			diskPercent: 0.0, // float32
 		}, read: [
 		], write: [
 		], stat: [
 		], deps: [
-		], err: []
+		], err: [
+			[500, `failed fetch cpu usage`],
+			[500, `failed fetch disk usage`],
+			[500, `failed fetch ram usage`],
+		]
 	},
 	StoreCartItemsAdd: {
 		in: {
@@ -308,6 +315,7 @@ export const APIs = {
 		in: {
 			state: '', // string
 			code: '', // string
+			accessToken: '', // string
 		}, out: {
 			oauthUser: 0, // M.SX
 			email: '', // string
@@ -333,6 +341,7 @@ export const APIs = {
 			},
 			sessionToken: '', //string | login token
 		}, read: [
+			"resty.",
 		], write: [
 			"Auth.Sessions",
 			"Auth.Users",
@@ -345,6 +354,11 @@ export const APIs = {
 			[500, `cannot create session`],
 			[500, `cannot encrypt password`],
 			[500, `failed exchange oauth token`],
+			[500, `failed fetch oauth token info`],
+			[500, `failed fetch user info`],
+			[500, `failed parse oauth token body`],
+			[500, `failed parse token detail body`],
+			[500, `failed parse user info body`],
 			[500, `host not configured with oauth: `],
 			[500, `host not configured with oauth`],
 			[500, `missing email from oauth provider`],

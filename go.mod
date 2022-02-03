@@ -50,6 +50,7 @@ require (
 	github.com/pkg/errors v0.9.1
 	github.com/rs/zerolog v1.26.1
 	github.com/segmentio/fasthash v1.0.3
+	github.com/shirou/gopsutil/v3 v3.21.9
 	github.com/stretchr/testify v1.7.0
 	github.com/tarantool/go-tarantool v0.0.0-20220201141139-c84ec853329c
 	github.com/tdewolff/minify v2.3.6+incompatible

@@ -5,5 +5,5 @@ tmp/
 bin/
 svelte/dist/
 svelte/node_modules/
-backup
+backup/
 .env.override
