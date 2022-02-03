@@ -51,7 +51,11 @@ type (
 const UserExternalLogin_Url = `/UserExternalLogin`
 
 func (d *Domain) UserExternalLogin(in *UserExternalLogin_In) (out UserExternalLogin_Out) {
-	out.SessionToken = lexid.ID()
+	if in.SessionToken == `` {
+		out.SessionToken = lexid.ID()
+	} else {
+		out.SessionToken = in.SessionToken
+	}
 	csrfState := in.Provider + `|` + out.SessionToken
 
 	switch in.Provider {
@@ -188,12 +192,14 @@ type (
 const UserOauth_Url = `/UserOauth`
 
 func (d *Domain) UserOauth(in *UserOauth_In) (out UserOauth_Out) {
-	state := S.Split(in.State, `|`)
-	if len(state) < 2 || state[1] != in.SessionToken {
+	csrf := S.RightOf(in.State, `|`)
+	if csrf != in.SessionToken {
 		out.SetError(400, `invalid CSRF oauth state`)
 		return
 	}
-	provider := state[0]
+
+	provider := S.LeftOf(in.State, `|`)
+
 	switch provider {
 	case Google:
 		gProvider := conf.GPLUS_OAUTH_PROVIDERS[in.Host]
@@ -364,7 +370,7 @@ func (d *Domain) UserOauth(in *UserOauth_In) (out UserOauth_Out) {
 			`grant_type`:    `authorization_code`,
 			`client_id`:     conf.TWITTER_CLIENTID,
 			`redirect_uri`:  tProvider.RedirectURL,
-			`code_verifier`: state[1],
+			`code_verifier`: csrf,
 		}).Post(`https://api.twitter.com/2/oauth2/token`)
 		if err != nil {
 			L.Print(err)
@@ -380,7 +386,7 @@ func (d *Domain) UserOauth(in *UserOauth_In) (out UserOauth_Out) {
 		  "scope":"users.read"
 		}
 		*/
-		token := parseBodyMap(res.Body())
+		token := parseBodyMap(body)
 		if token == nil {
 			out.SetError(500, `failed parse oauth token body`)
 			return
@@ -498,6 +504,8 @@ func (d *Domain) UserOauth(in *UserOauth_In) (out UserOauth_Out) {
 	out.SessionToken = session.SessionToken
 
 	out.CurrentUser = user.Users
+
+	out.SetRedirect(`/`)
 
 	return
 }

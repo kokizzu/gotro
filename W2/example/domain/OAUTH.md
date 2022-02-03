@@ -5,7 +5,7 @@
 
 1. open https://console.cloud.google.com/apis/credentials?project=
 2. create new project, fill OAuth Consent Screen requirements, tick (openid,email,profile), create credentials "OAuth 2.0 CLient IDs" > Web Application
-3. fill Authorized Javascript origins with `http://localhost:9090` and `http://127.0.0.1:9090`
+3. fill Authorized Javascript origins with `http://localhost:9090`, `http://127.0.0.1:9090`, `http://localhost`, and `http://127.0.0.1` (for reverse proxy)
 4. fill Authorized Redirect URIs with `http://localhost:9090/api/UserOauth` and `http://127.0.0.1:9090/api/UserOauth`
 5. put the ClientID and ClientSecret to `.env`
 

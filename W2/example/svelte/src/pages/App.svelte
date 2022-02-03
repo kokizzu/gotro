@@ -1,5 +1,7 @@
 <script lang="ts">
 	import {APIs, LastUpdatedAt} from "./api";
+	import {profile} from "/src/store/profile"
+	import Login from "../components/Login.svelte";
 	
 	let apis = []
 	
@@ -12,6 +14,12 @@
 
 <main>
 	<h1>API List</h1>
+	
+	{#if !$profile.user}
+		<Login/>
+	{:else}
+		<a href="/dashboard">Dashboard</a>
+	{/if}
 	
 	<h2>List {new Date( LastUpdatedAt * 1000 )}</h2>
 	<a id="top" href="api.js">raw JS</a>

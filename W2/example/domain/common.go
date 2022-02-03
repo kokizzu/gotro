@@ -133,10 +133,16 @@ type ResponseCommon struct {
 	Error        string      `json:"error" form:"error" query:"error" long:"error" msg:"error"`
 	StatusCode   int         `json:"status" form:"statusCode" query:"statusCode" long:"statusCode" msg:"statusCode"`
 	Debug        interface{} `json:"debug,omitempty" form:"debug" query:"debug" long:"debug" msg:"debug"`
+	Redirect     string      `json:"redirect,omitempty" form:"redirect" query:"redirect" long:"redirect" msg:"redirect"`
 }
 
 func (o *ResponseCommon) HasError() bool {
 	return o.StatusCode >= 400 || len(o.Error) > 0
+}
+
+func (o *ResponseCommon) SetRedirect(to string) {
+	o.StatusCode = 302
+	o.Redirect = to
 }
 
 func (o *ResponseCommon) SetError(code int, errStr string) {
@@ -159,6 +165,9 @@ func (l *ResponseCommon) ToFiberCtx(ctx *fiber.Ctx, inRc *RequestCommon, in inte
 	if l.StatusCode > 0 {
 		res := ctx.Response()
 		res.SetStatusCode(l.StatusCode)
+		if l.Redirect != `` {
+			ctx.Redirect(l.Redirect)
+		}
 	}
 	if inRc.Debug {
 		inRc.TracerContext = nil

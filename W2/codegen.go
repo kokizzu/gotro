@@ -949,8 +949,12 @@ export const APIs = {`)
 		buf.WriteString(`
 		}, out: {`)
 		outFields := r.outputFieldsByMethod[method]
+		exists := map[string]bool{}
 		for _, field := range outFields {
-			writeInOutStruct(field)
+			if !exists[field.Name] {
+				writeInOutStruct(field)
+				exists[field.Name] = true // remove duplicate
+			}
 		} // out}
 
 		buf.WriteString(`
