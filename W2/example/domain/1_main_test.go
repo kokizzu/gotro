@@ -1,7 +1,6 @@
 package domain
 
 import (
-	"io/ioutil"
 	"log"
 	"net"
 	"os"
@@ -55,7 +54,7 @@ func ParseDockerCompose() *DockerComposeConf {
 	var confFile string
 	for _, tryDir := range tryDirs {
 		confFile = tryDir + fileName
-		bytes, err := ioutil.ReadFile(confFile)
+		bytes, err := os.ReadFile(confFile)
 		if err != nil {
 			continue
 		}

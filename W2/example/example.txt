@@ -89,7 +89,7 @@ func fetchJson(url string) (W.Ajax, error) {
     return ajax, err
   }
   defer resp.Body.Close()
-  body, err := ioutil.ReadAll(resp.Body)
+  body, err := io.ReadAll(resp.Body)
   if ajax.ErrorIf(err, sql.ERR_201_FAILED_OAUTH_EXCHANGE) {
     return ajax, err
   }
@@ -128,7 +128,7 @@ func RetrieveGoogleUserInfo(provider *oauth2.Config, access_token *oauth2.Token)
     if err != nil {
       return res, err
     }
-    body, err := ioutil.ReadAll(response.Body)
+    body, err := io.ReadAll(response.Body)
     response.Body.Close()
     if err != nil {
       return res, err
@@ -140,7 +140,7 @@ func RetrieveGoogleUserInfo(provider *oauth2.Config, access_token *oauth2.Token)
   if err != nil {
     return res, err
   }
-  body, err := ioutil.ReadAll(response.Body)
+  body, err := io.ReadAll(response.Body)
   response.Body.Close()
   if err != nil {
     return res, err

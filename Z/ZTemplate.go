@@ -5,7 +5,6 @@ package Z
 import (
 	"bytes"
 	"errors"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"time"
@@ -123,7 +122,7 @@ func (t *TemplateChain) Reload() (*TemplateChain, error) {
 	// when modified
 	dup.ModTime = mod_time
 	// read the actual file
-	bs, err := ioutil.ReadFile(dup.Filename)
+	bs, err := os.ReadFile(dup.Filename)
 	errinfo = `template not found: ` + base
 	if L.IsError(err, errinfo, dup.Filename) {
 		dup.Parts = [][]byte{[]byte(errinfo)}

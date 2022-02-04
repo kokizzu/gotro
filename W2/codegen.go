@@ -6,7 +6,6 @@ import (
 	"go/ast"
 	"go/parser"
 	"go/token"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"sort"
@@ -280,8 +279,8 @@ func (r *ModelArgs) ParseModel(path string) {
 		r.fieldsByModel = map[string][]StructField{}
 	}
 	fs := token.NewFileSet()
-	src, err := ioutil.ReadFile(path)
-	L.PanicIf(err, `ioutil.ReadFile failed: `+path)
+	src, err := os.ReadFile(path)
+	L.PanicIf(err, `os.ReadFile failed: `+path)
 	f, err := parser.ParseFile(fs, path, src, parser.AllErrors)
 	L.PanicIf(err, `parser.ParseFile failed: `+path)
 	ast.Walk(r, f)
@@ -346,8 +345,8 @@ func (r *RoutesArgs) ParseDomain(path string) {
 		}
 	}
 	fs := token.NewFileSet()
-	src, err := ioutil.ReadFile(path)
-	L.PanicIf(err, `ioutil.ReadFile failed: `+path)
+	src, err := os.ReadFile(path)
+	L.PanicIf(err, `os.ReadFile failed: `+path)
 	f, err := parser.ParseFile(fs, path, src, parser.AllErrors)
 	L.PanicIf(err, `parser.ParseFile failed: `+path)
 	ast.Walk(r, f)
@@ -727,8 +726,8 @@ func webApiInitRoutes(app *fiber.App) *domain.Domain {
 
 	buf.WriteString(WARNING)
 
-	err := ioutil.WriteFile(path, buf.Bytes(), 0644)
-	L.PanicIf(err, `ioutil.WriteFile failed: `+path)
+	err := os.WriteFile(path, buf.Bytes(), 0644)
+	L.PanicIf(err, `os.WriteFile failed: `+path)
 }
 
 func writeUrlSegmentToIn(buf *bytes.Buffer, segments []string, parseMethod string) {
@@ -828,8 +827,8 @@ func cliArgsRunner(args []string) {
 
 	buf.WriteString(WARNING)
 
-	err := ioutil.WriteFile(path, buf.Bytes(), 0644)
-	L.PanicIf(err, `ioutil.WriteFile failed: `+path)
+	err := os.WriteFile(path, buf.Bytes(), 0644)
+	L.PanicIf(err, `os.WriteFile failed: `+path)
 }
 
 func (r *RoutesArgs) writeDomainInitialization(buf *bytes.Buffer) {
@@ -1041,8 +1040,8 @@ export const APIs = {`)
 }
 `)
 
-	err := ioutil.WriteFile(path, buf.Bytes(), 0644)
-	L.PanicIf(err, `ioutil.WriteFile failed: `+path)
+	err := os.WriteFile(path, buf.Bytes(), 0644)
+	L.PanicIf(err, `os.WriteFile failed: `+path)
 }
 
 var graphqlTypes = map[string]string{
@@ -1259,8 +1258,8 @@ var graphqlTypes = []graphql.Type{
 	buf.WriteString(tBuf.String())
 	buf.WriteString(WARNING)
 
-	err := ioutil.WriteFile(path, buf.Bytes(), 0644)
-	L.PanicIf(err, `ioutil.WriteFile failed: `+path)
+	err := os.WriteFile(path, buf.Bytes(), 0644)
+	L.PanicIf(err, `os.WriteFile failed: `+path)
 }
 
 func lowerFirstLetter(s string) string {

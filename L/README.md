@@ -164,6 +164,12 @@ print but show grandparent caller function
 func ReadFile(path string) string
 ```
 
+#### func  ReadFileLines
+
+```go
+func ReadFileLines(path string, lineReader func(line string) (exitEarly bool)) (ok bool)
+```
+
 #### func  RunCmd
 
 ```go

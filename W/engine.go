@@ -3,7 +3,6 @@ package W
 import (
 	"bytes"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"time"
 
@@ -147,7 +146,7 @@ func (engine *Engine) MinifyAssets() {
 				L.LOG.Notice(`Unknown resource format ` + ext[0] + ` ` + ext[1])
 				continue
 			}
-			dat, err := ioutil.ReadFile(dir + path)
+			dat, err := os.ReadFile(dir + path)
 			if L.IsError(err, `failed read asset: `+path) {
 				continue
 			}
@@ -160,7 +159,8 @@ func (engine *Engine) MinifyAssets() {
 		}
 		// please add these files to your gitignore
 		for _, fname := range []string{`lib.css`, `mod.css`, `lib.js`, `mod.js`} {
-			ioutil.WriteFile(dir+fname, r[fname].Bytes(), DEFAULT_FILEDIR_PERM)
+			err := os.WriteFile(dir+fname, r[fname].Bytes(), DEFAULT_FILEDIR_PERM)
+			L.IsError(err, `os.WriteFile: %s`, dir+fname)
 			if S.EndsWith(fname, `.js`) {
 				engine.Assets += `<script type='text/javascript' src='/` + fname + `?` + engine.Name + `' ></script>`
 			} else {

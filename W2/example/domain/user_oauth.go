@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"gopkg.in/resty.v1"
-	"io/ioutil"
+	"io"
 	"net/http"
 
 	"github.com/kokizzu/gotro/A"
@@ -121,7 +121,7 @@ func fetchJsonArr(client *http.Client, url string, res *ResponseCommon) (json A.
 		return
 	}
 	defer resp.Body.Close()
-	body, err := ioutil.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
 	if L.IsError(err, `failed read body`) {
 		res.SetError(500, `failed read body`)
 		return
@@ -140,7 +140,7 @@ func fetchJsonMap(client *http.Client, url string, res *ResponseCommon) (json M.
 		return
 	}
 	defer resp.Body.Close()
-	body, err := ioutil.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
 	if L.IsError(err, `failed read body`) {
 		L.Print(err)
 		res.SetError(500, `failed read body`)

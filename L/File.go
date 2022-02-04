@@ -1,7 +1,8 @@
 package L
 
 import (
-	"io/ioutil"
+	"bufio"
+	"io"
 	"os"
 )
 
@@ -43,9 +44,27 @@ func CreateDir(path string) bool {
 }
 
 func ReadFile(path string) string {
-	var buff, err = ioutil.ReadFile(path)
+	var buff, err = os.ReadFile(path)
 	if IsError(err, `ReadFile: %s`, path) {
 		return ``
 	}
 	return string(buff)
+}
+
+func ReadFileLines(path string, lineReader func(line string) (exitEarly bool)) (ok bool) {
+	f, err := os.OpenFile(path, os.O_RDONLY, 0644)
+	if IsError(err, `ReadFileLines.OpenFile: %s`, path) {
+		return false
+	}
+	defer f.Close()
+	reader := bufio.NewReader(f)
+	for {
+		line, err := reader.ReadString('\n')
+		if err == io.EOF {
+			return true
+		}
+		if !lineReader(line) {
+			return true
+		}
+	}
 }
