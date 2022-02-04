@@ -63,7 +63,7 @@ func ReadFileLines(path string, lineReader func(line string) (exitEarly bool)) (
 		if err == io.EOF {
 			return true
 		}
-		if !lineReader(line) {
+		if lineReader(line) {
 			return true
 		}
 	}
