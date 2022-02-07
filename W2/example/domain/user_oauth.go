@@ -20,11 +20,11 @@ import (
 	"github.com/kokizzu/lexid"
 )
 
-//go:generate gomodifytags -all -add-tags json,form,query,long,msg -transform camelcase --skip-unexported -w -file oauth.go
-//go:generate replacer 'Id" form' 'Id,string" form' type oauth.go
-//go:generate replacer 'json:"id"' 'json:id,string" form' type oauth.go
-//go:generate replacer 'By" form' 'By,string" form' type oauth.go
-// go:generate msgp -tests=false -file oauth.go -o oauth__MSG.GEN.go
+//go:generate gomodifytags -all -add-tags json,form,query,long,msg -transform camelcase --skip-unexported -w -file user_oauth.go
+//go:generate replacer 'Id" form' 'Id,string" form' type user_oauth.go
+//go:generate replacer 'json:"id"' 'json:id,string" form' type user_oauth.go
+//go:generate replacer 'By" form' 'By,string" form' type user_oauth.go
+// go:generate msgp -tests=false -file oauth.go -o user_oauth__MSG.GEN.go
 
 const (
 	Google   = `google`
@@ -179,7 +179,7 @@ type (
 		RequestCommon
 		State       string `json:"state" form:"state" query:"state" long:"state" msg:"state"`
 		Code        string `json:"code" form:"code" query:"code" long:"code" msg:"code"`
-		AccessToken string
+		AccessToken string `json:"accessToken" form:"accessToken" query:"accessToken" long:"accessToken" msg:"accessToken"`
 	}
 	UserOauth_Out struct {
 		ResponseCommon
