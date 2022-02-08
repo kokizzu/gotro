@@ -129,7 +129,7 @@ x.DoInsert() or x.DoReplace() // calling DoUpdateBy*() will do nothing, since mu
 - Add external [storage upload](//kokizzu.blogspot.com/2021/12/storage-service-with-cdn.html) example (minio? wasabi?)
 - Replace LightStep with [SigNoz](//github.com/SigNoz/signoz), [tutorial](//dev.to/signoz/monitor-your-golang-application-with-opentelemetry-and-signoz-3fli) and/or [datav](//github.com/datav-io/datav) or just dump it to Clickhouse directly and MQ like [RedPanda](//vectorized.io) as fallback
 - Add Analytics: [Jitsu](//jitsu.com/) or [Materialize](//materialize.com)
-- Add more deployment script with [LXC/LXD share](//bobcares.com/blog/how-to-setup-high-density-vps-hosting-using-lxc-linux-containers-and-lxd/) for single server multi-tenant or [LXD-Compose](//mottainaici.github.io/lxd-compose-docs/docs/)
+- Add example deployment script with [LXC/LXD share](//bobcares.com/blog/how-to-setup-high-density-vps-hosting-using-lxc-linux-containers-and-lxd/) for single server multi-tenant or [Docker Compose](//docs.docker.com/compose/) or [Docker Swarm](//docs.docker.com/engine/swarm/)
 - Add backup scripts for Tarantool and Clickhouse
 
 ## File Upload Example
