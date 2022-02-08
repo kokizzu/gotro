@@ -7,7 +7,6 @@ import (
 	"github.com/kokizzu/gotro/L"
 	"github.com/kokizzu/gotro/S"
 	"github.com/kokizzu/gotro/X"
-	"github.com/tarantool/go-tarantool"
 )
 
 const DEBUG = false
@@ -93,11 +92,6 @@ type Index struct {
 }
 
 type MSX map[string]interface{}
-
-type Adapter struct {
-	*tarantool.Connection
-	Reconnect func() *tarantool.Connection
-}
 
 func (a *Adapter) UpsertTable(tableName TableName, prop *TableProp) bool {
 	if DEBUG {

@@ -4,9 +4,11 @@ go 1.16
 
 require (
 	cloud.google.com/go v0.67.0 // indirect
-	github.com/ClickHouse/clickhouse-go/v2 v2.0.0-beta.12
+	github.com/ClickHouse/clickhouse-go/v2 v2.0.8
 	github.com/OneOfOne/cmap v0.0.0-20170825200327-ccaef7657ab8
 	github.com/allegro/bigcache v1.2.1
+	github.com/aws/aws-sdk-go v1.42.48
+	github.com/awslabs/amazon-qldb-driver-go/v2 v2.0.2
 	github.com/buaazp/fasthttprouter v0.1.1
 	github.com/containerd/continuity v0.2.2 // indirect
 	github.com/docker/cli v20.10.12+incompatible // indirect
@@ -63,10 +65,10 @@ require (
 	github.com/zeebo/xxh3 v1.0.1
 	go.opentelemetry.io/otel v1.3.0
 	go.opentelemetry.io/otel/trace v1.3.0
-	golang.org/x/crypto v0.0.0-20220131195533-30dcbda58838
+	golang.org/x/crypto v0.0.0-20220208050332-20e1d8d225ab
 	golang.org/x/net v0.0.0-20220127200216-cd36cc0744dd // indirect
 	golang.org/x/oauth2 v0.0.0-20210220000619-9bb904979d93
-	golang.org/x/sys v0.0.0-20220128215802-99c3d69c2c27 // indirect
+	golang.org/x/sys v0.0.0-20220207234003-57398862261d // indirect
 	golang.org/x/tools v0.1.9 // indirect
 	gopkg.in/check.v1 v1.0.0-20200902074654-038fdea0a05b // indirect
 	gopkg.in/redis.v5 v5.2.9
