@@ -3,20 +3,20 @@
 
 ## Recap
 
+| Name   | 10    | 1K    | 10K   | 20K   | p99 10 | p99 1K | p99  10K | p99  20K |
+|--------|------:|------:|------:|------:|-------:|-------:|---------:|---------:|
+| Write  | 24084 | 11505 | 11397 | 11112 | 0.0024 |   0.16 |     1.26 |     2.86 |
+| Read   | 28596 | 10657 | 12296 | 10950 | 0.0007 |   0.17 |     1.30 |     2.78 |
+| Health | 23568 | 11423 | 11195 | 11141 | 0.0008 |   0.16 |     1.71 |     3.37 |
+| Hello  | 22780 | 12091 | 10365 | 10319 | 0.0009 |   0.16 |     1.84 |     3.98 |
+
 Note:
-- all benchmark doing 100K http hits, but with different concurrency levels on localhost
+- all benchmark done using [hey](//github.com/rakyll/hey) running 100K http requests, but with different concurrency levels on localhost
 - logs enabled but discarded `make apiserver 2>&1 > /dev/null`, all dependencies run under `docker-compose`
 - Write = insert to 1 table, retrieve the id, append to global array
 - Read = read random by id from global array from 1 table
 - Health = do syscall (or read from /proc) cached once per second
 - Hello = only serializing empty input and rendering {"hello":"world"} output
-
-|        | 10    | 1K    | 10K   | 20K   | p99 10 | p99 1K | p99  10K | p99  20K |
-|--------|-------|-------|-------|-------|--------|--------|----------|----------|
-| Write  | 24084 | 11505 | 11397 | 11112 | 0.0024 |   0.16 |     1.26 |     2.86 |
-| Read   | 28596 | 10657 | 12296 | 10950 | 0.0007 |   0.17 |     1.30 |     2.78 |
-| Health | 23568 | 11423 | 11195 | 11141 | 0.0008 |   0.16 |     1.71 |     3.37 |
-| Hello  | 22780 | 12091 | 10365 | 10319 | 0.0009 |   0.16 |     1.84 |     3.98 |
 
 ## C10 Write (database write, network call)
 
