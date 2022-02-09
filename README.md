@@ -50,6 +50,7 @@ this already includes session loading and template rendering (real-life use case
 
 ## Contributors
 
+- [Ahmad Akbar Fauzi](//github.com/akbarfa49)
 - [Dikaimin Simon](//github.com/dikaimins)
 - [Dimas Yudha Prawira](//github.com/dhiemaz)
 - [Marcelinus Devin Yonas](//github.com/davey06)
@@ -82,8 +83,8 @@ this already includes session loading and template rendering (real-life use case
   - [TimeScaleDB](//www.timescale.com) <-- high-write (postgresql-compatible)
   - [TypeSense](//typesense.org)
   - [YugaByteDB](//www.yugabyte.com) <-- high-write (postgresql/redis/cassandra-compatible)
-- Review which queuing/pub-sub service we're gonna use ([NATS](//nats.io), [RedPanda](//vectorized.io)), requirement: must support persistence
+- Add ephemeral and/or persisted queuing/pub-sub service we're gonna use ([NATS](//nats.io), [RedPanda](//redpanda.com)), see [hugedbbench](//github.com/kokizzu/hugedbbench/)
 - Add [ExampleXxx function](//blog.golang.org/examples), getting started and more documentation 
 - Try other alternate graceful restart (zero downtime deployment): [grace](//github.com/facebookgo/grace) or [endless](//github.com/fvbock/endless) instead of just [overseer](https://github.com/jpillora/overseer)
 - Add Catch NotFound (rewrite the `Response.Body`) if no route and static file found
-- rewrite router to `fiber` or `fasthttp/router` after Generics support comes up (so we can embed the database connection dependencies inside the context without casting interface)
+- add Generics support comes up (so we can embed the database connection dependencies inside the context without casting interface)
