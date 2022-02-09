@@ -8,13 +8,13 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/gofiber/fiber/v2/middleware/recover"
-	"github.com/jpillora/overseer"
-	"github.com/jpillora/overseer/fetcher"
 	"github.com/kokizzu/gotro/L"
 	"github.com/kokizzu/gotro/M"
 	"github.com/kokizzu/gotro/S"
 	"github.com/kokizzu/gotro/W2/example/conf"
 	"github.com/kokizzu/gotro/W2/example/domain"
+	"github.com/kokizzu/overseer"
+	"github.com/kokizzu/overseer/fetcher"
 )
 
 var requiredHeader = M.SS{

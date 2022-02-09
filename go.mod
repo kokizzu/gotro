@@ -31,12 +31,12 @@ require (
 	github.com/jmoiron/sqlx v1.3.4
 	github.com/joho/godotenv v1.4.0
 	github.com/jordan-wright/email v4.0.1-0.20210109023952-943e75fe5223+incompatible
-	github.com/jpillora/overseer v1.1.6
 	github.com/klauspost/compress v1.14.2 // indirect
 	github.com/kokizzu/ch-timed-buffer v1.825.1523-0.20210826171319-738868384f38
 	github.com/kokizzu/goproc v1.625.1807
 	github.com/kokizzu/id64 v1.1114.1245
 	github.com/kokizzu/lexid v1.731.230
+	github.com/kokizzu/overseer v1.1.8
 	github.com/kpango/fastime v1.0.17
 	github.com/kr/pretty v0.3.0
 	github.com/lib/pq v1.10.4

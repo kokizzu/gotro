@@ -255,14 +255,14 @@ func TestFreeItemPromo(t *testing.T) {
 		}
 		want := autogold.Want("A3", StoreInvoice_Out{
 			CartItems: []*rqStore.CartItems{
-				&rqStore.CartItems{
+				{
 					ProductId: 2,
 					NameCopy:  "MacBook Pro",
 					PriceCopy: 539999,
 					Qty:       2,
 					SubTotal:  1079998,
 				},
-				&rqStore.CartItems{
+				{
 					ProductId: 4,
 					NameCopy:  "Raspberry Pi B",
 					PriceCopy: 3000,
@@ -343,7 +343,7 @@ func TestDiscountDeductItemPromo(t *testing.T) {
 		}
 		want := autogold.Want("B2", StoreInvoice_Out{
 			CartItems: []*rqStore.CartItems{
-				&rqStore.CartItems{
+				{
 					ProductId: 1,
 					NameCopy:  "Google Home",
 					PriceCopy: 4999,
@@ -381,7 +381,7 @@ func TestDiscountDeductItemPromo(t *testing.T) {
 		}
 		want := autogold.Want("B3", StoreInvoice_Out{
 			CartItems: []*rqStore.CartItems{
-				&rqStore.CartItems{
+				{
 					ProductId: 1,
 					NameCopy:  "Google Home",
 					PriceCopy: 4999,
@@ -419,7 +419,7 @@ func TestDiscountDeductItemPromo(t *testing.T) {
 		}
 		want := autogold.Want("B4", StoreInvoice_Out{
 			CartItems: []*rqStore.CartItems{
-				&rqStore.CartItems{
+				{
 					ProductId: 1,
 					NameCopy:  "Google Home",
 					PriceCopy: 4999,
@@ -463,7 +463,7 @@ func TestDiscountPercentPromo(t *testing.T) {
 		}
 		want := autogold.Want("C1", StoreInvoice_Out{
 			CartItems: []*rqStore.CartItems{
-				&rqStore.CartItems{
+				{
 					ProductId: 3,
 					NameCopy:  "Alexa Speaker",
 					PriceCopy: 10950,
@@ -496,7 +496,7 @@ func TestDiscountPercentPromo(t *testing.T) {
 		}
 		want := autogold.Want("C2", StoreInvoice_Out{
 			CartItems: []*rqStore.CartItems{
-				&rqStore.CartItems{
+				{
 					ProductId: 3,
 					NameCopy:  "Alexa Speaker",
 					PriceCopy: 10950,
@@ -535,7 +535,7 @@ func TestDiscountPercentPromo(t *testing.T) {
 		}
 		want := autogold.Want("C3", StoreInvoice_Out{
 			CartItems: []*rqStore.CartItems{
-				&rqStore.CartItems{
+				{
 					ProductId: 3,
 					NameCopy:  "Alexa Speaker",
 					PriceCopy: 10950,
@@ -575,7 +575,7 @@ func TestDiscountPercentPromo(t *testing.T) {
 		}
 		want := autogold.Want("C4", StoreInvoice_Out{
 			CartItems: []*rqStore.CartItems{
-				&rqStore.CartItems{
+				{
 					ProductId: 3,
 					NameCopy:  "Alexa Speaker",
 					PriceCopy: 10950,
