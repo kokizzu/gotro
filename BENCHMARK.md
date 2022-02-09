@@ -16,7 +16,8 @@ Note:
 - Write = insert to 1 table, retrieve the id, append to global array
 - Read = read random by id from global array from 1 table
 - Health = do syscall (or read from /proc) cached once per second
-- Hello = only serializing empty input and rendering {"hello":"world"} output
+- Hello = only serializing empty input and rendering `{"hello":"world"}` output
+- Benchmark server: 32-core, 128GB RAM, NVMe disk
 
 ## C10 Write (database write, network call)
 
