@@ -15,7 +15,7 @@ Note:
 - logs enabled but discarded `make apiserver 2>&1 > /dev/null`, all dependencies run under `docker-compose`
 - **Write** = insert into 1 table, retrieve the id, append the id to global array (ignoring race condition)
 - **Read** = read random id from global array, then query from 1 table
-- **Health** = do syscall (or read from /proc) cached once per second
+- **Health** = do syscall (or read from `/proc`) cached once per second
 - **Hello** = only serializing empty input and rendering `{"hello":"world"}` output
 - Benchmark server: 32-core, 128GB RAM, NVMe disk
 
