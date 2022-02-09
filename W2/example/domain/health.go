@@ -2,11 +2,15 @@ package domain
 
 import (
 	"github.com/kokizzu/gotro/L"
+	"github.com/kokizzu/gotro/W2/example/model/mAuth/rqAuth"
+	"github.com/kokizzu/gotro/W2/example/model/mAuth/wcAuth"
+	"github.com/kokizzu/lexid"
 	"github.com/kpango/fastime"
 	"github.com/shirou/gopsutil/v3/cpu"
 	"github.com/shirou/gopsutil/v3/disk"
 	"github.com/shirou/gopsutil/v3/mem"
 	"math"
+	"math/rand"
 )
 
 //go:generate gomodifytags -file health.go -all -add-tags json,form,query,long,msg -transform camelcase --skip-unexported --skip-unexported -w -file health.go
@@ -70,5 +74,70 @@ func (d *Domain) Health(in *Health_In) (out Health_Out) {
 	} else {
 		out.DiskPercent = round(root.UsedPercent)
 	}
+	return
+}
+
+type (
+	LoadTestWrite_In struct {
+		RequestCommon
+	}
+	LoadTestWrite_Out struct {
+		ResponseCommon
+		Ok bool   `json:"ok" form:"ok" query:"ok" long:"ok" msg:"ok"`
+		Id uint64 `json:id,string" form form:"id" query:"id" long:"id" msg:"id"`
+	}
+)
+
+const LoadTestWrite_Url = `/LoadTestWrite`
+
+var userIds = make([]uint64, 0, 1024*1024*32) // 32 million ids
+
+func (d *Domain) LoadTestWrite(in *LoadTestWrite_In) (out LoadTestWrite_Out) {
+	user := wcAuth.NewUsersMutator(d.Taran)
+	user.Email = lexid.ID() + `@localhost`
+	user.Password = `123`
+	out.Ok = user.DoInsert()
+	if user.Id > 0 {
+		out.Id = user.Id
+		userIds = append(userIds, user.Id)
+	}
+	return
+}
+
+type (
+	LoadTestRead_In struct {
+		RequestCommon
+		Id uint64 `json:id,string" form form:"id" query:"id" long:"id" msg:"id"`
+	}
+	LoadTestRead_Out struct {
+		ResponseCommon
+		User rqAuth.Users `json:"user" form:"user" query:"user" long:"user" msg:"user"`
+	}
+)
+
+const LoadTestRead_Url = `/LoadTestRead`
+
+func (d *Domain) LoadTestRead(in *LoadTestRead_In) (out LoadTestRead_Out) {
+	user := rqAuth.NewUsers(d.Taran)
+	user.Id = userIds[rand.Int()%len(userIds)]
+	user.FindById()
+	out.User = *user
+	return
+}
+
+type (
+	LoadHello_In struct {
+		RequestCommon
+	}
+	LoadHello_Out struct {
+		ResponseCommon
+		Hello string `json:"hello" form:"hello" query:"hello" long:"hello" msg:"hello"`
+	}
+)
+
+const LoadHello_Url = `/LoadHello`
+
+func (d *Domain) LoadHello(in *LoadHello_In) (out LoadHello_Out) {
+	out.Hello = `world`
 	return
 }

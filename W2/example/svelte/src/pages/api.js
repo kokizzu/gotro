@@ -1,5 +1,5 @@
 // can be hit using with /api/[ApiName]
-export const LastUpdatedAt = 1644268834
+export const LastUpdatedAt = 1644417343
 export const APIs = {
 	Health: {
 		in: {
@@ -16,6 +16,59 @@ export const APIs = {
 			[500, `failed fetch disk usage`],
 			[500, `failed fetch ram usage`],
 		]
+	},
+	LoadHello: {
+		in: {
+		}, out: {
+			hello: '', // string
+		}, read: [
+		], write: [
+		], stat: [
+		], deps: [
+		], err: []
+	},
+	LoadTestRead: {
+		in: {
+			id: '', // uint64
+		}, out: {
+			user: {
+				id:  '', // uint64
+				email:  '', // string
+				password:  '', // string
+				createdAt:  0, // int64
+				createdBy:  '', // uint64
+				updatedAt:  0, // int64
+				updatedBy:  '', // uint64
+				deletedAt:  0, // int64
+				deletedBy:  '', // uint64
+				isDeleted:  false, // bool
+				restoredAt:  0, // int64
+				restoredBy:  '', // uint64
+				passwordSetAt:  0, // int64
+				secretCode:  '', // string
+				secretCodeAt:  0, // int64
+				verificationSentAt:  0, // int64
+				verifiedAt:  0, // int64
+				lastLoginAt:  0, // int64
+			},
+		}, read: [
+			"Auth.Users",
+		], write: [
+		], stat: [
+		], deps: [
+		], err: []
+	},
+	LoadTestWrite: {
+		in: {
+		}, out: {
+			ok: false, // bool
+			id: '', // uint64
+		}, read: [
+		], write: [
+			"Auth.Users",
+		], stat: [
+		], deps: [
+		], err: []
 	},
 	StoreCartItemsAdd: {
 		in: {

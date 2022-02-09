@@ -70,7 +70,7 @@ func webApiParseInput(ctx *fiber.Ctx, reqCommon *domain.RequestCommon, in interf
 		reqCommon.Header = ctx.Get(header)
 		reqCommon.RawBody = string(body)
 	}
-	L.Print(ctx.OriginalURL())
+	//L.Print(ctx.OriginalURL())
 	if err := ctx.QueryParser(in); L.IsError(err, `ctx.QueryParser failed: `+url) {
 		return err
 	}

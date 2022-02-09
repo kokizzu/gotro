@@ -43,7 +43,7 @@ func (l *RequestCommon) ToFiberCtx(ctx *fiber.Ctx, out interface{}) error {
 	case ``, `json`, fiber.MIMEApplicationJSON:
 		ctx.Set(fiber.HeaderContentType, fiber.MIMEApplicationJSON)
 		byt, err := json.Marshal(out)
-		L.Print(string(byt))
+		//L.Print(string(byt))
 		if L.IsError(err, `json.Marshal: %#v`, out) {
 			return err
 		}
@@ -87,7 +87,7 @@ func (l *RequestCommon) FromFiberCtx(ctx *fiber.Ctx, tracerCtx context.Context) 
 			l.Uploads[file.Filename] = target
 		}
 	}
-	L.Describe(l)
+	//L.Describe(l)
 	l.TracerContext = tracerCtx
 }
 
