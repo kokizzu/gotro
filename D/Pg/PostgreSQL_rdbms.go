@@ -145,22 +145,22 @@ CREATE TABLE IF NOT EXISTS ` + name + ` (
 		if ra > 0 {
 			query = query_count_index + Z(is_deleted__index)
 			if tx.QInt(query) == 0 {
-				query = `CREATE INDEX ` + name + `__is_deleted__index ON ` + name + `(is_deleted);`
+				query = `CREATE INDEX IF NOT EXISTS ` + name + `__is_deleted__index ON ` + name + `(is_deleted);`
 				tx.DoExec(query)
 			}
 			query = query_count_index + Z(modified_at__index)
 			if tx.QInt(query) == 0 {
-				query = `CREATE INDEX ` + name + `__modified_at__index ON ` + name + `(modified_at);`
+				query = `CREATE INDEX IF NOT EXISTS ` + name + `__modified_at__index ON ` + name + `(modified_at);`
 				tx.DoExec(query)
 			}
 			query = query_count_index + Z(unique_patern__index)
 			if tx.QInt(query) == 0 {
-				query = `CREATE INDEX ` + name + `__unique__pattern ON ` + name + ` (unique_id varchar_pattern_ops);`
+				query = `CREATE INDEX IF NOT EXISTS ` + name + `__unique__pattern ON ` + name + ` (unique_id varchar_pattern_ops);`
 				tx.DoExec(query)
 			}
 			query = query_count_index + Z(name)
 			if tx.QInt(query) == 0 {
-				query = `CREATE INDEX ON ` + name + ` USING GIN(data)`
+				query = `CREATE INDEX IF NOT EXISTS ON ` + name + ` USING GIN(data)`
 				tx.DoExec(query)
 			}
 		}
@@ -187,20 +187,20 @@ CREATE TABLE IF NOT EXISTS _log_` + name + ` (
 		idx_name := `_log_` + name + `__record_id__idx`
 		query = query_count_index + Z(idx_name)
 		if tx.QInt(query) == 0 {
-			query = `CREATE INDEX	` + idx_name + ` ON 	_log_` + name + `	(record_id);`
+			query = `CREATE INDEX	IF NOT EXISTS ` + idx_name + ` ON 	_log_` + name + `	(record_id);`
 			tx.DoExec(query)
 		}
 
 		idx_name = `_log_` + name + `__date__idx`
 		query = query_count_index + Z(idx_name)
 		if tx.QInt(query) == 0 {
-			query = `CREATE INDEX	` + idx_name + ` ON 	_log_` + name + `	(date);`
+			query = `CREATE INDEX	IF NOT EXISTS ` + idx_name + ` ON 	_log_` + name + `	(date);`
 			tx.DoExec(query)
 		}
 		idx_name = `_log_` + name + `__user_id__idx`
 		query = query_count_index + Z(idx_name)
 		if tx.QInt(query) == 0 {
-			query = `CREATE INDEX	` + idx_name + ` ON 	_log_` + name + `	(user_id);`
+			query = `CREATE INDEX	IF NOT EXISTS ` + idx_name + ` ON 	_log_` + name + `	(user_id);`
 			tx.DoExec(query)
 		}
 		return ``
