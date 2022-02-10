@@ -482,6 +482,11 @@ func (json SX) GetStr(key string) string {
 		return `false`
 	case fmt.Stringer:
 		return v.String()
+	case *string:
+		if v == nil {
+			return ``
+		}
+		return *v
 	default:
 		L.Describe(`Property [` + key + `] is not a string: ` + fmt.Sprintf("%T", any))
 	}
