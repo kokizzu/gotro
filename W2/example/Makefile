@@ -5,6 +5,7 @@ compose:
 	docker-compose up
 
 apiserver:
+	killall example.exe || true
 	air -c air.toml
 
 webclient:
