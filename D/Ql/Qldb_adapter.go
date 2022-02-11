@@ -69,5 +69,5 @@ func (a *Adapter) QMapArray(query string, callback func(row M.SX) (exitEarly boo
 		}
 		return nil, nil
 	})
-	return err != nil
+	return err == nil
 }
