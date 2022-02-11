@@ -7,6 +7,7 @@ require (
 	github.com/ClickHouse/clickhouse-go/v2 v2.0.8
 	github.com/OneOfOne/cmap v0.0.0-20170825200327-ccaef7657ab8
 	github.com/allegro/bigcache v1.2.1
+	github.com/amzn/ion-go v1.1.3
 	github.com/aws/aws-sdk-go v1.42.48
 	github.com/awslabs/amazon-qldb-driver-go/v2 v2.0.2
 	github.com/buaazp/fasthttprouter v0.1.1

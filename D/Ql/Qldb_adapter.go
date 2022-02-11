@@ -2,12 +2,15 @@ package Ql
 
 import (
 	"context"
+	"errors"
+	"github.com/amzn/ion-go/ion"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/qldbsession"
 	"github.com/awslabs/amazon-qldb-driver-go/v2/qldbdriver"
 	"github.com/kokizzu/gotro/L"
+	"github.com/kokizzu/gotro/M"
 )
 
 // https://docs.aws.amazon.com/qldb/latest/developerguide/console_QLDB.html#partiql-editor-ref-tips
@@ -45,4 +48,26 @@ func Connect1(keyId, secret, region, ledger string) *qldbdriver.QLDBDriver {
 		})
 	L.PanicIf(err, `qldbdriver.New `+ledger)
 	return driver
+}
+
+func (a *Adapter) QMapArray(query string, callback func(row M.SX) (exitEarly bool)) bool {
+	_, err := a.Execute(context.Background(), func(txn qldbdriver.Transaction) (interface{}, error) {
+		tables, err := txn.Execute(query)
+		if L.IsError(err, `QMapArray.txn.Execute: `+query) {
+			return nil, err
+		}
+		for tables.Next(txn) {
+			ionBinary := tables.GetCurrentData()
+			row := M.SX{}
+			err := ion.Unmarshal(ionBinary, &row)
+			if L.IsError(err, `QMapArray.ion.Unmarshall: `+query) {
+				return nil, err
+			}
+			if callback(row) {
+				return nil, errors.New(`QMapArray.callback.exitEarly`)
+			}
+		}
+		return nil, nil
+	})
+	return err != nil
 }
