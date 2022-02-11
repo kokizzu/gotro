@@ -45,6 +45,7 @@ require (
 	github.com/mitchellh/mapstructure v1.4.3 // indirect
 	github.com/moby/term v0.0.0-20210619224110-3f7ff695adc6 // indirect
 	github.com/mojura/enkodo v0.5.6
+	github.com/olivere/elastic/v7 v7.0.31
 	github.com/onsi/gomega v1.16.0 // indirect
 	github.com/op/go-logging v0.0.0-20160315200505-970db520ece7
 	github.com/opencontainers/runc v1.1.0 // indirect
