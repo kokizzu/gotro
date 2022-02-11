@@ -50,7 +50,7 @@ func Connect1(keyId, secret, region, ledger string) *qldbdriver.QLDBDriver {
 	return driver
 }
 
-func (a *Adapter) QMapArray(query string, callback func(row M.SX) (exitEarly bool)) bool {
+func (a *Adapter) QMapArray(query string, eachRowFunc func(row M.SX) (exitEarly bool)) bool {
 	_, err := a.Execute(context.Background(), func(txn qldbdriver.Transaction) (interface{}, error) {
 		tables, err := txn.Execute(query)
 		if L.IsError(err, `QMapArray.txn.Execute: `+query) {
@@ -63,11 +63,13 @@ func (a *Adapter) QMapArray(query string, callback func(row M.SX) (exitEarly boo
 			if L.IsError(err, `QMapArray.ion.Unmarshall: `+query) {
 				return nil, err
 			}
-			if callback(row) {
-				return nil, errors.New(`QMapArray.callback.exitEarly`)
+			if eachRowFunc(row) {
+				return nil, errors.New(`QMapArray.eachRowFunc.exitEarly`)
 			}
 		}
 		return nil, nil
 	})
 	return err == nil
 }
+
+// TODO: add insert/update/delete example

@@ -51,7 +51,7 @@ func ReadFile(path string) string {
 	return string(buff)
 }
 
-func ReadFileLines(path string, lineReader func(line string) (exitEarly bool)) (ok bool) {
+func ReadFileLines(path string, eachLineFunc func(line string) (exitEarly bool)) (ok bool) {
 	f, err := os.OpenFile(path, os.O_RDONLY, 0644)
 	if IsError(err, `ReadFileLines.OpenFile: %s`, path) {
 		return false
@@ -63,7 +63,7 @@ func ReadFileLines(path string, lineReader func(line string) (exitEarly bool)) (
 		if err == io.EOF {
 			return true
 		}
-		if lineReader(line) {
+		if eachLineFunc(line) {
 			return true
 		}
 	}

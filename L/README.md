@@ -167,7 +167,7 @@ func ReadFile(path string) string
 #### func  ReadFileLines
 
 ```go
-func ReadFileLines(path string, lineReader func(line string) (exitEarly bool)) (ok bool)
+func ReadFileLines(path string, eachLineFunc func(line string) (exitEarly bool)) (ok bool)
 ```
 
 #### func  RunCmd
