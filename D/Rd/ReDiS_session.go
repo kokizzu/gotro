@@ -31,9 +31,7 @@ func NewRedisSession(host, pass string, db_num int, prefix string) *RedisSession
 		Password:    pass,
 		SelectDB:    db_num,
 	})
-	if err != nil {
-		return nil
-	}
+	L.PanicIf(err, `redis.NewClient`)
 	return &RedisSession{
 		Pool:   conn,
 		Prefix: prefix,
