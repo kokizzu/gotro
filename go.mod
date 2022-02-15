@@ -21,6 +21,7 @@ require (
 	github.com/go-ole/go-ole v1.2.6 // indirect
 	github.com/goccy/go-yaml v1.9.5
 	github.com/gofiber/fiber/v2 v2.25.0
+	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/google/go-cmp v0.5.7 // indirect
 	github.com/google/gops v0.3.22
 	github.com/graphql-go/graphql v0.8.0
@@ -47,13 +48,13 @@ require (
 	github.com/moby/term v0.0.0-20210619224110-3f7ff695adc6 // indirect
 	github.com/mojura/enkodo v0.5.6
 	github.com/olivere/elastic/v7 v7.0.31
-	github.com/onsi/gomega v1.16.0 // indirect
 	github.com/op/go-logging v0.0.0-20160315200505-970db520ece7
 	github.com/opencontainers/runc v1.1.0 // indirect
 	github.com/orcaman/concurrent-map v1.0.0
 	github.com/ory/dockertest/v3 v3.8.1
 	github.com/pkg/errors v0.9.1
 	github.com/rs/zerolog v1.26.1
+	github.com/rueian/rueidis v0.0.35
 	github.com/segmentio/fasthash v1.0.3
 	github.com/shirou/gopsutil/v3 v3.21.9
 	github.com/stretchr/testify v1.7.0
@@ -73,7 +74,7 @@ require (
 	golang.org/x/sys v0.0.0-20220207234003-57398862261d // indirect
 	golang.org/x/tools v0.1.9 // indirect
 	gopkg.in/check.v1 v1.0.0-20200902074654-038fdea0a05b // indirect
-	gopkg.in/redis.v5 v5.2.9
 	gopkg.in/resty.v1 v1.12.0
+	gopkg.in/yaml.v2 v2.4.0 // indirect
 	mvdan.cc/gofumpt v0.2.1 // indirect
 )
