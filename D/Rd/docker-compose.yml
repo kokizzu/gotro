@@ -1,0 +1,22 @@
+version: '3.7'
+
+services:
+    
+  # REDIS: 3 MB
+  redis1:
+    hostname: redis1
+    container_name: redis1
+    image: redis:latest
+    ports:
+      - '6379:6379'
+    command: redis-server --save 20 1 --loglevel warning --requirepass kl234j23095125125125
+    volumes: 
+      - redisdata1:/data
+
+volumes:
+  redisdata1:
+
+
+
+
+

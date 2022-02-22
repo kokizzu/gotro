@@ -1,0 +1,12 @@
+
+cluster.name: "docker-cluster"
+network.host: 0.0.0.0
+
+# for elasticvue
+
+# allow CORS requests from http://localhost:9400
+http.cors.enabled: true
+http.cors.allow-origin: "http://localhost:9400"
+
+# and if your cluster uses authorization:
+http.cors.allow-headers: X-Requested-With,Content-Type,Content-Length,Authorization

@@ -14,6 +14,9 @@ type Adapter struct {
 	Reconnect func() *elastic.Client
 }
 
+// example url:
+// http://127.0.0.1:9200
+
 func Connect1(url string, debug bool) *elastic.Client {
 	opts := []elastic.ClientOptionFunc{
 		elastic.SetURL(url),

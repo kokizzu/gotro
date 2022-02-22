@@ -1,0 +1,31 @@
+version: '3.7'
+
+services:
+  
+  # MINIO: 69 MB
+  minio1:
+    hostname: minio1
+    container_name: minio1
+    image: quay.io/minio/minio:RELEASE.2022-02-01T18-00-14Z
+    command: server /data1 --console-address ":9001"
+    ports:
+      - "19000:19000"
+      - "9001:9001"
+    environment:
+      MINIO_ROOT_USER: minio
+      MINIO_ROOT_PASSWORD: minio123
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:19000/minio/health/live"]
+      interval: 30s
+      timeout: 20s
+      retries: 3
+    volumes:
+      - miniodata1:/data1
+
+volumes:
+  miniodata1:
+
+
+
+
+
