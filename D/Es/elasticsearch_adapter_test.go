@@ -115,6 +115,10 @@ func TestElasticSearch(t *testing.T) {
 			`type1`: `C`,
 			`type2`: `X`,
 		}))
+		bulkReq.Add(elastic.NewBulkIndexRequest().Index(indexName).Id(`5`).Doc(M.SX{
+			`type1`: `A`,
+			`type2`: `X`,
+		}))
 		_, err := bulkReq.Refresh("true").Do(ctx)
 		L.PanicIf(err, `bulkReq.Do`)
 	})
