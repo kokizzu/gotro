@@ -77,7 +77,7 @@ func TestMeilis(t *testing.T) {
 				"title":        "Kung Fu Panda",
 				"genre":        "Children's Animation",
 				"release-year": 2008,
-				"cast": []map[string]interface{}{
+				"cast": []M.SX{
 					{"Jack Black": "Po"},
 					{"Jackie Chan": "Monkey"},
 				},
