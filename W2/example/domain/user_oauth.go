@@ -3,9 +3,10 @@ package domain
 import (
 	"encoding/json"
 	"fmt"
-	"gopkg.in/resty.v1"
 	"io"
 	"net/http"
+
+	"gopkg.in/resty.v1"
 
 	"github.com/kokizzu/gotro/A"
 
@@ -391,6 +392,7 @@ func (d *Domain) UserOauth(in *UserOauth_In) (out UserOauth_Out) {
 			out.SetError(500, `failed parse oauth token body`)
 			return
 		}
+
 		accessToken := token.GetStr(`access_token`)
 
 		res, err = r.R().

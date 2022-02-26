@@ -11,6 +11,7 @@ require (
 	github.com/aws/aws-sdk-go v1.42.48
 	github.com/awslabs/amazon-qldb-driver-go/v2 v2.0.2
 	github.com/buaazp/fasthttprouter v0.1.1
+	github.com/cenkalti/backoff v2.2.1+incompatible // indirect
 	github.com/containerd/continuity v0.2.2 // indirect
 	github.com/docker/cli v20.10.12+incompatible // indirect
 	github.com/docker/docker v20.10.12+incompatible // indirect
@@ -51,6 +52,7 @@ require (
 	github.com/op/go-logging v0.0.0-20160315200505-970db520ece7
 	github.com/opencontainers/runc v1.1.0 // indirect
 	github.com/orcaman/concurrent-map v1.0.0
+	github.com/ory/dockertest v3.3.5+incompatible
 	github.com/ory/dockertest/v3 v3.8.1
 	github.com/pkg/errors v0.9.1
 	github.com/rs/zerolog v1.26.1

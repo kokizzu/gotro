@@ -2,6 +2,7 @@ package conf
 
 import (
 	"errors"
+	"fmt"
 	"os"
 	"strings"
 
@@ -77,8 +78,9 @@ var (
 	GITHUB_CLIENTSECRET string
 	GITHUB_SCOPES       []string
 
-	STEAM_CLIENTID     string
+	STEAM_APPID        string
 	STEAM_CLIENTSECRET string
+	STEAM_ENDPOINT     oauth2.Endpoint
 
 	TWITTER_CLIENTID     string
 	TWITTER_CLIENTSECRET string
@@ -187,13 +189,21 @@ func LoadFromEnv(ignoreBinary ...interface{}) {
 		}
 	}
 
-	STEAM_CLIENTID = os.Getenv(`STEAM_CLIENTID`)
+	STEAM_APPID = os.Getenv(`STEAM_APPID`)
 	STEAM_CLIENTSECRET = os.Getenv(`STEAM_CLIENTSECRET`)
+	STEAM_ENDPOINT = oauth2.Endpoint{
+		AuthURL: fmt.Sprintf(
+			"https://steamcommunity.com/oauth/login?response_type=token&client_id=%s",
+			STEAM_APPID),
+		TokenURL: fmt.Sprintf(
+			"http://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key=%s&steamids=%s",
+			STEAM_CLIENTSECRET, STEAM_APPID),
+	}
 
 	STEAM_OAUTH_PROVIDERS = map[string]*oauth2.Config{}
 	for _, url := range OAUTH_URLS {
 		STEAM_OAUTH_PROVIDERS[url] = &oauth2.Config{
-			ClientID:     STEAM_CLIENTID,
+			ClientID:     STEAM_APPID,
 			ClientSecret: STEAM_CLIENTSECRET,
 			RedirectURL:  url + OAUTH_CALLBACK_PATH,
 			Endpoint: oauth2.Endpoint{
