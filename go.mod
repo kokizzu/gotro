@@ -43,7 +43,7 @@ require (
 	github.com/kr/pretty v0.3.0
 	github.com/lib/pq v1.10.4
 	github.com/mattn/go-colorable v0.1.12 // indirect
-	github.com/meilisearch/meilisearch-go v0.14.0
+	github.com/meilisearch/meilisearch-go v0.18.0
 	github.com/mitchellh/mapstructure v1.4.3 // indirect
 	github.com/moby/term v0.0.0-20210619224110-3f7ff695adc6 // indirect
 	github.com/mojura/enkodo v0.5.6

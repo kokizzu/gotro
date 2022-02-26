@@ -469,6 +469,8 @@ github.com/mattn/go-sqlite3 v1.14.6/go.mod h1:NyWgC/yNuGj7Q9rpYnZvas74GogHl5/Z4A
 github.com/matttproud/golang_protobuf_extensions v1.0.1/go.mod h1:D8He9yQNgCq6Z5Ld7szi9bcBfOoFv/3dc6xSMkL2PC0=
 github.com/meilisearch/meilisearch-go v0.14.0 h1:PioDKdwX10wRKeKNofzjVhXbFfjfSMeGdKXQQA5elmM=
 github.com/meilisearch/meilisearch-go v0.14.0/go.mod h1:YvgXoDiQtJDX7O1H2IMrwHG0aZUihwjHdbN2p/96n/M=
+github.com/meilisearch/meilisearch-go v0.18.0 h1:aF3lc0DAh8GnY3ylyvWA28pI5S3Ax6zdsTxrsIb62Ww=
+github.com/meilisearch/meilisearch-go v0.18.0/go.mod h1:csQUgxc2hVJ7IPNiuDgRPhxYtExIxyxys7rPrmlnLIU=
 github.com/microcosm-cc/bluemonday v1.0.1/go.mod h1:hsXNsILzKxV+sX77C5b8FSuKF00vh2OMYv+xgHpAMF4=
 github.com/mitchellh/go-homedir v1.1.0/go.mod h1:SfyaCUpYCn1Vlf4IUYiD9fPX4A5wJrkLzIz1N1q0pr0=
 github.com/mitchellh/mapstructure v1.1.2/go.mod h1:FVVH3fgwuzCH5S8UJGiWEs2h04kUh9fWfEaFds41c1Y=
