@@ -4,7 +4,7 @@ services:
   meilisearch-0.21.0:
     image: "getmeili/meilisearch:v0.21.0"
     ports:
-      - "7720:7700"
+      - "7700:7700"
     environment:
       - MEILI_NO_ANALYTICS=true
       - MEILI_NO_SENTRY=true

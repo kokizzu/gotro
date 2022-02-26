@@ -2,32 +2,16 @@ package Ms
 
 import (
 	"fmt"
+	"github.com/kokizzu/gotro/M"
 	"log"
 	"os"
 	"testing"
 
 	"github.com/kokizzu/gotro/L"
 	"github.com/meilisearch/meilisearch-go"
-	"github.com/ory/dockertest"
+	"github.com/ory/dockertest/v3"
 	"github.com/stretchr/testify/assert"
 )
-
-type Query struct {
-	Index    string
-	Document meilisearch.SearchRequest
-}
-
-type UpsertOne struct {
-	Space      string
-	row        interface{}
-	primaryKey string
-}
-
-type MigrateMeilisearch struct {
-	Space         string
-	Id            string
-	rangkingRules []string
-}
 
 var meili *Meili
 
@@ -50,10 +34,15 @@ func TestMain(m *testing.M) {
 	if err := globalPool.Retry(func() error {
 
 		client := meilisearch.NewClient(meilisearch.Config{
-			Host: fmt.Sprintf("http://127.0.0.1:%s", resource.GetPort("7700/tcp")),
+			Host:   fmt.Sprintf("http://127.0.0.1:%s", resource.GetPort("7700/tcp")),
+			APIKey: `test_api_key`,
 		})
 
-		return client.Health().Get()
+		err := client.Health().Get()
+		if err != nil && err.Error() == `unaccepted status code found: 200 expected: [204], message from api: '', request: empty request (path "GET /health" with method "Health.Get")` {
+			return nil
+		}
+		return err
 	}); err != nil {
 		log.Printf("Cannot connect to spawned docker: %s\n", err)
 		return
@@ -71,33 +60,28 @@ func TestMain(m *testing.M) {
 	}
 }
 
-var documents = []map[string]interface{}{
-	{
-		"id":   287947,
-		"name": "apple",
-	},
-}
-
-func TestMeiliFlow(t *testing.T) {
-	t.Run(`insert`, func(t *testing.T) {
-		in := &UpsertOne{
-			Space:      "apple",
-			row:        documents,
-			primaryKey: "buah",
-		}
-		out, _ := meili.UpsertOne(in.Space, in.row, in.primaryKey)
-		assert.Equal(t, out, "apple")
-	})
+func TestMeilisearch(t *testing.T) {
+	const tableName = `fruits`
 	t.Run(`migrate`, func(t *testing.T) {
-		in := &MigrateMeilisearch{
-			Space: "apple",
-			Id:    "fruit",
-			rangkingRules: []string{
-				"",
-			},
-		}
-		out := meili.MigrateMeilisearch(in.Space, in.Id, in.rangkingRules)
+		out := meili.MigrateMeilisearch(tableName, `id`, []string{
+			`desc(created)`,
+			`typo`,
+			`words`,
+			`proximity`,
+			`attribute`,
+			`wordsPosition`,
+			`exactness`,
+		})
 		assert.Empty(t, out.Error)
+	})
+	t.Run(`insert`, func(t *testing.T) {
+		in := &M.SX{
+			`id`:   1,
+			"name": "apple",
+		}
+		out, err := meili.UpsertOne(tableName, in, in.GetStr(`id`))
+		assert.Nil(t, err)
+		assert.Equal(t, out, "apple")
 	})
 	// t.Run(`query`, func(t *testing.T) {
 	// 	in := &Query{
