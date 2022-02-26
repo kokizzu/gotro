@@ -33,7 +33,7 @@ func TestMain(m *testing.M) {
 	})
 	L.PanicIf(err, "Could not start resource")
 
-	const mshost = `127.0.0.1:%s`
+	const mshost = `http://127.0.0.1:%s`
 	const msport = `7700/tcp`
 
 	if err := globalPool.Retry(func() error {
@@ -79,7 +79,13 @@ type Search struct {
 	MeilisReq meilisearch.SearchRequest
 }
 
+type Delete struct {
+	Index string
+	Key   string
+}
+
 func TestMeilis(t *testing.T) {
+	// Create = PASS
 	t.Run(`insert`, func(t *testing.T) {
 		in := &Create{
 			Index: "title",
@@ -97,15 +103,56 @@ func TestMeilis(t *testing.T) {
 		out, _ := meilis.Create(in.Index, in.Documents, in.PrimaryKey)
 		assert.Empty(t, out.Error)
 	})
-	// t.Run(`search`, func(t *testing.T) {
-	// 	in := &Search{
-	// 		Index:  "movies",
-	// 		Search: "Kung Fu Panda",
-	// 		MeilisReq: meilisearch.SearchRequest{
-	// 			Limit: 1,
-	// 		},
-	// 	}
-	// 	out, _ := meilis.Search(in.Index, in.Search, in.MeilisReq)
-	// 	assert.Empty(t, out.Limit)
-	// })
+	// GET = FAIL
+	t.Run(`get`, func(t *testing.T) {
+		in := &Search{
+			Index:  "title",
+			Search: "Kung",
+			MeilisReq: meilisearch.SearchRequest{
+				Matches: true,
+				// Limit: 10,
+			},
+		}
+		out, _ := meilis.Get(in.Index, in.Search)
+		fmt.Println(out.UID)
+		assert.Equal(t, out.UID, "Kung")
+	})
+	// SEARCH = FAIL
+	t.Run(`search`, func(t *testing.T) {
+		in := &Search{
+			Index:  "title",
+			Search: "Kung",
+			MeilisReq: meilisearch.SearchRequest{
+				Matches: true,
+				// Limit: 10,
+			},
+		}
+		out, _ := meilis.Search(in.Index, in.Search, in.MeilisReq)
+		fmt.Println(out.Limit)
+		assert.Equal(t, out.Hits, result)
+	})
+	// DELETE = PASS
+	t.Run(`delete`, func(t *testing.T) {
+		in := &Delete{
+			Index: "title",
+			Key:   "Kung Fu Panda",
+		}
+		out, _ := meilis.Delete(in.Index, in.Key)
+		assert.Empty(t, out.Error)
+	})
 }
+
+var result = `
+{
+	"hits": [
+		{
+			"title":        "Kung Fu Panda",
+			"genre":        "Children's Animation",
+			"release-year": 2008,
+			"cast": [
+			"Jack Black": "Po",
+			"Jackie Chan": "Monkey"
+			]
+		}
+	]
+}`
