@@ -1,9 +1,20 @@
 package Ms
 
-import "github.com/meilisearch/meilisearch-go"
+import (
+	"fmt"
+
+	"github.com/meilisearch/meilisearch-go"
+)
 
 type Meilis struct {
-	meilisearch.Client
+	*meilisearch.Client
+}
+
+func (m *Meilis) NewMeilisSession(host, port string) *meilisearch.Client {
+	client := meilisearch.NewClient(meilisearch.ClientConfig{
+		Host: fmt.Sprintf(host, port),
+	})
+	return client
 }
 
 func (m *Meilis) Create(index string, documents map[string]interface{}, primaryKey string) (*meilisearch.Task, error) {
