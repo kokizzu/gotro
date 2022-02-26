@@ -10,6 +10,7 @@ import (
 	"github.com/stretchr/testify/assert"
 
 	"github.com/kokizzu/gotro/L"
+	"github.com/kokizzu/gotro/M"
 	"github.com/ory/dockertest/v3"
 )
 
@@ -72,7 +73,7 @@ func TestMeilis(t *testing.T) {
 	t.Run(`insert`, func(t *testing.T) {
 		in := &Create{
 			Index: "title",
-			Documents: map[string]interface{}{
+			Documents: M.SX{
 				"title":        "Kung Fu Panda",
 				"genre":        "Children's Animation",
 				"release-year": 2008,
