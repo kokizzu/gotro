@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+set -x # print all command
+set -o # exit on error
+
 if [ $# -eq 0 ] ; then
   echo "Usage: 
   ./pullpush.sh 'the commit message'"
