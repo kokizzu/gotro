@@ -1,0 +1,24 @@
+version: '3.7'
+
+services:
+      
+  # Postgres
+  postgres1:
+    hostname: postgres1
+    container_name: postgres1
+    image: postgres:latest
+    volumes:
+      - postgres1:/var/lib/postgresql/data 
+    ports:
+      - "5432:5432"
+    environment: 
+      POSTGRES_USER: "root"
+      POSTGRES_PASSWORD: "password"
+
+volumes:
+  postgres1:
+
+
+
+
+
