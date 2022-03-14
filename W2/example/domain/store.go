@@ -10,7 +10,7 @@ import (
 
 //go:generate gomodifytags -all -add-tags json,form,query,long,msg -transform camelcase --skip-unexported -w -file store.go
 //go:generate replacer 'Id" form' 'Id,string" form' type store.go
-//go:generate replacer 'json:"id"' 'json:"id,string" form' type store.go
+//go:generate replacer 'json:"id"' 'json:"id,string"' type store.go
 //go:generate replacer 'By" form' 'By,string" form' type store.go
 // go:generate msgp -tests=false -file store.go -o store__MSG.GEN.go
 //go:generate farify doublequote --file store.go

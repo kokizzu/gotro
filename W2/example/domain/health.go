@@ -16,7 +16,7 @@ import (
 
 //go:generate gomodifytags -file health.go -all -add-tags json,form,query,long,msg -transform camelcase --skip-unexported --skip-unexported -w -file health.go
 //go:generate replacer 'Id" form' 'Id,string" form' type health.go
-//go:generate replacer 'json:"id"' 'json:"id,string" form' type health.go
+//go:generate replacer 'json:"id"' 'json:"id,string"' type health.go
 //go:generate replacer 'By" form' 'By,string" form' type health.go
 //go:generate farify doublequote --file health.go
 
@@ -86,7 +86,7 @@ type (
 	LoadTestWrite_Out struct {
 		ResponseCommon
 		Ok bool   `json:"ok" form:"ok" query:"ok" long:"ok" msg:"ok"`
-		Id uint64 `json:"id,string" form form:"id" query:"id" long:"id" msg:"id"`
+		Id uint64 `json:"id,string" form:"id" query:"id" long:"id" msg:"id"`
 	}
 )
 
@@ -109,7 +109,7 @@ func (d *Domain) LoadTestWrite(in *LoadTestWrite_In) (out LoadTestWrite_Out) {
 type (
 	LoadTestRead_In struct {
 		RequestCommon
-		Id uint64 `json:"id,string" form form:"id" query:"id" long:"id" msg:"id"`
+		Id uint64 `json:"id,string" form:"id" query:"id" long:"id" msg:"id"`
 	}
 	LoadTestRead_Out struct {
 		ResponseCommon
