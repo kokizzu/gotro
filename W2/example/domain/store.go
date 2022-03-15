@@ -10,9 +10,10 @@ import (
 
 //go:generate gomodifytags -all -add-tags json,form,query,long,msg -transform camelcase --skip-unexported -w -file store.go
 //go:generate replacer 'Id" form' 'Id,string" form' type store.go
-//go:generate replacer 'json:"id"' 'json:id,string" form' type store.go
+//go:generate replacer 'json:"id"' 'json:"id,string"' type store.go
 //go:generate replacer 'By" form' 'By,string" form' type store.go
 // go:generate msgp -tests=false -file store.go -o store__MSG.GEN.go
+//go:generate farify doublequote --file store.go
 
 type (
 	StoreProducts_In struct {
@@ -194,7 +195,7 @@ func (d *Domain) StoreInvoice(in *StoreInvoice_In) (out StoreInvoice_Out) {
 	if in.Recalculate || in.DoPurchase {
 		for _, ci := range out.CartItems {
 			ci.InvoiceId = in.InvoiceId
-			ci.Info = ""
+			ci.Info = ``
 			product := productIdMap[ci.ProductId]
 			if product == nil {
 				// if product gone, set qty to 0
@@ -225,13 +226,13 @@ func (d *Domain) StoreInvoice(in *StoreInvoice_In) (out StoreInvoice_Out) {
 						orig := ci.SubTotal
 						ci.SubTotal = int64(float64(ci.SubTotal) * (100 - promo.DiscountPercent) / 100)
 						ci.Discount = uint64(orig - ci.SubTotal)
-						ci.Info += "discount " + F.ToS(promo.DiscountPercent) + "% for " + I.ToS(minCount) + " purchase\n"
+						ci.Info += `discount ` + F.ToS(promo.DiscountPercent) + `% for ` + I.ToS(minCount) + " purchase\n"
 					} else if promo.DiscountCount > 0 {
 						// eg. buy 3, 3rd one is discount, then buy 6, 3rd and 6th is discount
 						orig := ci.SubTotal
 						ci.SubTotal = ci.PriceCopy * (ci.Qty - int64(promo.DiscountCount)*multiplier)
 						ci.Discount = uint64(orig - ci.SubTotal)
-						ci.Info += "discount " + I.UToS(promo.DiscountCount) + " for every " + I.ToS(minCount) + " purchase\n"
+						ci.Info += `discount ` + I.UToS(promo.DiscountCount) + ` for every ` + I.ToS(minCount) + " purchase\n"
 					}
 				}
 			}
@@ -280,7 +281,7 @@ func (d *Domain) StoreInvoice(in *StoreInvoice_In) (out StoreInvoice_Out) {
 			inv := int64(product.InventoryQty)
 			if ci.Qty > inv {
 				missing := ci.Qty - inv
-				ci.Info += "but we don't have enough free item in inventory (missing: " + I.ToS(missing) + ")\n"
+				ci.Info += `but we don't have enough free item in inventory (missing: ` + I.ToS(missing) + ")\n"
 				ci.Qty = I.Min(ci.Qty, inv)
 				ci.Discount -= product.Price * uint64(missing)
 			}
