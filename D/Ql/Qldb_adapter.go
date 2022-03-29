@@ -128,4 +128,15 @@ func (a *Adapter) QLine(selectQuery string, target interface{}, args ...interfac
 	return err == nil
 }
 
-// TODO: add insert/update/delete example
+func (a *Adapter) DoExec(execQuery string, args ...interface{}) bool {
+	_, err := a.Execute(context.Background(), func(txn qldbdriver.Transaction) (interface{}, error) {
+		_, err := txn.Execute(execQuery, args...)
+
+		if L.IsError(err, `DoExec: `+execQuery) {
+			return nil, err
+		}
+
+		return nil, nil
+	})
+	return err != nil
+}
