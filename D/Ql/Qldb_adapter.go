@@ -3,6 +3,7 @@ package Ql
 import (
 	"context"
 	"errors"
+
 	"github.com/amzn/ion-go/ion"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/credentials"
@@ -68,6 +69,61 @@ func (a *Adapter) QMapArray(query string, eachRowFunc func(row M.SX) (exitEarly 
 			}
 		}
 		return nil, nil
+	})
+	return err == nil
+}
+
+func (a *Adapter) QAll(selectQuery string, scanner func(rawRow []byte) error, args ...interface{}) (total int) {
+	_, _ = a.Execute(context.Background(), func(txn qldbdriver.Transaction) (interface{}, error) {
+
+		result, err := txn.Execute(selectQuery, args...)
+		if L.IsError(err, `QAll.Execute: `+selectQuery) {
+			return nil, err
+		}
+		for {
+			if !result.Next(txn) {
+				if err = result.Err(); L.IsError(err, `QAll.Next: `+selectQuery) {
+					return nil, err
+				}
+
+				break
+			}
+
+			ionBinary := result.GetCurrentData()
+
+			err = scanner(ionBinary)
+			if L.IsError(err, `QAll.scanner: `+selectQuery) {
+				return nil, err
+			}
+
+			total++
+		}
+
+		return nil, err
+	})
+	return
+}
+
+func (a *Adapter) QLine(selectQuery string, target interface{}, args ...interface{}) bool {
+	_, err := a.Execute(context.Background(), func(txn qldbdriver.Transaction) (interface{}, error) {
+
+		result, err := txn.Execute(selectQuery, args...)
+		if L.IsError(err, `QLine.Execute: `+selectQuery) {
+			return nil, err
+		}
+
+		if !result.Next(txn) {
+			if err = result.Err(); L.IsError(err, `QLine.Next: `+selectQuery) {
+				return nil, err
+			}
+			return nil, nil
+		}
+
+		ionBinary := result.GetCurrentData()
+
+		err = ion.Unmarshal(ionBinary, target)
+		L.IsError(err, `QLine.scanner: `+selectQuery)
+		return nil, err
 	})
 	return err == nil
 }
