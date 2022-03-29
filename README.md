@@ -31,11 +31,14 @@ so for example v1.213.1549 means it was released at `2021-02-13 15:49`
 ## Status
 
 Usable 3rd party database adapter:
-  - [Redis](/D/Rd)
-  - [PostgreSQL](/D/Pg) (OLTP, using JSONB)
-  - [Tarantool](/D/Tt) (OLTP and cache, have migration tool) -- recommended
-  - [ClickHouse](/D/Ch) (OLAP, have migration tool) -- recommended
-  - [Meilisearch](/D/Ms) (full text search)
+  - Ch = [Clickhouse](/D/Ch) (OLAP, have migration tool) -- recommended
+  - Es = [ElasticSearch](/D/Es) (full text search, query only)
+  - Ms = [Meilisearch](/D/Ms) (full text search)
+  - Pg = [PostgreSQL](/D/Pg) (OLTP, using JSONB)
+  - Ql = [QLDB](/D/Ql) (please use better database -_-)
+  - Rc = [BigCache](/D/Rc)
+  - Rd = [Redis](/D/Rd)
+  - Tt = [Tarantool](/D/Tt) (OLTP and cache, have migration tool) -- recommended
   
 Other than above, you must use officially provided database adapter from respective vendors. For docker compose example. you can see [local-docker-db](//github.com/alexmacarthur/local-docker-db)
 
