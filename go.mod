@@ -33,7 +33,6 @@ require (
 	github.com/jmoiron/sqlx v1.3.4
 	github.com/joho/godotenv v1.4.0
 	github.com/jordan-wright/email v4.0.1-0.20210109023952-943e75fe5223+incompatible
-	github.com/klauspost/compress v1.14.2 // indirect
 	github.com/kokizzu/ch-timed-buffer v1.825.1523-0.20210826171319-738868384f38
 	github.com/kokizzu/goproc v1.625.1807
 	github.com/kokizzu/id64 v1.1114.1245
@@ -61,17 +60,15 @@ require (
 	github.com/tarantool/go-tarantool v0.0.0-20220201141139-c84ec853329c
 	github.com/tdewolff/minify v2.3.6+incompatible
 	github.com/tdewolff/test v1.0.6 // indirect
-	github.com/valyala/fasthttp v1.33.0
+	github.com/valyala/fasthttp v1.34.0
 	github.com/vburenin/nsync v0.0.0-20160822015540-9a75d1c80410
 	github.com/xeipuuv/gojsonpointer v0.0.0-20190905194746-02993c407bfb // indirect
 	github.com/yosuke-furukawa/json5 v0.1.1
 	github.com/zeebo/xxh3 v1.0.1
 	go.opentelemetry.io/otel v1.3.0
 	go.opentelemetry.io/otel/trace v1.3.0
-	golang.org/x/crypto v0.0.0-20220208050332-20e1d8d225ab
-	golang.org/x/net v0.0.0-20220127200216-cd36cc0744dd // indirect
+	golang.org/x/crypto v0.0.0-20220214200702-86341886e292
 	golang.org/x/oauth2 v0.0.0-20210220000619-9bb904979d93
-	golang.org/x/sys v0.0.0-20220207234003-57398862261d // indirect
 	golang.org/x/tools v0.1.9 // indirect
 	gopkg.in/check.v1 v1.0.0-20200902074654-038fdea0a05b // indirect
 	gopkg.in/resty.v1 v1.12.0

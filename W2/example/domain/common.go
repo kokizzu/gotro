@@ -18,9 +18,10 @@ import (
 
 //go:generate gomodifytags -all -add-tags json,form,query,long,msg -transform camelcase --skip-unexported -w -file common.go
 //go:generate replacer 'Id" form' 'Id,string" form' type common.go
-//go:generate replacer 'json:"id"' 'json:id,string" form' type common.go
+//go:generate replacer 'json:"id"' 'json:"id,string"' type common.go
 //go:generate replacer 'By" form' 'By,string" form' type common.go
 // go:generate msgp -tests=false -file common.go -o  common__MSG.GEN.go
+//go:generate farify doublequote --file common.go
 
 type RequestCommon struct {
 	TracerContext context.Context   `json:"-" form:"tracerContext" query:"tracerContext" long:"tracerContext" msg:"-"`
@@ -96,7 +97,7 @@ func (l *RequestCommon) ToCli(file *os.File, out interface{}) {
 	switch l.OutputFormat {
 	case ``, `json`, fiber.MIMEApplicationJSON:
 		byt, err := json.Marshal(out)
-		if L.IsError(err, `json.Marsha: %#v`, out) {
+		if L.IsError(err, `json.Marshal: %#v`, out) {
 			return
 		}
 		_, err = file.Write(byt)

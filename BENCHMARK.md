@@ -18,6 +18,7 @@ Note:
 - **Health** = do syscall (or read from `/proc`) cached once per second
 - **Hello** = only serializing empty input and rendering `{"hello":"world"}` output
 - Benchmark server: 32-core, 128GB RAM, NVMe disk
+- comparison: [TechEmpower](//www.techempower.com/benchmarks/#section=data-r20&hw=ph&test=update&l=zijocf-sf&a=2) which can do write 11K rps with spec: Intel Xeon Gold 5120 (28-core), 32 GB RAM, enterprise SSD for similar write use case.
 
 ## C10 Write (database write, network call)
 

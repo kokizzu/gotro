@@ -31,6 +31,7 @@ setup-deps:
 	go install github.com/tinylib/msgp@latest
 	go install github.com/kokizzu/replacer@latest
 	go install github.com/robertkrimen/godocdown/godocdown@latest
+	go install github.com/akbarfa49/farify@latest
 
 setup-webserver-ubuntu:
 	sudo apt install -y debian-keyring debian-archive-keyring apt-transport-https

@@ -31,11 +31,14 @@ so for example v1.213.1549 means it was released at `2021-02-13 15:49`
 ## Status
 
 Usable 3rd party database adapter:
-  - [Redis](/D/Rd)
-  - [PostgreSQL](/D/Pg) (OLTP, using JSONB)
-  - [Tarantool](/D/Tt) (OLTP and cache, have migration tool) -- recommended
-  - [ClickHouse](/D/Ch) (OLAP, have migration tool) -- recommended
-  - [Meilisearch](/D/Ms) (full text search)
+  - Ch = [Clickhouse](/D/Ch) (OLAP, have migration tool) -- recommended
+  - Es = [ElasticSearch](/D/Es) (full text search, query only)
+  - Ms = [Meilisearch](/D/Ms) (full text search)
+  - Pg = [PostgreSQL](/D/Pg) (OLTP, using JSONB)
+  - Ql = [QLDB](/D/Ql) (please use better database -_-)
+  - Rc = [BigCache](/D/Rc)
+  - Rd = [Redis](/D/Rd)
+  - Tt = [Tarantool](/D/Tt) (OLTP and cache, have migration tool) -- recommended
   
 Other than above, you must use officially provided database adapter from respective vendors. For docker compose example. you can see [local-docker-db](//github.com/alexmacarthur/local-docker-db)
 
@@ -66,9 +69,10 @@ this already includes session loading and template rendering (real-life use case
 - use `nikoksr/notify` for notification and mail sending instead of tied to `W`
 - possibly refactor move cachedquery, records, etc to `D` package since nothing different about them
 - [Review](//goo.gl/tBkfse) which other [databases](//github.com/alexmacarthur/local-docker-db) we must support primarily for `D`, that can be silver bullet for extreme cases (high-write: sharding/partitioning and multi-master replication or auto-failover; full-text-search) 
+  - [Aerospike](//aerospike.com) <-- KV use case
   - [ActorDB](//www.actordb.com) <-- high-write
   - [CockroachDB](//www.cockroachlabs.com) <-- high-write (postgresql-compatible)
-  - [CouchBase](//www.couchbase.com) <-- high-write
+  - [Couchbase](//www.couchbase.com) <-- high-write
   - [DGraph](//dgraph.io)   
   - [CrateDB](//www.crate.io) <-- high-write
   - [GridDB](//griddb.net/en) <-- high-write
@@ -78,9 +82,8 @@ this already includes session loading and template rendering (real-life use case
   - [NebulaGraph](//nebula-graph.io)
   - [OrientDB](//orientdb.com)
   - [PostgreXL](//www.postgres-xl.org) <-- high-write (postgresql-compatible)
-  - [SingeStore](//www.singlestore.com) <-- high-write (mysql-compatible)
+  - [SingleStore](//www.singlestore.com) <-- high-write (mysql-compatible)
   - [TiDB](//github.com/pingcap/tidb) <-- high-write (mysql-compatible)
-  - [TimeScaleDB](//www.timescale.com) <-- high-write (postgresql-compatible)
   - [TypeSense](//typesense.org)
   - [YugaByteDB](//www.yugabyte.com) <-- high-write (postgresql/redis/cassandra-compatible)
 - Add ephemeral and/or persisted queuing/pub-sub service we're gonna use ([NATS](//nats.io), [RedPanda](//redpanda.com)), see [hugedbbench](//github.com/kokizzu/hugedbbench/)
