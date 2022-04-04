@@ -21,6 +21,9 @@ Why is it tied to [Clickhouse](//clickhouse.tech)?
 Why is it tied to [Fiber](//gofiber.io/)?
 - because it's currently the [fastest](//www.techempower.com/benchmarks/#section=data-r20&hw=ph&test=update&l=zijocf-sf) minimalist golang framework, ones that are faster but not more painful to use is C#'s [bettlex](//beetlex.io/)
 
+Can I replace the components/database (so instead of using Tarantool/Clickhouse/Fiber)?
+- yes, write your own codegen for database and api generator, it's possible
+
 Why still using `encoding/json`?
 - because I couldn't find any other faster alternative that can properly parse int64/uint64 (already tried jsoniter and easyjson, both give wrong result for `{"id":"89388457092187654"}` with `json:"id,string"` tag).
 
@@ -29,6 +32,9 @@ Why tying between business logic and data store (not using Repository pattern)?
 - because the data store itself are fast (in-mem) and can be tested using docker-compose or dockertest, no noticable difference between fake/mock and integration test with this database product.
 - because we shouldn't separate between memory (data structure) and business logic (algorithm), since they are both the brain of our application, without memory there's nothing to think, without thinking/processing it's just uninformative raw data blob.
 - because most entity/repository have 1 to 1 relationship with the persistent/data store adapter, so it would be a overengineering to split when you not yet need it (YAGNI).
+
+How to scale out or load balance?
+you can use strategies in this [blog](//kokizzu.blogspot.com/2022/04/automatic-load-balancer.html)
 
 ## Usage
 
