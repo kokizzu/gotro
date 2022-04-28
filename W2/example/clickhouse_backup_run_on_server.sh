@@ -5,7 +5,7 @@ SUDO_PASS=""
 
 CHB_BIN="$(which clickhouse-backup)"
 if [[ -z "${CHB_BIN}" ]] ; then
-	wget -c https://github.com/AlexAkulov/clickhouse-backup/releases/download/v1.2.2/clickhouse-backup.tar.gz
+	wget -c https://github.com/AlexAkulov/clickhouse-backup/releases/download/v1.3.2/clickhouse-backup-linux-amd64.tar.gz
 	tar -xf clickhouse-backup.tar.gz
 	cd clickhouse-backup/
 	echo $SUDO_PASS | sudo mv clickhouse-backup /usr/local/bin
