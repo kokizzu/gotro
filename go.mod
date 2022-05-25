@@ -11,8 +11,6 @@ require (
 	github.com/aws/aws-sdk-go v1.42.48
 	github.com/awslabs/amazon-qldb-driver-go/v2 v2.0.2
 	github.com/buaazp/fasthttprouter v0.1.1
-	github.com/containerd/continuity v0.2.2 // indirect
-	github.com/docker/cli v20.10.12+incompatible // indirect
 	github.com/docker/docker v20.10.12+incompatible // indirect
 	github.com/fatih/color v1.13.0
 	github.com/francoispqt/gojay v1.2.13 // indirect
@@ -48,15 +46,15 @@ require (
 	github.com/mojura/enkodo v0.5.6
 	github.com/olivere/elastic/v7 v7.0.31
 	github.com/op/go-logging v0.0.0-20160315200505-970db520ece7
-	github.com/opencontainers/runc v1.1.0 // indirect
+	github.com/opencontainers/runc v1.1.2 // indirect
 	github.com/orcaman/concurrent-map v1.0.0
-	github.com/ory/dockertest/v3 v3.8.1
+	github.com/ory/dockertest/v3 v3.9.0
 	github.com/pkg/errors v0.9.1
 	github.com/rs/zerolog v1.26.1
 	github.com/rueian/rueidis v0.0.35
 	github.com/segmentio/fasthash v1.0.3
 	github.com/shirou/gopsutil/v3 v3.21.9
-	github.com/stretchr/testify v1.7.0
+	github.com/stretchr/testify v1.7.1
 	github.com/tarantool/go-tarantool v0.0.0-20220201141139-c84ec853329c
 	github.com/tdewolff/minify v2.3.6+incompatible
 	github.com/tdewolff/test v1.0.6 // indirect
