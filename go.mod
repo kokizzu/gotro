@@ -11,7 +11,8 @@ require (
 	github.com/aws/aws-sdk-go v1.42.48
 	github.com/awslabs/amazon-qldb-driver-go/v2 v2.0.2
 	github.com/buaazp/fasthttprouter v0.1.1
-	github.com/docker/docker v20.10.12+incompatible // indirect
+	github.com/docker/cli v20.10.16+incompatible // indirect
+	github.com/docker/docker v20.10.16+incompatible // indirect
 	github.com/fatih/color v1.13.0
 	github.com/francoispqt/gojay v1.2.13 // indirect
 	github.com/francoispqt/onelog v0.0.0-20190306043706-8c2bb31b10a4
@@ -25,6 +26,7 @@ require (
 	github.com/graphql-go/graphql v0.8.0
 	github.com/hexops/autogold v1.3.0
 	github.com/hexops/valast v1.4.1 // indirect
+	github.com/imdario/mergo v0.3.13 // indirect
 	github.com/jackc/pgx/v4 v4.14.1
 	github.com/jasonlvhit/gocron v0.0.1
 	github.com/jessevdk/go-flags v1.5.0
@@ -41,7 +43,7 @@ require (
 	github.com/lib/pq v1.10.4
 	github.com/mattn/go-colorable v0.1.12 // indirect
 	github.com/meilisearch/meilisearch-go v0.14.0
-	github.com/mitchellh/mapstructure v1.4.3 // indirect
+	github.com/mitchellh/mapstructure v1.5.0 // indirect
 	github.com/moby/term v0.0.0-20210619224110-3f7ff695adc6 // indirect
 	github.com/mojura/enkodo v0.5.6
 	github.com/olivere/elastic/v7 v7.0.31
@@ -66,7 +68,9 @@ require (
 	go.opentelemetry.io/otel v1.3.0
 	go.opentelemetry.io/otel/trace v1.3.0
 	golang.org/x/crypto v0.0.0-20220214200702-86341886e292
+	golang.org/x/net v0.0.0-20220524220425-1d687d428aca // indirect
 	golang.org/x/oauth2 v0.0.0-20210220000619-9bb904979d93
+	golang.org/x/sys v0.0.0-20220520151302-bc2c85ada10a // indirect
 	golang.org/x/tools v0.1.9 // indirect
 	gopkg.in/check.v1 v1.0.0-20200902074654-038fdea0a05b // indirect
 	gopkg.in/resty.v1 v1.12.0
