@@ -10,6 +10,8 @@ fi
 gofmt -s -w . # go fmt `find . -name '*.go' -type f`
 echo "codes formatted.."
 
+go mod tidy -v
+
 # testing if has "gokil" included
 ag gokil **/*.go && ( echo 'echo should not import previous gokil library..' ; kill 0 )
 ag luwes **/*.go && ( echo 'echo should not import luwes library..' ; kill 0 )
