@@ -20,7 +20,8 @@ go install golang.org/x/tools/cmd/goimports@latest
 goimports -w **/*.go
 echo "codes formatted.."
 
-go mod tidy -v
+go get -u -v github.com/ory/dockertest/v3@latest
+go mod tidy
 
 # testing if has error
 go build loader.go || ( echo 'has error, exiting..' ; kill 0 )
