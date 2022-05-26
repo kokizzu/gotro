@@ -7,9 +7,11 @@ if [ $# -eq 0 ] ; then
 fi
 
 # format indentation
-gofmt -s -w . # go fmt `find . -name '*.go' -type f`
+go fmt ./...
 echo "codes formatted.."
 
+# update deps
+go get -u -v github.com/ory/dockertest@latest
 go mod tidy -v
 
 # testing if has "gokil" included
