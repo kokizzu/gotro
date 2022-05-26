@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
-set -x # print all command
-set -o # exit on error
+#set -x # print all command
+#set -o # exit on error
 
 if [ $# -eq 0 ] ; then
   echo "Usage: 
@@ -16,8 +16,11 @@ for x in A B C F I L M S T X; do
 done
 
 # format indentation
-go fmt ./...
+go install golang.org/x/tools/cmd/goimports@latest
+goimports -w **/*.go
 echo "codes formatted.."
+
+go mod tidy -v
 
 # testing if has error
 go build loader.go || ( echo 'has error, exiting..' ; kill 0 )

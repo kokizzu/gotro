@@ -2,11 +2,12 @@ package Es
 
 import (
 	"context"
+	"log"
+	"os"
+
 	"github.com/kokizzu/gotro/L"
 	"github.com/kokizzu/gotro/M"
 	"github.com/olivere/elastic/v7"
-	"log"
-	"os"
 )
 
 type Adapter struct {

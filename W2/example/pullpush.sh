@@ -11,7 +11,7 @@ go fmt ./...
 echo "codes formatted.."
 
 # update deps
-go get -u -v github.com/ory/dockertest@latest
+go get -u -v github.com/ory/dockertest/v3@latest
 go mod tidy -v
 
 # testing if has "gokil" included

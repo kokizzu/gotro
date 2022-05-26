@@ -4,9 +4,10 @@ import (
 	"crypto/tls"
 	"database/sql"
 	"fmt"
+	"time"
+
 	"github.com/ClickHouse/clickhouse-go/v2"
 	"github.com/kokizzu/gotro/L"
-	"time"
 )
 
 type Adapter struct {
