@@ -8,31 +8,39 @@ import (
 )
 
 type Meili struct {
-	meilisearch.ClientInterface
+	meilisearch.Client
 	Log *onelog.Logger
 }
 
-func (m *Meili) Query(space string, searchReq *meilisearch.SearchRequest) (*meilisearch.SearchResponse, error) {
-	return m.Query(space, searchReq)
+func (m *Meili) Query(index, str string, searchReq *meilisearch.SearchRequest) (*meilisearch.SearchResponse, error) {
+	return m.Client.Index(index).Search(str, searchReq)
 }
 
-func (m *Meili) UpsertOne(space string, row interface{}, primaryKey string) (interface{}, error) {
-	return m.UpsertOne(space, A.X{row}, primaryKey)
-}
-
-func (m *Meili) MigrateMeilisearch(space string, id string, rankingRules []string) error {
-	_, err := m.CreateIndex(&meilisearch.IndexConfig{
-		Uid:        space,
-		PrimaryKey: id,
-	})
-	if err != nil {
-		merr, ok := err.(*meilisearch.Error)
-		if !ok || merr.Error() != `Index `+space+` already exists` {
-			L.IsError(err, `failed create index`)
-			return err
-		}
+func (m *Meili) UpsertOne(index string, rows A.MSX) (*meilisearch.Task, error) {
+	task, err := m.Client.Index(index).AddDocuments(rows)
+	if L.IsError(err, `Ms.Client.Index.AddDocuments`) {
+		return nil, err
 	}
-	_, err = m.Index(space).UpdateRankingRules(&rankingRules)
-	L.IsError(err, `failed update rankingRules`)
+	return m.Client.WaitForTask(task)
+}
+
+func (m *Meili) MigrateMeilisearch(space string, primaryKey string, rankingRules []string) error {
+	task, err := m.CreateIndex(&meilisearch.IndexConfig{
+		Uid:        space,
+		PrimaryKey: primaryKey,
+	})
+	if L.IsError(err, `Ms.Client.CreateIndex`) {
+		return err
+	}
+	task, err = m.Client.WaitForTask(task)
+	if L.IsError(err, `Ms.Client.WaitForTask.CreateIndex`) {
+		return err
+	}
+	task, err = m.Index(space).UpdateRankingRules(&rankingRules)
+	if L.IsError(err, `Ms.Index.UpdateRankingRules`) {
+		return err
+	}
+	task, err = m.Client.WaitForTask(task)
+	L.IsError(err, `Ms.Client.WaitForTask.UpdateRankingRules`)
 	return err
 }
