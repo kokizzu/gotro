@@ -62,13 +62,15 @@ this already includes session loading and template rendering (real-life use case
 - [Pham Hoang Tien](//github.com/PhamHoangTien1987)
 - [Rizal Widyarta Gowandy](//github.com/rizalgowandy)
 
-## TODO
+## TODO / Bounty
 
+- add [kardios/service](//github.com/kardianos/service) for W2
+- add unit tests
 - fix mysql adapter so it becomes usable (currently copied from Postgres'), probably wait until mysql has indexable json column, or do alters like scylladb and sqlite, or just remove and rewrite one for [TiDB](//github.com/kokizzu/list-of-tech-migrations)
 - rewrite `D/Pg` using prepared statements, so no more `S.Z`
 - use `nikoksr/notify` for notification and mail sending instead of tied to `W`
 - possibly refactor move cachedquery, records, etc to `D` package since nothing different about them
-- [Review](//goo.gl/tBkfse) which other [databases](//github.com/alexmacarthur/local-docker-db) we must support primarily for `D`, that can be silver bullet for extreme cases (high-write: sharding/partitioning and multi-master replication or auto-failover; full-text-search) 
+- [Review](//goo.gl/tBkfse) and [benchmark](//github.com/kokizzu/hugedbbench) which other [databases](//github.com/alexmacarthur/local-docker-db) we must support primarily for `D`, that can be silver bullet for extreme cases (high-write: sharding/partitioning and multi-master replication or auto-failover; full-text-search) 
   - [Aerospike](//aerospike.com) <-- KV use case
   - [ActorDB](//www.actordb.com) <-- high-write
   - [CockroachDB](//www.cockroachlabs.com) <-- high-write (postgresql-compatible)
@@ -86,6 +88,11 @@ this already includes session loading and template rendering (real-life use case
   - [TiDB](//github.com/pingcap/tidb) <-- high-write (mysql-compatible)
   - [TypeSense](//typesense.org)
   - [YugaByteDB](//www.yugabyte.com) <-- high-write (postgresql/redis/cassandra-compatible)
+- Also benchmark search engines (insert, force reindex duration, search substring first/last word foreach dataset, delete first 100 records by id)
+- Add CDC example from TiDB to RedPanda to Materialize.io
+- Pipe all request and respose W2/example to Clickhouse, need to censor all the session key using S.XXH3
+- use [zap](//github.com/uber-go/zap) for logging on W2/example
+- Create metrics logger on W2/example that push to redpanda then materialize.io
 - Add ephemeral and/or persisted queuing/pub-sub service we're gonna use ([NATS](//nats.io), [RedPanda](//redpanda.com)), see [hugedbbench](//github.com/kokizzu/hugedbbench/)
 - Add [ExampleXxx function](//blog.golang.org/examples), getting started and more documentation 
 - Try other alternate graceful restart (zero downtime deployment): [grace](//github.com/facebookgo/grace) or [endless](//github.com/fvbock/endless) instead of just [overseer](https://github.com/jpillora/overseer)
