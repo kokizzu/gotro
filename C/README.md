@@ -10,7 +10,7 @@
 ```go
 func IsDigit(ch byte) bool
 ```
-check whether the character is a digit or not
+IsDigit check whether the character is a digit or not
 
     C.IsDigit('9') // true
 
@@ -19,7 +19,7 @@ check whether the character is a digit or not
 ```go
 func IsIdent(ch byte) bool
 ```
-check whether the character is a valid identifier suffix alphanumeric
+IsIdent check whether the character is a valid identifier suffix alphanumeric
 (letter/underscore/numeral)
 
     C.IsIdent('9'))
@@ -29,7 +29,8 @@ check whether the character is a valid identifier suffix alphanumeric
 ```go
 func IsIdentStart(ch byte) bool
 ```
-check whether the character is a valid identifier prefix (letter/underscore)
+IsIdentStart check whether the character is a valid identifier prefix
+(letter/underscore)
 
     C.IsIdentStart('-') // false
     C.IsIdentStart('_') // true
@@ -39,7 +40,7 @@ check whether the character is a valid identifier prefix (letter/underscore)
 ```go
 func IsValidFilename(ch byte) bool
 ```
-check whether the character is a safe file-name characters
+IsValidFilename check whether the character is a safe file-name characters
 (alphanumeric/comma/full-stop/dash)
 
     C.IsValidFilename(' ') // output bool(true)

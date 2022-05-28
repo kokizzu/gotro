@@ -49,7 +49,7 @@ func (t *TemplateChain) Str(values M.SX) string {
 	return bs.String()
 }
 
-// write to buffer
+// Render write to buffer
 func (t *TemplateChain) Render(target *bytes.Buffer, values M.SX) {
 	if t.AutoRefresh {
 		nt, err := t.Reload()
@@ -91,7 +91,7 @@ func (t *TemplateChain) Render(target *bytes.Buffer, values M.SX) {
 	target.Write(t.Parts[len(t.Parts)-1])
 }
 
-// reload from file
+// Reload reload from file
 func (t *TemplateChain) Reload() (*TemplateChain, error) {
 	if t.InMemory {
 		return t, nil
@@ -322,7 +322,7 @@ func (t *TemplateChain) parseTemplate(bs []byte) {
 	//L.Print(`end parsing`, t.Filename, len(t.Parts), len(t.Keys), info.Size())
 }
 
-// parse a file and cache it
+// ParseFile parse a file and cache it
 func ParseFile(autoReload, printDebug bool, filename string) (*TemplateChain, error) {
 	res := &TemplateChain{}
 	res.AutoRefresh = autoReload

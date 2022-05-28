@@ -1,5 +1,7 @@
 package X
 
+// Any type support package
+
 import (
 	"bytes"
 	"encoding/json"
@@ -20,9 +22,7 @@ import (
 	"github.com/kokizzu/gotro/S"
 )
 
-// Any type support package
-
-// convert any data type to uint
+// ToU convert any data type to uint
 //  var m interface{}
 //  m = `123`
 //  L.ParentDescribe(X.ToI(m)) // uint(123)
@@ -139,7 +139,7 @@ func ToU(any interface{}) uint64 {
 	return 0
 }
 
-// convert any data type to int8
+// ToByte convert any data type to int8
 //  var m interface{}
 //  m = `123`
 //  L.ParentDescribe(X.ToByte(m)) // byte(123)
@@ -253,7 +253,7 @@ func ToByte(any interface{}) byte {
 	return 0
 }
 
-// convert any data type to int64
+// ToI convert any data type to int64
 //  var m interface{}
 //  m = `123`
 //  L.ParentDescribe(X.ToI(m)) // int64(123)
@@ -368,7 +368,7 @@ func ToI(any interface{}) int64 {
 	return 0
 }
 
-// Convert any data type to float64
+// ToF Convert any data type to float64
 //  var m interface{}
 //  m = `123.5`
 //  L.ParentDescribe(X.ToF(m)) // float64(123.5)
@@ -477,7 +477,7 @@ func ToF(any interface{}) float64 {
 	return 0
 }
 
-// convert any data type to string
+// ToS convert any data type to string
 //  var m interface{}
 //  m = `123`
 //  L.ParentDescribe(X.ToS(m)) // `123`
@@ -584,7 +584,7 @@ func ToS(any interface{}) string {
 	return ``
 }
 
-// convert any to time
+// ToTime convert any to time
 func ToTime(any interface{}) time.Time {
 	if any == nil {
 		return time.Time{}
@@ -626,7 +626,7 @@ func ToTime(any interface{}) time.Time {
 	return time.Time{}
 }
 
-// convert any data type to bool
+// ToBool convert any data type to bool
 //  var m interface{}
 //  m = `123`
 //  L.ParentDescribe(X.ToBool(m)) // bool(true)
@@ -724,7 +724,7 @@ func ToBool(any interface{}) bool {
 	return false
 }
 
-// convert any data type to array of any
+// ToArr convert any data type to array of any
 //  var m3 interface{}
 //  m3 = []interface{}{1}   // tipe array
 //  L.ParentDescribe(X.ToArr(m3)) // []interface {}{int(1),}
@@ -739,7 +739,7 @@ func ToArr(any interface{}) []interface{} {
 	return val
 }
 
-// convert array of any data type to array of string
+// ArrToStrArr convert array of any data type to array of string
 //  var m4 []interface{}
 //  m4 = []interface{}{1}     // // tipe array
 //  L.ParentDescribe(X.ArrToStrArr(m4)) // []string{"1"}
@@ -751,7 +751,7 @@ func ArrToStrArr(any_arr []interface{}) []string {
 	return res
 }
 
-// Convert array of any data type to array of int64
+// ArrToIntArr Convert array of any data type to array of int64
 //  var m4 []interface{}
 //  m4 = []interface{}{1}     // // tipe array
 //  L.ParentDescribe(X.ArrToIntArr(m4)) // []int64{1}
@@ -879,6 +879,7 @@ func json5fromMSI(orig map[string]int64) string {
 	return b.String()
 }
 
+// ToJson5 convert to json5
 func ToJson5(any interface{}) string {
 	// bug when using map[int64]interface{}
 	if any == nil {
@@ -934,7 +935,7 @@ func ToJson5(any interface{}) string {
 	// TODO: add more types (M/A) here, do not EVER TRY to use reflection in this case
 }
 
-// convert to beautiful json text
+// ToJsonPretty convert to beautiful json text
 //  m:= []interface {}{true,`1`,23,`wabcd`}
 //  L.Print(K.ToJsonPretty(m))
 //  // [
@@ -949,13 +950,14 @@ func ToJsonPretty(any interface{}) string {
 	return string(res)
 }
 
-// convert to standard json text
+// ToJson convert to standard json text
 func ToJson(any interface{}) string {
 	res, err := json.Marshal(any)
 	L.IsError(err, `X.ToJson failed`, any)
 	return string(res)
 }
 
+// ToAX  convert to []interface{}
 func ToAX(any interface{}) A.X {
 	if any == nil {
 		return A.X{}
@@ -967,6 +969,7 @@ func ToAX(any interface{}) A.X {
 	return val
 }
 
+// ToMSX convert to map[string]interface{}
 func ToMSX(any interface{}) M.SX {
 	if any == nil {
 		return M.SX{}
@@ -978,6 +981,7 @@ func ToMSX(any interface{}) M.SX {
 	return val
 }
 
+// ToMSS convert to map[string]string
 func ToMSS(any interface{}) M.SS {
 	if any == nil {
 		return M.SS{}
@@ -989,6 +993,7 @@ func ToMSS(any interface{}) M.SS {
 	return val
 }
 
+// ToYaml convert to yaml text
 func ToYaml(any interface{}) string {
 	bytes, err := yaml.Marshal(any)
 	L.IsError(err, `yaml.Marshal`, any)

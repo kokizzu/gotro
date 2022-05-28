@@ -58,7 +58,7 @@ func init() {
 	BgRed = color.New(color.BgRed).SprintfFunc()
 }
 
-// get CPU usage percentage
+// PercentCPU get CPU usage percentage
 //  L.PercentCPU()
 func PercentCPU() float64 {
 	last_cpu_call := time.Now().Unix()
@@ -94,7 +94,7 @@ func PercentCPU() float64 {
 	return CPU_PERCENT
 }
 
-// get RAM usage percentage
+// PercentRAM get RAM usage percentage
 //  L.PercentRAM()
 func PercentRAM() float64 {
 	last_ram_call := time.Now().Unix()
@@ -120,7 +120,7 @@ func PercentRAM() float64 {
 	return RAM_PERCENT
 }
 
-// get a stacktrace as string
+// StackTrace get a stacktrace as string
 //  L.StackTrace(0) // until current function
 //  L.StackTrace(1) // until function that call this function
 func StackTrace(start int) string {
@@ -143,7 +143,7 @@ func StackTrace(start int) string {
 	return str
 }
 
-// print error
+// IsError print error
 func IsError(err error, msg string, args ...interface{}) bool {
 	if err == nil {
 		return false
@@ -160,7 +160,7 @@ func IsError(err error, msg string, args ...interface{}) bool {
 	return true
 }
 
-// print error
+// CheckIf print error
 func CheckIf(is_err bool, msg string, args ...interface{}) bool {
 	if !is_err {
 		return false
@@ -177,7 +177,7 @@ func CheckIf(is_err bool, msg string, args ...interface{}) bool {
 	return true
 }
 
-// describe anything
+// Describe pretty print any variable
 func Describe(args ...interface{}) {
 	pc, file, line, _ := runtime.Caller(1)
 	prefix := ``
@@ -194,7 +194,7 @@ func Describe(args ...interface{}) {
 	LOG.Debug(strings.Replace(str, `%`, `%%`, -1))
 }
 
-// describe anything
+// ParentDescribe describe anything
 func ParentDescribe(args ...interface{}) {
 	pc, file, line, _ := runtime.Caller(2)
 	prefix := ``
@@ -211,7 +211,7 @@ func ParentDescribe(args ...interface{}) {
 	LOG.Debug(strings.Replace(str, `%`, `%%`, -1))
 }
 
-// replacement for fmt.Println, gives line number
+// Print replacement for fmt.Println, gives line number
 func Print(any ...interface{}) {
 	_, file, line, _ := runtime.Caller(1)
 	str := color.CyanString(file[len(FILE_PATH):] + `:` + I.ToStr(line) + `: `)
@@ -219,7 +219,7 @@ func Print(any ...interface{}) {
 	fmt.Println(any...)
 }
 
-// print but show grandparent caller function
+// PrintParent print but show grandparent caller function
 func PrintParent(any ...interface{}) {
 	_, file, line, _ := runtime.Caller(2)
 	str := color.CyanString(file[len(FILE_PATH):] + `:` + I.ToStr(line) + `: `)
@@ -227,7 +227,7 @@ func PrintParent(any ...interface{}) {
 	fmt.Println(any...)
 }
 
-// print error message and exit program
+// PanicIf print error message and exit program
 func PanicIf(err error, msg string, args ...interface{}) {
 	if err == nil {
 		return
@@ -247,7 +247,7 @@ func PanicIf(err error, msg string, args ...interface{}) {
 	panic(fmt.Errorf(err.Error()+WebBR+fmt.Sprintf("%# v"+WebBR+"    StackTrace: %s", res, stt)+WebBR+strf+strf2+WebBR+msg, args...))
 }
 
-// return elapsed time in ms, show 1st level, returns in ms
+// TimeTrack return elapsed time in ms, show 1st level, returns in ms
 func TimeTrack(start time.Time, name string) float64 {
 	_, file, line, _ := runtime.Caller(1)
 	prefix := color.YellowString(file[len(FILE_PATH):] + `:` + I.ToStr(line) + `: `)
@@ -260,7 +260,7 @@ func TimeTrack(start time.Time, name string) float64 {
 	return elapsed
 }
 
-// return elapsed time in ms, show 3nd level, returns in ms
+// LogTrack return elapsed time in ms, show 3nd level, returns in ms
 func LogTrack(start time.Time, name string) float64 {
 	_, file, line, _ := runtime.Caller(3)
 	prefix := color.CyanString(file[len(FILE_PATH):] + `:` + I.ToStr(line) + `: `)
@@ -275,7 +275,7 @@ func LogTrack(start time.Time, name string) float64 {
 
 var DEBUG bool
 
-// trace a function call
+// Trace trace a function call
 func Trace() {
 	if !DEBUG {
 		return
@@ -285,7 +285,7 @@ func Trace() {
 	fmt.Println(str)
 }
 
-// execute command and return output
+// RunCmd execute command and return output
 func RunCmd(cmd string, args ...string) (output []byte) {
 	var err error
 	fullcmd := `RunCmd: ` + cmd + ` `
@@ -303,7 +303,7 @@ func RunCmd(cmd string, args ...string) (output []byte) {
 	return
 }
 
-// run cmd and pipe to stdout
+// PipeRunCmd run cmd and pipe to stdout
 func PipeRunCmd(cmd string, args ...string) error {
 	fullcmd := `RunCmd: ` + cmd + ` `
 	if len(args) > 0 {
@@ -323,32 +323,63 @@ type CallInfo struct {
 	Line        int
 }
 
-func CallerInfo(skip ...int) *CallInfo {
+func (c *CallInfo) String() string {
+	return fmt.Sprintf("%s:%d %s.%s", c.FileName, c.Line, c.PackageName, c.FuncName)
+}
+
+// CallerInfo return caller info
+// default skip is 1, equal to parent caller
+func CallerInfo(skip ...int) (caller *CallInfo) {
+	caller = &CallInfo{}
 	skipCount := 1
 	if len(skip) > 0 {
 		skipCount = skip[0]
 	}
+
 	pc, file, line, ok := runtime.Caller(skipCount)
 	if !ok {
-		return &CallInfo{}
+		return
 	}
-	_, fileName := path.Split(file)
-	parts := strings.Split(runtime.FuncForPC(pc).Name(), ".")
+
+	caller.Line = line
+	_, caller.FileName = path.Split(file)
+	parts := strings.Split(runtime.FuncForPC(pc).Name(), `.`)
 	pl := len(parts)
-	packageName := ""
-	funcName := parts[pl-1]
+	caller.FuncName = parts[pl-1]
 
 	if parts[pl-2][0] == '(' {
-		funcName = parts[pl-2] + "." + funcName
-		packageName = strings.Join(parts[0:pl-2], ".")
+		caller.FuncName = parts[pl-2] + `.` + caller.FuncName
+		caller.PackageName = strings.Join(parts[0:pl-2], `.`)
 	} else {
-		packageName = strings.Join(parts[0:pl-1], ".")
+		caller.PackageName = strings.Join(parts[0:pl-1], `.`)
 	}
 
-	return &CallInfo{
-		PackageName: packageName,
-		FileName:    fileName,
-		FuncName:    funcName,
-		Line:        line,
+	return
+}
+
+// CallerChain return caller chain until specific
+// skipFrom 1 to 2 will return from parent caller until grandparent
+func CallerChain(skipFrom, skipUntil int) (res []CallInfo) {
+	for skipCount := skipFrom; skipCount <= skipUntil; skipCount++ {
+		pc, file, line, ok := runtime.Caller(skipCount)
+		if !ok {
+			return
+		}
+
+		caller := CallInfo{Line: line}
+		_, caller.FileName = path.Split(file)
+		parts := strings.Split(runtime.FuncForPC(pc).Name(), `.`)
+		pl := len(parts)
+		caller.FuncName = parts[pl-1]
+
+		if parts[pl-2][0] == '(' {
+			caller.FuncName = parts[pl-2] + `.` + caller.FuncName
+			caller.PackageName = strings.Join(parts[0:pl-2], `.`)
+		} else {
+			caller.PackageName = strings.Join(parts[0:pl-1], `.`)
+		}
+
+		res = append(res, caller)
 	}
+	return
 }

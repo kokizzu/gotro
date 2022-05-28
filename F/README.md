@@ -10,7 +10,7 @@
 ```go
 func If(b bool, yes float64) float64
 ```
-simplified ternary operator (bool ? val : 0), returns second argument, if the
+If simplified ternary operator (bool ? val : 0), returns second argument, if the
 condition (first arg) is true, returns 0 if not
 
     F.If(true,3.12) // 3.12
@@ -21,8 +21,8 @@ condition (first arg) is true, returns 0 if not
 ```go
 func IfElse(b bool, yes, no float64) float64
 ```
-ternary operator (bool ? val1 : val2), returns second argument if the condition
-(first arg) is true, third argument if not
+IfElse ternary operator (bool ? val1 : val2), returns second argument if the
+condition (first arg) is true, third argument if not
 
     F.IfElse(true,3.12,3.45))  // 3.12
 
@@ -31,14 +31,14 @@ ternary operator (bool ? val1 : val2), returns second argument if the condition
 ```go
 func ToDateStr(num float64) string
 ```
-convert float64 unix to `YYYY-MM-DD`
+ToDateStr convert float64 unix to `YYYY-MM-DD`
 
 #### func  ToIsoDateStr
 
 ```go
 func ToIsoDateStr(num float64) string
 ```
-convert to ISO-8601 string
+ToIsoDateStr convert to ISO-8601 string
 
     F.ToIsoDateStr(0) // `1970-01-01T00:00:00`
 
@@ -47,7 +47,7 @@ convert to ISO-8601 string
 ```go
 func ToS(num float64) string
 ```
-convert float64 to string
+ToS convert float64 to string
 
     F.ToS(3.1284)) // `3.1284`
 
@@ -56,6 +56,6 @@ convert float64 to string
 ```go
 func ToStr(num float64) string
 ```
-convert float64 to string with 2 digits behind the decimal point
+ToStr convert float64 to string with 2 digits behind the decimal point
 
     F.ToStr(3.1284)) // `3.13`

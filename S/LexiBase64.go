@@ -33,7 +33,7 @@ func init() {
 	rand.Seed(atom)
 }
 
-// convert integer to custom base-63 encoding that lexicographically correct, positive integer only
+// EncodeCB63 convert integer to custom base-63 encoding that lexicographically correct, positive integer only
 //  0       -
 //  1..10   0..9
 //  11..36  A..Z
@@ -61,7 +61,7 @@ func EncodeCB63(id int64, min_len int) string {
 	return string(str)
 }
 
-// convert custom base-63 encoding to int64
+// DecodeCB63 convert custom base-63 encoding to int64
 //   S.DecodeCB63(`--0`) // 1, true
 //   S.DecodeCB64(`(*&#$`) // 0, false
 func DecodeCB63(str string) (int64, bool) {
@@ -77,7 +77,7 @@ func DecodeCB63(str string) (int64, bool) {
 	return res, true
 }
 
-// random CB63 n-times, the result is n*MaxStrLenCB63 bytes
+// RandomCB63 random CB63 n-times, the result is n*MaxStrLenCB63 bytes
 func RandomCB63(len int64) string {
 	res := ``
 	for z := int64(0); z < len-1; z++ {

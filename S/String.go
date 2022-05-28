@@ -2,12 +2,11 @@ package S
 
 // String support package
 import (
+	"bytes"
 	"encoding/json"
+	"math/rand"
 	"strconv"
 	"strings"
-
-	"bytes"
-	"math/rand"
 	"unicode"
 
 	"github.com/kokizzu/gotro/C"
@@ -18,35 +17,35 @@ import (
 
 const WebBR = "\n<br/>"
 
-// check whether the input string (first arg) starts with a certain character (second arg) or not.
+// StartsWith check whether the input string (first arg) starts with a certain character (second arg) or not.
 //  S.StartsWith(`adakah`,`ad`) // bool(true)
 //  S.StartsWith(`adakah`,`bad`) // bool(false)
 func StartsWith(str, prefix string) bool {
 	return strings.HasPrefix(str, prefix)
 }
 
-// check whether the input string (first arg) ends with a certain character (second arg) or not.
+// EndsWith check whether the input string (first arg) ends with a certain character (second arg) or not.
 //  S.EndsWith(`adakah`,`ah`)) // bool(true)
 //  S.EndsWith(`adakah`,`aka`)) // bool(false)
 func EndsWith(str, suffix string) bool {
 	return strings.HasSuffix(str, suffix)
 }
 
-// check whether the input string (first arg) contains a certain sub string (second arg) or not.
+// Contains check whether the input string (first arg) contains a certain sub string (second arg) or not.
 //  S.Contains(`komputer`,`om`)) // bool(true)
 //  S.Contains(`komputer`,`opu`)) // bool(false)
 func Contains(str, substr string) bool {
 	return strings.Contains(str, substr)
 }
 
-// compare two input string (first arg) equal with another input string (second arg).
+// Equals compare two input string (first arg) equal with another input string (second arg).
 //  S.Equals(`komputer`,`komputer`)) // bool(true)
 //  S.Equals(`komputer`,`Komputer`)) // bool(false)
 func Equals(strFirst, strSecond string) bool {
 	return strFirst == strSecond
 }
 
-// compare two input string (first arg) equal with ignoring case another input string (second arg).
+// EqualsIgnoreCase compare two input string (first arg) equal with ignoring case another input string (second arg).
 //  S.EqualsIgnoreCase(`komputer`,`komputer`)) // bool(true)
 //  S.EqualsIgnoreCase(`komputer`,`Komputer`)) // bool(true)
 func EqualsIgnoreCase(strFirst, strSecond string) bool {
@@ -55,55 +54,55 @@ func EqualsIgnoreCase(strFirst, strSecond string) bool {
 	return strFirst == strSecond
 }
 
-// count how many specific character (first arg) that the string (second arg) contains
+// Count count how many specific character (first arg) that the string (second arg) contains
 //  S.Count(`komputeer`,`e`))// output int(2)
 func Count(str, substr string) int {
 	return strings.Count(str, substr)
 }
 
-// erase spaces from left and right
+// Trim erase spaces from left and right
 //  S.Trim(` withtrim:  `) // `withtrim:`
 func Trim(str string) string {
 	return strings.TrimSpace(str)
 }
 
-// remove chars from beginning and end
+// TrimChars remove chars from beginning and end
 //  S.TrimChars(`aoaaffoa`,`ao`) // `ff`
 func TrimChars(str, chars string) string {
 	return strings.Trim(str, chars)
 }
 
-// get first index of
+// IndexOf get first index of
 // S.IndexOf(`abcdcd`,`c) // 2, -1 if not exists
 func IndexOf(str, sub string) int {
 	return strings.Index(str, sub)
 }
 
-// get last index of
+// LastIndexOf get last index of
 //  S.LastIndexOf(`abcdcd`,`c`) // 4, -1 if not exists
 func LastIndexOf(str, sub string) int {
 	return strings.LastIndex(str, sub)
 }
 
-// replace all substring with another substring
+// Replace replace all substring with another substring
 //  S.Replace(`bisa`,`is`,`us`) // `busa`
 func Replace(haystack, needle, gold string) string {
 	return strings.Replace(haystack, needle, gold, -1)
 }
 
-// change the characters in string to lowercase
+// ToLower change the characters in string to lowercase
 //  S.ToLower(`BIsa`) // "bisa"
 func ToLower(str string) string {
 	return strings.ToLower(str)
 }
 
-// change the characters in string to uppercase
+// ToUpper change the characters in string to uppercase
 // S.ToUpper(`bisa`) // "BISA"
 func ToUpper(str string) string {
 	return strings.ToUpper(str)
 }
 
-// get character at specific index, utf-8 safe
+// CharAt get character at specific index, utf-8 safe
 //  S.CharAt(`Halo 世界`, 5) // `世` // utf-8 example, if characters not shown, it's probably your font/editor/plugin
 //  S.CharAt(`Halo`, 3) // `o`
 func CharAt(str string, index int) string {
@@ -115,7 +114,7 @@ func CharAt(str string, index int) string {
 	return ``
 }
 
-// remove character at specific index, utf-8 safe
+// RemoveCharAt remove character at specific index, utf-8 safe
 //  S.RemoveCharAt(`Halo 世界`, 5) // `Halo 界` --> utf-8 example, if characters not shown, it's probably your font/editor/plugin
 //  S.RemoveCharAt(`Halo`, 3) // `Hal`
 func RemoveCharAt(str string, index int) string {
@@ -128,13 +127,13 @@ func RemoveCharAt(str string, index int) string {
 	return string(chars)
 }
 
-// Change first letter for every word to uppercase
+// ToTitle Change first letter for every word to uppercase
 //  S.ToTitle(`Disa dasi`)) // output "Disa Dasi"
 func ToTitle(str string) string {
 	return strings.Title(str)
 }
 
-// simplified ternary operator (bool ? val : 0), returns second argument, if the condition (first arg) is true, returns empty string if not
+// If simplified ternary operator (bool ? val : 0), returns second argument, if the condition (first arg) is true, returns empty string if not
 //  S.If(true,`a`) // `a`
 //  S.If(false,`a`) // ``
 func If(b bool, yes string) string {
@@ -144,7 +143,7 @@ func If(b bool, yes string) string {
 	return ``
 }
 
-// ternary operator (bool ? val1 : val2), returns second argument if the condition (first arg) is true, third argument if not
+// IfElse ternary operator (bool ? val1 : val2), returns second argument if the condition (first arg) is true, third argument if not
 //  S.IfElse(true,`a`,`b`) // `a`
 //  S.IfElse(false,`a`,`b`) // `b`
 func IfElse(b bool, yes, no string) string {
@@ -154,7 +153,7 @@ func IfElse(b bool, yes, no string) string {
 	return no
 }
 
-// coalesce, return first non-empty string
+// IfEmpty coalesce, return first non-empty string
 //  S.IfEmpty(``,`2`) // `2`
 //  S.IfEmpty(`1`,`2`) // `1`
 func IfEmpty(str1, str2 string) string {
@@ -164,7 +163,7 @@ func IfEmpty(str1, str2 string) string {
 	return str2
 }
 
-// coalesce, return first non-empty string
+// Coalesce coalesce, return first non-empty string
 //  S.Coalesce(`1`,`2`) // `1`
 //  S.Coalesce(``,`2`) // `2`
 //  S.Coalesce(``,``,`3`) // `3`
@@ -177,7 +176,7 @@ func Coalesce(strs ...string) string {
 	return ``
 }
 
-// convert string to uint64, returns 0 and silently print error if not valid
+// ToU convert string to uint64, returns 0 and silently print error if not valid
 //  S.ToU(`1234`) // 1234
 //  S.ToU(`1a`) // 0
 func ToU(str string) uint64 {
@@ -186,7 +185,7 @@ func ToU(str string) uint64 {
 	return val
 }
 
-// convert string to int64, returns 0 and silently print error if not valid
+// ToI convert string to int64, returns 0 and silently print error if not valid
 //  S.ToI(`1234`) // 1234
 //  S.ToI(`1a`) // 0
 func ToI(str string) int64 {
@@ -195,7 +194,7 @@ func ToI(str string) int64 {
 	return val
 }
 
-// convert string to int, returns 0 and silently print error if not valid
+// ToInt convert string to int, returns 0 and silently print error if not valid
 //  S.ToInt(`1234`) // 1234
 //  S.ToInt(`1a`) // 0
 func ToInt(str string) int {
@@ -204,7 +203,7 @@ func ToInt(str string) int {
 	return int(val)
 }
 
-// convert to uint with check
+// AsU convert to uint with check
 //  S.AsU(`1234`) // 1234, true
 //  S.AsU(`1abc`) // 0, false
 func AsU(str string) (uint, bool) {
@@ -212,7 +211,7 @@ func AsU(str string) (uint, bool) {
 	return uint(res), err == nil
 }
 
-// convert to int64 with check
+// AsI convert to int64 with check
 //  S.AsI(`1234`) // 1234, true
 //  S.AsI(`1abc`) // 0, false
 func AsI(str string) (int64, bool) {
@@ -220,7 +219,7 @@ func AsI(str string) (int64, bool) {
 	return res, err == nil
 }
 
-// convert string to float64, returns 0 and silently print error if not valid
+// ToF convert string to float64, returns 0 and silently print error if not valid
 //  S.ToF(`1234.5`) // 1234.5
 //  S.ToF(`1a`) // 0.0
 func ToF(str string) float64 {
@@ -229,7 +228,7 @@ func ToF(str string) float64 {
 	return val
 }
 
-// convert to float64 with check
+// AsF convert to float64 with check
 //  S.AsF(`1234.5`) // 1234.5, true
 //  S.AsF(`1abc`) // 0.0, false
 func AsF(str string) (float64, bool) {
@@ -237,7 +236,7 @@ func AsF(str string) (float64, bool) {
 	return res, err == nil
 }
 
-// convert JSON object to map[string]interface{}, silently print and return empty map if failed
+// JsonToMap convert JSON object to map[string]interface{}, silently print and return empty map if failed
 //  json_str := `{"test":123,"bla":[1,2,3,4]}`
 //  map1 := S.JsonToMap(json_str)
 func JsonToMap(str string) (res map[string]interface{}) {
@@ -250,7 +249,7 @@ func JsonToMap(str string) (res map[string]interface{}) {
 	return
 }
 
-// convert JSON object to map[string]string, silently print and return empty map if failed
+// JsonToStrStrMap convert JSON object to map[string]string, silently print and return empty map if failed
 //  json_str := `{"test":123,"bla":[1,2,3,4]}`
 //  map1 := S.JsonToMap(json_str)
 func JsonToStrStrMap(str string) (res map[string]string) {
@@ -263,7 +262,7 @@ func JsonToStrStrMap(str string) (res map[string]string) {
 	return
 }
 
-// convert JSON object to []interface{}, silently print and return empty slice of interface if failed
+// JsonToArr convert JSON object to []interface{}, silently print and return empty slice of interface if failed
 //  json_str := `[1,2,['test'],'a']`
 //  arr := S.JsonToArr(json_str)
 func JsonToArr(str string) (res []interface{}) {
@@ -276,7 +275,7 @@ func JsonToArr(str string) (res []interface{}) {
 	return
 }
 
-// convert JSON object to []map[string]interface{}, silently print and return empty slice of interface if failed
+// JsonToObjArr convert JSON object to []map[string]interface{}, silently print and return empty slice of interface if failed
 //  json_str := `[{"x":"foo"},{"y":"bar"}]`
 //  arr := S.JsonToObjArr(json_str)
 func JsonToObjArr(str string) (res []map[string]interface{}) {
@@ -289,7 +288,7 @@ func JsonToObjArr(str string) (res []map[string]interface{}) {
 	return
 }
 
-// convert JSON object to []string, silently print and return empty slice of interface if failed
+// JsonToStrArr convert JSON object to []string, silently print and return empty slice of interface if failed
 //  json_str := `["123","456",789]`
 //  arr := S.JsonToStrArr(json_str)
 func JsonToStrArr(str string) (res []string) {
@@ -302,7 +301,7 @@ func JsonToStrArr(str string) (res []string) {
 	return
 }
 
-// convert JSON object to []int64, silently print and return empty slice of interface if failed
+// JsonToIntArr convert JSON object to []int64, silently print and return empty slice of interface if failed
 //  json_str := `[1,2,['test'],'a']`
 //  arr := S.JsonToArr(json_str)
 func JsonToIntArr(str string) (res []int64) {
@@ -320,7 +319,7 @@ func Repeat(str string, count int) string {
 	return strings.Repeat(str, count)
 }
 
-// convert JSON object to map[string]interface{} with check
+// JsonAsMap convert JSON object to map[string]interface{} with check
 //  json_str := `{"test":123,"bla":[1,2,3,4]}`
 //  map1, ok := S.JsonAsMap(json_str)
 func JsonAsMap(str string) (res map[string]interface{}, ok bool) {
@@ -330,7 +329,7 @@ func JsonAsMap(str string) (res map[string]interface{}, ok bool) {
 	return
 }
 
-// convert JSON object to []interface{} with check
+// JsonAsArr convert JSON object to []interface{} with check
 //  json_str := `[1,2,['test'],'a']`
 //  arr, ok := S.JsonAsArr(json_str)
 func JsonAsArr(str string) (res []interface{}, ok bool) {
@@ -340,7 +339,7 @@ func JsonAsArr(str string) (res []interface{}, ok bool) {
 	return
 }
 
-// convert JSON object to []string with check
+// JsonAsStrArr convert JSON object to []string with check
 //  json_str := `["a","b","c"]`
 //  arr, ok := S.JsonAsStrArr(json_str)
 func JsonAsStrArr(str string) (res []string, ok bool) {
@@ -350,7 +349,7 @@ func JsonAsStrArr(str string) (res []string, ok bool) {
 	return
 }
 
-// convert JSON object to []int64 with check
+// JsonAsIntArr convert JSON object to []int64 with check
 //  json_str := `[1,2,3]`
 //  arr, ok := S.JsonAsIntArr(json_str)
 func JsonAsIntArr(str string) (res []int64, ok bool) {
@@ -360,7 +359,7 @@ func JsonAsIntArr(str string) (res []int64, ok bool) {
 	return
 }
 
-// convert JSON object to []float64 with check
+// JsonAsFloatArr convert JSON object to []float64 with check
 //  json_str := `[1,2,3]`
 //  arr, ok := S.JsonAsFloatArr(json_str)
 func JsonAsFloatArr(str string) (res []float64, ok bool) {
@@ -370,32 +369,32 @@ func JsonAsFloatArr(str string) (res []float64, ok bool) {
 	return
 }
 
-// split a string (first arg) by characters (second arg) into array of strings (output).
+// Split split a string (first arg) by characters (second arg) into array of strings (output).
 //  S.Split(`biiiissssa`,func(ch rune) bool { return ch == `i` }) // output []string{"b", "", "", "", "ssssa"}
 func Split(str, sep string) []string {
 	return strings.Split(str, sep)
 }
 
-// split a string (first arg) based on a function
+// SplitFunc split a string (first arg) based on a function
 func SplitFunc(str string, fun func(rune) bool) []string {
 	return strings.FieldsFunc(str, fun)
 }
 
-// append padStr to left until length is lenStr
+// PadLeft append padStr to left until length is lenStr
 func PadLeft(s string, padStr string, lenStr int) string {
 	var padCount int
 	padCount = I.MaxOf(lenStr-len(s), 0)
 	return strings.Repeat(padStr, padCount) + s
 }
 
-// append padStr to right until length is lenStr
+// PadRight append padStr to right until length is lenStr
 func PadRight(s string, padStr string, lenStr int) string {
 	var padCount int
 	padCount = I.MaxOf(lenStr-len(s), 0)
 	return s + strings.Repeat(padStr, padCount)
 }
 
-// return valid version of mail contact (part before <usr@email>)
+// ValidateMailContact return valid version of mail contact (part before <usr@email>)
 func ValidateMailContact(str string) string {
 	str = Replace(str, `,`, `_`)
 	str = Replace(str, `.`, `_`)
@@ -407,7 +406,7 @@ func ValidateMailContact(str string) string {
 	return str
 }
 
-// return formatted array of mail contact <usr@email>
+// MergeMailContactEmails return formatted array of mail contact <usr@email>
 func MergeMailContactEmails(each_name, str_emails string) []string {
 	temp := []string{}
 	str_email := Split(str_emails, `,`)
@@ -422,7 +421,7 @@ func MergeMailContactEmails(each_name, str_emails string) []string {
 	return temp
 }
 
-// return empty string if str is not a valid email
+// ValidateEmail return empty string if str is not a valid email
 func ValidateEmail(str string) string {
 	res := strings.Split(str, `@`)
 	if len(res) != 2 {
@@ -436,7 +435,7 @@ func ValidateEmail(str string) string {
 	return ``
 }
 
-// remove invalid characters of a phone number
+// ValidatePhone remove invalid characters of a phone number
 func ValidatePhone(str string) string {
 	res := strings.Map(func(r rune) rune {
 		if unicode.IsDigit(r) || r == '+' || r == ' ' || r == '-' {
@@ -447,7 +446,7 @@ func ValidatePhone(str string) string {
 	return res
 }
 
-// validate file name
+// ValidateFilename validate file name
 func ValidateFilename(str string) string {
 	res := strings.Map(func(r rune) rune {
 		if C.IsValidFilename(byte(r)) {
@@ -458,7 +457,7 @@ func ValidateFilename(str string) string {
 	return res
 }
 
-// create a random password
+// RandomPassword create a random password
 func RandomPassword(strlen int64) string {
 	const chars = "abcdefghijkmnopqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ123456789" // l and I removed
 	result := make([]byte, strlen)
@@ -468,7 +467,7 @@ func RandomPassword(strlen int64) string {
 	return string(result)
 }
 
-// split to substrings with maximum n characters
+// SplitN split to substrings with maximum n characters
 func SplitN(str string, n int) []string {
 	if len(str) < n {
 		return []string{str}
@@ -489,7 +488,7 @@ func SplitN(str string, n int) []string {
 	return subs
 }
 
-// substring before first `substr`
+// LeftOf substring before first `substr`
 func LeftOf(str, substr string) string {
 	len := strings.Index(str, substr)
 	if len < 0 {
@@ -498,7 +497,7 @@ func LeftOf(str, substr string) string {
 	return str[:len]
 }
 
-// substring after first `substr`
+// RightOf substring after first `substr`
 func RightOf(str, substr string) string {
 	pos := strings.Index(str, substr)
 	if pos < 0 {
@@ -507,7 +506,7 @@ func RightOf(str, substr string) string {
 	return str[pos+len(substr):]
 }
 
-// substring at most n characters
+// LeftN substring at most n characters
 func LeftN(str string, n int) string {
 	if len(str) < n {
 		return str
@@ -515,7 +514,7 @@ func LeftN(str string, n int) string {
 	return str[:n] + `...`
 }
 
-// substring at most n characters
+// Left substring at most n characters
 func Left(str string, n int) string {
 	if len(str) < n {
 		return str
@@ -526,7 +525,7 @@ func Left(str string, n int) string {
 	return str[:n]
 }
 
-// substring at right most n characters
+// Right substring at right most n characters
 func Right(str string, n int) string {
 	if len(str) < n {
 		return str
@@ -537,7 +536,7 @@ func Right(str string, n int) string {
 	return str[(len(str) - n):]
 }
 
-// substring at set left right n characters
+// Mid substring at set left right n characters
 func Mid(str string, left int, length int) string {
 	if len(str) < left {
 		return str
@@ -554,7 +553,7 @@ func Mid(str string, left int, length int) string {
 	return str[left : left+length]
 }
 
-// substring before last `substr`
+// LeftOfLast substring before last `substr`
 func LeftOfLast(str, substr string) string {
 	len := strings.LastIndex(str, substr)
 	if len < 0 {
@@ -563,7 +562,7 @@ func LeftOfLast(str, substr string) string {
 	return str[:len]
 }
 
-// substring after last `substr`
+// RightOfLast substring after last `substr`
 func RightOfLast(str, substr string) string {
 	pos := strings.LastIndex(str, substr)
 	if pos < 0 {
@@ -572,7 +571,7 @@ func RightOfLast(str, substr string) string {
 	return str[pos+len(substr):]
 }
 
-// remove last n character, not UTF-8 friendly
+// RemoveLastN remove last n character, not UTF-8 friendly
 func RemoveLastN(str string, n int) string {
 	m := len(str)
 	if n >= m {
@@ -581,7 +580,7 @@ func RemoveLastN(str string, n int) string {
 	return str[0 : m-n]
 }
 
-// concat if not empty with additional separator
+// ConcatIfNotEmpty concat if not empty with additional separator
 func ConcatIfNotEmpty(str, sep string) string {
 	if str == `` {
 		return ``
@@ -589,7 +588,7 @@ func ConcatIfNotEmpty(str, sep string) string {
 	return str + sep
 }
 
-// convert to lower only first char
+// LowerFirst convert to lower only first char
 func LowerFirst(s string) string {
 	for i, v := range s {
 		return string(unicode.ToLower(v)) + s[i+1:]
@@ -597,7 +596,7 @@ func LowerFirst(s string) string {
 	return ``
 }
 
-// convert to lower only first char
+// UpperFirst convert to lower only first char
 func UpperFirst(s string) string {
 	for i, v := range s {
 		return string(unicode.ToUpper(v)) + s[i+1:]
@@ -605,7 +604,7 @@ func UpperFirst(s string) string {
 	return ``
 }
 
-// convert to CamelCase
+// CamelCase convert to CamelCase
 // source: https://github.com/iancoleman/strcase
 func CamelCase(s string) string {
 	s = strings.TrimSpace(s)
@@ -643,7 +642,7 @@ func CamelCase(s string) string {
 	return n.String()
 }
 
-// convert to snake case
+// SnakeCase convert to snake case
 // source: https://github.com/iancoleman/strcase
 func SnakeCase(s string) string {
 	s = strings.TrimSpace(s)

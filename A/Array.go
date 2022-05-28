@@ -1,5 +1,7 @@
 package A
 
+// Array support package
+
 import (
 	"bytes"
 	"encoding/json"
@@ -10,14 +12,12 @@ import (
 	"github.com/kokizzu/gotro/L"
 )
 
-// Array support package
-
-// array (slice) of anything
+// X array (slice) of anything
 //  v := A.X{}
 //  v = append(v, any_value)
 type X []interface{}
 
-// array (slice) of map with string key and any value
+// MSX array (slice) of map with string key and any value
 //  v := A.MSX{}
 //  v = append(v, map[string]{
 //    `foo`: 123,
@@ -25,7 +25,7 @@ type X []interface{}
 //  })
 type MSX []map[string]interface{}
 
-// convert map array of string to JSON string type
+// ToJson convert map array of string to JSON string type
 //  m:= []interface{}{123,`abc`}
 //  L.Print(A.ToJson(m)) // [123,"abc"]
 func ToJson(arr []interface{}) string {
@@ -34,14 +34,14 @@ func ToJson(arr []interface{}) string {
 	return string(str)
 }
 
-// combine strings in the array of string with the chosen string separator
+// StrJoin combine strings in the array of string with the chosen string separator
 //  m1:= []string{`satu`,`dua`}
 //  A.StrJoin(m1,`-`) // satu-dua
 func StrJoin(arr []string, sep string) string {
 	return strings.Join(arr, sep)
 }
 
-// combine int64s in the array of int64 with the chosen string separator
+// IntJoin combine int64s in the array of int64 with the chosen string separator
 //  m1:= []int64{123,456}
 //  A.IntJoin(m1,`|`) // 123|456
 func IntJoin(arr []int64, sep string) string {
@@ -56,7 +56,7 @@ func IntJoin(arr []int64, sep string) string {
 	return buf.String()
 }
 
-// combine uint64s in the array of int64 with the chosen string separator
+// UIntJoin combine uint64s in the array of int64 with the chosen string separator
 //  m1:= []uint64{123,456}
 //  A.UIntJoin(m1,`-`) // 123-456
 func UIntJoin(arr []uint64, sep string) string {
@@ -71,12 +71,11 @@ func UIntJoin(arr []uint64, sep string) string {
 	return buf.String()
 }
 
-/* Convert array of string to array of int64
-func main() {
-    m:= []string{`1`,`2`}
-    L.Print(A.StrToInt(m))//output [1 2]
-}
-*/
+// StrToInt Convert array of string to array of int64
+//  func main() {
+//    m:= []string{`1`,`2`}
+//    L.Print(A.StrToInt(m))//output [1 2]
+//  }
 // convert string list to integer list
 func StrToInt(arr []string) []int64 {
 	res := []int64{}
@@ -90,7 +89,7 @@ func StrToInt(arr []string) []int64 {
 	return res
 }
 
-// Append string to array of string if not exists
+// StrContains Append string to array of string if not exists
 func StrContains(arr []string, str string) bool {
 	for _, s := range arr {
 		if s == str {
@@ -100,7 +99,7 @@ func StrContains(arr []string, str string) bool {
 	return false
 }
 
-// Append int64 to array of string if not exists
+// IntContains Append int64 to array of string if not exists
 func IntContains(arr []int64, str int64) bool {
 	for _, s := range arr {
 		if s == str {
@@ -110,7 +109,7 @@ func IntContains(arr []int64, str int64) bool {
 	return false
 }
 
-// Append if not exists
+// StrAppendIfNotExists Append if not exists
 func StrAppendIfNotExists(arr []string, str string) []string {
 	if StrContains(arr, str) {
 		return arr
@@ -118,7 +117,7 @@ func StrAppendIfNotExists(arr []string, str string) []string {
 	return append(arr, str)
 }
 
-// Append if not exists
+// IntAppendIfNotExists Append if not exists
 func IntAppendIfNotExists(arr []int64, str int64) []int64 {
 	if IntContains(arr, str) {
 		return arr
@@ -126,7 +125,7 @@ func IntAppendIfNotExists(arr []int64, str int64) []int64 {
 	return append(arr, str)
 }
 
-// Append slices if not exists
+// StrsAppendIfNotExists Append slices if not exists
 func StrsAppendIfNotExists(arr []string, strs []string) []string {
 	for _, str := range strs {
 		if StrContains(arr, str) {
@@ -137,7 +136,7 @@ func StrsAppendIfNotExists(arr []string, strs []string) []string {
 	return arr
 }
 
-// Append slices if not exists
+// IntsAppendIfNotExists Append slices if not exists
 func IntsAppendIfNotExists(arr []int64, ints []int64) []int64 {
 	for _, i := range ints {
 		if IntContains(arr, i) {
@@ -148,7 +147,7 @@ func IntsAppendIfNotExists(arr []int64, ints []int64) []int64 {
 	return arr
 }
 
-// split, add alias, and concat emails with name
+// ParseEmail split, add alias, and concat emails with name
 func ParseEmail(str_emails, each_name string) []string {
 	temp := []string{}
 	str_email := strings.Split(str_emails, `,`)
@@ -168,7 +167,7 @@ func ParseEmail(str_emails, each_name string) []string {
 	return temp
 }
 
-// check if float exists on array
+// FloatExist check if float exists on array
 func FloatExist(arr []float64, val float64) bool {
 	for _, cur := range arr {
 		if val == cur {

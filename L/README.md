@@ -58,73 +58,77 @@ var TIMETRACK_MIN_DURATION float64
 ```go
 func CheckIf(is_err bool, msg string, args ...interface{}) bool
 ```
-print error
+CheckIf print error
 
 #### func  CreateDir
 
 ```go
 func CreateDir(path string) bool
 ```
+CreateDir create directory recursively
 
 #### func  CreateFile
 
 ```go
 func CreateFile(path string, content string) bool
 ```
+CreateFile create file with specific content
 
 #### func  Describe
 
 ```go
 func Describe(args ...interface{})
 ```
-describe anything
+Describe pretty print any variable
 
 #### func  FileEmpty
 
 ```go
 func FileEmpty(name string) bool
 ```
+FileEmpty check file missing or has zero size
 
 #### func  FileExists
 
 ```go
 func FileExists(name string) bool
 ```
+FileExists check file exists
 
 #### func  IsError
 
 ```go
 func IsError(err error, msg string, args ...interface{}) bool
 ```
-print error
+IsError print error
 
 #### func  LogTrack
 
 ```go
 func LogTrack(start time.Time, name string) float64
 ```
-return elapsed time in ms, show 3nd level, returns in ms
+LogTrack return elapsed time in ms, show 3nd level, returns in ms
 
 #### func  PanicIf
 
 ```go
 func PanicIf(err error, msg string, args ...interface{})
 ```
-print error message and exit program
+PanicIf print error message and exit program
 
 #### func  ParentDescribe
 
 ```go
 func ParentDescribe(args ...interface{})
 ```
-describe anything
+ParentDescribe describe anything
 
 #### func  PercentCPU
 
 ```go
 func PercentCPU() float64
 ```
-get CPU usage percentage
+PercentCPU get CPU usage percentage
 
     L.PercentCPU()
 
@@ -133,7 +137,7 @@ get CPU usage percentage
 ```go
 func PercentRAM() float64
 ```
-get RAM usage percentage
+PercentRAM get RAM usage percentage
 
     L.PercentRAM()
 
@@ -142,47 +146,49 @@ get RAM usage percentage
 ```go
 func PipeRunCmd(cmd string, args ...string) error
 ```
-run cmd and pipe to stdout
+PipeRunCmd run cmd and pipe to stdout
 
 #### func  Print
 
 ```go
 func Print(any ...interface{})
 ```
-replacement for fmt.Println, gives line number
+Print replacement for fmt.Println, gives line number
 
 #### func  PrintParent
 
 ```go
 func PrintParent(any ...interface{})
 ```
-print but show grandparent caller function
+PrintParent print but show grandparent caller function
 
 #### func  ReadFile
 
 ```go
 func ReadFile(path string) string
 ```
+ReadFile read file content as string
 
 #### func  ReadFileLines
 
 ```go
 func ReadFileLines(path string, eachLineFunc func(line string) (exitEarly bool)) (ok bool)
 ```
+ReadFileLines read file content line by line
 
 #### func  RunCmd
 
 ```go
 func RunCmd(cmd string, args ...string) (output []byte)
 ```
-execute command and return output
+RunCmd execute command and return output
 
 #### func  StackTrace
 
 ```go
 func StackTrace(start int) string
 ```
-get a stacktrace as string
+StackTrace get a stacktrace as string
 
     L.StackTrace(0) // until current function
     L.StackTrace(1) // until function that call this function
@@ -192,14 +198,14 @@ get a stacktrace as string
 ```go
 func TimeTrack(start time.Time, name string) float64
 ```
-return elapsed time in ms, show 1st level, returns in ms
+TimeTrack return elapsed time in ms, show 1st level, returns in ms
 
 #### func  Trace
 
 ```go
 func Trace()
 ```
-trace a function call
+Trace trace a function call
 
 #### type CallInfo
 
@@ -213,8 +219,23 @@ type CallInfo struct {
 ```
 
 
+#### func  CallerChain
+
+```go
+func CallerChain(skipFrom, skipUntil int) (res []CallInfo)
+```
+CallerChain return caller chain until specific skipFrom 1 to 2 will return from
+parent caller until grandparent
+
 #### func  CallerInfo
 
 ```go
-func CallerInfo(skip ...int) *CallInfo
+func CallerInfo(skip ...int) (caller *CallInfo)
+```
+CallerInfo return caller info default skip is 1, equal to parent caller
+
+#### func (*CallInfo) String
+
+```go
+func (c *CallInfo) String() string
 ```

@@ -10,14 +10,14 @@
 ```go
 func SSKeysStartedWith(m SS, prefix string) []string
 ```
-retrieve all keys started with
+SSKeysStartedWith retrieve all keys started with
 
 #### func  ToJson
 
 ```go
 func ToJson(hash map[string]interface{}) string
 ```
-convert map[string]interface{} to json
+ToJson convert map[string]interface{} to json
 
     m :=  map[string]interface{}{`buah`:123,`angka`:`dia`}
     M.ToJson(m) // {"angka":"dia","buah":123}
@@ -28,7 +28,7 @@ convert map[string]interface{} to json
 type IAX map[int64][]interface{}
 ```
 
-map with int64 key and array of any value
+IAX map with int64 key and array of any value
 
 #### type IB
 
@@ -36,14 +36,14 @@ map with int64 key and array of any value
 type IB map[int64]bool
 ```
 
-map with int64 key and bool value
+IB map with int64 key and bool value
 
 #### func (IB) Keys
 
 ```go
 func (hash IB) Keys() []int64
 ```
-get array of int64 keys
+Keys get array of int64 keys
 
     m :=  M.IB{1:true,2:false}
     m.Keys() // []int64{1, 2}
@@ -55,7 +55,7 @@ get all integer keys
 ```go
 func (hash IB) KeysConcat(with string) string
 ```
-get concatenated integer keys
+KeysConcat get concatenated integer keys
 
     m := M.IB{1: true, 2: false, 3:true, 5:false}
     m.KeysConcat(`,`) // `1,2,3,5`
@@ -66,14 +66,14 @@ get concatenated integer keys
 type II map[int64]int64
 ```
 
-map with int64 key and int64 value
+II map with int64 key and int64 value
 
 #### func (II) Keys
 
 ```go
 func (hash II) Keys() []int64
 ```
-get array of int64 keys
+Keys get array of int64 keys
 
     m :=  M.II{1:1,2:3}
     m.Keys() // []int64{1, 2}
@@ -83,7 +83,7 @@ get array of int64 keys
 ```go
 func (hash II) KeysConcat(with string) string
 ```
-get concatenated integer keys
+KeysConcat get concatenated integer keys
 
     m := M.II{1: 2, 2: 567, 3:6, 5:45}
     m.KeysConcat(`,`) // `1,2,3,5`
@@ -94,7 +94,7 @@ get concatenated integer keys
 type IS map[int64]string
 ```
 
-map with int64 key and string value
+IS map with int64 key and string value
 
 #### type IX
 
@@ -102,14 +102,14 @@ map with int64 key and string value
 type IX map[int64]interface{}
 ```
 
-map with int64 key and any value
+IX map with int64 key and any value
 
 #### func (IX) Keys
 
 ```go
 func (hash IX) Keys() []int64
 ```
-get array of int64 keys
+Keys get array of int64 keys
 
     m :=  M.IX{1:1,2:`DIA`}
     m.Keys()) // []int64{1, 2}
@@ -119,7 +119,7 @@ get array of int64 keys
 ```go
 func (hash IX) ToSX() SX
 ```
-convert keys to string
+ToSX convert keys to string
 
     m :=  M.IX{1:1,2:`DUA`}
     m.ToSX() // M.SX{"1": int(1),"2": "DUA"}
@@ -132,7 +132,7 @@ convert integer keys to string keys
 type SAX map[string][]interface{}
 ```
 
-map with string key and array of any value
+SAX map with string key and array of any value
 
 #### type SB
 
@@ -140,14 +140,14 @@ map with string key and array of any value
 type SB map[string]bool
 ```
 
-map with string key and bool value
+SB map with string key and bool value
 
 #### func (SB) IntoJson
 
 ```go
 func (hash SB) IntoJson() (string, bool)
 ```
-convert to json string with check
+IntoJson convert to json string with check
 
 #### func (SB) IntoJsonPretty
 
@@ -161,7 +161,7 @@ convert to pretty json string with check
 ```go
 func (hash SB) KeysConcat(with string) string
 ```
-get concatenated string keys
+KeysConcat get concatenated string keys
 
     m := M.SB{`tes`:true,`coba`:true,`lah`:true}
     m.KeysConcat(`,`) // `coba,lah,tes`
@@ -171,7 +171,7 @@ get concatenated string keys
 ```go
 func (hash SB) SortedKeys() []string
 ```
-get sorted keys
+SortedKeys get sorted keys
 
     m := M.SS{`tes`:true,`coba`:false,`lah`:false}
     m.SortedKeys() // []string{`coba`,`lah`,`tes`}
@@ -181,14 +181,14 @@ get sorted keys
 ```go
 func (hash SB) ToJson() string
 ```
-convert to json string, silently print error if failed
+ToJson convert to json string, silently print error if failed
 
 #### func (SB) ToJsonPretty
 
 ```go
 func (hash SB) ToJsonPretty() string
 ```
-convert to pretty json string, silently print error if failed
+ToJsonPretty convert to pretty json string, silently print error if failed
 
 #### type SF
 
@@ -196,7 +196,7 @@ convert to pretty json string, silently print error if failed
 type SF map[string]float64
 ```
 
-map with string key and float64 value
+SF map with string key and float64 value
 
 #### type SI
 
@@ -204,7 +204,7 @@ map with string key and float64 value
 type SI map[string]int64
 ```
 
-map with string key and int64 value
+SI map with string key and int64 value
 
 #### type SS
 
@@ -212,42 +212,42 @@ map with string key and int64 value
 type SS map[string]string
 ```
 
-map with string key and string value
+SS map with string key and string value
 
 #### func (SS) GetFloat
 
 ```go
 func (hash SS) GetFloat(key string) float64
 ```
-get float64 type from map
+GetFloat get float64 type from map
 
 #### func (SS) GetInt
 
 ```go
 func (hash SS) GetInt(key string) int64
 ```
-get int64 from from map
+GetInt get int64 from from map
 
 #### func (SS) GetStr
 
 ```go
 func (hash SS) GetStr(key string) string
 ```
-get string type from map
+GetStr get string type from map
 
 #### func (SS) GetUint
 
 ```go
 func (hash SS) GetUint(key string) uint64
 ```
-get uint from map
+GetUint get uint from map
 
 #### func (SS) Keys
 
 ```go
 func (hash SS) Keys() []string
 ```
-get array of string keys
+Keys get array of string keys
 
     m :=  M.SS{`satu`:`1`,`dua`:`2`}
     m.Keys() // []string{"satu", "dua"}
@@ -257,7 +257,7 @@ get array of string keys
 ```go
 func (hash SS) KeysConcat(with string) string
 ```
-get concatenated string keys
+KeysConcat get concatenated string keys
 
     m := M.SS{`tes`:`tes`,`coba`:`saja`,`lah`:`lah`}
     m.KeysConcat(`,`) // `coba,lah,tes`
@@ -267,28 +267,28 @@ get concatenated string keys
 ```go
 func (hash SS) Merge(src SS)
 ```
-merge from another map
+Merge merge from another map
 
 #### func (SS) Pretty
 
 ```go
 func (hash SS) Pretty(sep string) string
 ```
-get pretty printed values
+Pretty get pretty printed values
 
 #### func (SS) PrettyFunc
 
 ```go
 func (hash SS) PrettyFunc(sep string, fun func(string, string) string) string
 ```
-get pretty printed values with filter values
+PrettyFunc get pretty printed values with filter values
 
 #### func (SS) SortedKeys
 
 ```go
 func (hash SS) SortedKeys() []string
 ```
-get sorted keys
+SortedKeys get sorted keys
 
     m := M.SS{`tes`:`tes`,`coba`:`saja`,`lah`:`lah`}
     m.SortedKeys() // []string{`coba`,`lah`,`tes`}
@@ -298,14 +298,14 @@ get sorted keys
 ```go
 func (hash SS) ToJson() string
 ```
-convert to json string, silently print error if failed
+ToJson convert to json string, silently print error if failed
 
 #### func (SS) ToScylla
 
 ```go
 func (hash SS) ToScylla() string
 ```
-convert to scylla based map<text,text>
+ToScylla convert to scylla based map<text,text>
 
 #### type SX
 
@@ -313,14 +313,14 @@ convert to scylla based map<text,text>
 type SX map[string]interface{}
 ```
 
-map with string key and any value
+SX map with string key and any value
 
 #### func (SX) GetAX
 
 ```go
 func (json SX) GetAX(key string) []interface{}
 ```
-get array of anything value from map
+GetAX get array of anything value from map
 
     m :=  M.SX{`tes`:[]interface{}{123,`buah`}}
     m.GetAX(`tes`) // []interface {}{int(123),"buah"}
@@ -330,8 +330,8 @@ get array of anything value from map
 ```go
 func (json SX) GetBool(key string) bool
 ```
-get bool type from map (empty string, 0, `f`, `false` are false, other non empty
-are considered truthy value) m :=
+GetBool get bool type from map (empty string, 0, `f`, `false` are false, other
+non empty are considered truthy value) m :=
 M.SX{`test`:234.345,`coba`:`buah`,`angka`:float64(123),`salah`:123}
 
     m.GetBool(`test`)  // bool(true)
@@ -344,7 +344,7 @@ M.SX{`test`:234.345,`coba`:`buah`,`angka`:float64(123),`salah`:123}
 ```go
 func (json SX) GetFloat(key string) float64
 ```
-get float64 type from map
+GetFloat get float64 type from map
 
     m := M.SX{`test`:234.345,`coba`:`buah`,`dia`:true,`angka`:23435}
     m.GetFloat(`test`)  // float64(234.345)
@@ -357,7 +357,7 @@ get float64 type from map
 ```go
 func (json SX) GetInt(key string) int64
 ```
-get int64 type from map
+GetInt get int64 type from map
 
     m := M.SX{`test`:234.345,`coba`:`buah`,`dia`:true,`angka`:int64(23435)}
     m.GetInt(`test`))  // int64(234)
@@ -370,7 +370,7 @@ get int64 type from map
 ```go
 func (json SX) GetIntArr(key string) []int64
 ```
-get array int64 value from map
+GetIntArr get array int64 value from map
 
     m :=  M.SX{`tes`:[]int64{123,234}}
     m.GetIntArr(`tes`)) // []int64{123, 234}
@@ -380,7 +380,7 @@ get array int64 value from map
 ```go
 func (json SX) GetMIB(key string) IB
 ```
-get map string int64 value from map
+GetMIB get map string int64 value from map
 
     m := M.SX{`tes`:M.SB{`satu`:true,`2`:false}}
     m.GetMSB(`tes`) // M.SB{"satu":true, "2":false}
@@ -390,7 +390,7 @@ get map string int64 value from map
 ```go
 func (json SX) GetMSB(key string) SB
 ```
-get map string bool value from map
+GetMSB get map string bool value from map
 
     m := M.SX{`tes`:M.SB{`1`:true,`2`:false}}
     m.GetMSB(`tes`) // M.SB{"1":true, "2":false}
@@ -400,7 +400,7 @@ get map string bool value from map
 ```go
 func (json SX) GetMSF(key string) SF
 ```
-get map string float64 value from map
+GetMSF get map string float64 value from map
 
     m := M.SX{`tes`:M.SF{`satu`:32.45,`2`:12}}
     m.GetMSF(`tes`) // M.SF{"satu":32.45, "2":12}
@@ -410,7 +410,7 @@ get map string float64 value from map
 ```go
 func (json SX) GetMSI(key string) SI
 ```
-get map string int64 value from map
+GetMSI get map string int64 value from map
 
     m := M.SX{`tes`:M.SF{`satu`:32,`2`:12}}
     m.GetMSI(`tes`) // M.SF{"satu":32, "2":12}
@@ -420,7 +420,7 @@ get map string int64 value from map
 ```go
 func (json SX) GetMSX(key string) SX
 ```
-get map string anything value from map
+GetMSX get map string anything value from map
 
     m :=  M.SX{`tes`:M.SX{`satu`:234.345,`dua`:`huruf`,`tiga`:123}}
     m.GetMSX(`tes`) // M.SX{"tiga": int(123),"satu": float64(234.345),"dua":  "huruf"}
@@ -430,7 +430,7 @@ get map string anything value from map
 ```go
 func (json SX) GetStr(key string) string
 ```
-get string type from map
+GetStr get string type from map
 
     m := M.SX{`test`:234.345,`coba`:`buah`,`angka`:int64(123)}
     m.GetStr(`test`)  // `234.345`
@@ -442,7 +442,7 @@ get string type from map
 ```go
 func (json SX) GetUint(key string) uint64
 ```
-get uint type from map
+GetUint get uint type from map
 
     m := M.SX{`test`:234.345,`coba`:`buah`,`dia`:true,`angka`:int64(23435)}
     m.GetInt(`test`))  // int64(234)
@@ -455,21 +455,21 @@ get uint type from map
 ```go
 func (hash SX) IntoJson() (string, bool)
 ```
-convert to json string with check
+IntoJson convert to json string with check
 
 #### func (SX) IntoJsonPretty
 
 ```go
 func (hash SX) IntoJsonPretty() (string, bool)
 ```
-convert to pretty json string with check
+IntoJsonPretty convert to pretty json string with check
 
 #### func (SX) Keys
 
 ```go
 func (hash SX) Keys() []string
 ```
-get array of string keys
+Keys get array of string keys
 
     m :=  M.SS{`satu`:`1`,`dua`:`2`}
     m.Keys() // []string{"satu", "dua"}
@@ -479,21 +479,21 @@ get array of string keys
 ```go
 func (hash SX) Pretty(sep string) string
 ```
-get pretty printed values
+Pretty get pretty printed values
 
 #### func (SX) Set
 
 ```go
 func (hash SX) Set(key string, val interface{})
 ```
-set key with any value
+Set set key with any value
 
 #### func (SX) SortedKeys
 
 ```go
 func (hash SX) SortedKeys() []string
 ```
-get sorted keys
+SortedKeys get sorted keys
 
     m := M.SX{`tes`:1,`coba`:12.4,`lah`:false}
     m.SortedKeys() // []string{`coba`,`lah`,`tes`}
@@ -503,11 +503,11 @@ get sorted keys
 ```go
 func (hash SX) ToJson() string
 ```
-convert to json string, silently print error if failed
+ToJson convert to json string, silently print error if failed
 
 #### func (SX) ToJsonPretty
 
 ```go
 func (hash SX) ToJsonPretty() string
 ```
-convert to pretty json string, silently print error if failed
+ToJsonPretty convert to pretty json string, silently print error if failed

@@ -8,7 +8,7 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-// hash password with sha256 (without salt)
+// HashPassword hash password with sha256 (without salt)
 func HashPassword(pass string) string {
 	res1 := []byte(pass)
 	res2 := sha256.Sum256(res1)
@@ -16,7 +16,7 @@ func HashPassword(pass string) string {
 	return base64.StdEncoding.EncodeToString(res3)
 }
 
-// hash password (with salt)
+// EncryptPassword hash password (with salt)
 func EncryptPassword(s string) string {
 	saltedBytes := []byte(s)
 	hashedBytes, err := bcrypt.GenerateFromPassword(saltedBytes, bcrypt.DefaultCost)
@@ -25,8 +25,7 @@ func EncryptPassword(s string) string {
 	return string(hashedBytes[:])
 }
 
-// check encrypted password
-//
+// CheckPassword check encrypted password
 func CheckPassword(hash string, rawPassword string) error {
 	incoming := []byte(rawPassword)
 	existing := []byte(hash)

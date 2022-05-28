@@ -22,7 +22,7 @@ var ModCB63 []uint64
 ```go
 func AsF(str string) (float64, bool)
 ```
-convert to float64 with check
+AsF convert to float64 with check
 
     S.AsF(`1234.5`) // 1234.5, true
     S.AsF(`1abc`) // 0.0, false
@@ -32,7 +32,7 @@ convert to float64 with check
 ```go
 func AsI(str string) (int64, bool)
 ```
-convert to int64 with check
+AsI convert to int64 with check
 
     S.AsI(`1234`) // 1234, true
     S.AsI(`1abc`) // 0, false
@@ -42,7 +42,7 @@ convert to int64 with check
 ```go
 func AsU(str string) (uint, bool)
 ```
-convert to uint with check
+AsU convert to uint with check
 
     S.AsU(`1234`) // 1234, true
     S.AsU(`1abc`) // 0, false
@@ -52,7 +52,7 @@ convert to uint with check
 ```go
 func BT(str string) string
 ```
-add backtick quote in the beginning and the end of string, without escaping.
+BT add backtick quote in the beginning and the end of string, without escaping.
 
     S.Q(`coba`) // "`coba`"
     S.Q(`123`)  // "`123`"
@@ -62,14 +62,14 @@ add backtick quote in the beginning and the end of string, without escaping.
 ```go
 func CamelCase(s string) string
 ```
-convert to CamelCase source: https://github.com/iancoleman/strcase
+CamelCase convert to CamelCase source: https://github.com/iancoleman/strcase
 
 #### func  CharAt
 
 ```go
 func CharAt(str string, index int) string
 ```
-get character at specific index, utf-8 safe
+CharAt get character at specific index, utf-8 safe
 
     S.CharAt(`Halo 世界`, 5) // `世` // utf-8 example, if characters not shown, it's probably your font/editor/plugin
     S.CharAt(`Halo`, 3) // `o`
@@ -79,14 +79,14 @@ get character at specific index, utf-8 safe
 ```go
 func CheckPassword(hash string, rawPassword string) error
 ```
-check encrypted password
+CheckPassword check encrypted password
 
 #### func  Coalesce
 
 ```go
 func Coalesce(strs ...string) string
 ```
-coalesce, return first non-empty string
+Coalesce coalesce, return first non-empty string
 
     S.Coalesce(`1`,`2`) // `1`
     S.Coalesce(``,`2`) // `2`
@@ -97,15 +97,15 @@ coalesce, return first non-empty string
 ```go
 func ConcatIfNotEmpty(str, sep string) string
 ```
-concat if not empty with additional separator
+ConcatIfNotEmpty concat if not empty with additional separator
 
 #### func  Contains
 
 ```go
 func Contains(str, substr string) bool
 ```
-check whether the input string (first arg) contains a certain sub string (second
-arg) or not.
+Contains check whether the input string (first arg) contains a certain sub
+string (second arg) or not.
 
     S.Contains(`komputer`,`om`)) // bool(true)
     S.Contains(`komputer`,`opu`)) // bool(false)
@@ -115,7 +115,7 @@ arg) or not.
 ```go
 func Count(str, substr string) int
 ```
-count how many specific character (first arg) that the string (second arg)
+Count count how many specific character (first arg) that the string (second arg)
 contains
 
     S.Count(`komputeer`,`e`))// output int(2)
@@ -125,7 +125,7 @@ contains
 ```go
 func DecodeCB63(str string) (int64, bool)
 ```
-convert custom base-63 encoding to int64
+DecodeCB63 convert custom base-63 encoding to int64
 
     S.DecodeCB63(`--0`) // 1, true
     S.DecodeCB64(`(*&#$`) // 0, false
@@ -135,8 +135,8 @@ convert custom base-63 encoding to int64
 ```go
 func EncodeCB63(id int64, min_len int) string
 ```
-convert integer to custom base-63 encoding that lexicographically correct,
-positive integer only
+EncodeCB63 convert integer to custom base-63 encoding that lexicographically
+correct, positive integer only
 
     0       -
     1..10   0..9
@@ -151,15 +151,15 @@ positive integer only
 ```go
 func EncryptPassword(s string) string
 ```
-hash password (with salt)
+EncryptPassword hash password (with salt)
 
 #### func  EndsWith
 
 ```go
 func EndsWith(str, suffix string) bool
 ```
-check whether the input string (first arg) ends with a certain character (second
-arg) or not.
+EndsWith check whether the input string (first arg) ends with a certain
+character (second arg) or not.
 
     S.EndsWith(`adakah`,`ah`)) // bool(true)
     S.EndsWith(`adakah`,`aka`)) // bool(false)
@@ -169,8 +169,8 @@ arg) or not.
 ```go
 func Equals(strFirst, strSecond string) bool
 ```
-compare two input string (first arg) equal with another input string (second
-arg).
+Equals compare two input string (first arg) equal with another input string
+(second arg).
 
     S.Equals(`komputer`,`komputer`)) // bool(true)
     S.Equals(`komputer`,`Komputer`)) // bool(false)
@@ -180,8 +180,8 @@ arg).
 ```go
 func EqualsIgnoreCase(strFirst, strSecond string) bool
 ```
-compare two input string (first arg) equal with ignoring case another input
-string (second arg).
+EqualsIgnoreCase compare two input string (first arg) equal with ignoring case
+another input string (second arg).
 
     S.EqualsIgnoreCase(`komputer`,`komputer`)) // bool(true)
     S.EqualsIgnoreCase(`komputer`,`Komputer`)) // bool(true)
@@ -191,14 +191,14 @@ string (second arg).
 ```go
 func HashPassword(pass string) string
 ```
-hash password with sha256 (without salt)
+HashPassword hash password with sha256 (without salt)
 
 #### func  If
 
 ```go
 func If(b bool, yes string) string
 ```
-simplified ternary operator (bool ? val : 0), returns second argument, if the
+If simplified ternary operator (bool ? val : 0), returns second argument, if the
 condition (first arg) is true, returns empty string if not
 
     S.If(true,`a`) // `a`
@@ -209,8 +209,8 @@ condition (first arg) is true, returns empty string if not
 ```go
 func IfElse(b bool, yes, no string) string
 ```
-ternary operator (bool ? val1 : val2), returns second argument if the condition
-(first arg) is true, third argument if not
+IfElse ternary operator (bool ? val1 : val2), returns second argument if the
+condition (first arg) is true, third argument if not
 
     S.IfElse(true,`a`,`b`) // `a`
     S.IfElse(false,`a`,`b`) // `b`
@@ -220,7 +220,7 @@ ternary operator (bool ? val1 : val2), returns second argument if the condition
 ```go
 func IfEmpty(str1, str2 string) string
 ```
-coalesce, return first non-empty string
+IfEmpty coalesce, return first non-empty string
 
     S.IfEmpty(``,`2`) // `2`
     S.IfEmpty(`1`,`2`) // `1`
@@ -230,14 +230,14 @@ coalesce, return first non-empty string
 ```go
 func IndexOf(str, sub string) int
 ```
-get first index of S.IndexOf(`abcdcd`,`c) // 2, -1 if not exists
+IndexOf get first index of S.IndexOf(`abcdcd`,`c) // 2, -1 if not exists
 
 #### func  JsonAsArr
 
 ```go
 func JsonAsArr(str string) (res []interface{}, ok bool)
 ```
-convert JSON object to []interface{} with check
+JsonAsArr convert JSON object to []interface{} with check
 
     json_str := `[1,2,['test'],'a']`
     arr, ok := S.JsonAsArr(json_str)
@@ -247,7 +247,7 @@ convert JSON object to []interface{} with check
 ```go
 func JsonAsFloatArr(str string) (res []float64, ok bool)
 ```
-convert JSON object to []float64 with check
+JsonAsFloatArr convert JSON object to []float64 with check
 
     json_str := `[1,2,3]`
     arr, ok := S.JsonAsFloatArr(json_str)
@@ -257,7 +257,7 @@ convert JSON object to []float64 with check
 ```go
 func JsonAsIntArr(str string) (res []int64, ok bool)
 ```
-convert JSON object to []int64 with check
+JsonAsIntArr convert JSON object to []int64 with check
 
     json_str := `[1,2,3]`
     arr, ok := S.JsonAsIntArr(json_str)
@@ -267,7 +267,7 @@ convert JSON object to []int64 with check
 ```go
 func JsonAsMap(str string) (res map[string]interface{}, ok bool)
 ```
-convert JSON object to map[string]interface{} with check
+JsonAsMap convert JSON object to map[string]interface{} with check
 
     json_str := `{"test":123,"bla":[1,2,3,4]}`
     map1, ok := S.JsonAsMap(json_str)
@@ -277,7 +277,7 @@ convert JSON object to map[string]interface{} with check
 ```go
 func JsonAsStrArr(str string) (res []string, ok bool)
 ```
-convert JSON object to []string with check
+JsonAsStrArr convert JSON object to []string with check
 
     json_str := `["a","b","c"]`
     arr, ok := S.JsonAsStrArr(json_str)
@@ -287,8 +287,8 @@ convert JSON object to []string with check
 ```go
 func JsonToArr(str string) (res []interface{})
 ```
-convert JSON object to []interface{}, silently print and return empty slice of
-interface if failed
+JsonToArr convert JSON object to []interface{}, silently print and return empty
+slice of interface if failed
 
     json_str := `[1,2,['test'],'a']`
     arr := S.JsonToArr(json_str)
@@ -298,8 +298,8 @@ interface if failed
 ```go
 func JsonToIntArr(str string) (res []int64)
 ```
-convert JSON object to []int64, silently print and return empty slice of
-interface if failed
+JsonToIntArr convert JSON object to []int64, silently print and return empty
+slice of interface if failed
 
     json_str := `[1,2,['test'],'a']`
     arr := S.JsonToArr(json_str)
@@ -309,8 +309,8 @@ interface if failed
 ```go
 func JsonToMap(str string) (res map[string]interface{})
 ```
-convert JSON object to map[string]interface{}, silently print and return empty
-map if failed
+JsonToMap convert JSON object to map[string]interface{}, silently print and
+return empty map if failed
 
     json_str := `{"test":123,"bla":[1,2,3,4]}`
     map1 := S.JsonToMap(json_str)
@@ -320,8 +320,8 @@ map if failed
 ```go
 func JsonToObjArr(str string) (res []map[string]interface{})
 ```
-convert JSON object to []map[string]interface{}, silently print and return empty
-slice of interface if failed
+JsonToObjArr convert JSON object to []map[string]interface{}, silently print and
+return empty slice of interface if failed
 
     json_str := `[{"x":"foo"},{"y":"bar"}]`
     arr := S.JsonToObjArr(json_str)
@@ -331,8 +331,8 @@ slice of interface if failed
 ```go
 func JsonToStrArr(str string) (res []string)
 ```
-convert JSON object to []string, silently print and return empty slice of
-interface if failed
+JsonToStrArr convert JSON object to []string, silently print and return empty
+slice of interface if failed
 
     json_str := `["123","456",789]`
     arr := S.JsonToStrArr(json_str)
@@ -342,8 +342,8 @@ interface if failed
 ```go
 func JsonToStrStrMap(str string) (res map[string]string)
 ```
-convert JSON object to map[string]string, silently print and return empty map if
-failed
+JsonToStrStrMap convert JSON object to map[string]string, silently print and
+return empty map if failed
 
     json_str := `{"test":123,"bla":[1,2,3,4]}`
     map1 := S.JsonToMap(json_str)
@@ -353,7 +353,7 @@ failed
 ```go
 func LastIndexOf(str, sub string) int
 ```
-get last index of
+LastIndexOf get last index of
 
     S.LastIndexOf(`abcdcd`,`c`) // 4, -1 if not exists
 
@@ -362,70 +362,70 @@ get last index of
 ```go
 func Left(str string, n int) string
 ```
-substring at most n characters
+Left substring at most n characters
 
 #### func  LeftN
 
 ```go
 func LeftN(str string, n int) string
 ```
-substring at most n characters
+LeftN substring at most n characters
 
 #### func  LeftOf
 
 ```go
 func LeftOf(str, substr string) string
 ```
-substring before first `substr`
+LeftOf substring before first `substr`
 
 #### func  LeftOfLast
 
 ```go
 func LeftOfLast(str, substr string) string
 ```
-substring before last `substr`
+LeftOfLast substring before last `substr`
 
 #### func  LowerFirst
 
 ```go
 func LowerFirst(s string) string
 ```
-convert to lower only first char
+LowerFirst convert to lower only first char
 
 #### func  MergeMailContactEmails
 
 ```go
 func MergeMailContactEmails(each_name, str_emails string) []string
 ```
-return formatted array of mail contact <usr@email>
+MergeMailContactEmails return formatted array of mail contact <usr@email>
 
 #### func  Mid
 
 ```go
 func Mid(str string, left int, length int) string
 ```
-substring at set left right n characters
+Mid substring at set left right n characters
 
 #### func  PadLeft
 
 ```go
 func PadLeft(s string, padStr string, lenStr int) string
 ```
-append padStr to left until length is lenStr
+PadLeft append padStr to left until length is lenStr
 
 #### func  PadRight
 
 ```go
 func PadRight(s string, padStr string, lenStr int) string
 ```
-append padStr to right until length is lenStr
+PadRight append padStr to right until length is lenStr
 
 #### func  Q
 
 ```go
 func Q(str string) string
 ```
-add single quote in the beginning and the end of string, without escaping.
+Q add single quote in the beginning and the end of string, without escaping.
 
     S.Q(`coba`) // `'coba'`
     S.Q(`123`)  // `'123'`
@@ -435,7 +435,7 @@ add single quote in the beginning and the end of string, without escaping.
 ```go
 func QQ(str string) string
 ```
-add double quote in the beginning and the end of string, without escaping.
+QQ add double quote in the beginning and the end of string, without escaping.
 
     S.Q(`coba`) // `"coba"`
     S.Q(`123`)  // `"123"`
@@ -445,21 +445,21 @@ add double quote in the beginning and the end of string, without escaping.
 ```go
 func RandomCB63(len int64) string
 ```
-random CB63 n-times, the result is n*MaxStrLenCB63 bytes
+RandomCB63 random CB63 n-times, the result is n*MaxStrLenCB63 bytes
 
 #### func  RandomPassword
 
 ```go
 func RandomPassword(strlen int64) string
 ```
-create a random password
+RandomPassword create a random password
 
 #### func  RemoveCharAt
 
 ```go
 func RemoveCharAt(str string, index int) string
 ```
-remove character at specific index, utf-8 safe
+RemoveCharAt remove character at specific index, utf-8 safe
 
     S.RemoveCharAt(`Halo 世界`, 5) // `Halo 界` --> utf-8 example, if characters not shown, it's probably your font/editor/plugin
     S.RemoveCharAt(`Halo`, 3) // `Hal`
@@ -469,7 +469,7 @@ remove character at specific index, utf-8 safe
 ```go
 func RemoveLastN(str string, n int) string
 ```
-remove last n character, not UTF-8 friendly
+RemoveLastN remove last n character, not UTF-8 friendly
 
 #### func  Repeat
 
@@ -483,7 +483,7 @@ repeat string
 ```go
 func Replace(haystack, needle, gold string) string
 ```
-replace all substring with another substring
+Replace replace all substring with another substring
 
     S.Replace(`bisa`,`is`,`us`) // `busa`
 
@@ -492,36 +492,36 @@ replace all substring with another substring
 ```go
 func Right(str string, n int) string
 ```
-substring at right most n characters
+Right substring at right most n characters
 
 #### func  RightOf
 
 ```go
 func RightOf(str, substr string) string
 ```
-substring after first `substr`
+RightOf substring after first `substr`
 
 #### func  RightOfLast
 
 ```go
 func RightOfLast(str, substr string) string
 ```
-substring after last `substr`
+RightOfLast substring after last `substr`
 
 #### func  SnakeCase
 
 ```go
 func SnakeCase(s string) string
 ```
-convert to snake case source: https://github.com/iancoleman/strcase
+SnakeCase convert to snake case source: https://github.com/iancoleman/strcase
 
 #### func  Split
 
 ```go
 func Split(str, sep string) []string
 ```
-split a string (first arg) by characters (second arg) into array of strings
-(output).
+Split split a string (first arg) by characters (second arg) into array of
+strings (output).
 
     S.Split(`biiiissssa`,func(ch rune) bool { return ch == `i` }) // output []string{"b", "", "", "", "ssssa"}
 
@@ -530,22 +530,22 @@ split a string (first arg) by characters (second arg) into array of strings
 ```go
 func SplitFunc(str string, fun func(rune) bool) []string
 ```
-split a string (first arg) based on a function
+SplitFunc split a string (first arg) based on a function
 
 #### func  SplitN
 
 ```go
 func SplitN(str string, n int) []string
 ```
-split to substrings with maximum n characters
+SplitN split to substrings with maximum n characters
 
 #### func  StartsWith
 
 ```go
 func StartsWith(str, prefix string) bool
 ```
-check whether the input string (first arg) starts with a certain character
-(second arg) or not.
+StartsWith check whether the input string (first arg) starts with a certain
+character (second arg) or not.
 
     S.StartsWith(`adakah`,`ad`) // bool(true)
     S.StartsWith(`adakah`,`bad`) // bool(false)
@@ -555,7 +555,7 @@ check whether the input string (first arg) starts with a certain character
 ```go
 func ToF(str string) float64
 ```
-convert string to float64, returns 0 and silently print error if not valid
+ToF convert string to float64, returns 0 and silently print error if not valid
 
     S.ToF(`1234.5`) // 1234.5
     S.ToF(`1a`) // 0.0
@@ -565,7 +565,7 @@ convert string to float64, returns 0 and silently print error if not valid
 ```go
 func ToI(str string) int64
 ```
-convert string to int64, returns 0 and silently print error if not valid
+ToI convert string to int64, returns 0 and silently print error if not valid
 
     S.ToI(`1234`) // 1234
     S.ToI(`1a`) // 0
@@ -575,7 +575,7 @@ convert string to int64, returns 0 and silently print error if not valid
 ```go
 func ToInt(str string) int
 ```
-convert string to int, returns 0 and silently print error if not valid
+ToInt convert string to int, returns 0 and silently print error if not valid
 
     S.ToInt(`1234`) // 1234
     S.ToInt(`1a`) // 0
@@ -585,7 +585,7 @@ convert string to int, returns 0 and silently print error if not valid
 ```go
 func ToLower(str string) string
 ```
-change the characters in string to lowercase
+ToLower change the characters in string to lowercase
 
     S.ToLower(`BIsa`) // "bisa"
 
@@ -594,7 +594,7 @@ change the characters in string to lowercase
 ```go
 func ToTitle(str string) string
 ```
-Change first letter for every word to uppercase
+ToTitle Change first letter for every word to uppercase
 
     S.ToTitle(`Disa dasi`)) // output "Disa Dasi"
 
@@ -603,7 +603,7 @@ Change first letter for every word to uppercase
 ```go
 func ToU(str string) uint64
 ```
-convert string to uint64, returns 0 and silently print error if not valid
+ToU convert string to uint64, returns 0 and silently print error if not valid
 
     S.ToU(`1234`) // 1234
     S.ToU(`1a`) // 0
@@ -613,14 +613,14 @@ convert string to uint64, returns 0 and silently print error if not valid
 ```go
 func ToUpper(str string) string
 ```
-change the characters in string to uppercase S.ToUpper(`bisa`) // "BISA"
+ToUpper change the characters in string to uppercase S.ToUpper(`bisa`) // "BISA"
 
 #### func  Trim
 
 ```go
 func Trim(str string) string
 ```
-erase spaces from left and right
+Trim erase spaces from left and right
 
     S.Trim(` withtrim:  `) // `withtrim:`
 
@@ -629,7 +629,7 @@ erase spaces from left and right
 ```go
 func TrimChars(str, chars string) string
 ```
-remove chars from beginning and end
+TrimChars remove chars from beginning and end
 
     S.TrimChars(`aoaaffoa`,`ao`) // `ff`
 
@@ -638,63 +638,64 @@ remove chars from beginning and end
 ```go
 func UZ(str string) string
 ```
-replace <, >, and & back, quot and apos to alternative utf8
+UZ replace <, >, and & back, quot and apos to alternative utf8
 
 #### func  UZRAW
 
 ```go
 func UZRAW(str string) string
 ```
-replace <, >, and & back, quot and apos to real html
+UZRAW replace <, >, and & back, quot and apos to real html
 
 #### func  UpperFirst
 
 ```go
 func UpperFirst(s string) string
 ```
-convert to lower only first char
+UpperFirst convert to lower only first char
 
 #### func  ValidateEmail
 
 ```go
 func ValidateEmail(str string) string
 ```
-return empty string if str is not a valid email
+ValidateEmail return empty string if str is not a valid email
 
 #### func  ValidateFilename
 
 ```go
 func ValidateFilename(str string) string
 ```
-validate file name
+ValidateFilename validate file name
 
 #### func  ValidateMailContact
 
 ```go
 func ValidateMailContact(str string) string
 ```
-return valid version of mail contact (part before <usr@email>)
+ValidateMailContact return valid version of mail contact (part before
+<usr@email>)
 
 #### func  ValidatePhone
 
 ```go
 func ValidatePhone(str string) string
 ```
-remove invalid characters of a phone number
+ValidatePhone remove invalid characters of a phone number
 
 #### func  XSS
 
 ```go
 func XSS(str string) string
 ```
-replace <, >, ', ", % but without giving single quote
+XSS replace <, >, ', ", % but without giving single quote
 
 #### func  Z
 
 ```go
 func Z(str string) string
 ```
-trim, replace <, >, ', " and gives single quote
+Z trim, replace <, >, ', " and gives single quote
 
     S.Z(`<>'"`) // `&lt;&gt;&apos;&quot;
 
@@ -703,7 +704,7 @@ trim, replace <, >, ', " and gives single quote
 ```go
 func ZB(b bool) string
 ```
-give ' to boolean value
+ZB give ' to boolean value
 
     S.ZB(true)  // `'true'`
     S.ZB(false) // `'false'`
@@ -713,7 +714,7 @@ give ' to boolean value
 ```go
 func ZI(num int64) string
 ```
-give ' to int64 value
+ZI give ' to int64 value
 
     S.ZI(23)) // '23'
     S.ZI(03)) // '3'
@@ -723,7 +724,7 @@ give ' to int64 value
 ```go
 func ZJ(str string) string
 ```
-single quote a json string
+ZJ single quote a json string
 
     hai := `{'test':123,"bla":[1,2,3,4]}`
     S.ZJ(hai) // "{'test':123,\"bla\":[1,2,3,4]}"
@@ -733,7 +734,7 @@ single quote a json string
 ```go
 func ZJJ(str string) string
 ```
-double quote a json string
+ZJJ double quote a json string
 
     hai := `{'test':123,"bla":[1,2,3,4]}`
     S.ZJJ(hai) // "{'test':123,\"bla\":[1,2,3,4]}"
@@ -743,14 +744,14 @@ double quote a json string
 ```go
 func ZJLIKE(str string) string
 ```
-ZLIKE but for json (not replacing double quote)
+ZJLIKE ZLIKE but for json (not replacing double quote)
 
 #### func  ZLIKE
 
 ```go
 func ZLIKE(str string) string
 ```
-replace <, >, ', ", % and gives single quote and %
+ZLIKE replace <, >, ', ", % and gives single quote and %
 
     S.ZLIKE(`coba<`))  // output '%coba&lt;%'
     S.ZLIKE(`"coba"`)) // output '%&quot;coba&quot;%'
@@ -760,7 +761,7 @@ replace <, >, ', ", % and gives single quote and %
 ```go
 func ZS(str string) string
 ```
-replace <, >, ', " and gives single quote (without trimming)
+ZS replace <, >, ', " and gives single quote (without trimming)
 
     S.Z(`<>'"`) // `&lt;&gt;&apos;&quot;
 
@@ -769,21 +770,21 @@ replace <, >, ', " and gives single quote (without trimming)
 ```go
 func ZT(strs ...string) string
 ```
-trace function, location of the caller code, replacement for ZC
+ZT trace function, location of the caller code, replacement for ZC
 
 #### func  ZT2
 
 ```go
 func ZT2() string
 ```
-trace function, location of 2nd level caller, parameterless, with newline
+ZT2 trace function, location of 2nd level caller, parameterless, with newline
 
 #### func  ZU
 
 ```go
 func ZU(num uint64) string
 ```
-give ' to uint value
+ZU give ' to uint value
 
     S.ZI(23)) // '23'
     S.ZI(03)) // '3'
@@ -793,6 +794,6 @@ give ' to uint value
 ```go
 func ZZ(str string) string
 ```
-replace ` and give double quote (for table names)
+ZZ replace ` and give double quote (for table names)
 
     S.ZZ(`coba"`) // `"coba&quot;"`

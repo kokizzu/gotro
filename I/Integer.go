@@ -7,7 +7,7 @@ import (
 	"strings"
 )
 
-// simplified ternary operator (bool ? val : 0), returns second argument, if the condition (first arg) is true, returns 0 if not
+// If simplified ternary operator (bool ? val : 0), returns second argument, if the condition (first arg) is true, returns 0 if not
 //  I.If(true,3) // 3
 //  I.If(false,3) // 0
 func If(b bool, yes int64) int64 {
@@ -17,7 +17,7 @@ func If(b bool, yes int64) int64 {
 	return 0
 }
 
-// ternary operator (bool ? val1 : val2), returns second argument if the condition (first arg) is true, third argument if not
+// IfElse ternary operator (bool ? val1 : val2), returns second argument if the condition (first arg) is true, third argument if not
 //  I.IfElse(true,3,4) // 3
 //  I.IfElse(false,3,4) // 4
 func IfElse(b bool, yes, no int64) int64 {
@@ -27,7 +27,7 @@ func IfElse(b bool, yes, no int64) int64 {
 	return no
 }
 
-// simplified ternary operator (bool ? val1==0 : val2), returns second argument, if val1 (first arg) is zero, returns val2 if not
+// IfZero simplified ternary operator (bool ? val1==0 : val2), returns second argument, if val1 (first arg) is zero, returns val2 if not
 //  I.IfZero(0,3) // 3
 //  I.IfZero(4,3) // 4
 func IfZero(val1, val2 int64) int64 {
@@ -37,7 +37,7 @@ func IfZero(val1, val2 int64) int64 {
 	return val1
 }
 
-// simplified ternary operator (bool ? val1==0 : val2), returns second argument, if val1 (first arg) is zero, returns val2 if not
+// IsZero simplified ternary operator (bool ? val1==0 : val2), returns second argument, if val1 (first arg) is zero, returns val2 if not
 //  I.IsZero(0,3) // 3
 //  I.IsZero(4,3) // 4
 func IsZero(val1, val2 int) int {
@@ -47,7 +47,7 @@ func IsZero(val1, val2 int) int {
 	return val1
 }
 
-// simplified ternary operator (bool ? val : 0), returns second argument, if the condition (first arg) is true, returns 0 if not
+// UIf simplified ternary operator (bool ? val : 0), returns second argument, if the condition (first arg) is true, returns 0 if not
 //  UI.UIf(true,3) // 3
 //  UI.UIf(false,3) // 0
 func UIf(b bool, yes uint64) uint64 {
@@ -57,7 +57,7 @@ func UIf(b bool, yes uint64) uint64 {
 	return 0
 }
 
-// ternary operator (bool ? val1 : val2), returns second argument if the condition (first arg) is true, third argument if not
+// UIfElse ternary operator (bool ? val1 : val2), returns second argument if the condition (first arg) is true, third argument if not
 //  UI.UIfElse(true,3,4) // 3
 //  UI.UIfElse(false,3,4) // 4
 func UIfElse(b bool, yes, no uint64) uint64 {
@@ -67,7 +67,7 @@ func UIfElse(b bool, yes, no uint64) uint64 {
 	return no
 }
 
-// simplified ternary operator (bool ? val1==0 : val2), returns second argument, if val1 (first arg) is zero, returns val2 if not
+// UIfZero simplified ternary operator (bool ? val1==0 : val2), returns second argument, if val1 (first arg) is zero, returns val2 if not
 //  UI.UIfZero(0,3) // 3
 //  UI.UIfZero(4,3) // 4
 func UIfZero(val1, val2 uint64) uint64 {
@@ -77,9 +77,9 @@ func UIfZero(val1, val2 uint64) uint64 {
 	return val1
 }
 
-// simplified ternary operator (bool ? val1==0 : val2), returns second argument, if val1 (first arg) is zero, returns val2 if not
-//  UI.UIsZero(0,3) // 3
-//  UI.UIsZero(4,3) // 4
+// UIsZero simplified ternary operator (bool ? val1==0 : val2), returns second argument, if val1 (first arg) is zero, returns val2 if not
+//  I.UIsZero(0,3) // 3
+//  I.UIsZero(4,3) // 4
 func UIsZero(val1, val2 uint) uint {
 	if val1 == 0 {
 		return val2
@@ -87,31 +87,31 @@ func UIsZero(val1, val2 uint) uint {
 	return val1
 }
 
-// convert int64 to string
+// ToS convert int64 to string
 //  I.ToS(int64(1234)) // `1234`
 func ToS(num int64) string {
 	return strconv.FormatInt(num, 10)
 }
 
-// convert int to string
+// ToStr convert int to string
 //  I.ToStr(1234) // `1234`
 func ToStr(num int) string {
 	return strconv.Itoa(num)
 }
 
-// convert uint64 to string
+// UToS convert uint64 to string
 //  I.UToS(uint64(1234)) // `1234`
 func UToS(num uint64) string {
 	return strconv.FormatUint(num, 10)
 }
 
-// convert int to string
+// UToStr convert int to string
 //  I.UToStr(uint(1234)) // `1234`
 func UToStr(num uint) string {
 	return strconv.FormatUint(uint64(num), 10)
 }
 
-// int64 min of two values
+// Min int64 min of two values
 //  I.Min(int64(3),int64(4)) // 3
 func Min(a, b int64) int64 {
 	if a < b {
@@ -120,7 +120,7 @@ func Min(a, b int64) int64 {
 	return b
 }
 
-// int64 max of two values
+// Max int64 max of two values
 //  I.Max(int64(3),int64(4)) // 4
 func Max(a, b int64) int64 {
 	if a > b {
@@ -129,7 +129,7 @@ func Max(a, b int64) int64 {
 	return b
 }
 
-// uint64 min of two values
+// UMin uint64 min of two values
 //  I.UMin(uint64(3),uint64(4)) // 3
 func UMin(a, b uint64) uint64 {
 	if a < b {
@@ -138,7 +138,7 @@ func UMin(a, b uint64) uint64 {
 	return b
 }
 
-// uint64 max of two values
+// UMax uint64 max of two values
 //  I.UMax(uint64(3),uint64(4)) // 4
 func UMax(a, b uint64) uint64 {
 	if a > b {
@@ -147,7 +147,7 @@ func UMax(a, b uint64) uint64 {
 	return b
 }
 
-// int min of two values
+// MinOf int min of two values
 //  I.MinOf(3,4) // 3
 func MinOf(a, b int) int {
 	if a < b {
@@ -156,7 +156,7 @@ func MinOf(a, b int) int {
 	return b
 }
 
-// int max of two values
+// MaxOf int max of two values
 //  I.MaxOf(3,4) // 4
 func MaxOf(a, b int) int {
 	if a > b {
@@ -165,7 +165,7 @@ func MaxOf(a, b int) int {
 	return b
 }
 
-// uint min of two values
+// UMinOf uint min of two values
 //  I.MinOf(3,4) // 3
 func UMinOf(a, b uint) uint {
 	if a < b {
@@ -174,7 +174,7 @@ func UMinOf(a, b uint) uint {
 	return b
 }
 
-// uint max of two values
+// UMaxOf uint max of two values
 //  I.MaxOf(3,4) // 4
 func UMaxOf(a, b uint) uint {
 	if a > b {
@@ -183,7 +183,7 @@ func UMaxOf(a, b uint) uint {
 	return b
 }
 
-// format ordinal number suffix such as st, nd, rd, and th.
+// ToEnglishNum format ordinal number suffix such as st, nd, rd, and th.
 //  I.ToEnglishNum(241)) // `241st`
 //  I.ToEnglishNum(242)) // `242nd`
 //  I.ToEnglishNum(244)) // `244th`
@@ -208,7 +208,7 @@ func ToEnglishNum(num int64) string {
 	return prefix
 }
 
-// converts int64 (first arg) to string with zero padded with maximum length
+// PadZero converts int64 (first arg) to string with zero padded with maximum length
 // I.PadZero(123,5) // `00123`
 func PadZero(num int64, length int) string {
 	str := ToS(num)
@@ -229,7 +229,7 @@ func init() {
 	romanV = map[int64]rune{1: 'V', 10: 'L', 100: 'D', 1000: 'ↁ', 10000: 'ↇ'}
 }
 
-// convert int64 to roman number
+// Roman convert int64 to roman number
 //  I.ToRoman(16)) // output "XVI"
 func Roman(num int64) string {
 	res := []rune{}

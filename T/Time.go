@@ -24,7 +24,7 @@ const HMS = `150405`
 
 var EMPTY = time.Time{}
 
-// convert time to iso formatted time string
+// ToIsoStr convert time to iso formatted time string
 //  T.ToIsoStr(time.Now()) // "2016-03-17T10:04:50.6489"
 func ToIsoStr(t time.Time) string {
 	if t == EMPTY {
@@ -33,13 +33,13 @@ func ToIsoStr(t time.Time) string {
 	return t.Format(ISO)
 }
 
-// current iso time
+// IsoStr current iso time
 //  T.IsoStr() // "2016-03-17T10:07:56.418728"
 func IsoStr() string {
 	return time.Now().Format(ISO)
 }
 
-// convert time to iso date
+// ToDateStr convert time to iso date
 //  T.ToDateStr(time.Now()) // output "2016-03-17"
 func ToDateStr(t time.Time) string {
 	if t == EMPTY {
@@ -48,13 +48,13 @@ func ToDateStr(t time.Time) string {
 	return t.Format(YMD)
 }
 
-// current iso date
+// DateStr current iso date
 // T.DateStr()) // "2016-03-17"
 func DateStr() string {
 	return time.Now().Format(YMD)
 }
 
-// convert time to human date
+// ToHumanStr convert time to human date
 //  T.ToHumanStr(time.Now()) // "17-Mar-2016 10:06"
 func ToHumanStr(t time.Time) string {
 	if t == EMPTY {
@@ -63,13 +63,13 @@ func ToHumanStr(t time.Time) string {
 	return t.Format(HUMAN)
 }
 
-// current human date
+// HumanStr current human date
 //  T.HumanStr() // "17-Mar-2016 10:06"
 func HumanStr() string {
 	return time.Now().Format(HUMAN)
 }
 
-// convert time to iso date and hour:minute
+// ToDateHourStr convert time to iso date and hour:minute
 //  T.ToDateHourStr(time.Now()) // "2016-03-17 10:07"
 func ToDateHourStr(t time.Time) string {
 	if t == EMPTY {
@@ -78,7 +78,7 @@ func ToDateHourStr(t time.Time) string {
 	return t.Format(YMD_HM)
 }
 
-// convert time to iso date and hourminutesecond
+// ToHhmmssStr convert time to iso date and hourminutesecond
 //  T.ToDateHourStr(time.Now()) // "230744"
 func ToHhmmssStr(t time.Time) string {
 	if t == EMPTY {
@@ -87,19 +87,19 @@ func ToHhmmssStr(t time.Time) string {
 	return t.Format(HMS)
 }
 
-// current iso date and hour
+// DateHhStr current iso date and hour
 //  T.DateHhStr()// output "20160317.10"
 func DateHhStr() string {
 	return time.Now().Format(YMDH)
 }
 
-// current iso date and hour
+// DateHhMmStr current iso date and hour
 //  T.DateHhMmStr()// output "20160317.1059"
 func DateHhMmStr() string {
 	return time.Now().Format(YMDHM)
 }
 
-// convert time to iso date and time
+// ToDateTimeStr convert time to iso date and time
 //  T.ToDateTimeStr(time.Now()) // "2016-03-17 10:07:50"
 func ToDateTimeStr(t time.Time) string {
 	if t == EMPTY {
@@ -108,60 +108,60 @@ func ToDateTimeStr(t time.Time) string {
 	return t.Format(YMD_HMS)
 }
 
-// current iso date and time
+// DateTimeStr current iso date and time
 //  T.ToDateTimeStr(time.Now()) // "2016-03-17 10:07:50"
 func DateTimeStr() string {
 	return time.Now().Format(YMD_HMS)
 }
 
-// int64 day of current date
+// DayInt int64 day of current date
 func DayInt() int64 {
 	return int64(time.Now().Day())
 }
 
-// int64 current hour
+// HourInt int64 current hour
 func HourInt() int64 {
 	return int64(time.Now().Hour())
 }
 
-// int64 current month
+// MonthInt int64 current month
 func MonthInt() int64 {
 	return int64(time.Now().Month())
 }
 
-// int64 current year
+// YearInt int64 current year
 func YearInt() int64 {
 	return int64(time.Now().Year())
 }
 
-// int64 current day of year
+// YearDayInt int64 current day of year
 func YearDayInt() int64 {
 	return int64(time.Now().YearDay())
 }
 
-// get filename version of current date
+// Filename get filename version of current date
 //  T.Filename()) // "20160317_102543"
 func Filename() string {
 	return time.Now().Format(FILE)
 }
 
-// get filename version of current time
+// HhmmssStr get filename version of current time
 func HhmmssStr() string {
 	return ToHhmmssStr(time.Now())
 }
 
-// sleep for nanosec
+// Sleep delay for nanosecond
 func Sleep(ns time.Duration) {
 	time.Sleep(ns)
 }
 
-// random 0.4-2 sec sleep
+// RandomSleep random 0.4-2 sec sleep
 func RandomSleep() {
 	dur := rand.Int63()%(1600*1000*1000) + (400 * 1000 * 1000)
 	time.Sleep(time.Duration(dur))
 }
 
-// measure elapsed time in nanosec
+// Track measure elapsed time in nanosec
 //  T.Track(func(){
 //    x:=0
 //    T.Sleep(1)
@@ -174,7 +174,7 @@ func Track(fun func()) time.Duration {
 	return elapsed
 }
 
-// check if time in are in the range
+// IsValidTimeRange check if time in are in the range
 //  t1, _:=time.Parse(`1992-03-23`,T.DateFormat)
 //  t2, _:=time.Parse(`2016-03-17`,T.DateFormat)
 //  T.IsValidTimeRange(t1,t2,time.Now()) // bool(false)
@@ -183,33 +183,32 @@ func IsValidTimeRange(start, end, check time.Time) bool {
 	return res
 }
 
-// returns age from current date
+// Age returns age from current date
 func Age(birthdate time.Time) float64 {
 	return float64(time.Now().Sub(birthdate)/time.Hour) / 24 / 365.25
 }
 
-// returns age from within 2 date
+// AgeAt returns age from within 2 date
 func AgeAt(birthdate, point time.Time) float64 {
 	return float64(point.Sub(birthdate)/time.Hour) / 24 / 365.25
 }
 
-// get current unix nano
+// UnixNano get current unix nano
 func UnixNano() int64 {
 	return time.Now().UnixNano()
 }
 
-// get current unix nano after added with certain duration
+// UnixNanoAfter get current unix nano after added with certain duration
 func UnixNanoAfter(d time.Duration) int64 {
 	return time.Now().Add(d).UnixNano()
 }
 
-// get current unix (second) as integer
+// Epoch get current unix (second) as integer
 func Epoch() int64 {
 	return time.Now().Unix()
 }
 
-//2019-07-16 Yonas
-//convert string date to epoch => '2019-01-01' -->1546300800
+// ToEpoch convert string date to epoch => '2019-01-01' -->1546300800
 func ToEpoch(date string) int64 {
 	d, err := time.Parse(YMD, date)
 	if err != nil {
@@ -219,57 +218,57 @@ func ToEpoch(date string) int64 {
 	}
 }
 
-// get current unix (second) as string
+// EpochStr get current unix (second) as string
 func EpochStr() string {
 	return I.ToS(time.Now().Unix())
 }
 
-// get current unix time added with a duration
+// EpochAfter get current unix time added with a duration
 func EpochAfter(d time.Duration) int64 {
 	return time.Now().Add(d).Unix()
 }
 
-// get current unix time added with a duration
+// EpochAfterStr get current unix time added with a duration
 func EpochAfterStr(d time.Duration) string {
 	return I.ToS(time.Now().Add(d).Unix())
 }
 
-// convert unix time to file naming
+// UnixToFile convert unix time to file naming
 func UnixToFile(i int64) string {
 	return time.Unix(i, 0).Format(FILE)
 }
 
-// get day's name
+// WeekdayStr get day's name
 func WeekdayStr() string {
 	return time.Now().Weekday().String()
 }
 
-// get what day is it today, Sunday => 0
+// Weekday get what day is it today, Sunday => 0
 func Weekday() int {
 	return int(time.Now().Weekday())
 }
 
-// convert
+// UnixToDateTimeStr convert unix seconds to YYYY-MM-DD_hh:mm:ss
 func UnixToDateTimeStr(epoch float64) string {
 	return time.Unix(int64(epoch), 0).Format(YMD_HMS)
 }
 
-// convert from unix to date format
+// UnixToDateStr convert from unix sconds to YYYY-MM-DD
 func UnixToDateStr(epoch float64) string {
 	return time.Unix(int64(epoch), 0).Format(YMD)
 }
 
-// convert from unix to human date format
+// UnixToHumanDateStr convert from unix to human date format D MMM YYYY
 func UnixToHumanDateStr(epoch float64) string {
 	return time.Unix(int64(epoch), 0).Format(HUMAN_DATE)
 }
 
-// convert from unix to human format
+// UnixToHumanStr convert from unix to human format D-MMM-YYYY hh:mm:ss
 func UnixToHumanStr(epoch float64) string {
 	return time.Unix(int64(epoch), 0).Format(HUMAN)
 }
 
-// return current last two digit year
+// LastTwoDigitYear return current last two digit year
 func LastTwoDigitYear() string {
 	return time.Now().Format(YY)
 }

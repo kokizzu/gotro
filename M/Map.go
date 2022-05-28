@@ -16,40 +16,40 @@ import (
 
 // Map support package
 
-// map with string key and any value
+// SX map with string key and any value
 type SX map[string]interface{}
 
-// map with int64 key and any value
+// IX map with int64 key and any value
 type IX map[int64]interface{}
 
-// map with string key and array of any value
+// SAX map with string key and array of any value
 type SAX map[string][]interface{}
 
-// map with int64 key and array of any value
+// IAX map with int64 key and array of any value
 type IAX map[int64][]interface{}
 
-// map with string key and string value
+// SS map with string key and string value
 type SS map[string]string
 
-// map with int64 key and int64 value
+// II map with int64 key and int64 value
 type II map[int64]int64
 
-// map with string key and float64 value
+// SF map with string key and float64 value
 type SF map[string]float64
 
-// map with string key and int64 value
+// SI map with string key and int64 value
 type SI map[string]int64
 
-// map with int64 key and string value
+// IS map with int64 key and string value
 type IS map[int64]string
 
-// map with int64 key and bool value
+// IB map with int64 key and bool value
 type IB map[int64]bool
 
-// map with string key and bool value
+// SB map with string key and bool value
 type SB map[string]bool
 
-// get concatenated integer keys
+// KeysConcat get concatenated integer keys
 //  m := M.II{1: 2, 2: 567, 3:6, 5:45}
 //  m.KeysConcat(`,`) // `1,2,3,5`
 func (hash II) KeysConcat(with string) string {
@@ -66,7 +66,7 @@ func (hash II) KeysConcat(with string) string {
 	return res.String()
 }
 
-// get concatenated string keys
+// KeysConcat get concatenated string keys
 //  m := M.SS{`tes`:`tes`,`coba`:`saja`,`lah`:`lah`}
 //  m.KeysConcat(`,`) // `coba,lah,tes`
 func (hash SS) KeysConcat(with string) string {
@@ -83,7 +83,7 @@ func (hash SS) KeysConcat(with string) string {
 	return res.String()
 }
 
-// convert to scylla based map<text,text>
+// ToScylla convert to scylla based map<text,text>
 func (hash SS) ToScylla() string {
 	res := bytes.Buffer{}
 	res.WriteString(`{`)
@@ -99,14 +99,14 @@ func (hash SS) ToScylla() string {
 
 }
 
-// convert to json string, silently print error if failed
+// ToJson convert to json string, silently print error if failed
 func (hash SS) ToJson() string {
 	str, err := json.Marshal(hash)
 	L.IsError(err, `M.ToJson failed`, hash)
 	return string(str)
 }
 
-// get sorted keys
+// SortedKeys get sorted keys
 //  m := M.SS{`tes`:`tes`,`coba`:`saja`,`lah`:`lah`}
 //  m.SortedKeys() // []string{`coba`,`lah`,`tes`}
 func (hash SS) SortedKeys() []string {
@@ -120,7 +120,7 @@ func (hash SS) SortedKeys() []string {
 	return res
 }
 
-// get pretty printed values
+// Pretty get pretty printed values
 func (hash SS) Pretty(sep string) string {
 	keys := hash.SortedKeys()
 	buff := bytes.Buffer{}
@@ -135,7 +135,7 @@ func (hash SS) Pretty(sep string) string {
 	return buff.String()
 }
 
-// get pretty printed values with filter values
+// PrettyFunc get pretty printed values with filter values
 func (hash SS) PrettyFunc(sep string, fun func(string, string) string) string {
 	keys := hash.SortedKeys()
 	buff := bytes.Buffer{}
@@ -150,7 +150,7 @@ func (hash SS) PrettyFunc(sep string, fun func(string, string) string) string {
 	return buff.String()
 }
 
-// get concatenated string keys
+// KeysConcat get concatenated string keys
 //  m := M.SB{`tes`:true,`coba`:true,`lah`:true}
 //  m.KeysConcat(`,`) // `coba,lah,tes`
 func (hash SB) KeysConcat(with string) string {
@@ -167,7 +167,7 @@ func (hash SB) KeysConcat(with string) string {
 	return res.String()
 }
 
-// get sorted keys
+// SortedKeys get sorted keys
 //  m := M.SS{`tes`:true,`coba`:false,`lah`:false}
 //  m.SortedKeys() // []string{`coba`,`lah`,`tes`}
 func (hash SB) SortedKeys() []string {
@@ -181,21 +181,21 @@ func (hash SB) SortedKeys() []string {
 	return res
 }
 
-// convert to json string, silently print error if failed
+// ToJson convert to json string, silently print error if failed
 func (hash SB) ToJson() string {
 	str, err := json.Marshal(hash)
 	L.IsError(err, `M.ToJson failed`, hash)
 	return string(str)
 }
 
-// convert to pretty json string, silently print error if failed
+// ToJsonPretty convert to pretty json string, silently print error if failed
 func (hash SB) ToJsonPretty() string {
 	str, err := json.MarshalIndent(hash, ``, `  `)
 	L.IsError(err, `M.ToJsonPretty failed`, hash)
 	return string(str)
 }
 
-// convert to json string with check
+// IntoJson convert to json string with check
 func (hash SB) IntoJson() (string, bool) {
 	str, err := json.Marshal(hash)
 	return string(str), err != nil
@@ -207,7 +207,7 @@ func (hash SB) IntoJsonPretty() (string, bool) {
 	return string(str), err != nil
 }
 
-// get sorted keys
+// SortedKeys get sorted keys
 //  m := M.SX{`tes`:1,`coba`:12.4,`lah`:false}
 //  m.SortedKeys() // []string{`coba`,`lah`,`tes`}
 func (hash SX) SortedKeys() []string {
@@ -221,7 +221,7 @@ func (hash SX) SortedKeys() []string {
 	return res
 }
 
-// get concatenated integer keys
+// KeysConcat get concatenated integer keys
 //  m := M.IB{1: true, 2: false, 3:true, 5:false}
 //  m.KeysConcat(`,`) // `1,2,3,5`
 func (hash IB) KeysConcat(with string) string {
@@ -238,33 +238,33 @@ func (hash IB) KeysConcat(with string) string {
 	return res.String()
 }
 
-// convert to json string, silently print error if failed
+// ToJson convert to json string, silently print error if failed
 func (hash SX) ToJson() string {
 	str, err := json.Marshal(hash)
 	L.IsError(err, `M.ToJson failed`, hash)
 	return string(str)
 }
 
-// convert to pretty json string, silently print error if failed
+// ToJsonPretty convert to pretty json string, silently print error if failed
 func (hash SX) ToJsonPretty() string {
 	str, err := json.MarshalIndent(hash, ``, `  `)
 	L.IsError(err, `M.ToJsonPretty failed`, hash)
 	return string(str)
 }
 
-// convert to json string with check
+// IntoJson convert to json string with check
 func (hash SX) IntoJson() (string, bool) {
 	str, err := json.Marshal(hash)
 	return string(str), err != nil
 }
 
-// convert to pretty json string with check
+// IntoJsonPretty convert to pretty json string with check
 func (hash SX) IntoJsonPretty() (string, bool) {
 	str, err := json.MarshalIndent(hash, ``, `  `)
 	return string(str), err != nil
 }
 
-// get int64 type from map
+// GetInt get int64 type from map
 //  m := M.SX{`test`:234.345,`coba`:`buah`,`dia`:true,`angka`:int64(23435)}
 //  m.GetInt(`test`))  // int64(234)
 //  m.GetInt(`dia`))   // int64(1)
@@ -322,7 +322,7 @@ func (json SX) GetInt(key string) int64 {
 	return 0
 }
 
-// get uint type from map
+// GetUint get uint type from map
 //  m := M.SX{`test`:234.345,`coba`:`buah`,`dia`:true,`angka`:int64(23435)}
 //  m.GetInt(`test`))  // int64(234)
 //  m.GetInt(`dia`))   // int64(1)
@@ -382,7 +382,7 @@ func (json SX) GetUint(key string) uint64 {
 	return 0
 }
 
-// get float64 type from map
+// GetFloat get float64 type from map
 //  m := M.SX{`test`:234.345,`coba`:`buah`,`dia`:true,`angka`:23435}
 //  m.GetFloat(`test`)  // float64(234.345)
 //  m.GetFloat(`dia`)   // int64(1)
@@ -437,7 +437,7 @@ func (json SX) GetFloat(key string) float64 {
 	return 0
 }
 
-// get string type from map
+// GetStr get string type from map
 //  m := M.SX{`test`:234.345,`coba`:`buah`,`angka`:int64(123)}
 //  m.GetStr(`test`)  // `234.345`
 //  m.GetStr(`coba`)  // `buah`
@@ -493,7 +493,7 @@ func (json SX) GetStr(key string) string {
 	return ``
 }
 
-// get bool type from map (empty string, 0, `f`, `false` are false, other non empty are considered truthy value)
+// GetBool get bool type from map (empty string, 0, `f`, `false` are false, other non empty are considered truthy value)
 // m := M.SX{`test`:234.345,`coba`:`buah`,`angka`:float64(123),`salah`:123}
 //  m.GetBool(`test`)  // bool(true)
 //  m.GetBool(`coba`)  // bool(true)
@@ -546,7 +546,7 @@ func (json SX) GetBool(key string) bool {
 	return false
 }
 
-// get map string bool value from map
+// GetMSB get map string bool value from map
 //  m := M.SX{`tes`:M.SB{`1`:true,`2`:false}}
 //  m.GetMSB(`tes`) // M.SB{"1":true, "2":false}
 func (json SX) GetMSB(key string) SB {
@@ -572,7 +572,7 @@ func (json SX) GetMSB(key string) SB {
 	}
 }
 
-// get map string float64 value from map
+// GetMSF get map string float64 value from map
 //  m := M.SX{`tes`:M.SF{`satu`:32.45,`2`:12}}
 //  m.GetMSF(`tes`) // M.SF{"satu":32.45, "2":12}
 func (json SX) GetMSF(key string) SF {
@@ -600,7 +600,7 @@ func (json SX) GetMSF(key string) SF {
 	}
 }
 
-// get map string int64 value from map
+// GetMSI get map string int64 value from map
 //  m := M.SX{`tes`:M.SF{`satu`:32,`2`:12}}
 //  m.GetMSI(`tes`) // M.SF{"satu":32, "2":12}
 func (json SX) GetMSI(key string) SI {
@@ -628,7 +628,7 @@ func (json SX) GetMSI(key string) SI {
 	}
 }
 
-// get map string int64 value from map
+// GetMIB get map string int64 value from map
 //  m := M.SX{`tes`:M.SB{`satu`:true,`2`:false}}
 //  m.GetMSB(`tes`) // M.SB{"satu":true, "2":false}
 func (json SX) GetMIB(key string) IB {
@@ -654,7 +654,7 @@ func (json SX) GetMIB(key string) IB {
 	}
 }
 
-// get map string anything value from map
+// GetMSX get map string anything value from map
 //  m :=  M.SX{`tes`:M.SX{`satu`:234.345,`dua`:`huruf`,`tiga`:123}}
 //  m.GetMSX(`tes`) // M.SX{"tiga": int(123),"satu": float64(234.345),"dua":  "huruf"}
 func (json SX) GetMSX(key string) SX {
@@ -672,7 +672,7 @@ func (json SX) GetMSX(key string) SX {
 	}
 }
 
-// get array of anything value from map
+// GetAX get array of anything value from map
 //  m :=  M.SX{`tes`:[]interface{}{123,`buah`}}
 //  m.GetAX(`tes`) // []interface {}{int(123),"buah"}
 func (json SX) GetAX(key string) []interface{} {
@@ -688,7 +688,7 @@ func (json SX) GetAX(key string) []interface{} {
 	}
 }
 
-// get array int64 value from map
+// GetIntArr get array int64 value from map
 //  m :=  M.SX{`tes`:[]int64{123,234}}
 //  m.GetIntArr(`tes`)) // []int64{123, 234}
 func (json SX) GetIntArr(key string) []int64 {
@@ -747,27 +747,27 @@ func (json SX) GetIntArr(key string) []int64 {
 	}
 }
 
-// get int64 from from map
+// GetInt get int64 from from map
 func (hash SS) GetInt(key string) int64 {
 	return S.ToI(hash[key])
 }
 
-// get uint from map
+// GetUint get uint from map
 func (hash SS) GetUint(key string) uint64 {
 	return S.ToU(hash[key])
 }
 
-// get float64 type from map
+// GetFloat get float64 type from map
 func (hash SS) GetFloat(key string) float64 {
 	return S.ToF(hash[key])
 }
 
-// get string type from map
+// GetStr get string type from map
 func (hash SS) GetStr(key string) string {
 	return hash[key]
 }
 
-// get array of string keys
+// Keys get array of string keys
 //  m :=  M.SS{`satu`:`1`,`dua`:`2`}
 //  m.Keys() // []string{"satu", "dua"}
 func (hash SS) Keys() []string {
@@ -778,14 +778,14 @@ func (hash SS) Keys() []string {
 	return res
 }
 
-// merge from another map
+// Merge merge from another map
 func (hash SS) Merge(src SS) {
 	for k, v := range src {
 		hash[k] = v
 	}
 }
 
-// get array of string keys
+// Keys get array of string keys
 //  m :=  M.SS{`satu`:`1`,`dua`:`2`}
 //  m.Keys() // []string{"satu", "dua"}
 func (hash SX) Keys() []string {
@@ -796,7 +796,7 @@ func (hash SX) Keys() []string {
 	return res
 }
 
-// get array of int64 keys
+// Keys get array of int64 keys
 //  m :=  M.IX{1:1,2:`DIA`}
 //  m.Keys()) // []int64{1, 2}
 func (hash IX) Keys() []int64 {
@@ -807,7 +807,7 @@ func (hash IX) Keys() []int64 {
 	return res
 }
 
-// get array of int64 keys
+// Keys get array of int64 keys
 //  m :=  M.II{1:1,2:3}
 //  m.Keys() // []int64{1, 2}
 func (hash II) Keys() []int64 {
@@ -818,7 +818,7 @@ func (hash II) Keys() []int64 {
 	return res
 }
 
-// get array of int64 keys
+// Keys get array of int64 keys
 //  m :=  M.IB{1:true,2:false}
 //  m.Keys() // []int64{1, 2}
 // get all integer keys
@@ -830,7 +830,7 @@ func (hash IB) Keys() []int64 {
 	return res
 }
 
-// convert keys to string
+// ToSX convert keys to string
 //  m :=  M.IX{1:1,2:`DUA`}
 //  m.ToSX() // M.SX{"1": int(1),"2": "DUA"}
 // convert integer keys to string keys
@@ -842,7 +842,7 @@ func (hash IX) ToSX() SX {
 	return res
 }
 
-// convert map[string]interface{} to json
+// ToJson convert map[string]interface{} to json
 //  m :=  map[string]interface{}{`buah`:123,`angka`:`dia`}
 //  M.ToJson(m) // {"angka":"dia","buah":123}
 func ToJson(hash map[string]interface{}) string {
@@ -851,12 +851,12 @@ func ToJson(hash map[string]interface{}) string {
 	return string(str)
 }
 
-// set key with any value
+// Set set key with any value
 func (hash SX) Set(key string, val interface{}) {
 	hash[key] = val
 }
 
-// get pretty printed values
+// Pretty get pretty printed values
 func (hash SX) Pretty(sep string) string {
 	keys := hash.SortedKeys()
 	buff := bytes.Buffer{}
@@ -869,7 +869,7 @@ func (hash SX) Pretty(sep string) string {
 	return buff.String()
 }
 
-// retrieve all keys started with
+// SSKeysStartedWith retrieve all keys started with
 func SSKeysStartedWith(m SS, prefix string) []string {
 	res := []string{}
 	for k := range m {
