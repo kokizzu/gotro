@@ -17,6 +17,7 @@ require (
 	github.com/google/gops v0.3.23
 	github.com/graphql-go/graphql v0.8.0
 	github.com/hexops/autogold v1.3.0
+	github.com/hexops/valast v1.4.1
 	github.com/jackc/pgx/v4 v4.16.1
 	github.com/jasonlvhit/gocron v0.0.1
 	github.com/jessevdk/go-flags v1.5.0

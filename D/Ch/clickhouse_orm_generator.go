@@ -108,12 +108,12 @@ func GenerateOrm(tables map[TableName]*TableProp) {
 	sort.Strings(tableNames)
 
 	for _, tableName := range tableNames {
-		SA(`var ` + tableName + `Dummy = ` + S.CamelCase(tableName) + "{}\n")
+		SA(`var ` + tableName + `Dummy = ` + S.PascalCase(tableName) + "{}\n")
 	}
 
 	SA("var Preparators = map[Ch.TableName]chBuffer.Preparator{\n")
 	for _, tableName := range tableNames {
-		SA(`	` + mPkgName + `.Table` + S.CamelCase(tableName) + `: func(tx *sql.Tx) *sql.Stmt {
+		SA(`	` + mPkgName + `.Table` + S.PascalCase(tableName) + `: func(tx *sql.Tx) *sql.Stmt {
 		query := ` + tableName + `Dummy.sqlInsert()
 		stmt, err := tx.Prepare(query)
 		L.IsError(err, ` + "`failed to tx.Prepare: `+query" + `)
@@ -126,7 +126,7 @@ func GenerateOrm(tables map[TableName]*TableProp) {
 	// for each table generate in order
 	for _, tableName := range tableNames {
 		props := tables[TableName(tableName)]
-		structName := S.CamelCase(tableName)
+		structName := S.PascalCase(tableName)
 		maxLen := 1
 		for _, prop := range props.Fields {
 			l := len(prop.Name) + 1 - strings.Count(prop.Name, `_`)
@@ -139,7 +139,7 @@ func GenerateOrm(tables map[TableName]*TableProp) {
 		SA(`type ` + structName + " struct {\n")
 		SA("	Adapter *" + connStruct + " `json:" + `"-"` + " msg:" + `"-"` + " query:" + `"-"` + " form:" + `"-"` + "`\n")
 		for _, prop := range props.Fields {
-			camel := S.CamelCase(prop.Name)
+			camel := S.PascalCase(prop.Name)
 			SA("	" + camel + strings.Repeat(` `, maxLen-len(camel)) + typeTranslator[prop.Type] + "\n")
 		}
 		SA("}\n\n")
@@ -193,13 +193,13 @@ func GenerateOrm(tables map[TableName]*TableProp) {
 		SA(`func (` + receiverName + ` ` + structName + ") SqlInsertParam() []interface{} { //nolint:dupl false positive\n")
 		SA("	return []interface{}{\n")
 		for idx, prop := range props.Fields {
-			SA("		" + receiverName + "." + S.CamelCase(prop.Name) + ", // " + I.ToStr(idx) + " \n")
+			SA("		" + receiverName + "." + S.PascalCase(prop.Name) + ", // " + I.ToStr(idx) + " \n")
 		}
 		SA("	}\n")
 		SA("}\n\n")
 
 		for idx, prop := range props.Fields {
-			propName := S.CamelCase(prop.Name)
+			propName := S.PascalCase(prop.Name)
 
 			// index functions
 			SA(`func (` + receiverName + ` *` + structName + ") Idx" + propName + "() int { //nolint:dupl false positive\n")
@@ -221,7 +221,7 @@ func GenerateOrm(tables map[TableName]*TableProp) {
 		SA(`func (` + receiverName + ` *` + structName + ") ToArray() A.X { //nolint:dupl false positive\n")
 		SA("	return A.X{\n")
 		for idx, prop := range props.Fields {
-			camel := S.CamelCase(prop.Name)
+			camel := S.PascalCase(prop.Name)
 			SA("		" + receiverName + "." + camel + `,` + strings.Repeat(` `, maxLen-len(camel)) + `// ` + X.ToS(idx) + "\n")
 		}
 		SA("	}\n")
@@ -230,7 +230,7 @@ func GenerateOrm(tables map[TableName]*TableProp) {
 		//// from AX
 		//SA(`func (` + receiverName + ` *` + structName + `) FromArray(a A.X) *` + structName + " { //nolint:dupl false positive\n")
 		//for idx, prop := range props.Fields {
-		//	SA("	" + receiverName + "." + S.CamelCase(prop.Name) + ` = ` + typeConverter[prop.Type] + "(a[" + X.ToS(idx) + "])\n")
+		//	SA("	" + receiverName + "." + S.PascalCase(prop.Name) + ` = ` + typeConverter[prop.Type] + "(a[" + X.ToS(idx) + "])\n")
 		//}
 		//SA("	return " + receiverName + "\n")
 		//SA("}\n\n")

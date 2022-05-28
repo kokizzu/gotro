@@ -22,6 +22,22 @@ ToJson convert map[string]interface{} to json
     m :=  map[string]interface{}{`buah`:123,`angka`:`dia`}
     M.ToJson(m) // {"angka":"dia","buah":123}
 
+#### type FieldTag
+
+```go
+type FieldTag string
+```
+
+
+```go
+const (
+	RawFieldName   FieldTag = ``
+	SnakeFieldName FieldTag = `SNAKE`
+	CamelFieldName FieldTag = `CAMEL`
+	AllFieldName   FieldTag = `ALL`
+)
+```
+
 #### type IAX
 
 ```go
@@ -315,6 +331,13 @@ type SX map[string]interface{}
 
 SX map with string key and any value
 
+#### func  FromStruct
+
+```go
+func FromStruct(srcStructPtr interface{}) SX
+```
+FromStruct convert any struct to map
+
 #### func (SX) GetAX
 
 ```go
@@ -511,3 +534,47 @@ ToJson convert to json string, silently print error if failed
 func (hash SX) ToJsonPretty() string
 ```
 ToJsonPretty convert to pretty json string, silently print error if failed
+
+#### func (SX) ToStruct
+
+```go
+func (m SX) ToStruct(targetStructPtr interface{})
+```
+ToStruct convert to struct
+
+#### type StructMapper
+
+```go
+type StructMapper struct {
+	StructName string
+	Offset2key map[uintptr]string
+	Key2offset map[string]uintptr
+}
+```
+
+
+#### func  ParseStruct
+
+```go
+func ParseStruct(s interface{}, tag FieldTag) (sm *StructMapper)
+```
+ParseStruct convert struct to structMapper
+
+#### func  StructMap
+
+```go
+func StructMap(structPtr interface{}) *StructMapper
+```
+StructMap get or create a struct mapper
+
+#### func (*StructMapper) MapToStruct
+
+```go
+func (sm *StructMapper) MapToStruct(m SX, s interface{})
+```
+
+#### func (*StructMapper) StructToMap
+
+```go
+func (sm *StructMapper) StructToMap(s interface{}) (m SX)
+```

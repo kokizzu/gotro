@@ -735,10 +735,10 @@ func writeUrlSegmentToIn(buf *bytes.Buffer, segments []string, parseMethod strin
 		inputMethod := fmt.Sprintf(parseMethod, q(param))
 		if S.EndsWith(param, `Id`) && !S.StartsWith(param, `encoded`) {
 			buf.WriteString(`
-		in.` + S.CamelCase(param) + ` = S.ToU(` + inputMethod + `)`)
+		in.` + S.PascalCase(param) + ` = S.ToU(` + inputMethod + `)`)
 		} else {
 			buf.WriteString(`
-		in.` + S.CamelCase(param) + ` = ` + inputMethod)
+		in.` + S.PascalCase(param) + ` = ` + inputMethod)
 		}
 	}
 }

@@ -604,9 +604,9 @@ func UpperFirst(s string) string {
 	return ``
 }
 
-// CamelCase convert to CamelCase
+// PascalCase convert to PascalCase
 // source: https://github.com/iancoleman/strcase
-func CamelCase(s string) string {
+func PascalCase(s string) string {
 	s = strings.TrimSpace(s)
 	if s == "" {
 		return s
@@ -615,6 +615,43 @@ func CamelCase(s string) string {
 	n := strings.Builder{}
 	n.Grow(len(s))
 	capNext := true
+	for i, v := range []byte(s) {
+		isCap := v >= 'A' && v <= 'Z'
+		isLow := v >= 'a' && v <= 'z'
+		if capNext {
+			if isLow {
+				v += 'A'
+				v -= 'a'
+			}
+		} else if i == 0 {
+			if isCap {
+				v += 'a'
+				v -= 'A'
+			}
+		}
+		if isCap || isLow {
+			n.WriteByte(v)
+			capNext = false
+		} else if vIsNum := v >= '0' && v <= '9'; vIsNum {
+			n.WriteByte(v)
+			capNext = true
+		} else {
+			capNext = v == '_' || v == ' ' || v == '-' || v == '.'
+		}
+	}
+	return n.String()
+}
+
+// CamelCase convert to camelCase
+func CamelCase(s string) string {
+	s = strings.TrimSpace(s)
+	if s == "" {
+		return s
+	}
+
+	n := strings.Builder{}
+	n.Grow(len(s))
+	capNext := false
 	for i, v := range []byte(s) {
 		isCap := v >= 'A' && v <= 'Z'
 		isLow := v >= 'a' && v <= 'z'
@@ -691,4 +728,12 @@ func SnakeCase(s string) string {
 	}
 
 	return n.String()
+}
+
+// FirstIsLower check first character is lowercase
+func FirstIsLower(s string) bool {
+	if len(s) == 0 {
+		return false
+	}
+	return s[0] >= 'a' && s[0] <= 'z'
 }

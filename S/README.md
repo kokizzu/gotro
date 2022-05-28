@@ -62,7 +62,7 @@ BT add backtick quote in the beginning and the end of string, without escaping.
 ```go
 func CamelCase(s string) string
 ```
-CamelCase convert to CamelCase source: https://github.com/iancoleman/strcase
+CamelCase convert to camelCase
 
 #### func  CharAt
 
@@ -185,6 +185,13 @@ another input string (second arg).
 
     S.EqualsIgnoreCase(`komputer`,`komputer`)) // bool(true)
     S.EqualsIgnoreCase(`komputer`,`Komputer`)) // bool(true)
+
+#### func  FirstIsLower
+
+```go
+func FirstIsLower(s string) bool
+```
+FirstIsLower check first character is lowercase
 
 #### func  HashPassword
 
@@ -419,6 +426,13 @@ PadLeft append padStr to left until length is lenStr
 func PadRight(s string, padStr string, lenStr int) string
 ```
 PadRight append padStr to right until length is lenStr
+
+#### func  PascalCase
+
+```go
+func PascalCase(s string) string
+```
+PascalCase convert to PascalCase source: https://github.com/iancoleman/strcase
 
 #### func  Q
 

@@ -175,7 +175,7 @@ func GenerateOrm(tables map[TableName]*TableProp, withGraphql ...bool) {
 	// for each table generate in order
 	for _, tableName := range tableNames {
 		props := tables[TableName(tableName)]
-		structName := S.CamelCase(tableName)
+		structName := S.PascalCase(tableName)
 		maxLen := 1
 		propTypeByName := map[string]Field{}
 		for _, prop := range props.Fields {
@@ -202,7 +202,7 @@ func GenerateOrm(tables map[TableName]*TableProp, withGraphql ...bool) {
 		const none = `"-"`
 		RQ("	Adapter *" + connStruct + " " + S.BT("json:"+none+" msg:"+none+" query:"+none+" form:"+none) + NL)
 		for _, prop := range props.Fields {
-			camel := S.CamelCase(prop.Name)
+			camel := S.PascalCase(prop.Name)
 			RQ("	" + camel + strings.Repeat(` `, maxLen-len(camel)) + typeTranslator[prop.Type] + NL)
 		}
 		RQ("}\n\n")
@@ -230,7 +230,7 @@ func GenerateOrm(tables map[TableName]*TableProp, withGraphql ...bool) {
 
 		// auto increment id
 		if props.AutoIncrementId {
-			uniquePropCamel := S.CamelCase(IdCol)
+			uniquePropCamel := S.PascalCase(IdCol)
 			structProp := receiverName + `.` + uniquePropCamel
 
 			RQ(`func (` + receiverName + ` *` + structName + `) UniqueIndex` + uniquePropCamel + "() string { //nolint:dupl false positive\n")
@@ -248,7 +248,7 @@ func GenerateOrm(tables map[TableName]*TableProp, withGraphql ...bool) {
 		WC(`// func (` + receiverName + ` *` + structName + "Mutator) DoUpsert() bool { //nolint:dupl false positive\n")
 		WC("//	_, err := " + receiverName + ".Adapter.Upsert(" + receiverName + ".SpaceName(), " + receiverName + ".ToArray(), A.X{\n")
 		for idx, prop := range props.Fields {
-			WC("//		A.X{`=`, " + X.ToS(idx) + ", " + receiverName + "." + S.CamelCase(prop.Name) + "},\n")
+			WC("//		A.X{`=`, " + X.ToS(idx) + ", " + receiverName + "." + S.PascalCase(prop.Name) + "},\n")
 		}
 		WC("//	})\n")
 		WC("//	return !L.IsError(err, `" + structName + ".DoUpsert failed: `+" + receiverName + ".SpaceName())\n")
@@ -256,7 +256,7 @@ func GenerateOrm(tables map[TableName]*TableProp, withGraphql ...bool) {
 
 		// unique index1
 		if props.Unique1 != `` && !(props.AutoIncrementId && props.Unique1 == IdCol) {
-			uniquePropCamel := S.CamelCase(props.Unique1)
+			uniquePropCamel := S.PascalCase(props.Unique1)
 			structProp := receiverName + `.` + uniquePropCamel
 
 			RQ(`func (` + receiverName + ` *` + structName + `) UniqueIndex` + uniquePropCamel + "() string { //nolint:dupl false positive\n")
@@ -272,7 +272,7 @@ func GenerateOrm(tables map[TableName]*TableProp, withGraphql ...bool) {
 
 		// unique index2
 		if props.Unique2 != `` && !(props.AutoIncrementId && props.Unique2 == IdCol) {
-			uniquePropCamel := S.CamelCase(props.Unique2)
+			uniquePropCamel := S.PascalCase(props.Unique2)
 			structProp := receiverName + `.` + uniquePropCamel
 
 			RQ(`func (` + receiverName + ` *` + structName + `) UniqueIndex` + uniquePropCamel + "() string { //nolint:dupl false positive\n")
@@ -284,7 +284,7 @@ func GenerateOrm(tables map[TableName]*TableProp, withGraphql ...bool) {
 
 		// unique index3
 		if props.Unique3 != `` && !(props.AutoIncrementId && props.Unique3 == IdCol) {
-			uniquePropCamel := S.CamelCase(props.Unique3)
+			uniquePropCamel := S.PascalCase(props.Unique3)
 			structProp := receiverName + `.` + uniquePropCamel
 
 			RQ(`func (` + receiverName + ` *` + structName + `) UniqueIndex` + uniquePropCamel + "() string { //nolint:dupl false positive\n")
@@ -299,8 +299,8 @@ func GenerateOrm(tables map[TableName]*TableProp, withGraphql ...bool) {
 			uniquePropCamel := ``
 			structProps := ``
 			for _, uniq := range props.Uniques {
-				uniquePropCamel += S.CamelCase(uniq)
-				structProps += `, ` + receiverName + `.` + S.CamelCase(uniq)
+				uniquePropCamel += S.PascalCase(uniq)
+				structProps += `, ` + receiverName + `.` + S.PascalCase(uniq)
 			}
 			if len(structProps) > 2 {
 				structProps = structProps[2:]
@@ -349,13 +349,13 @@ func GenerateOrm(tables map[TableName]*TableProp, withGraphql ...bool) {
 		RQ(`func (` + receiverName + ` *` + structName + ") ToUpdateArray() A.X { //nolint:dupl false positive\n")
 		RQ("	return A.X{\n")
 		for idx, prop := range props.Fields {
-			RQ("		A.X{`=`, " + X.ToS(idx) + ", " + receiverName + "." + S.CamelCase(prop.Name) + "},\n")
+			RQ("		A.X{`=`, " + X.ToS(idx) + ", " + receiverName + "." + S.PascalCase(prop.Name) + "},\n")
 		}
 		RQ("	}\n")
 		RQ("}\n\n")
 
 		for idx, prop := range props.Fields {
-			propName := S.CamelCase(prop.Name)
+			propName := S.PascalCase(prop.Name)
 
 			// index functions
 			RQ(`func (` + receiverName + ` *` + structName + ") Idx" + propName + "() int { //nolint:dupl false positive\n")
@@ -387,14 +387,14 @@ func GenerateOrm(tables map[TableName]*TableProp, withGraphql ...bool) {
 		RQ(`func (` + receiverName + ` *` + structName + ") ToArray() A.X { //nolint:dupl false positive\n")
 		if props.AutoIncrementId {
 			RQ("	var " + IdCol + " interface{} = nil\n")
-			idProp := receiverName + "." + S.CamelCase(IdCol)
+			idProp := receiverName + "." + S.PascalCase(IdCol)
 			RQ("	if " + idProp + " != 0 {\n")
 			RQ("		" + IdCol + " = " + idProp + "\n")
 			RQ("	}\n")
 		}
 		RQ("	return A.X{\n")
 		for idx, prop := range props.Fields {
-			camel := S.CamelCase(prop.Name)
+			camel := S.PascalCase(prop.Name)
 			if props.AutoIncrementId && IdCol == prop.Name {
 				RQ("		" + IdCol + ",\n")
 			} else {
@@ -407,7 +407,7 @@ func GenerateOrm(tables map[TableName]*TableProp, withGraphql ...bool) {
 		// from AX
 		RQ(`func (` + receiverName + ` *` + structName + `) FromArray(a A.X) *` + structName + " { //nolint:dupl false positive\n")
 		for idx, prop := range props.Fields {
-			RQ("	" + receiverName + "." + S.CamelCase(prop.Name) + ` = ` + typeConverter[prop.Type] + "(a[" + X.ToS(idx) + "])\n")
+			RQ("	" + receiverName + "." + S.PascalCase(prop.Name) + ` = ` + typeConverter[prop.Type] + "(a[" + X.ToS(idx) + "])\n")
 		}
 		RQ("	return " + receiverName + NL)
 		RQ("}\n\n")
@@ -438,21 +438,21 @@ func GenerateOrm(tables map[TableName]*TableProp, withGraphql ...bool) {
 		//// set to min value
 		//WC(`func (`+receiverName+` *` + structName + ") ResetToMax() { //nolint:dupl false positive\n")
 		//for _, prop := range props.Fields {
-		//	WC("	"+receiverName+"." + S.CamelCase(prop.Name) + " = " + maxMap[prop.Type] + NL)
+		//	WC("	"+receiverName+"." + S.PascalCase(prop.Name) + " = " + maxMap[prop.Type] + NL)
 		//}
 		//WC("}\n\n")
 		//
 		//// set to min value
 		//WC(`func (`+receiverName+` *` + structName + ") ResetToMin() { //nolint:dupl false positive\n")
 		//for _, prop := range props.Fields {
-		//	WC("	"+receiverName+"." + S.CamelCase(prop.Name) + " = " + minMap[prop.Type] + NL)
+		//	WC("	"+receiverName+"." + S.PascalCase(prop.Name) + " = " + minMap[prop.Type] + NL)
 		//}
 		//WC("}\n\n")
 		//
 		//// set if greater
 		//WC(`func (`+receiverName+` *` + structName + ") SetIfLesser(l *"+structName+") { //nolint:dupl false positive\n")
 		//for _, prop := range props.Fields {
-		//	propName := S.CamelCase(prop.Name)
+		//	propName := S.PascalCase(prop.Name)
 		//	WC("	if "+receiverName+"." + propName + " > l." + propName + " {\n")
 		//	WC("		"+receiverName+"." + propName + " = l." + propName + NL)
 		//	WC("	}\n")
@@ -462,7 +462,7 @@ func GenerateOrm(tables map[TableName]*TableProp, withGraphql ...bool) {
 		//// set if greater
 		//WC(`func (`+receiverName+` *` + structName + ") SetIfGreater(l *"+structName+") { //nolint:dupl false positive\n")
 		//for _, prop := range props.Fields {
-		//	propName := S.CamelCase(prop.Name)
+		//	propName := S.PascalCase(prop.Name)
 		//	WC("	if "+receiverName+"." + propName + " < l." + propName + " {\n")
 		//	WC("		"+receiverName+"." + propName + " = l." + propName + NL)
 		//	WC("	}\n")
