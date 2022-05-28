@@ -62,8 +62,10 @@ this already includes session loading and template rendering (real-life use case
 - [Pham Hoang Tien](//github.com/PhamHoangTien1987)
 - [Rizal Widyarta Gowandy](//github.com/rizalgowandy)
 
-## TODO
+## TODO / Bounty
 
+- add [kardios/service](//github.com/kardianos/service) for W2
+- add unit tests
 - fix mysql adapter so it becomes usable (currently copied from Postgres'), probably wait until mysql has indexable json column, or do alters like scylladb and sqlite, or just remove and rewrite one for [TiDB](//github.com/kokizzu/list-of-tech-migrations)
 - rewrite `D/Pg` using prepared statements, so no more `S.Z`
 - use `nikoksr/notify` for notification and mail sending instead of tied to `W`
