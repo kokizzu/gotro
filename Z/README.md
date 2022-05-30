@@ -1,7 +1,7 @@
 
 # ZTemplate
 
-a simple javascript syntax-friendly template engine (it means in the javascript editor/IDE, it wont show a lexical/syntax error or wrong syntax highlighting, the autocomplete will still works). You can use [svelte-mpa](//github.com/kokizzu/svelte-mpa)
+a simple javascript syntax-friendly template engine (it means in the javascript editor/IDE, it wont show a lexical/syntax error or wrong syntax highlighting, the autocomplete will still works). You can use [svelte-mpa](//github.com/kokizzu/svelte-mpa) if you need reactivity on each page.
 
 ## Syntax
 
