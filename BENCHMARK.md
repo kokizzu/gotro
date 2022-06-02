@@ -19,6 +19,7 @@ Note:
 - **Hello** = only serializing empty input and rendering `{"hello":"world"}` output
 - Benchmark server: 32-core, 128GB RAM, NVMe disk
 - comparison: [TechEmpower](//www.techempower.com/benchmarks/#section=data-r20&hw=ph&test=update&l=zijocf-sf&a=2) which can do write 11K rps with spec: Intel Xeon Gold 5120 (28-core), 32 GB RAM, enterprise SSD for similar write use case.
+- without logger but with profiling, `hey -n 100000 -c 255 http://lohost:9090/api/LoadWriteTets`, can do 70K rps
 
 ## C10 Write (database write, network call)
 
