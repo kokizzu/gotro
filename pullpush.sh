@@ -39,14 +39,14 @@ read -p "Press Ctrl+C to exit, press any enter key to check the diff..
 
 # recheck again
 git diff --staged
-echo 'Going to commit with message: '\"$*\"
+echo 'Going to commit with message: '\""$*"\"
 read -p "Press Ctrl+C to exit, press any enter key to really commit..
 "
 
 git commit -m "$*" && git pull && git push origin master
 
-TAG=`ruby -e 't = Time.now; print "v1.#{t.month+(t.year-2021)*12}%02d.#{t.hour}%02d" % [t.day, t.min]'`
-git tag -a $TAG -m "$*"
+TAG=$(ruby -e 't = Time.now; print "v1.#{t.month+(t.year-2021)*12}%02d.#{t.hour}%02d" % [t.day, t.min]')
+git tag -a "$TAG" -m "$*"
 git push --tags 
 
 echo "# to undo this release: 

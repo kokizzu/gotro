@@ -704,6 +704,15 @@ func XSS(str string) string
 ```
 XSS replace <, >, ', ", % but without giving single quote
 
+#### func  XXH3
+
+```go
+func XXH3(s string) uint64
+```
+XXH3 fastest 64-bit hash function
+https://github.com/jacobmarble/go-checksum-benchmark
+https://github.com/Cyan4973/xxHash
+
 #### func  Z
 
 ```go

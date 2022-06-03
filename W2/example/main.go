@@ -16,9 +16,11 @@ import (
 	//"github.com/lightstep/otel-launcher-go/launcher"
 )
 
+var VERSION = ``
 var log *zerolog.Logger
 
 func main() {
+	conf.VERSION = VERSION
 	log = conf.InitLogger()
 
 	err := godotenv.Overload(`.env`)

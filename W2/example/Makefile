@@ -111,3 +111,15 @@ docker-clean-networks:
 backup-ch:
 	#https://github.com/AlexAkulov/clickhouse-backup/releases/download/v1.0.0/clickhouse-backup_1.0.0_amd64.deb
 	 
+
+###########
+### builder
+
+release:
+	./release.sh
+
+###########
+### cleaner
+
+clean_db:
+	rm -rf ./backup/tarantool-data

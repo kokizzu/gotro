@@ -1,6 +1,7 @@
 version: "3.3"
 
 services:
+
   clickhouse1:
     image: yandex/clickhouse-server:latest # 21.8.11.4
     ports:
@@ -19,6 +20,12 @@ services:
     environment:
       TARANTOOL_USER_NAME: "myusername" 
       TARANTOOL_USER_PASSWORD: "mysecretpassword"
+      #TT_READAHEAD: '1632000' # 10x   
+      #TT_VINYL_MEMORY: '2684354560' # 20x
+      #TT_VINYL_CACHE: '2684354560' # 20x
+      #TT_NET_MSG_MAX: '768' # 1x
+      #TT_MEMTX_MEMORY: '268435456' # 1x
+      #TT_VINYL_PAGE_SIZE: '8192' # 1x
     volumes:
       - ./backup/tarantool-data:/var/lib/tarantool
     ports:
