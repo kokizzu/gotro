@@ -1,50 +1,102 @@
-# Svelte + TS + Vite
+# Multipage Svelte, Svelte MPA
 
-This template should help get you started developing with Svelte and TypeScript in Vite.
+The purpose of this project is to make Svelte that defaults to SPA into an statically-generated MPA (multipage SPA). 
+So for deployment you only need to [rsync](//rsync.samba.org/) the `.html`, `.css`, `.js` and any other non-`.svelte` files. 
+It was originally built for [Z](https://github.com/kokizzu/gotro/tree/master/Z) template engine.
 
-## Recommended IDE Setup
+Creator: [sameerveda](//github.com/sameerveda)
 
-[VSCode](https://code.visualstudio.com/) + [Svelte](https://marketplace.visualstudio.com/items?itemName=svelte.svelte-vscode).
+Specs/sponsored by: [kokizzu](//github.com/kokizzu)
 
-## Need an official Svelte framework?
+## Specification
 
-Check out [SvelteKit](https://github.com/sveltejs/kit#readme), which is also powered by Vite. Deploy anywhere with its serverless-first approach and adapt to various platforms, with out of the box support for TypeScript, SCSS, and Less, and easily-added support for mdsvex, GraphQL, PostCSS, Tailwind CSS, and more.
+For example you have a project with specific structure:
 
-## Technical considerations
+```shell
+_mycomponent/
+  button.svelte
+foo/
+  _table.svelte
+  bar.svelte --> will generate 
+  any.js
+subpage/
+  page3.svelte --> will generate
+index.svelte --> will generate
+whatever.css
+whatever.js
+_layout.html
+```
 
-**Why use this over SvelteKit?**
+It would automatically generate 3 files: `foo/bar.html`, `subpage/page3.html`, and `index.html`.
 
-- SvelteKit is still a work-in-progress.
-- It currently does not support the pure-SPA use case.
-- It brings its own routing solution which might not be preferable for some users.
-- It is first and foremost a framework that just happens to use Vite under the hood, not a Vite app.
-  `vite dev` and `vite build` wouldn't work in a SvelteKit environment, for example.
+1. generate automatically `.html` foreach `.svelte`, for production build use `npm run build:prod`
+2. can import properly other js, css, or svelte file (relative import)
+3. dev mode, eg. `npm start`, it would listen to `localhost:8080` then livereload when changed like default svelte template project (will also autogenerate the `.html` files like spec number 1)
+4. there no configuration, it should work as-is automatically, anything starts with underscore will not generate `.html`, eg. `_component1.svelte`, or `_components/table.svelte`
+5. will look for `_layout.html` in current directory or nearest upper directories as base template
+6. using minimal set of npm dependencies and no outdated package
+7. generated html will not remove comments, especially one that used in [Z](https://github.com/kokizzu/gotro/tree/master/Z) template engine, like: `/*! c1 */`, `#{c2}`, `[/* c3 */]`, or `{/* c4 */}`
 
-This template contains as little as possible to get started with Vite + TypeScript + Svelte, while taking into account the developer experience with regards to HMR and intellisense. It demonstrates capabilities on par with the other `create-app` templates and is a good starting point for beginners dipping their toes into a Vite + Svelte project.
+## Usage
 
-Should you later need the extended capabilities and extensibility provided by SvelteKit, the template has been structured similarly to SvelteKit so that it is easy to migrate.
+```shell
+npm install -g degit                 # scaffolding helper
+degit kokizzu/svelte-mpa myproject1  # clone this repo with new name
+cd myproject1                        
 
-**Why `global.d.ts` instead of `compilerOptions.types` inside `jsconfig.json` or `tsconfig.json`?**
+npm install  # install dependencies
+npm start    # start dev-server
 
-Setting `compilerOptions.types` shuts out all other types not explicitly listed in the configuration. Using triple-slash references keeps the default TypeScript setting of accepting type information from the entire workspace, while also adding `svelte` and `vite/client` type information.
+npm run build:prod  # build project for production
+./deploy.sh         # example deployment script for single server
+```
 
-**Why include `.vscode/extensions.json`?**
+## Dev Dependencies
 
-Other templates indirectly recommend extensions via the README, but this file allows VS Code to prompt the user to install the recommended extension upon opening the project.
+- [svelte](//svelte.dev/) - cybernetically enhanced web apps
+- [esbuild](//esbuild.github.io/) - an extremely fast JavaScript bundler
+- [esbuild-svelte](//github.com/EMH333/esbuild-svelte) - plugin to compile svelte components for bundling with esbuild
+- [chokidar](//github.com/paulmillr/chokidar) - minimal and efficient cross-platform file watching library
+- [five-server](//github.com/yandeu/five-server) - development Server with Live Reload Capability
+- [lodash](//lodash.com) - A modern JavaScript utility library delivering modularity, performance & extras
+- [parse5](//github.com/inikulin/parse5) - html parsing/serialization toolset for node.js
+- [svelte-preprocess](//github.com/sveltejs/svelte-preprocess) - a svelte preprocessor with sensible defaults and support for: postcss, scss, less, stylus, coffeescript, typescript, pug and much more.
 
-**Why enable `allowJs` in the TS template?**
+zero production dependency.
 
-While `allowJs: false` would indeed prevent the use of `.js` files in the project, it does not prevent the use of JavaScript syntax in `.svelte` files. In addition, it would force `checkJs: false`, bringing the worst of both worlds: not being able to guarantee the entire codebase is TypeScript, and also having worse typechecking for the existing JavaScript. In addition, there are valid use cases in which a mixed codebase may be relevant.
+## Why? Motivation
 
-**Why is HMR not preserving my local component state?**
+If you already have existing backend that wasn't written in NodeJS, you can have best of two worlds, multiple page with their own meta headers and content for SEO, and reactivity using Svelte for each page. Also with this you can remove the serialization/transport/hop-cost of default setup:
 
-HMR state preservation comes with a number of gotchas! It has been disabled by default in both `svelte-hmr` and `@sveltejs/vite-plugin-svelte` due to its often surprising behavior. You can read the details [here](https://github.com/rixo/svelte-hmr#svelte-hmr).
+```
+[Browser] --fetch-HTML--> [SvelteKit/Next/Nuxt/etc] --fetch-API--> [ExistingBackend]
 
-If you have state that's important to retain within a component, consider creating an external store which would not be replaced by HMR.
+became
 
-```ts
-// store.ts
-// An extremely simple external store
-import { writable } from 'svelte/store'
-export default writable(0)
+[Browser] --fetch-HTML/API--> [ExistingBackend]
+```
+
+So your existing backend responsibility is to load the generated `.html` then replace the js variable or any template keyword with proper value for initial load/SEO. 
+But you can also use this as SSG.
+
+## TODO / Possible Improvement
+
+- [ ] update `<!--BUILD TIME` generated comment from highest modification date of dependencies, eg. if `a.svelte` depends on `b.js` and `_c.svelte`, the resulting `a.html` html comment should be max modification date of those three 
+- [ ] generate bundled javascript `[name].min.js` foreach `[name].svelte` file that will imported by generated `[name].html`, to reduce overhead when page's bundled reactivity code size is very big, only when svelte file doesn't contain Z-template special keywords, so the code might look like this:
+```html
+`_layout.html`:
+...
+<script>
+  let obj = {/* some_obj */}
+  let arr = [/* some_arr */]
+</script>
+
+`bla.svelte`:
+<script>
+  let obj = (window||{}).obj || {};
+  let arr = (window||{}).arr || [];
+</script>
+
+generated `bla.min.js` will be referenced by `bla.html`: 
+<script src='bla.min.js?generatedTime'></script>
 ```

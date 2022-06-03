@@ -2,18 +2,30 @@
   "name": "svelte-mpa-app",
   "version": "0.0.0",
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "serve": "vite preview"
+    "start": "npm run dev",
+    "dev": "node build.js --watch --serve",
+    "build": "node build.js",
+    "build:prod": "node build.js --minify",
+    "serve": "node build.js --serve"
   },
   "devDependencies": {
-    "@sveltejs/vite-plugin-svelte": "1.0.0-next.17",
-    "svelte": "3.42.1",
-    "svelte-preprocess": "4.7.4",
-    "typescript": "4.3.5",
-    "vite": "2.5.0"
+    "chokidar": "^3.5.3",
+    "esbuild": "^0.14.42",
+    "esbuild-svelte": "^0.7.0",
+    "five-server": "^0.1.4",
+    "lodash": "^4.17.21",
+    "parse5": "^7.0.0",
+    "prettier": "^2.6.2",
+    "svelte-preprocess": "^4.10.6",
+    "typescript": "^4.7.2",
+    "svelte": "^3.43.0"
+  },
+  "prettier": {
+    "singleQuote": true,
+    "trailingComma": "es5",
+    "printWidth": 120,
+    "arrowParens": "avoid"
   },
   "dependencies": {
-    "vite-plugin-mpa": "file:./vite-plugin-mpa"
   }
 }

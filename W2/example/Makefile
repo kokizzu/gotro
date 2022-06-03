@@ -10,9 +10,8 @@ apiserver:
 
 webclient:
 	#sudo chown -R `whoami` /usr/lib/node_modules/
-	cd svelte/src/vite-plugin-mpa && npm install && npm run build
-	cd svelte && npm install && npm run dev
-	# https://github.com/IndexXuan/vite-plugin-mpa/tree/main/examples/svelte-mpa-app
+	cd svelte && npm install && npm start
+	# https://github.com/kokizz/svelte-mpa
 
 reverseproxy:
 	caddy fmt -overwrite Caddyfile
@@ -42,8 +41,9 @@ setup-webserver-ubuntu:
 	sudo systemctl stop caddy
 	sudo systemctl disable caddy
 	sudo setcap 'cap_net_bind_service=+ep' `which caddy`
-	curl -fsSL https://deb.nodesource.com/setup_16.x | sudo -E bash -
+	curl -fsSL https://deb.nodesource.com/setup_17.x | sudo -E bash -
 	sudo apt-get install -y nodejs
+	sudo setcap CAP_NET_BIND_SERVICE=+eip `which caddy`
 
 setup-webserver-mac:
 	brew install caddy

@@ -13,6 +13,7 @@
 Note:
 - all benchmark done using [hey](//github.com/rakyll/hey) running 100K http requests, but with different concurrency levels on localhost
 - logs enabled but discarded `make apiserver > /dev/null 2>&1`, all dependencies run under `docker-compose`
+- database tuned on `docker-compose.yml` to be able handling high load
 - **Write** = insert into 1 table, retrieve the id, append the id to global array (ignoring race condition)
 - **Read** = read random id from global array, then query from 1 table
 - **Health** = do syscall (or read from `/proc`) cached once per second

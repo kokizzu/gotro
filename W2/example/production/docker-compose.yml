@@ -9,3 +9,10 @@ services:
       - ./tarantool-data:/usr/local/share/tarantool
     ports:
       - "3301:3301"
+    environment:
+      TARANTOOL_USER_NAME: "myusername" 
+      TARANTOOL_USER_PASSWORD: "mysecretpassword"
+      TT_READAHEAD: '1632000' # 10x   
+      TT_VINYL_MEMORY: '2684354560' # 20x
+      TT_VINYL_CACHE: '2684354560' # 20x
+      TT_NET_MSG_MAX: '76800' # 100x

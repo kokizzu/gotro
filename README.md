@@ -44,8 +44,10 @@ Other than above, you must use officially provided database adapter from respect
 
 ## Benchmark
 
-Benchmarked using [hey](//github.com/rakyll/hey) `-c 255 -n 255000 http://localhost:3001` on i7-4720HQ [gotro](//github.com/kokizzu/gotro) almost 2x faster than [gokil](//gitlab.com/kokizzu/gokil) (23k rps vs 12k rps, thanks to `fasthttp`),
-this already includes session loading and template rendering (real-life use case, but with template auto-reloading which should be faster on production mode, since unlike in development mode it doesn't stat disk at all). For `W2` can achieve 20k rps on Ryzen3 3100 without session loading and template rendering (only renders JSON), but with debug logging turned on (development mode), 33K-144K rps on newer 32-core 128GB RAM NVMe server see [BENCHMARK.md](/BENCHMARK.md) for detailed result.
+Benchmarked using [hey](//github.com/rakyll/hey) `-c 255 -n 255000 http://localhost:3001` on i7-4720HQ [gotro](//github.com/kokizzu/gotro) almost 2x faster than [gokil](//gitlab.com/kokizzu/gokil) (`12K` rps vs `23K` rps, thanks to `fasthttp`),
+this already includes session loading and template rendering (real-life use case, but with template auto-reloading which should be faster on production mode, since unlike in development mode it doesn't stat disk at all). 
+
+For newer framework `W2` can achieve `20K` rps on Ryzen3 3100 without session loading and template rendering (only renders JSON), but with debug logging turned on (development mode), `33K` to `144K` rps on newer 32-core 128GB RAM NVMe server, see [BENCHMARK.md](/BENCHMARK.md) for detailed result.
 
 ## Usage
 
