@@ -3,12 +3,12 @@
 
 ## Recap
 
-| Name   | 10    | 1K    | 10K   | 20K   | p99 10 | p99 1K | p99  10K | p99  20K |
-|--------|------:|------:|------:|------:|-------:|-------:|---------:|---------:|
-| Write  | 24084 | 11505 | 11397 | 11112 | 0.0024 |   0.16 |     1.26 |     2.86 |
-| Read   | 28596 | 10657 | 12296 | 10950 | 0.0007 |   0.17 |     1.30 |     2.78 |
-| Health | 23568 | 11423 | 11195 | 11141 | 0.0008 |   0.16 |     1.71 |     3.37 |
-| Hello  | 22780 | 12091 | 10365 | 10319 | 0.0009 |   0.16 |     1.84 |     3.98 |
+| Name   |     10 |     1K |   10K |   20K | p99 10 | p99 1K | p99 10K | p99 20K |
+|--------|-------:|------:|------:|------:|-------:|-------:|--------:|--------:|
+| Write  |  46695 |  55719 | 52232 | 33428 | 0.0004 | 0.0656 |  0.3889 |  1.9080 |
+| Read   |  54946 | 112834 | 82359 | 38736 | 0.0004 | 0.0761 |  0.5704 |  1.8054 |
+| Health | 106305 | 143231 | 99251 | 51664 | 0.0003 | 0.0600 |  0.5148 |  1.4058 |
+| Hello  | 104708 | 144292 | 98795 | 44347 | 0.0003 | 0.0389 |  0.4940 |  1.6238 |
 
 Note:
 - all benchmark done using [hey](//github.com/rakyll/hey) running 100K http requests, but with different concurrency levels on localhost
@@ -19,7 +19,6 @@ Note:
 - **Hello** = only serializing empty input and rendering `{"hello":"world"}` output
 - Benchmark server: 32-core, 128GB RAM, NVMe disk
 - comparison: [TechEmpower](//www.techempower.com/benchmarks/#section=data-r20&hw=ph&test=update&l=zijocf-sf&a=2) which can do write 11K rps with spec: Intel Xeon Gold 5120 (28-core), 32 GB RAM, enterprise SSD for similar write use case.
-- without logger but with profiling, `hey -n 100000 -c 255 http://lohost:9090/api/LoadWriteTets`, can do 70K rps
 
 ## C10 Write (database write, network call)
 
@@ -27,44 +26,44 @@ Note:
  hey -n 100000 -c 10 http://localhost:9090/api/LoadTestWrite
 
 Summary:
-  Total:        4.1521 secs
-  Slowest:      0.0516 secs
+  Total:        2.1415 secs
+  Slowest:      0.0276 secs
   Fastest:      0.0001 secs
-  Average:      0.0004 secs
-  Requests/sec: 24084.1362
+  Average:      0.0002 secs
+  Requests/sec: 46695.7216
   
-  Total data:   7499984 bytes
-  Size/request: 74 bytes
+  Total data:   6388900 bytes
+  Size/request: 63 bytes
 
 Response time histogram:
   0.000 [1]     |
-  0.005 [99494] |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
-  0.010 [354]   |
-  0.016 [96]    |
-  0.021 [18]    |
-  0.026 [12]    |
-  0.031 [12]    |
-  0.036 [5]     |
-  0.041 [6]     |
-  0.046 [1]     |
-  0.052 [1]     |
+  0.003 [99989] |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+  0.006 [0]     |
+  0.008 [0]     |
+  0.011 [0]     |
+  0.014 [0]     |
+  0.017 [0]     |
+  0.019 [0]     |
+  0.022 [0]     |
+  0.025 [0]     |
+  0.028 [10]    |
 
 
 Latency distribution:
   10% in 0.0002 secs
   25% in 0.0002 secs
-  50% in 0.0003 secs
-  75% in 0.0004 secs
-  90% in 0.0006 secs
-  95% in 0.0007 secs
-  99% in 0.0024 secs
+  50% in 0.0002 secs
+  75% in 0.0002 secs
+  90% in 0.0003 secs
+  95% in 0.0003 secs
+  99% in 0.0004 secs
 
 Details (average, fastest, slowest):
-  DNS+dialup:   0.0000 secs, 0.0001 secs, 0.0516 secs
-  DNS-lookup:   0.0000 secs, 0.0000 secs, 0.0004 secs
-  req write:    0.0000 secs, 0.0000 secs, 0.0020 secs
-  resp wait:    0.0004 secs, 0.0001 secs, 0.0515 secs
-  resp read:    0.0000 secs, 0.0000 secs, 0.0020 secs
+  DNS+dialup:   0.0000 secs, 0.0001 secs, 0.0276 secs
+  DNS-lookup:   0.0000 secs, 0.0000 secs, 0.0003 secs
+  req write:    0.0000 secs, 0.0000 secs, 0.0004 secs
+  resp wait:    0.0002 secs, 0.0001 secs, 0.0275 secs
+  resp read:    0.0000 secs, 0.0000 secs, 0.0005 secs
 
 Status code distribution:
   [200] 100000 responses
@@ -76,142 +75,142 @@ Status code distribution:
 hey -n 100000 -c 1000 http://localhost:9090/api/LoadTestWrite
 
 Summary:
-  Total:        8.6918 secs
-  Slowest:      0.3116 secs
+  Total:        1.7947 secs
+  Slowest:      0.1562 secs
   Fastest:      0.0002 secs
-  Average:      0.0853 secs
-  Requests/sec: 11505.1429
+  Average:      0.0174 secs
+  Requests/sec: 55719.9159
   
-  Total data:   7500000 bytes
-  Size/request: 75 bytes
+  Total data:   6500000 bytes
+  Size/request: 65 bytes
 
 Response time histogram:
   0.000 [1]     |
-  0.031 [803]   |■
-  0.063 [16525] |■■■■■■■■■■■■■
-  0.094 [49475] |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
-  0.125 [26771] |■■■■■■■■■■■■■■■■■■■■■■
-  0.156 [5218]  |■■■■
-  0.187 [733]   |■
-  0.218 [380]   |
-  0.249 [71]    |
-  0.280 [17]    |
-  0.312 [6]     |
+  0.016 [78824] |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+  0.031 [4794]  |■■
+  0.047 [692]   |
+  0.063 [13757] |■■■■■■■
+  0.078 [1569]  |■
+  0.094 [91]    |
+  0.109 [105]   |
+  0.125 [7]     |
+  0.141 [105]   |
+  0.156 [55]    |
 
 
 Latency distribution:
-  10% in 0.0557 secs
-  25% in 0.0680 secs
-  50% in 0.0830 secs
-  75% in 0.0998 secs
-  90% in 0.1171 secs
-  95% in 0.1290 secs
-  99% in 0.1624 secs
+  10% in 0.0062 secs
+  25% in 0.0077 secs
+  50% in 0.0098 secs
+  75% in 0.0139 secs
+  90% in 0.0556 secs
+  95% in 0.0584 secs
+  99% in 0.0656 secs
 
 Details (average, fastest, slowest):
-  DNS+dialup:   0.0006 secs, 0.0002 secs, 0.3116 secs
-  DNS-lookup:   0.0009 secs, 0.0000 secs, 0.1909 secs
-  req write:    0.0001 secs, 0.0000 secs, 0.0971 secs
-  resp wait:    0.0839 secs, 0.0002 secs, 0.2249 secs
-  resp read:    0.0001 secs, 0.0000 secs, 0.0809 secs
+  DNS+dialup:   0.0002 secs, 0.0002 secs, 0.1562 secs
+  DNS-lookup:   0.0003 secs, 0.0000 secs, 0.1368 secs
+  req write:    0.0001 secs, 0.0000 secs, 0.1368 secs
+  resp wait:    0.0148 secs, 0.0001 secs, 0.0678 secs
+  resp read:    0.0013 secs, 0.0000 secs, 0.1377 secs
 
 Status code distribution:
   [200] 100000 responses
 ```
 
-## C10K Write
+## C 10K Write
 
 ```shell
 hey -n 100000 -c 10000 http://localhost:9090/api/LoadTestWrite
 
 Summary:
-  Total:        8.7736 secs
-  Slowest:      1.7372 secs
-  Fastest:      0.0064 secs
-  Average:      0.8234 secs
-  Requests/sec: 11397.8483
+  Total:        1.9145 secs
+  Slowest:      0.7293 secs
+  Fastest:      0.0002 secs
+  Average:      0.1690 secs
+  Requests/sec: 52232.5421
   
-  Total data:   7500000 bytes
-  Size/request: 75 bytes
+  Total data:   6500000 bytes
+  Size/request: 65 bytes
 
 Response time histogram:
-  0.006 [1]     |
-  0.179 [255]   |
-  0.353 [670]   |■
-  0.526 [3658]  |■■■■
-  0.699 [17333] |■■■■■■■■■■■■■■■■■
-  0.872 [41010] |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
-  1.045 [26587] |■■■■■■■■■■■■■■■■■■■■■■■■■■
-  1.218 [8682]  |■■■■■■■■
-  1.391 [1552]  |■■
-  1.564 [227]   |
-  1.737 [25]    |
+  0.000 [1]     |
+  0.073 [6625]  |■■■■■
+  0.146 [29891] |■■■■■■■■■■■■■■■■■■■■■■■■■
+  0.219 [48295] |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+  0.292 [9863]  |■■■■■■■■
+  0.365 [3956]  |■■■
+  0.438 [972]   |■
+  0.511 [290]   |
+  0.583 [71]    |
+  0.656 [28]    |
+  0.729 [8]     |
 
 
 Latency distribution:
-  10% in 0.6174 secs
-  25% in 0.7141 secs
-  50% in 0.8183 secs
-  75% in 0.9325 secs
-  90% in 1.0507 secs
-  95% in 1.1263 secs
-  99% in 1.2666 secs
+  10% in 0.0925 secs
+  25% in 0.1315 secs
+  50% in 0.1746 secs
+  75% in 0.1927 secs
+  90% in 0.2576 secs
+  95% in 0.2950 secs
+  99% in 0.3889 secs
 
 Details (average, fastest, slowest):
-  DNS+dialup:   0.0233 secs, 0.0064 secs, 1.7372 secs
-  DNS-lookup:   0.0162 secs, 0.0000 secs, 0.3918 secs
-  req write:    0.0017 secs, 0.0000 secs, 0.3625 secs
-  resp wait:    0.7867 secs, 0.0003 secs, 1.7371 secs
-  resp read:    0.0004 secs, 0.0000 secs, 0.2636 secs
+  DNS+dialup:   0.0097 secs, 0.0002 secs, 0.7293 secs
+  DNS-lookup:   0.0107 secs, 0.0000 secs, 0.1968 secs
+  req write:    0.0014 secs, 0.0000 secs, 0.1788 secs
+  resp wait:    0.1175 secs, 0.0001 secs, 0.2241 secs
+  resp read:    0.0214 secs, 0.0000 secs, 0.4949 secs
 
 Status code distribution:
   [200] 100000 responses
 ```
 
-## C20K Write
+## C 20K Write
 
 ```shell
 hey -n 100000 -c 20000 http://localhost:9090/api/LoadTestWrite
 
 Summary:
-  Total:        8.9988 secs
-  Slowest:      3.8714 secs
-  Fastest:      0.0008 secs
-  Average:      1.6022 secs
-  Requests/sec: 11112.6331
+  Total:        2.9915 secs
+  Slowest:      2.5130 secs
+  Fastest:      0.0003 secs
+  Average:      0.5248 secs
+  Requests/sec: 33428.1736
   
-  Total data:   7500000 bytes
-  Size/request: 75 bytes
+  Total data:   6500000 bytes
+  Size/request: 65 bytes
 
 Response time histogram:
-  0.001 [1]     |
-  0.388 [969]   |■
-  0.775 [3177]  |■■■■
-  1.162 [11032] |■■■■■■■■■■■■■
-  1.549 [32934] |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
-  1.936 [28344] |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
-  2.323 [16345] |■■■■■■■■■■■■■■■■■■■■
-  2.710 [5826]  |■■■■■■■
-  3.097 [861]   |■
-  3.484 [453]   |■
-  3.871 [58]    |
+  0.000 [1]     |
+  0.252 [45724] |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+  0.503 [22434] |■■■■■■■■■■■■■■■■■■■■
+  0.754 [8519]  |■■■■■■■
+  1.005 [3409]  |■■■
+  1.257 [2587]  |■■
+  1.508 [6568]  |■■■■■■
+  1.759 [8467]  |■■■■■■■
+  2.010 [1971]  |■■
+  2.262 [252]   |
+  2.513 [68]    |
 
 
 Latency distribution:
-  10% in 1.0419 secs
-  25% in 1.3020 secs
-  50% in 1.5702 secs
-  75% in 1.9105 secs
-  90% in 2.2135 secs
-  95% in 2.4044 secs
-  99% in 2.8638 secs
+  10% in 0.0490 secs
+  25% in 0.1373 secs
+  50% in 0.3183 secs
+  75% in 0.6613 secs
+  90% in 1.5236 secs
+  95% in 1.6808 secs
+  99% in 1.9080 secs
 
 Details (average, fastest, slowest):
-  DNS+dialup:   0.0619 secs, 0.0008 secs, 3.8714 secs
-  DNS-lookup:   0.0965 secs, 0.0000 secs, 1.4742 secs
-  req write:    0.0122 secs, 0.0000 secs, 0.5623 secs
-  resp wait:    1.3670 secs, 0.0003 secs, 3.8000 secs
-  resp read:    0.0168 secs, 0.0000 secs, 0.6904 secs
+  DNS+dialup:   0.0707 secs, 0.0003 secs, 2.5130 secs
+  DNS-lookup:   0.0454 secs, 0.0000 secs, 0.9131 secs
+  req write:    0.0058 secs, 0.0000 secs, 0.4495 secs
+  resp wait:    0.2291 secs, 0.0002 secs, 0.9176 secs
+  resp read:    0.0951 secs, 0.0000 secs, 1.0243 secs
 
 Status code distribution:
   [200] 100000 responses
@@ -223,43 +222,43 @@ Status code distribution:
 hey -n 100000 -c 10 http://localhost:9090/api/LoadTestRead 
 
 Summary:
-  Total:        3.4969 secs
-  Slowest:      0.0027 secs
+  Total:        1.8199 secs
+  Slowest:      0.0082 secs
   Fastest:      0.0001 secs
-  Average:      0.0003 secs
-  Requests/sec: 28596.6464
+  Average:      0.0002 secs
+  Requests/sec: 54946.8908
   
-  Total data:   37400000 bytes
-  Size/request: 374 bytes
+  Total data:   36200000 bytes
+  Size/request: 362 bytes
 
 Response time histogram:
   0.000 [1]     |
-  0.000 [58060] |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
-  0.001 [36139] |■■■■■■■■■■■■■■■■■■■■■■■■■
-  0.001 [5644]  |■■■■
-  0.001 [119]   |
-  0.001 [17]    |
-  0.002 [8]     |
-  0.002 [5]     |
-  0.002 [0]     |
-  0.002 [0]     |
-  0.003 [7]     |
+  0.001 [99924] |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+  0.002 [24]    |
+  0.003 [12]    |
+  0.003 [9]     |
+  0.004 [8]     |
+  0.005 [1]     |
+  0.006 [11]    |
+  0.007 [0]     |
+  0.007 [0]     |
+  0.008 [10]    |
 
 
 Latency distribution:
-  10% in 0.0002 secs
+  10% in 0.0001 secs
   25% in 0.0002 secs
-  50% in 0.0003 secs
-  75% in 0.0005 secs
-  90% in 0.0006 secs
-  95% in 0.0006 secs
-  99% in 0.0007 secs
+  50% in 0.0002 secs
+  75% in 0.0002 secs
+  90% in 0.0002 secs
+  95% in 0.0002 secs
+  99% in 0.0004 secs
 
 Details (average, fastest, slowest):
-  DNS+dialup:   0.0000 secs, 0.0001 secs, 0.0027 secs
-  DNS-lookup:   0.0000 secs, 0.0000 secs, 0.0004 secs
-  req write:    0.0000 secs, 0.0000 secs, 0.0005 secs
-  resp wait:    0.0003 secs, 0.0001 secs, 0.0027 secs
+  DNS+dialup:   0.0000 secs, 0.0001 secs, 0.0082 secs
+  DNS-lookup:   0.0000 secs, 0.0000 secs, 0.0003 secs
+  req write:    0.0000 secs, 0.0000 secs, 0.0004 secs
+  resp wait:    0.0002 secs, 0.0001 secs, 0.0082 secs
   resp read:    0.0000 secs, 0.0000 secs, 0.0005 secs
 
 Status code distribution:
@@ -269,142 +268,143 @@ Status code distribution:
 ## C1K Read
 
 ```shell
-hey -n 100000 -c 1000 http://localhost:9090/api/LoadTestRead 
-
 Summary:
-  Total:        9.3835 secs
-  Slowest:      0.2796 secs
-  Fastest:      0.0002 secs
-  Average:      0.0921 secs
-  Requests/sec: 10657.0083
+  Total:        0.8863 secs
+  Slowest:      0.2039 secs
+  Fastest:      0.0001 secs
+  Average:      0.0082 secs
+  Requests/sec: 112834.5020
   
-  Total data:   37400000 bytes
-  Size/request: 374 bytes
+  Total data:   36200000 bytes
+  Size/request: 362 bytes
 
 Response time histogram:
   0.000 [1]     |
-  0.028 [544]   |■
-  0.056 [8063]  |■■■■■■■■■
-  0.084 [34160] |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
-  0.112 [35047] |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
-  0.140 [15844] |■■■■■■■■■■■■■■■■■■
-  0.168 [4609]  |■■■■■
-  0.196 [1415]  |■■
-  0.224 [268]   |
-  0.252 [35]    |
-  0.280 [14]    |
+  0.020 [89162] |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+  0.041 [9143]  |■■■■
+  0.061 [650]   |
+  0.082 [62]    |
+  0.102 [67]    |
+  0.122 [515]   |
+  0.143 [161]   |
+  0.163 [68]    |
+  0.183 [165]   |
+  0.204 [6]     |
 
 
 Latency distribution:
-  10% in 0.0579 secs
-  25% in 0.0717 secs
-  50% in 0.0890 secs
-  75% in 0.1090 secs
-  90% in 0.1302 secs
-  95% in 0.1449 secs
-  99% in 0.1776 secs
+  10% in 0.0003 secs
+  25% in 0.0004 secs
+  50% in 0.0008 secs
+  75% in 0.0113 secs
+  90% in 0.0211 secs
+  95% in 0.0261 secs
+  99% in 0.0761 secs
 
 Details (average, fastest, slowest):
-  DNS+dialup:   0.0003 secs, 0.0002 secs, 0.2796 secs
-  DNS-lookup:   0.0010 secs, 0.0000 secs, 0.1742 secs
-  req write:    0.0000 secs, 0.0000 secs, 0.0754 secs
-  resp wait:    0.0908 secs, 0.0002 secs, 0.2796 secs
-  resp read:    0.0001 secs, 0.0000 secs, 0.0620 secs
+  DNS+dialup:   0.0006 secs, 0.0001 secs, 0.2039 secs
+  DNS-lookup:   0.0004 secs, 0.0000 secs, 0.1535 secs
+  req write:    0.0003 secs, 0.0000 secs, 0.1522 secs
+  resp wait:    0.0007 secs, 0.0001 secs, 0.0604 secs
+  resp read:    0.0036 secs, 0.0000 secs, 0.0811 secs
 
 Status code distribution:
   [200] 100000 responses
 ```
 
-## C10K Read
+## C 10K Read
 
 ```shell
 hey -n 100000 -c 10000 http://localhost:9090/api/LoadTestRead 
 
 Summary:
-  Total:        8.1324 secs
-  Slowest:      1.9896 secs
-  Fastest:      0.0002 secs
-  Average:      0.7559 secs
-  Requests/sec: 12296.5247
+  Total:        1.2142 secs
+  Slowest:      1.1184 secs
+  Fastest:      0.0001 secs
+  Average:      0.1015 secs
+  Requests/sec: 82359.4925
   
-  Total data:   37400000 bytes
-  Size/request: 374 bytes
+  Total data:   36200000 bytes
+  Size/request: 362 bytes
 
 Response time histogram:
   0.000 [1]     |
-  0.199 [841]   |■
-  0.398 [3544]  |■■■
-  0.597 [15991] |■■■■■■■■■■■■■■■■
-  0.796 [40506] |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
-  0.995 [26058] |■■■■■■■■■■■■■■■■■■■■■■■■■■
-  1.194 [10202] |■■■■■■■■■■
-  1.393 [2522]  |■■
-  1.592 [299]   |
-  1.791 [32]    |
-  1.990 [4]     |
+  0.112 [63986] |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+  0.224 [19104] |■■■■■■■■■■■■
+  0.336 [8328]  |■■■■■
+  0.447 [4517]  |■■■
+  0.559 [3001]  |■■
+  0.671 [708]   |
+  0.783 [278]   |
+  0.895 [69]    |
+  1.007 [6]     |
+  1.118 [2]     |
 
 
 Latency distribution:
-  10% in 0.5123 secs
-  25% in 0.6232 secs
-  50% in 0.7409 secs
-  75% in 0.8836 secs
-  90% in 1.0360 secs
-  95% in 1.1305 secs
-  99% in 1.3002 secs
+  10% in 0.0003 secs
+  25% in 0.0004 secs
+  50% in 0.0050 secs
+  75% in 0.1653 secs
+  90% in 0.3115 secs
+  95% in 0.4017 secs
+  99% in 0.5704 secs
 
 Details (average, fastest, slowest):
-  DNS+dialup:   0.0213 secs, 0.0002 secs, 1.9896 secs
-  DNS-lookup:   0.0089 secs, 0.0000 secs, 0.3246 secs
-  req write:    0.0022 secs, 0.0000 secs, 0.3965 secs
-  resp wait:    0.7148 secs, 0.0002 secs, 1.9896 secs
-  resp read:    0.0019 secs, 0.0000 secs, 0.3288 secs
+  DNS+dialup:   0.0105 secs, 0.0001 secs, 1.1184 secs
+  DNS-lookup:   0.0066 secs, 0.0000 secs, 0.3608 secs
+  req write:    0.0035 secs, 0.0000 secs, 0.2850 secs
+  resp wait:    0.0129 secs, 0.0001 secs, 0.2628 secs
+  resp read:    0.0378 secs, 0.0000 secs, 0.7637 secs
+
+Status code distribution:
+  [200] 100000 responses
 ```
 
-## C20K Read
+## C 20K Read
 
 ```shell
 hey -n 100000 -c 20000 http://localhost:9090/api/LoadTestRead 
 
 Summary:
-  Total:        9.1321 secs
-  Slowest:      4.1688 secs
-  Fastest:      0.0349 secs
-  Average:      1.5950 secs
-  Requests/sec: 10950.4404
+  Total:        2.5815 secs
+  Slowest:      2.3408 secs
+  Fastest:      0.0002 secs
+  Average:      0.4402 secs
+  Requests/sec: 38736.6084
   
-  Total data:   37400000 bytes
-  Size/request: 374 bytes
+  Total data:   36200000 bytes
+  Size/request: 362 bytes
 
 Response time histogram:
-  0.035 [1]     |
-  0.448 [1175]  |■
-  0.862 [7044]  |■■■■■■■■
-  1.275 [20223] |■■■■■■■■■■■■■■■■■■■■■■■■
-  1.688 [33160] |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
-  2.102 [19626] |■■■■■■■■■■■■■■■■■■■■■■■■
-  2.515 [11557] |■■■■■■■■■■■■■■
-  2.929 [6720]  |■■■■■■■■
-  3.342 [346]   |
-  3.755 [128]   |
-  4.169 [20]    |
+  0.000 [1]     |
+  0.234 [47639] |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+  0.468 [16885] |■■■■■■■■■■■■■■
+  0.702 [6547]  |■■■■■
+  0.936 [7330]  |■■■■■■
+  1.171 [11008] |■■■■■■■■■
+  1.405 [3024]  |■■■
+  1.639 [4877]  |■■■■
+  1.873 [2055]  |■■
+  2.107 [460]   |
+  2.341 [174]   |
 
 
 Latency distribution:
-  10% in 0.9166 secs
-  25% in 1.2202 secs
-  50% in 1.5413 secs
-  75% in 1.9559 secs
-  90% in 2.4363 secs
-  95% in 2.6717 secs
-  99% in 2.7868 secs
+  10% in 0.0004 secs
+  25% in 0.0005 secs
+  50% in 0.2490 secs
+  75% in 0.7878 secs
+  90% in 1.1858 secs
+  95% in 1.5508 secs
+  99% in 1.8054 secs
 
 Details (average, fastest, slowest):
-  DNS+dialup:   0.0351 secs, 0.0349 secs, 4.1688 secs
-  DNS-lookup:   0.0863 secs, 0.0000 secs, 1.5161 secs
-  req write:    0.0700 secs, 0.0000 secs, 1.0982 secs
-  resp wait:    1.3713 secs, 0.0002 secs, 3.6377 secs
-  resp read:    0.0302 secs, 0.0000 secs, 1.2161 secs
+  DNS+dialup:   0.0483 secs, 0.0002 secs, 2.3408 secs
+  DNS-lookup:   0.0620 secs, 0.0000 secs, 0.8380 secs
+  req write:    0.0032 secs, 0.0000 secs, 0.5570 secs
+  resp wait:    0.1060 secs, 0.0001 secs, 0.7873 secs
+  resp read:    0.1263 secs, 0.0000 secs, 1.2577 secs
 
 Status code distribution:
   [200] 100000 responses
@@ -416,44 +416,44 @@ Status code distribution:
  hey -n 100000 -c 10 http://localhost:9090/api/Health      
 
 Summary:
-  Total:        4.2430 secs
-  Slowest:      0.0044 secs
+  Total:        0.9407 secs
+  Slowest:      0.0089 secs
   Fastest:      0.0000 secs
-  Average:      0.0004 secs
-  Requests/sec: 23568.3716
+  Average:      0.0001 secs
+  Requests/sec: 106305.0847
   
-  Total data:   9699940 bytes
-  Size/request: 96 bytes
+  Total data:   9897468 bytes
+  Size/request: 98 bytes
 
 Response time histogram:
   0.000 [1]     |
-  0.000 [62082] |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
-  0.001 [37697] |■■■■■■■■■■■■■■■■■■■■■■■■
-  0.001 [189]   |
-  0.002 [7]     |
-  0.002 [4]     |
-  0.003 [0]     |
-  0.003 [0]     |
-  0.004 [4]     |
+  0.001 [99950] |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+  0.002 [26]    |
+  0.003 [1]     |
   0.004 [1]     |
-  0.004 [15]    |
+  0.004 [1]     |
+  0.005 [0]     |
+  0.006 [2]     |
+  0.007 [8]     |
+  0.008 [0]     |
+  0.009 [10]    |
 
 
 Latency distribution:
-  10% in 0.0002 secs
-  25% in 0.0003 secs
-  50% in 0.0004 secs
-  75% in 0.0005 secs
-  90% in 0.0006 secs
-  95% in 0.0007 secs
-  99% in 0.0008 secs
+  10% in 0.0001 secs
+  25% in 0.0001 secs
+  50% in 0.0001 secs
+  75% in 0.0001 secs
+  90% in 0.0001 secs
+  95% in 0.0001 secs
+  99% in 0.0003 secs
 
 Details (average, fastest, slowest):
-  DNS+dialup:   0.0000 secs, 0.0000 secs, 0.0044 secs
-  DNS-lookup:   0.0000 secs, 0.0000 secs, 0.0003 secs
-  req write:    0.0000 secs, 0.0000 secs, 0.0011 secs
-  resp wait:    0.0004 secs, 0.0000 secs, 0.0044 secs
-  resp read:    0.0000 secs, 0.0000 secs, 0.0012 secs
+  DNS+dialup:   0.0000 secs, 0.0000 secs, 0.0089 secs
+  DNS-lookup:   0.0000 secs, 0.0000 secs, 0.0002 secs
+  req write:    0.0000 secs, 0.0000 secs, 0.0017 secs
+  resp wait:    0.0001 secs, 0.0000 secs, 0.0089 secs
+  resp read:    0.0000 secs, 0.0000 secs, 0.0011 secs
 
 Status code distribution:
   [200] 100000 responses
@@ -465,142 +465,142 @@ Status code distribution:
 hey -n 100000 -c 1000 http://localhost:9090/api/Health 
 
 Summary:
-  Total:        8.7541 secs
-  Slowest:      0.3141 secs
+  Total:        0.6982 secs
+  Slowest:      0.1649 secs
   Fastest:      0.0001 secs
-  Average:      0.0858 secs
-  Requests/sec: 11423.2743
+  Average:      0.0065 secs
+  Requests/sec: 143231.8962
   
-  Total data:   9887748 bytes
-  Size/request: 98 bytes
+  Total data:   9900000 bytes
+  Size/request: 99 bytes
 
 Response time histogram:
   0.000 [1]     |
-  0.031 [914]   |■
-  0.063 [17483] |■■■■■■■■■■■■■■■
-  0.094 [47910] |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
-  0.126 [26679] |■■■■■■■■■■■■■■■■■■■■■■
-  0.157 [5814]  |■■■■■
-  0.188 [763]   |■
-  0.220 [396]   |
-  0.251 [18]    |
-  0.283 [14]    |
-  0.314 [8]     |
+  0.017 [87831] |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+  0.033 [9472]  |■■■■
+  0.050 [1401]  |■
+  0.066 [426]   |
+  0.082 [470]   |
+  0.099 [284]   |
+  0.115 [15]    |
+  0.132 [72]    |
+  0.148 [23]    |
+  0.165 [5]     |
 
 
 Latency distribution:
-  10% in 0.0550 secs
-  25% in 0.0678 secs
-  50% in 0.0835 secs
-  75% in 0.1012 secs
-  90% in 0.1194 secs
-  95% in 0.1311 secs
-  99% in 0.1612 secs
+  10% in 0.0001 secs
+  25% in 0.0001 secs
+  50% in 0.0002 secs
+  75% in 0.0092 secs
+  90% in 0.0181 secs
+  95% in 0.0236 secs
+  99% in 0.0600 secs
 
 Details (average, fastest, slowest):
-  DNS+dialup:   0.0004 secs, 0.0001 secs, 0.3141 secs
-  DNS-lookup:   0.0009 secs, 0.0000 secs, 0.1927 secs
-  req write:    0.0001 secs, 0.0000 secs, 0.1903 secs
-  resp wait:    0.0846 secs, 0.0001 secs, 0.2442 secs
-  resp read:    0.0000 secs, 0.0000 secs, 0.0686 secs
+  DNS+dialup:   0.0004 secs, 0.0001 secs, 0.1649 secs
+  DNS-lookup:   0.0004 secs, 0.0000 secs, 0.0744 secs
+  req write:    0.0002 secs, 0.0000 secs, 0.0696 secs
+  resp wait:    0.0002 secs, 0.0000 secs, 0.0404 secs
+  resp read:    0.0028 secs, 0.0000 secs, 0.0876 secs
 
 Status code distribution:
   [200] 100000 responses
 ```
 
-## C10K Health
+## C 10K Health
 
 ```shell
 hey -n 100000 -c 10000 http://localhost:9090/api/Health
 
 Summary:
-  Total:        8.9323 secs
-  Slowest:      3.1181 secs
+  Total:        1.0075 secs
+  Slowest:      0.8499 secs
   Fastest:      0.0001 secs
-  Average:      0.8167 secs
-  Requests/sec: 11195.3508
+  Average:      0.0844 secs
+  Requests/sec: 99251.1317
   
-  Total data:   9854998 bytes
+  Total data:   9870145 bytes
   Size/request: 98 bytes
 
 Response time histogram:
   0.000 [1]     |
-  0.312 [2875]  |■■■
-  0.624 [24787] |■■■■■■■■■■■■■■■■■■■■■■■■
-  0.936 [41571] |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
-  1.247 [21197] |■■■■■■■■■■■■■■■■■■■■
-  1.559 [7329]  |■■■■■■■
-  1.871 [1812]  |■■
-  2.183 [362]   |
-  2.495 [55]    |
-  2.806 [10]    |
-  3.118 [1]     |
+  0.085 [65039] |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+  0.170 [17363] |■■■■■■■■■■■
+  0.255 [6213]  |■■■■
+  0.340 [6799]  |■■■■
+  0.425 [2234]  |■
+  0.510 [1238]  |■
+  0.595 [716]   |
+  0.680 [287]   |
+  0.765 [88]    |
+  0.850 [22]    |
 
 
 Latency distribution:
-  10% in 0.4914 secs
-  25% in 0.6094 secs
-  50% in 0.7559 secs
-  75% in 0.9941 secs
-  90% in 1.2371 secs
-  95% in 1.3970 secs
-  99% in 1.7137 secs
+  10% in 0.0001 secs
+  25% in 0.0001 secs
+  50% in 0.0029 secs
+  75% in 0.1364 secs
+  90% in 0.2713 secs
+  95% in 0.3344 secs
+  99% in 0.5148 secs
 
 Details (average, fastest, slowest):
-  DNS+dialup:   0.0137 secs, 0.0001 secs, 3.1181 secs
-  DNS-lookup:   0.0084 secs, 0.0000 secs, 0.3815 secs
-  req write:    0.0014 secs, 0.0000 secs, 0.3469 secs
-  resp wait:    0.7843 secs, 0.0001 secs, 3.1180 secs
-  resp read:    0.0010 secs, 0.0000 secs, 0.3027 secs
+  DNS+dialup:   0.0085 secs, 0.0001 secs, 0.8499 secs
+  DNS-lookup:   0.0053 secs, 0.0000 secs, 0.1781 secs
+  req write:    0.0009 secs, 0.0000 secs, 0.1783 secs
+  resp wait:    0.0039 secs, 0.0000 secs, 0.1745 secs
+  resp read:    0.0329 secs, 0.0000 secs, 0.5704 secs
 
 Status code distribution:
   [200] 100000 responses
 ```
 
-## C20K Health
+## C 20K Health
 
 ```shell
 hey -n 100000 -c 20000 http://localhost:9090/api/Health      
 
 Summary:
-  Total:        8.9757 secs
-  Slowest:      5.5716 secs
+  Total:        1.9356 secs
+  Slowest:      1.8303 secs
   Fastest:      0.0001 secs
-  Average:      1.5825 secs
-  Requests/sec: 11141.2181
+  Average:      0.2596 secs
+  Requests/sec: 51664.5346
   
-  Total data:   9877214 bytes
+  Total data:   9888826 bytes
   Size/request: 98 bytes
 
 Response time histogram:
   0.000 [1]     |
-  0.557 [4135]  |■■■■
-  1.114 [13631] |■■■■■■■■■■■■
-  1.672 [44756] |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
-  2.229 [21275] |■■■■■■■■■■■■■■■■■■■
-  2.786 [11910] |■■■■■■■■■■■
-  3.343 [3163]  |■■■
-  3.900 [1003]  |■
-  4.457 [111]   |
-  5.014 [13]    |
-  5.572 [2]     |
+  0.183 [57872] |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+  0.366 [17025] |■■■■■■■■■■■■
+  0.549 [7560]  |■■■■■
+  0.732 [5768]  |■■■■
+  0.915 [4553]  |■■■
+  1.098 [4404]  |■■■
+  1.281 [1533]  |■
+  1.464 [434]   |
+  1.647 [735]   |■
+  1.830 [115]   |
 
 
 Latency distribution:
-  10% in 0.9157 secs
-  25% in 1.2031 secs
-  50% in 1.4036 secs
-  75% in 1.9678 secs
-  90% in 2.4978 secs
-  95% in 2.7296 secs
-  99% in 3.3747 secs
+  10% in 0.0001 secs
+  25% in 0.0002 secs
+  50% in 0.1550 secs
+  75% in 0.3710 secs
+  90% in 0.7834 secs
+  95% in 0.9897 secs
+  99% in 1.4058 secs
 
 Details (average, fastest, slowest):
-  DNS+dialup:   0.0684 secs, 0.0001 secs, 5.5716 secs
-  DNS-lookup:   0.1299 secs, 0.0000 secs, 2.4811 secs
-  req write:    0.0115 secs, 0.0000 secs, 1.8493 secs
-  resp wait:    1.3601 secs, 0.0001 secs, 4.5270 secs
-  resp read:    0.0213 secs, 0.0000 secs, 1.8238 secs
+  DNS+dialup:   0.0070 secs, 0.0001 secs, 1.8303 secs
+  DNS-lookup:   0.0229 secs, 0.0000 secs, 0.6348 secs
+  req write:    0.0017 secs, 0.0000 secs, 0.4559 secs
+  resp wait:    0.0376 secs, 0.0000 secs, 0.5288 secs
+  resp read:    0.0887 secs, 0.0000 secs, 1.4141 secs
 
 Status code distribution:
   [200] 100000 responses
@@ -612,44 +612,44 @@ Status code distribution:
 hey -n 100000 -c 10 http://localhost:9090/api/LoadHello
 
 Summary:
-  Total:        4.3897 secs
-  Slowest:      0.0226 secs
+  Total:        0.9550 secs
+  Slowest:      0.0085 secs
   Fastest:      0.0000 secs
-  Average:      0.0004 secs
-  Requests/sec: 22780.7162
+  Average:      0.0001 secs
+  Requests/sec: 104708.9702
   
   Total data:   5700000 bytes
   Size/request: 57 bytes
 
 Response time histogram:
   0.000 [1]     |
-  0.002 [99959] |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
-  0.005 [29]    |
+  0.001 [99911] |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+  0.002 [45]    |
+  0.003 [4]     |
+  0.003 [8]     |
+  0.004 [1]     |
+  0.005 [10]    |
+  0.006 [10]    |
   0.007 [0]     |
-  0.009 [0]     |
-  0.011 [1]     |
-  0.014 [0]     |
-  0.016 [0]     |
-  0.018 [0]     |
-  0.020 [0]     |
-  0.023 [10]    |
+  0.008 [0]     |
+  0.008 [10]    |
 
 
 Latency distribution:
-  10% in 0.0002 secs
-  25% in 0.0003 secs
-  50% in 0.0004 secs
-  75% in 0.0006 secs
-  90% in 0.0007 secs
-  95% in 0.0007 secs
-  99% in 0.0009 secs
+  10% in 0.0001 secs
+  25% in 0.0001 secs
+  50% in 0.0001 secs
+  75% in 0.0001 secs
+  90% in 0.0001 secs
+  95% in 0.0001 secs
+  99% in 0.0003 secs
 
 Details (average, fastest, slowest):
-  DNS+dialup:   0.0000 secs, 0.0000 secs, 0.0226 secs
+  DNS+dialup:   0.0000 secs, 0.0000 secs, 0.0085 secs
   DNS-lookup:   0.0000 secs, 0.0000 secs, 0.0003 secs
-  req write:    0.0000 secs, 0.0000 secs, 0.0036 secs
-  resp wait:    0.0004 secs, 0.0000 secs, 0.0225 secs
-  resp read:    0.0000 secs, 0.0000 secs, 0.0077 secs
+  req write:    0.0000 secs, 0.0000 secs, 0.0004 secs
+  resp wait:    0.0001 secs, 0.0000 secs, 0.0084 secs
+  resp read:    0.0000 secs, 0.0000 secs, 0.0007 secs
 
 Status code distribution:
   [200] 100000 responses
@@ -661,142 +661,142 @@ Status code distribution:
 hey -n 100000 -c 1000 http://localhost:9090/api/LoadHello 
 
 Summary:
-  Total:        8.2700 secs
-  Slowest:      0.3034 secs
+  Total:        0.6930 secs
+  Slowest:      0.1352 secs
   Fastest:      0.0001 secs
-  Average:      0.0813 secs
-  Requests/sec: 12091.9439
+  Average:      0.0063 secs
+  Requests/sec: 144292.8724
   
   Total data:   5700000 bytes
   Size/request: 57 bytes
 
 Response time histogram:
   0.000 [1]     |
-  0.030 [1078]  |■
-  0.061 [19059] |■■■■■■■■■■■■■■■
-  0.091 [49452] |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
-  0.121 [24805] |■■■■■■■■■■■■■■■■■■■■
-  0.152 [4347]  |■■■■
-  0.182 [367]   |
-  0.212 [479]   |
-  0.243 [299]   |
-  0.273 [96]    |
-  0.303 [17]    |
+  0.014 [85481] |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+  0.027 [10190] |■■■■■
+  0.041 [3636]  |■■
+  0.054 [549]   |
+  0.068 [83]    |
+  0.081 [30]    |
+  0.095 [7]     |
+  0.108 [6]     |
+  0.122 [7]     |
+  0.135 [10]    |
 
 
 Latency distribution:
-  10% in 0.0518 secs
-  25% in 0.0641 secs
-  50% in 0.0788 secs
-  75% in 0.0953 secs
-  90% in 0.1120 secs
-  95% in 0.1233 secs
-  99% in 0.1641 secs
+  10% in 0.0001 secs
+  25% in 0.0001 secs
+  50% in 0.0002 secs
+  75% in 0.0093 secs
+  90% in 0.0193 secs
+  95% in 0.0244 secs
+  99% in 0.0389 secs
 
 Details (average, fastest, slowest):
-  DNS+dialup:   0.0006 secs, 0.0001 secs, 0.3034 secs
-  DNS-lookup:   0.0010 secs, 0.0000 secs, 0.1533 secs
-  req write:    0.0000 secs, 0.0000 secs, 0.0798 secs
-  resp wait:    0.0798 secs, 0.0001 secs, 0.2400 secs
-  resp read:    0.0000 secs, 0.0000 secs, 0.0450 secs
+  DNS+dialup:   0.0001 secs, 0.0001 secs, 0.1352 secs
+  DNS-lookup:   0.0003 secs, 0.0000 secs, 0.0492 secs
+  req write:    0.0001 secs, 0.0000 secs, 0.0755 secs
+  resp wait:    0.0003 secs, 0.0000 secs, 0.0631 secs
+  resp read:    0.0027 secs, 0.0000 secs, 0.0839 secs
 
 Status code distribution:
   [200] 100000 responses
 ```
 
-## C10K Hello
+## C 10K Hello
 
 ```shell
 hey -n 100000 -c 10000 http://localhost:9090/api/LoadHello
 
 Summary:
-  Total:        9.6475 secs
-  Slowest:      2.9423 secs
+  Total:        1.0122 secs
+  Slowest:      0.9236 secs
   Fastest:      0.0001 secs
-  Average:      0.8973 secs
-  Requests/sec: 10365.3998
+  Average:      0.0828 secs
+  Requests/sec: 98795.5020
   
   Total data:   5700000 bytes
   Size/request: 57 bytes
 
 Response time histogram:
   0.000 [1]     |
-  0.294 [2009]  |■■
-  0.589 [11498] |■■■■■■■■■■■
-  0.883 [40739] |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
-  1.177 [27869] |■■■■■■■■■■■■■■■■■■■■■■■■■■■
-  1.471 [12220] |■■■■■■■■■■■■
-  1.765 [4213]  |■■■■
-  2.060 [1138]  |■
-  2.354 [242]   |
-  2.648 [59]    |
-  2.942 [12]    |
+  0.092 [64914] |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+  0.185 [18645] |■■■■■■■■■■■
+  0.277 [6256]  |■■■■
+  0.369 [5515]  |■■■
+  0.462 [3459]  |■■
+  0.554 [810]   |
+  0.647 [318]   |
+  0.739 [55]    |
+  0.831 [24]    |
+  0.924 [3]     |
 
 
 Latency distribution:
-  10% in 0.5442 secs
-  25% in 0.6792 secs
-  50% in 0.8466 secs
-  75% in 1.0933 secs
-  90% in 1.3220 secs
-  95% in 1.4980 secs
-  99% in 1.8467 secs
+  10% in 0.0001 secs
+  25% in 0.0001 secs
+  50% in 0.0004 secs
+  75% in 0.1227 secs
+  90% in 0.2803 secs
+  95% in 0.3552 secs
+  99% in 0.4940 secs
 
 Details (average, fastest, slowest):
-  DNS+dialup:   0.0165 secs, 0.0001 secs, 2.9423 secs
-  DNS-lookup:   0.0142 secs, 0.0000 secs, 0.2916 secs
-  req write:    0.0009 secs, 0.0000 secs, 0.1381 secs
-  resp wait:    0.8636 secs, 0.0001 secs, 2.9423 secs
-  resp read:    0.0001 secs, 0.0000 secs, 0.0806 secs
+  DNS+dialup:   0.0116 secs, 0.0001 secs, 0.9236 secs
+  DNS-lookup:   0.0095 secs, 0.0000 secs, 0.1775 secs
+  req write:    0.0010 secs, 0.0000 secs, 0.1084 secs
+  resp wait:    0.0094 secs, 0.0000 secs, 0.1262 secs
+  resp read:    0.0272 secs, 0.0000 secs, 0.5055 secs
 
 Status code distribution:
   [200] 100000 responses
 ```
 
-## C20K Hello
+## C 20K Hello
 
 ```shell
 hey -n 100000 -c 20000 http://localhost:9090/api/LoadHello
 
 Summary:
-  Total:        9.6904 secs
-  Slowest:      6.4666 secs
-  Fastest:      0.0002 secs
-  Average:      1.6755 secs
-  Requests/sec: 10319.4446
+  Total:        2.2549 secs
+  Slowest:      2.2309 secs
+  Fastest:      0.0001 secs
+  Average:      0.3807 secs
+  Requests/sec: 44347.0950
   
   Total data:   5700000 bytes
   Size/request: 57 bytes
 
 Response time histogram:
   0.000 [1]     |
-  0.647 [5335]  |■■■■■■
-  1.293 [33214] |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
-  1.940 [27625] |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
-  2.587 [21133] |■■■■■■■■■■■■■■■■■■■■■■■■■
-  3.233 [8663]  |■■■■■■■■■■
-  3.880 [2849]  |■■■
-  4.527 [869]   |■
-  5.173 [261]   |
-  5.820 [39]    |
-  6.467 [11]    |
+  0.223 [48104] |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+  0.446 [15563] |■■■■■■■■■■■■■
+  0.669 [9233]  |■■■■■■■■
+  0.892 [13934] |■■■■■■■■■■■■
+  1.115 [7301]  |■■■■■■
+  1.339 [707]   |■
+  1.562 [3671]  |■■■
+  1.785 [1016]  |■
+  2.008 [405]   |
+  2.231 [65]    |
 
 
 Latency distribution:
-  10% in 0.8219 secs
-  25% in 1.1397 secs
-  50% in 1.5045 secs
-  75% in 2.1292 secs
-  90% in 2.7457 secs
-  95% in 3.1096 secs
-  99% in 3.9815 secs
+  10% in 0.0001 secs
+  25% in 0.0002 secs
+  50% in 0.2425 secs
+  75% in 0.7113 secs
+  90% in 0.9720 secs
+  95% in 1.3476 secs
+  99% in 1.6238 secs
 
 Details (average, fastest, slowest):
-  DNS+dialup:   0.0575 secs, 0.0002 secs, 6.4666 secs
-  DNS-lookup:   0.0340 secs, 0.0000 secs, 0.6683 secs
-  req write:    0.0233 secs, 0.0000 secs, 0.8265 secs
-  resp wait:    1.5186 secs, 0.0001 secs, 6.4665 secs
-  resp read:    0.0029 secs, 0.0000 secs, 0.8066 secs
+  DNS+dialup:   0.0351 secs, 0.0001 secs, 2.2309 secs
+  DNS-lookup:   0.0494 secs, 0.0000 secs, 1.3221 secs
+  req write:    0.0091 secs, 0.0000 secs, 1.0711 secs
+  resp wait:    0.0723 secs, 0.0000 secs, 1.0124 secs
+  resp read:    0.1177 secs, 0.0000 secs, 1.3883 secs
 
 Status code distribution:
   [200] 100000 responses
