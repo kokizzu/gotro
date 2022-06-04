@@ -84,6 +84,9 @@ make gen-orm
 make gen-route
 ```
 
+Every new `*.svelte` file will automatically generate corresponding `*.html` file, also will automatically generate `index.GEN.go`, so you can create proper handler to inject into `_layout.html` or json into the generated `*.html` file. For now, please rerun `make webclient` after adding new `*.svelte` to generate new route.
+
+
 ## Gotchas
 
 - Calling direct assignment (`=`) instead of `wc*.Set*()` before calling `wc*.DoUpdateBy*()` will do nothing, as direct assignment does not append mutation property

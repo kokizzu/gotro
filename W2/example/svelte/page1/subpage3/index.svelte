@@ -39,8 +39,8 @@
 <style>
   p {
     font-size: 20px;
-    color: red;
-    background: yellow;
+    color: darkblue;
+    background: lightcyan;
   }
   table, th {
 	  border: 1px solid grey;
