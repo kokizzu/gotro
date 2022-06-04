@@ -56,6 +56,7 @@ func index(ctx *fiber.Ctx, path string) (bind M.SX, err error) {
 		`obj`: M.SX{
 			`a`: 1,
 			`b`: 2.345,
+			`c`: 3,
 		},
 	}
 	return
@@ -84,6 +85,15 @@ func page1_subpage3_index(c *fiber.Ctx, path string) (bind M.SX, err error) {
 }
 
 func page2_index(c *fiber.Ctx, path string) (bind M.SX, err error) {
+	bind = M.SX{
+		`title`:        `also from server`,
+		`from_server2`: path,
+		`from_server`:  A.X{1, 2, 3},
+	}
+	return
+}
+
+func page1_index(c *fiber.Ctx, path string) (bind M.SX, err error) {
 	bind = M.SX{
 		`title`:        `also from server`,
 		`from_server2`: path,

@@ -1,6 +1,6 @@
 # Multipage Svelte, Svelte MPA
 
-The purpose of this project is to make Svelte that defaults to SPA into an statically-generated MPA (multipage SPA). 
+The purpose of this project is to make Svelte that defaults is component-based SPA into an statically-generated MPA (multipage SPA, page+component-based). 
 So for deployment you only need to [rsync](//rsync.samba.org/) the `.html`, `.css`, `.js` and any other non-`.svelte` files. 
 It was originally built for [Z](https://github.com/kokizzu/gotro/tree/master/Z) template engine.
 
@@ -44,8 +44,9 @@ npm install -g degit                 # scaffolding helper
 degit kokizzu/svelte-mpa myproject1  # clone this repo with new name
 cd myproject1                        
 
-npm install  # install dependencies
-npm start    # start dev-server
+npm install    # install dependencies
+npm start      # start dev-server
+npm run watch  # start dev-server without server, eg. if you use other webserver or reverse proxy locally
 
 npm run build:prod  # build project for production
 ./deploy.sh         # example deployment script for single server

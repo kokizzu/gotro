@@ -6,11 +6,11 @@ compose:
 
 apiserver:
 	killall example.exe || true
-	air -c air.toml
+	air -c air.toml # localhost:9090
 
 webclient:
 	#sudo chown -R `whoami` /usr/lib/node_modules/
-	cd svelte && npm install && npm start
+	cd svelte && npm install && npm run dev # http://localhost:5500
 	# https://github.com/kokizz/svelte-mpa
 
 reverseproxy:
