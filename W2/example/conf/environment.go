@@ -115,7 +115,7 @@ func LoadFromEnv(ignoreBinary ...interface{}) {
 	CLICKHOUSE_USER = os.Getenv(`CLICKHOUSE_USER`)
 	CLICKHOUSE_PASS = os.Getenv(`CLICKHOUSE_PASS`)
 
-	WEBAPI_HOSTPORT = S.IfEmpty(os.Getenv(`WEBAPI_HOSTPORT`), `:3000`)
+	WEBAPI_HOSTPORT = S.IfEmpty(os.Getenv(`WEBAPI_HOSTPORT`), `:5500`)
 	WEBAPI_EXEPATH = S.IfEmpty(os.Getenv(`WEBAPI_EXEPATH`), `./`+PROJECT_NAME+`.exe`)
 
 	MINIO_ENDPOINT = os.Getenv(`MINIO_ENDPOINT`)

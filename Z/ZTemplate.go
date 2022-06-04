@@ -5,6 +5,7 @@ package Z
 import (
 	"bytes"
 	"errors"
+	"io"
 	"os"
 	"path/filepath"
 	"time"
@@ -49,46 +50,52 @@ func (t *TemplateChain) Str(values M.SX) string {
 	return bs.String()
 }
 
+func (t *TemplateChain) ByteBuffer(values M.SX) *bytes.Buffer {
+	bs := bytes.Buffer{}
+	t.Render(&bs, values)
+	return &bs
+}
+
 // Render write to buffer
-func (t *TemplateChain) Render(target *bytes.Buffer, values M.SX) {
+func (t *TemplateChain) Render(target io.Writer, values M.SX) {
 	if t.AutoRefresh {
 		nt, err := t.Reload()
 		if err == nil {
-			t = nt
+			*t = *nt
 		}
 	}
-	not_found := M.SB{}
+	notFound := M.SB{}
 	used := M.SB{}
 	for idx, key := range t.Keys {
-		target.Write(t.Parts[idx])
+		_, _ = target.Write(t.Parts[idx])
 		val, ok := values[key]
 		if !ok {
-			target.WriteString(key)
-			not_found[key] = true
+			_, _ = target.Write([]byte(key))
+			notFound[key] = true
 		} else {
-			target.WriteString(X.ToS(val))
+			_, _ = target.Write([]byte(X.ToS(val)))
 		}
 		used[key] = true
 	}
 	if t.PrintDebug {
-		not_used_arr := []string{}
+		var notUsedArr []string
 		for key := range values {
 			if !used[key] {
-				not_used_arr = append(not_used_arr, key)
+				notUsedArr = append(notUsedArr, key)
 			}
 		}
-		if len(not_used_arr) > 0 {
-			L.Print(`Unused template parameter on `+t.Filename, not_used_arr)
+		if len(notUsedArr) > 0 {
+			L.Print(`Unused template parameter on `+t.Filename, notUsedArr)
 		}
-		not_found_arr := []string{}
-		for key := range not_found {
-			not_found_arr = append(not_found_arr, key)
+		var notFoundArr []string
+		for key := range notFound {
+			notFoundArr = append(notFoundArr, key)
 		}
-		if len(not_found_arr) > 0 {
-			L.Print(`Template parameter not found on `+t.Filename, not_found_arr)
+		if len(notFoundArr) > 0 {
+			L.Print(`Template parameter not found on `+t.Filename, notFoundArr)
 		}
 	}
-	target.Write(t.Parts[len(t.Parts)-1])
+	_, _ = target.Write(t.Parts[len(t.Parts)-1])
 }
 
 // Reload reload from file
@@ -115,12 +122,12 @@ func (t *TemplateChain) Reload() (*TemplateChain, error) {
 		return &dup, errors.New(errinfo)
 	}
 	// when not modified
-	mod_time := info.ModTime()
-	if dup.ModTime.Sub(mod_time).Nanoseconds() == 0 && mod_time.UnixNano() != 0 {
+	modTime := info.ModTime()
+	if dup.ModTime.Sub(modTime).Nanoseconds() == 0 && modTime.UnixNano() != 0 {
 		return t, nil
 	}
 	// when modified
-	dup.ModTime = mod_time
+	dup.ModTime = modTime
 	// read the actual file
 	bs, err := os.ReadFile(dup.Filename)
 	errinfo = `template not found: ` + base

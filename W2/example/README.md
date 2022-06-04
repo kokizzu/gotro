@@ -55,7 +55,7 @@ make setup-deps
 # install reverse proxy
 make setup-webserver
 
-# install dependencies for web frontend (Svelte with Vite build system): localhost:3000
+# install dependencies for web frontend (Svelte with ESBuild): localhost:5500
 make webclient
 
 # start dependencies (Tarantool, Clickhouse, Mailhog): localhost:3301, localhost:9000, localhost:1025

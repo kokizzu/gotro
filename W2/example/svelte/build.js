@@ -1,9 +1,9 @@
 const chokidar = require('chokidar');
 const esbuild = require('esbuild');
-const { readdirSync, statSync, existsSync, writeFileSync, readFileSync } = require('fs');
-const { join, basename, resolve, dirname, relative } = require('path');
+const {readdirSync, statSync, existsSync, writeFileSync, readFileSync} = require('fs');
+const {join, basename, resolve, dirname, relative} = require('path');
 const sveltePlugin = require('esbuild-svelte');
-const { isEqual } = require('lodash');
+const {isEqual} = require('lodash');
 const parse5 = require('parse5');
 
 const [watch, serve, minify, debug, logVars] = ['--watch', '--serve', '--minify', '--debug', '--log-vars'].map(s =>
@@ -40,6 +40,27 @@ function findPages(dir = '.', sink = []) {
     .map(f => join(dir, f))
     .filter(f => statSync(f).isDirectory())
     .forEach(f => findPages(f, sink));
+
+  // generate route handlers
+  if (dir === '.') {
+    let goContent = `package svelte
+    
+import (
+	"github.com/gofiber/fiber/v2"
+	"github.com/kokizzu/gotro/M"
+)
+
+var handlers = map[string]func(c *fiber.Ctx, path string) (res M.SX, err error){`
+    for (let file of sink) {
+      let fileName = file.slice(0, -7)
+      goContent += `
+	"` + fileName + `": ` + fileName.replaceAll('/', `_`) + `,`
+    }
+    goContent += `
+}`
+    writeFileSync('index.GEN.go', goContent);
+  }
+
   return sink;
 }
 
@@ -68,10 +89,10 @@ const zPlaceholderRestore = (content, sink) =>
 const svelteJsPathResolver = {
   name: 'svelteJsPathResolver',
   setup(build) {
-    const options = { filter: /\.svelte\.(ts)$/ };
+    const options = {filter: /\.svelte\.(ts)$/};
 
-    build.onResolve(options, ({ path, resolveDir }) => ({ path: join(resolveDir, path) }));
-    build.onLoad(options, ({ path }) => {
+    build.onResolve(options, ({path, resolveDir}) => ({path: join(resolveDir, path)}));
+    build.onLoad(options, ({path}) => {
       return {
         contents: `
             import App from "./${basename(path).replace(/\.ts$/, '')}";
@@ -125,7 +146,7 @@ function layoutFor(path) {
       ? readFileSync(path, 'utf-8')
       : `<html>
               <head>
-                <title>!/* title */</title>
+                <title>/*! title */</title>
               </head>
               <body>
                 <h1>layout for everything else</h1>
@@ -155,12 +176,12 @@ function layoutFor(path) {
     slot.nodeName = 'main';
     slot.tagName = 'main';
     delete slot.data;
-    slot.attrs = [{ name: 'id', value: 'app' }, ...(slot.attrs || [])?.filter(t => t.name !== 'id')];
+    slot.attrs = [{name: 'id', value: 'app'}, ...(slot.attrs || [])?.filter(t => t.name !== 'id')];
   } else {
     body.childNodes.push({
       nodeName: 'main',
       tagName: 'main',
-      attrs: [{ name: 'id', value: 'app' }],
+      attrs: [{name: 'id', value: 'app'}],
       childNodes: [],
       namespaceURI: body.namespaceURI,
     });
@@ -202,7 +223,7 @@ function layoutFor(path) {
       nodeName: 'style',
       tagName: 'style',
       attrs: [],
-      childNodes: [{ nodeName: '#text', value: cssKEY }],
+      childNodes: [{nodeName: '#text', value: cssKEY}],
       namespaceURI: body.namespaceURI,
     },
     {
@@ -213,7 +234,7 @@ function layoutFor(path) {
       nodeName: 'script',
       tagName: 'script',
       attrs: [],
-      childNodes: [{ nodeName: '#text', value: jsKEY }],
+      childNodes: [{nodeName: '#text', value: jsKEY}],
       namespaceURI: body.namespaceURI,
     },
     {
@@ -224,7 +245,7 @@ function layoutFor(path) {
 
   debug && console.log('build layout for: ', path || defaultKey);
 
-  return (layoutFor.cache[path || defaultKey] = ({ js, css }) => {
+  return (layoutFor.cache[path || defaultKey] = ({js, css}) => {
     const cssVars = [],
       jsVars = [];
     js = zPlaceholderRestore(js, cssVars) || '';
@@ -251,7 +272,7 @@ function layoutFor(path) {
 
   function saveFiles(files = builder) {
     const output = {};
-    for (const { path, text } of files.outputFiles) {
+    for (const {path, text} of files.outputFiles) {
       if (cache[path] === text) continue;
       cache[path] = text;
 
@@ -280,38 +301,38 @@ function layoutFor(path) {
   watch && console.log('first build end\n');
 
   watch &&
-    chokidar
-      .watch('.', { ignored: s => ignorePath.has(s) || ignorePath.has(join('./', s)) })
-      .on('all', async (event, path) => {
-        if (!watcherReady) return void listed_files.add(path);
-        if (compiledFiles.has(resolve(path))) return;
+  chokidar
+    .watch('.', {ignored: s => ignorePath.has(s) || ignorePath.has(join('./', s))})
+    .on('all', async (event, path) => {
+      if (!watcherReady) return void listed_files.add(path);
+      if (compiledFiles.has(resolve(path))) return;
 
-        console.log(event + ':', path);
+      console.log(event + ':', path);
 
-        if (path[0] !== '_' && path.endsWith('.svelte') && !listed_files.has(path)) {
-          const pages2 = findPages();
+      if (path[0] !== '_' && path.endsWith('.svelte') && !listed_files.has(path)) {
+        const pages2 = findPages();
 
-          if (!isEqual(pages, pages2)) {
-            cache = {};
-            builder = await createBuilder(pages);
-            saveFiles();
-            return;
-          }
+        if (!isEqual(pages, pages2)) {
+          cache = {};
+          builder = await createBuilder(pages);
+          saveFiles();
+          return;
         }
+      }
 
-        saveFiles(await builder.rebuild());
-      })
-      .on('ready', () => {
-        console.log(`watching ${listed_files.size} files/dirs for changes`);
-        watcherReady = true;
-      });
+      saveFiles(await builder.rebuild());
+    })
+    .on('ready', () => {
+      console.log(`watching ${listed_files.size} files/dirs for changes`);
+      watcherReady = true;
+    });
 
   const FiveServer = require('five-server').default
   serve &&
-    await (new FiveServer()).start({
-      open: true,
-      workspace: __dirname,
-      ignore: [...ignorePath, '*.js', '*.ts', '*.svelte'].join(','),
-      wait: 500,
-    });
+  await (new FiveServer()).start({
+    open: true,
+    workspace: __dirname,
+    ignore: [...ignorePath, '*.js', '*.ts', '*.svelte'].join(','),
+    wait: 500,
+  });
 })();

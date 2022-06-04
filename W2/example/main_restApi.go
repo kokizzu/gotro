@@ -8,6 +8,7 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/pprof"
 	"github.com/gofiber/fiber/v2/middleware/recover"
+	"github.com/kokizzu/gotro/W2/example/svelte"
 
 	"github.com/kokizzu/gotro/L"
 	"github.com/kokizzu/gotro/M"
@@ -51,13 +52,10 @@ func webApiServer() func(state overseer.State) {
 		if profilingEnabled {
 			app.Use(pprof.New())
 		}
-		app.Get(`/`, func(ctx *fiber.Ctx) error {
-			_, _ = ctx.WriteString(`ok`)
-			return nil
-		})
 		//seedInitialData()
 		domain := webApiInitRoutes(app)
 		webApiInitGraphql(app, domain)
+		svelte.HandleSSR(app, `./svelte`, domain)
 		runCron(domain)
 		L.Print(conf.AdminTestSessionToken)
 		err := app.Listener(state.Listener)
