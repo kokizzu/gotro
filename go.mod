@@ -46,7 +46,7 @@ require (
 	github.com/stretchr/testify v1.7.1
 	github.com/tarantool/go-tarantool v0.0.0-20220520093723-d44ffa0cda16
 	github.com/tdewolff/minify v2.3.6+incompatible
-	github.com/valyala/bytebufferpool v1.0.0 // indirect
+	github.com/valyala/bytebufferpool v1.0.0
 	github.com/valyala/fasthttp v1.37.0
 	github.com/vburenin/nsync v0.0.0-20160822015540-9a75d1c80410
 	github.com/yosuke-furukawa/json5 v0.1.1
