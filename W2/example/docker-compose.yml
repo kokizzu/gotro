@@ -28,6 +28,8 @@ services:
       #TT_VINYL_PAGE_SIZE: '8192' # 1x
     volumes:
       - ./backup/tarantool-data:/var/lib/tarantool
+      - ./docker/opt_tarantool_app.lua:/opt/tarantool/app.lua
+    #entrypoint: /entrypoint.sh /opt/tarantool/app.lua
     ports:
       - "3301:3301"
 

@@ -136,7 +136,7 @@ SELECT
     "type",
     "position"
 FROM system.columns
-WHERE "table" = '$1'
+WHERE "table" = $1
 ORDER BY "position"`
 	rows, err := a.Query(query, tableName)
 	if L.IsError(err, `a.Query error: `+query) {

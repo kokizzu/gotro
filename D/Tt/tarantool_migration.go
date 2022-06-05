@@ -177,9 +177,19 @@ func (a *Adapter) ExecTarantoolVerbose(funcName string, params A.X) string {
 	Descr(funcName)
 	Descr(params)
 	res, err := a.Call(funcName, params)
-	if err != nil && (len(params) == 0 || (len(params) > 0 && err.Error() != `Space '`+X.ToS(params[0])+`' already exists (0xa)`)) {
-		L.IsError(err, `ExecTarantool failed: `+funcName)
-		return err.Error()
+	if err != nil {
+		if len(params) > 0 {
+			errStr := err.Error()
+			if errStr == `Space '`+X.ToS(params[0])+`' already exists` ||
+				errStr == `Sequence '`+X.ToS(params[0])+`' already exists` {
+				L.IsError(err, `ExecTarantool failed: `+funcName)
+				return err.Error()
+			}
+		}
+		if len(params) == 0 {
+			L.IsError(err, `ExecTarantool failed: `+funcName)
+			return err.Error()
+		}
 	}
 	Descr(res.Tuples())
 	return ``
