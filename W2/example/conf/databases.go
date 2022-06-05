@@ -23,7 +23,7 @@ func ConnectTarantool() *tarantool.Connection {
 }
 
 func ConnectClickhouse() *sql.DB {
-	connStr := fmt.Sprintf("tcp://%s:%s?debug=true",
+	connStr := fmt.Sprintf("tcp://%s:%s", // ?debug=true",
 		CLICKHOUSE_HOST,
 		CLICKHOUSE_PORT,
 	)

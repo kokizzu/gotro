@@ -122,4 +122,4 @@ release:
 ### cleaner
 
 clean_db:
-	rm -rf ./backup/tarantool-data
+	sudo rm -rf ./backup/tarantool-data

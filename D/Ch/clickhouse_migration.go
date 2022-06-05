@@ -124,7 +124,7 @@ func (a *Adapter) UpsertTable(tableName TableName, props *TableProp) bool {
 
 func (a *Adapter) MigrateTables(tables map[TableName]*TableProp) {
 	for name, props := range tables {
-		Descr(name, props)
+		//Descr(name, props)
 		a.UpsertTable(name, props)
 	}
 }
