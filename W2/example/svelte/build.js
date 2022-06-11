@@ -3,7 +3,7 @@ const esbuild = require('esbuild');
 const {readdirSync, statSync, existsSync, writeFileSync, readFileSync} = require('fs');
 const {join, basename, resolve, dirname, relative} = require('path');
 const sveltePlugin = require('esbuild-svelte');
-const { isEqual, throttle, debounce, sum } = require('lodash');
+const {sum} = require('lodash');
 const parse5 = require('parse5');
 
 const [watch, serve, minify, debug, logVars] = ['--watch', '--serve', '--minify', '--debug', '--log-vars'].map(s =>
@@ -22,12 +22,13 @@ const ignorePath = new Set([
   'package.json',
   'README.md',
   'build.js',
+  'pullpush.sh',
 ]);
 
 // find page candidates
 function findPages(dir = '.', sink = []) {
   if (ignorePath.has(dir.replace('./', '').replace('.\\', ''))) {
-    debug && console.log('skip: ', dir);
+    debug && console.log('skip:', dir);
     return;
   }
 
@@ -40,27 +41,6 @@ function findPages(dir = '.', sink = []) {
     .map(f => join(dir, f))
     .filter(f => statSync(f).isDirectory())
     .forEach(f => findPages(f, sink));
-
-  // generate route handlers
-  if (dir === '.') {
-    let goContent = `package svelte
-    
-import (
-	"github.com/gofiber/fiber/v2"
-	"github.com/kokizzu/gotro/M"
-)
-
-var handlers = map[string]func(c *fiber.Ctx, path string) (res M.SX, err error){`
-    for (let file of sink) {
-      let fileName = file.slice(0, -7)
-      goContent += `
-	"` + fileName + `": ` + fileName.replaceAll('/', `_`) + `,`
-    }
-    goContent += `
-}`
-    writeFileSync('index.GEN.go', goContent);
-  }
-
   return sink;
 }
 
@@ -106,7 +86,7 @@ const svelteJsPathResolver = {
 };
 
 function createBuilder(entryPoints) {
-  console.log('pages: ', entryPoints);
+  console.log('pages:', entryPoints);
 
   return esbuild.build({
     entryPoints: entryPoints.map(s => s + '.ts'),
@@ -145,15 +125,14 @@ function layoutFor(path) {
     path
       ? readFileSync(path, 'utf-8')
       : `<html>
-              <head>
-                <title>#{title}</title>
-              </head>
-              <body>
-                <h1>layout not found, please create <b>_layout.html</b></h1>
-                <slot></slot>
-              </body>
-            </html>
-      `
+  <head>
+    <title>#{title}</title>
+  </head>
+  <body>
+    <h1>layout not found, please create <b>_layout.html</b></h1>
+    <slot></slot>
+  </body>
+</html>`
   );
 
   let slot = null;
@@ -175,7 +154,10 @@ function layoutFor(path) {
     slot.nodeName = 'main';
     slot.tagName = 'main';
     delete slot.data;
-    slot.attrs = [{name: 'id', value: 'app'}, ...(slot.attrs || [])?.filter(t => t.name !== 'id')];
+    slot.attrs = [
+      {name: 'id', value: 'app'}, 
+      ...(slot.attrs || [])?.filter(t => t.name !== 'id')
+    ];
   } else {
     body.childNodes.push({
       nodeName: 'main',
@@ -242,7 +224,7 @@ function layoutFor(path) {
     },
   ];
 
-  debug && console.log('build layout for: ', path || defaultKey);
+  debug && console.log('build layout for:', path || defaultKey);
 
   return (layoutFor.cache[path || defaultKey] = ({js, css}) => {
     const cssVars = [],
@@ -268,10 +250,10 @@ function layoutFor(path) {
   const compiledFiles = new Set();
   let cache = {};
 
-  function saveFiles(files = builder) {
+  function saveFiles(files = builder, layoutChanged = false) {
     const output = {};
     for (const {path, text} of files.outputFiles) {
-      if (cache[path] === text) continue;
+      if (cache[path] === text && !layoutChanged) continue;
       cache[path] = text;
 
       const key = path.replace(/\.svelte\.\w+$/, '');
@@ -290,18 +272,19 @@ function layoutFor(path) {
 
       path = resolve(path + '.html');
       compiledFiles.add(path);
-      console.log('compiled', relative(resolve(__dirname), path));
+      console.log('compiled:', relative(resolve(__dirname), path));
       writeFileSync(path, content);
     });
   }
 
   saveFiles();
-  watch && console.log('first build end\n');
+  watch && console.log('first build end');
 
   if (watch) {
     const pagesPaths = new Set(pages.map(p => resolve(p)));
 
     let timeRef = null;
+
     function changeListener(path, stats, type, watcher) {
       if (compiledFiles.has(resolve(path))) return;
       console.log(type + ':', path.replace(__dirname, ''));
@@ -313,32 +296,34 @@ function layoutFor(path) {
       else if (svelteFile && type === 'unlink') pagesPaths.delete(resolve(path));
       else pagesChanged = false;
 
-      clearTimeout(timeRef);
+      let layoutChanged = path.endsWith('_layout.html');
+      
+      if (timeRef) clearTimeout(timeRef);
       timeRef = setTimeout(async () => {
         pagesChanged
-          ? saveFiles((builder = await createBuilder(Array.from(pagesPaths, p => relative(__dirname, p)))))
-          : saveFiles(await builder.rebuild());
+          ? saveFiles((builder = await createBuilder(Array.from(pagesPaths, p => relative(__dirname, p)))), layoutChanged)
+          : saveFiles(await builder.rebuild(), layoutChanged);
       }, 200);
-      }
+    }
 
     const watcher = chokidar
-      .watch('.', { ignored: s => ignorePath.has(s) || ignorePath.has(join('./', s)), ignoreInitial: true })
+      .watch('.', {ignored: s => ignorePath.has(s) || ignorePath.has(join('./', s)), ignoreInitial: true})
       .on('change', (path, stats) => changeListener(path, stats, 'change', watcher))
       .on('add', (path, stats) => changeListener(path, stats, 'add', watcher))
       .on('unlink', (path, stats) => changeListener(path, stats, 'unlink', watcher))
-    .on('ready', () => {
+      .on('ready', () => {
         console.log(`watching ${sum(Object.values(watcher.getWatched()).map(t => t.length))} files/dirs for changes`);
-      watcherReady = true;
+        watcherReady = true;
       })
       .on('error', err => console.log('ERROR:', err));
   }
 
   const FiveServer = require('five-server').default;
   serve &&
-    (await new FiveServer().start({
+  (await new FiveServer().start({
     open: true,
     workspace: __dirname,
-      ignore: [...ignorePath, /\.(js|ts|svelte)$/],
+    ignore: [...ignorePath, /\.(js|ts|svelte)$/, /\_layout\.html$/],
     wait: 500,
-    }));
+  }));
 })();

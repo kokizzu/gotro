@@ -17,11 +17,11 @@ _mycomponent/
   button.svelte
 foo/
   _table.svelte
-  bar.svelte --> will generate 
+  bar.svelte --> will generate bar.html
   any.js
 subpage/
-  page3.svelte --> will generate
-index.svelte --> will generate
+  page3.svelte --> will generate page3.html
+index.svelte --> will generate index.html
 whatever.css
 whatever.js
 _layout.html
@@ -45,8 +45,8 @@ degit kokizzu/svelte-mpa myproject1  # clone this repo with new name
 cd myproject1                        
 
 npm install    # install dependencies
-npm start      # start dev-server
-npm run watch  # start dev-server without server, eg. if you use other webserver or reverse proxy locally
+npm start      # start dev-server, auto rebuild
+npm run watch  # auto rebuild without webserver, eg. if you use other webserver/reverse proxy locally
 
 npm run build:prod  # build project for production
 ./deploy.sh         # example deployment script for single server
@@ -77,8 +77,7 @@ became
 [Browser] --fetch-HTML/API--> [ExistingBackend]
 ```
 
-So your existing backend responsibility is to load the generated `.html` then replace the js variable or any template keyword with proper value for initial load/SEO. 
-But you can also use this as SSG.
+So your existing backend responsibility is to load the generated `.html` then replace the js variable or any template keyword with proper value for initial load/SEO. So not svelte's responsibiity to request/preload the initial json content, but backend's responsiblity (whatever existing backend langauge/framework you are using). Like SvelteKit, you can also use this as SSG. You can see example [here](//github.com/kokizzu/sveltefiber)
 
 ## TODO / Possible Improvement
 
