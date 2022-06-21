@@ -1,0 +1,6 @@
+<yandex>
+    <macros replace="replace">
+        <cluster>cluster1</cluster>
+        <replica>ch2</replica>
+    </macros>
+</yandex>

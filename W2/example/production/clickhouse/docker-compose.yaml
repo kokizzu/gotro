@@ -1,0 +1,53 @@
+version: '3'
+services:  
+  ch1:
+    image: clickhouse/clickhouse-server:22
+    restart: always
+    volumes:
+      - ./config.xml:/etc/clickhouse-server/config.d/local.xml
+      - ./macro1.xml:/etc/clickhouse-server/config.d/macros.xml
+      - ./data/1:/var/lib/clickhouse    
+    ports:
+      - '18123:8123'
+      - '19000:9000'
+      - '19009:9009'
+    ulimits:
+      nproc: 65536
+      nofile:
+        soft: 252144
+        hard: 252144
+  ch2:
+    image: clickhouse/clickhouse-server:22
+    restart: always
+    volumes:
+      - ./config.xml:/etc/clickhouse-server/config.d/local.xml
+      - ./macro2.xml:/etc/clickhouse-server/config.d/macros.xml
+      - ./data/2:/var/lib/clickhouse
+    ports:
+      - '28123:8123'
+      - '29000:9000'
+      - '29009:9009'
+    ulimits:
+      nproc: 65536
+      nofile:
+        soft: 252144
+        hard: 252144
+  ch3:
+    image: clickhouse/clickhouse-server:22
+    restart: always
+    volumes:
+      - ./config.xml:/etc/clickhouse-server/config.d/local.xml
+      - ./macro3.xml:/etc/clickhouse-server/config.d/macros.xml
+      - ./data/3:/var/lib/clickhouse
+    ports:
+      - '38123:8123'
+      - '39000:9000'
+      - '39009:9009'
+    ulimits:
+      nproc: 65536
+      nofile:
+        soft: 252144
+        hard: 252144
+  zookeeper:
+    image: zookeeper
+  # or use clickhouse-keeper

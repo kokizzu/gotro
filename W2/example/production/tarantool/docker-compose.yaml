@@ -1,0 +1,53 @@
+version: '3'
+services:
+  tt1: # master
+    image: tarantool/tarantool:2 # x.x.2+ = stable
+    volumes:
+      - ./master__app.lua:/opt/scripts/app.lua
+      - ./data/1:/var/lib/tarantool
+    command: tarantool /opt/scripts/app.lua
+    environment:
+      - TARANTOOL_USER_NAME=tester
+      - TARANTOOL_USER_PASSWORD=tester
+      - TT_READAHEAD=1632000 # 10x   
+      - TT_VINYL_MEMORY=2684354560 # 20x
+      - TT_VINYL_CACHE=2684354560 # 20x
+      - TT_NET_MSG_MAX=76800 # 100x
+      - TT_MEMTX_MEMORY=268435456 # 1x
+      - TT_VINYL_PAGE_SIZE=8192 # 1x
+    ports:
+      - 13301:3301
+  tt2: # slave1
+    image: tarantool/tarantool:2
+    volumes:
+      - ./slave__app.lua:/opt/scripts/app.lua
+      - ./data/2:/var/lib/tarantool
+    command: tarantool /opt/scripts/app.lua
+    environment:
+      - TARANTOOL_USER_NAME=tester
+      - TARANTOOL_USER_PASSWORD=tester
+      - TT_READAHEAD=1632000 # 10x   
+      - TT_VINYL_MEMORY=2684354560 # 20x
+      - TT_VINYL_CACHE=2684354560 # 20x
+      - TT_NET_MSG_MAX=76800 # 100x
+      - TT_MEMTX_MEMORY=268435456 # 1x
+      - TT_VINYL_PAGE_SIZE=8192 # 1x
+    ports:
+      - 23301:3301
+  tt3: # slave2
+    image: tarantool/tarantool:2
+    volumes:
+      - ./slave__app.lua:/opt/scripts/app.lua
+      - ./data/3:/var/lib/tarantool
+    command: tarantool /opt/scripts/app.lua
+    environment:
+      - TARANTOOL_USER_NAME=tester
+      - TARANTOOL_USER_PASSWORD=tester
+      - TT_READAHEAD=1632000 # 10x   
+      - TT_VINYL_MEMORY=2684354560 # 20x
+      - TT_VINYL_CACHE=2684354560 # 20x
+      - TT_NET_MSG_MAX=76800 # 100x
+      - TT_MEMTX_MEMORY=268435456 # 1x
+      - TT_VINYL_PAGE_SIZE=8192 # 1x
+    ports:
+      - 33301:3301
