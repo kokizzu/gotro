@@ -39,8 +39,16 @@ func prepareDb(onReady func(rd rueidis.Client) int) {
 	}
 	var rd rueidis.Client
 
-	if err := globalPool.Retry(func() error {
-		var err error
+	retries := 0
+	if err := globalPool.Retry(func() (err error) {
+		defer func() {
+			rec := recover()
+			if rec != nil {
+				retries++
+				log.Printf("attempt %d %s\n", retries, rec)
+				err, _ = rec.(error)
+			}
+		}()
 		// m, _ := resource.Container.NetworkSettings.Ports[docker.Port(rdPort+`/tcp`)]
 		// log.Println(m)
 		// return errors.New(`nothing`)
@@ -48,7 +56,7 @@ func prepareDb(onReady func(rd rueidis.Client) int) {
 		s := fmt.Sprintf(connStr, resource.GetPort(rdPort))
 
 		reconnect = func() *RedisSession {
-			rs := NewRedisSession(s, ``, 0, `nihao`)
+			rs := NewRedisSession(s, ``, 0, `prefix1`)
 			return rs
 		}
 		rc := reconnect()
@@ -103,5 +111,4 @@ func TestBasic_Operation(t *testing.T) {
 		rds.SetStr(key, val)
 		must.NotEqual(xVal, rds.GetStr(key))
 	})
-
 }

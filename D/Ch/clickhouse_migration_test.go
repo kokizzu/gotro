@@ -3,10 +3,9 @@ package Ch
 import (
 	"database/sql"
 	"fmt"
-	"testing"
-
 	"log"
 	"os"
+	"testing"
 
 	_ "github.com/ClickHouse/clickhouse-go/v2"
 	"github.com/kokizzu/gotro/L"

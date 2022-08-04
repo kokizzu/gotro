@@ -44,7 +44,7 @@ require (
 	github.com/segmentio/fasthash v1.0.3
 	github.com/shirou/gopsutil/v3 v3.22.4
 	github.com/stretchr/testify v1.7.1
-	github.com/tarantool/go-tarantool v0.0.0-20220520093723-d44ffa0cda16
+	github.com/tarantool/go-tarantool v1.7.0
 	github.com/tdewolff/minify v2.3.6+incompatible
 	github.com/valyala/bytebufferpool v1.0.0
 	github.com/valyala/fasthttp v1.37.0
