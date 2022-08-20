@@ -149,7 +149,7 @@ func GenerateOrm(tables map[TableName]*TableProp, withGraphql ...bool) {
 
 	BOTH(NL)
 	if useGraphql {
-		RQ(qi(`github.com/graphql-go/graphql`))
+		//RQ(qi(`github.com/   graphql-go/graphql`))
 	}
 	BOTH(qi(`github.com/kokizzu/gotro/A`))
 	BOTH(qi(this.PackageName)) // github.com/kokizzu/gotro/D/Tt

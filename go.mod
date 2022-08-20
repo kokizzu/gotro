@@ -14,7 +14,6 @@ require (
 	github.com/francoispqt/onelog v0.0.0-20190306043706-8c2bb31b10a4
 	github.com/goccy/go-yaml v1.9.5
 	github.com/gofiber/fiber/v2 v2.34.0
-	github.com/graphql-go/graphql v0.8.0
 	github.com/hexops/autogold v1.3.0
 	github.com/hexops/valast v1.4.1
 	github.com/jackc/pgx/v4 v4.16.1
@@ -37,7 +36,6 @@ require (
 	github.com/op/go-logging v0.0.0-20160315200505-970db520ece7
 	github.com/orcaman/concurrent-map v1.0.0
 	github.com/ory/dockertest/v3 v3.9.1
-	github.com/pkg/errors v0.9.1
 	github.com/rs/zerolog v1.26.1
 	github.com/rueian/rueidis v0.0.51
 	github.com/segmentio/fasthash v1.0.3
@@ -110,6 +108,7 @@ require (
 	github.com/opencontainers/runc v1.1.3 // indirect
 	github.com/paulmach/orb v0.5.0 // indirect
 	github.com/pierrec/lz4/v4 v4.1.14 // indirect
+	github.com/pkg/errors v0.9.1 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/power-devops/perfstat v0.0.0-20210106213030-5aafc221ea8c // indirect
 	github.com/rogpeppe/go-internal v1.8.1 // indirect

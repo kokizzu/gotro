@@ -1104,7 +1104,7 @@ func (r *RoutesArgs) WriteGraphql(path string) {
 import (`)
 
 	imports := M.SB{
-		`github.com/graphql-go/graphql`:     true,
+		//`github.com/   graphql-go/graphql`:     true,
 		`github.com/mitchellh/mapstructure`: true,
 		`github.com/kokizzu/gotro/L`:        true,
 		`github.com/kokizzu/gotro/X`:        true,
