@@ -92,6 +92,20 @@ str := FromString(`i like #{char}`).Str(M.SX{
 str == `i like Rem`
 ```
 
+## How Fast is it?
+
+Because of limited set of feature compared to Go's standard text/template.
+
+```shell
+# ~12x faster compared to text/template for parsing and rendering
+BenchmarkParseRenderZTemplate-32   1697598   742.1 ns/op
+BenchmarkParseRenderGoTemplate-32   152878  9237   ns/op
+
+# ~4.8x faster compared to text/template for rendering only
+BenchmarkRenderZTemplate-32        8543964   139.4 ns/op
+BenchmarkRenderGoTemplate-32       1736002   678.9 ns/op
+```
+
 ## Performance Optimization Tips
 
 - build/load the template once (`Z.ParseFile` or `Z.FromString`), call `.Render` multiple times

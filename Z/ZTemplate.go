@@ -136,11 +136,11 @@ func (t *TemplateChain) Reload() (*TemplateChain, error) {
 		L.Print(dup.Filename)
 		return &dup, errors.New(errinfo)
 	}
-	dup.parseTemplate(bs)
+	dup.ParseTemplate(bs)
 	return &dup, nil
 }
 
-func (t *TemplateChain) parseTemplate(bs []byte) {
+func (t *TemplateChain) ParseTemplate(bs []byte) {
 	// clear parts
 	t.Parts = [][]byte{}
 	t.Keys = []string{}
@@ -356,6 +356,6 @@ func FromString(template string, debugFlags ...bool) *TemplateChain {
 	} else {
 		res.Filename = template
 	}
-	res.parseTemplate([]byte(template))
+	res.ParseTemplate([]byte(template))
 	return res
 }
