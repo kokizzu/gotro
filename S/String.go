@@ -3,7 +3,6 @@ package S
 // String support package
 import (
 	"bytes"
-	"encoding/json"
 	"math/rand"
 	"strconv"
 	"strings"
