@@ -1105,11 +1105,11 @@ import (`)
 
 	imports := M.SB{
 		//`github.com/   graphql-go/graphql`:     true,
-		`github.com/mitchellh/mapstructure`: true,
-		`github.com/kokizzu/gotro/L`:        true,
-		`github.com/kokizzu/gotro/X`:        true,
-		`github.com/pkg/errors`:             true,
-		r.ProjectName + `/domain`:           true,
+		`github.com/goccy/go-json`:   true,
+		`github.com/kokizzu/gotro/L`: true,
+		`github.com/kokizzu/gotro/X`: true,
+		`github.com/pkg/errors`:      true,
+		r.ProjectName + `/domain`:    true,
 	}
 	types := M.SB{}
 
@@ -1203,7 +1203,8 @@ var graphqlType` + methodName + `Out = graphql.NewObject(graphql.ObjectConfig{
 					}()
 					rc := p.Context.Value(RequestCommonKey).(*domain.RequestCommon)
 					in := domain.` + methodName + `_In{RequestCommon: *rc}
-					err = mapstructure.Decode(p.Args, &in)
+					byt, _ := json.Marshal(p.Args)
+					err = json.Unmarshal(byt, &in)
 					out := d.` + methodName + `(&in)
 					err = graphqlWrapError(err, out.Error)
 					if in.Debug {

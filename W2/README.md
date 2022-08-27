@@ -24,8 +24,8 @@ Why is it tied to [Fiber](//gofiber.io/)?
 Can I replace the components/database (so instead of using Tarantool/Clickhouse/Fiber)?
 - yes, write your own codegen for database and api generator, it's possible
 
-Why still using `encoding/json`?
-- because I couldn't find any other faster alternative that can properly parse int64/uint64 (already tried jsoniter and easyjson, both give wrong result for `{"id":"89388457092187654"}` with `json:"id,string"` tag).
+Why using `github.com/goccy/go-json`?
+- because I couldn't find any other faster alternative (other than slower `encoding/json`) that can properly parse int64/uint64 (already tried `jsoniter` and `easyjson`, both give wrong result for `{"id":"89388457092187654"}` with `json:"id,string"` tag).
 
 Why tying between business logic and data store (not using Repository pattern)?
 - because we are rarely changing database product, like 90% of the time we'll never switch database since it's too costly (time consuming), if read part is the bottleneck we usually cache it (or precalculate or create static snapshot on every update), but if the write is the bottleneck, we usually shard it to different machine (either manual sharding, eg. A to L on node 1, K to Z on node 2, or automatic like with 2 level hash), even when we have to switch database, we usually have to do double-write first, which using `interface{anything}` totally have a very little benefit, compared to the cost (reduced agility when doing source code navigation, since you cannot jump properly to the declaration/implementation/usage if using interface), I still believe that only good time to use interface is for third party (to replace it with fakes for testing 3rd party that usually have a very slow I/O)

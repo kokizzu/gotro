@@ -7,6 +7,8 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/goccy/go-json"
+
 	"github.com/kokizzu/gotro/I"
 	"github.com/kokizzu/gotro/L"
 )

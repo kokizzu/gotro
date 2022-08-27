@@ -9,6 +9,8 @@ import (
 	"strings"
 	"time"
 
+	"github.com/goccy/go-json"
+
 	"github.com/goccy/go-yaml"
 
 	"github.com/kokizzu/gotro/A"
