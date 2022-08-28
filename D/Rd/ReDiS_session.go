@@ -24,12 +24,27 @@ func (sess RedisSession) Product() string {
 	return D.REDIS
 }
 
-func NewRedisSession(host, pass string, db_num int, prefix string) *RedisSession {
+// TryRedisSession non panic version, returns error if failed to connect
+func TryRedisSession(host, pass string, dbNum int, prefix string) (*RedisSession, error) {
 	host = S.IfEmpty(host, DEFAULT_HOST)
 	conn, err := redis.NewClient(redis.ClientOption{
 		InitAddress: []string{host},
 		Password:    pass,
-		SelectDB:    db_num,
+		SelectDB:    dbNum,
+	})
+	return &RedisSession{
+		Pool:   conn,
+		Prefix: prefix,
+	}, err
+}
+
+// NewRedisSession panic version
+func NewRedisSession(host, pass string, dbNum int, prefix string) *RedisSession {
+	host = S.IfEmpty(host, DEFAULT_HOST)
+	conn, err := redis.NewClient(redis.ClientOption{
+		InitAddress: []string{host},
+		Password:    pass,
+		SelectDB:    dbNum,
 	})
 	L.PanicIf(err, `redis.NewClient`)
 	return &RedisSession{
