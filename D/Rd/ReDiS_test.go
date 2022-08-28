@@ -1,7 +1,6 @@
 package Rd
 
 import (
-	"errors"
 	"fmt"
 	"log"
 	"os"
@@ -15,8 +14,8 @@ import (
 var globalPool *dockertest.Pool
 
 func prepareDb(onReady func(rd rueidis.Client) int) {
-	const dockerRepo = `redislabs/rejson`
-	const dockerVer = `2.0.6`
+	const dockerRepo = `redis`
+	const dockerVer = `7.0.4`
 	const rdPort = `6379/tcp`
 	const connStr = `127.0.0.1:%s`
 	var err error
@@ -41,27 +40,21 @@ func prepareDb(onReady func(rd rueidis.Client) int) {
 
 	retries := 0
 	if err := globalPool.Retry(func() (err error) {
-		defer func() {
-			rec := recover()
-			if rec != nil {
-				retries++
-				log.Printf("attempt %d %s\n", retries, rec)
-				err, _ = rec.(error)
-			}
-		}()
 		// m, _ := resource.Container.NetworkSettings.Ports[docker.Port(rdPort+`/tcp`)]
 		// log.Println(m)
 		// return errors.New(`nothing`)
 
 		s := fmt.Sprintf(connStr, resource.GetPort(rdPort))
 
-		reconnect = func() *RedisSession {
-			rs := NewRedisSession(s, ``, 0, `prefix1`)
-			return rs
+		reconnect = func() (*RedisSession, error) {
+			retries++
+			return TryRedisSession(s, `kl234j23095125125125`, 0, `prefix1`)
 		}
-		rc := reconnect()
-		if rc == nil {
-			return errors.New(`empty connection`)
+		var rc *RedisSession
+		rc, err = reconnect()
+		if err != nil {
+			log.Printf("attempt %d %s\n", retries, err)
+			return err
 		}
 		rd = rc.Pool
 		return err
@@ -77,14 +70,10 @@ func prepareDb(onReady func(rd rueidis.Client) int) {
 	os.Exit(code)
 }
 
-var reconnect func() *RedisSession
+var reconnect func() (*RedisSession, error)
 var redisConn rueidis.Client
 
 func TestMain(m *testing.M) {
-	// _, err := rueidis.NewClient(rueidis.ClientOption{
-	// 	InitAddress: []string{`127.0.0.1:6379`},
-	// })
-	// log.Println(err)
 	prepareDb(func(db rueidis.Client) int {
 		redisConn = db
 		if db != nil {
@@ -98,17 +87,15 @@ func TestMain(m *testing.M) {
 func TestBasic_Operation(t *testing.T) {
 	rds := RedisSession{Pool: redisConn, Prefix: `duar`}
 	must := assert.New(t)
-	t.Run(`set string`, func(t *testing.T) {
-		key := `esteh`
-		value := `panas`
-		rds.SetStr(key, value)
-		must.Equal(value, rds.GetStr(key))
+	const key1 = `esteh`
+	const val1 = `panas`
+	t.Run(`setStr`, func(t *testing.T) {
+		rds.SetStr(key1, val1)
+		must.Equal(val1, rds.GetStr(key1))
 	})
-	t.Run(`must error`, func(t *testing.T) {
-		key := `megu`
-		val := `kaboom`
-		xVal := `kaphew`
-		rds.SetStr(key, val)
-		must.NotEqual(xVal, rds.GetStr(key))
+	t.Run(`setInt`, func(t *testing.T) {
+		const val2 int64 = 123
+		rds.SetInt(key1, val2)
+		must.Equal(val2, rds.GetInt(key1))
 	})
 }

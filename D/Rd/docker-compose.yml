@@ -6,7 +6,7 @@ services:
   redis1:
     hostname: redis1
     container_name: redis1
-    image: redis:latest
+    image: redis:7.0.4 # latest=6.2.6, 5.0.7 is the default for ubuntu 20.04
     ports:
       - '6379:6379'
     command: redis-server --save 20 1 --loglevel warning --requirepass kl234j23095125125125
