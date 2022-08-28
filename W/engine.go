@@ -96,13 +96,13 @@ func (engine *Engine) MinifyAssets() {
 			switch ext[0] {
 			case `js`:
 				path = `lib/` + ext[1] + `.` + ext[0]
-				str = `<script type='text/javascript' src='/` + path + `' ></script>`
+				str = `<script async type='text/javascript' src='/` + path + `' ></script>`
 			case `css`:
 				path = `lib/` + ext[1] + `.` + ext[0]
 				str = `<link type='text/css' rel='stylesheet' href='/` + path + `' />`
 			case `/js`:
 				path = ext[1] + `.js`
-				str = `<script type='text/javascript' src='/` + path + `' ></script>`
+				str = `<script async type='text/javascript' src='/` + path + `' ></script>`
 			case `/css`:
 				path = ext[1] + `.css`
 				str = `<link type='text/css' rel='stylesheet' href='/` + path + `' />`
