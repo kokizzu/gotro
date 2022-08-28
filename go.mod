@@ -38,7 +38,7 @@ require (
 	github.com/orcaman/concurrent-map v1.0.0
 	github.com/ory/dockertest/v3 v3.9.1
 	github.com/rs/zerolog v1.26.1
-	github.com/rueian/rueidis v0.0.51
+	github.com/rueian/rueidis v0.0.73
 	github.com/segmentio/fasthash v1.0.3
 	github.com/shirou/gopsutil/v3 v3.22.4
 	github.com/stretchr/testify v1.8.0
