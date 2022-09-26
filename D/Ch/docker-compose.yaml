@@ -1,7 +1,7 @@
 version: "3.2"
 
 services:
-  clickhouse:
+  clickhouse1:
     image: yandex/clickhouse-server
     ports:
       - 8123:8123
@@ -10,3 +10,5 @@ services:
       nofile:
         soft: 262144
         hard: 262144
+#    volumes:
+#      - ./local.xml:/etc/clickhouse-server/config.d/local.xml

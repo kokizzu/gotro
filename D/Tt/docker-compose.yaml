@@ -4,10 +4,10 @@ services:
   tarantool1:
     image: tarantool/tarantool:2.10.2
     # x.x.0 = alpha, x.x.1 = beta, x.x.2+ = stable, latest not always stable
-    volumes:
-      - ./tarantool1:/usr/local/share/tarantool
     ports:
       - "3301:3301"
+#    volumes:
+#      - ./tarantool1:/usr/local/share/tarantool
 
 #volumes:
 #  tarantool1:

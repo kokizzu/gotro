@@ -18,7 +18,7 @@ type PgDockerTest struct {
 	DSN      string
 }
 
-// https://hub.docker.com/_/postgres/tags
+// https://hub.docker.com/_/postgres
 func (in *PgDockerTest) ImageVersion(pool *D.DockerTest, version string) *dockertest.RunOptions {
 	in.pool = pool
 	in.SetDefaults(version)

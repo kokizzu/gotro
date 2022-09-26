@@ -15,7 +15,7 @@ type TsDockerTest struct {
 	pool   *D.DockerTest
 }
 
-// https://hub.docker.com/typesense/typesense
+// https://hub.docker.com/r/typesense/typesense
 /*
 default empty api key = 123
 */

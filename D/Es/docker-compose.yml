@@ -23,8 +23,8 @@ services:
       - "9200:9200"
       - "9300:9300"
     volumes:
-#      - elasticsearchdata7:/usr/share/elasticsearch/data
       - ./etc_elasticsearch_elasticsearch.yaml:/usr/share/elasticsearch/config/elasticsearch.yml
+#      - elasticsearch7:/usr/share/elasticsearch/data
  
   # ELASTICVUE: 22 MB
   elasticvue3:
@@ -38,7 +38,7 @@ services:
     # note: wait a moment before accessing http://localhost:9400 elasticsearch might took a time to start
 
 #volumes:
-#  elasticsearchdata7:
+#  elasticsearch7:
 #    driver_opts:
 #      type: tmpfs
 #      device: tmpfs

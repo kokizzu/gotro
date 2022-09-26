@@ -14,7 +14,7 @@ type RpDockerTest struct {
 	Port  string
 }
 
-// https://hub.docker.com/_/mysql
+// https://hub.docker.com/r/vectorized/redpanda
 /*
 node=`docker ps | grep redpanda | cut -f 1 -d ' '`
 docker exec -it redpanda1 rpk

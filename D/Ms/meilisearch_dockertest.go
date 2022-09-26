@@ -15,7 +15,7 @@ type MsDockerTest struct {
 	Port      string
 }
 
-// https://hub.docker.com/getmeili/meilisearch
+// https://hub.docker.com/r/getmeili/meilisearch
 func (in *MsDockerTest) ImageVersion(pool *D.DockerTest, version string) *dockertest.RunOptions {
 	in.pool = pool
 	in.SetDefaults(version)

@@ -14,7 +14,7 @@ type ScDockerTest struct {
 	pool  *D.DockerTest
 }
 
-// https://hub.docker.com/scylladb/scylla
+// https://hub.docker.com/r/scylladb/scylla
 /*
 node=`docker ps | grep /scylla: | cut -f 1 -d ' '`
 docker exec -it $node cqlsh
