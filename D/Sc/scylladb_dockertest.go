@@ -15,6 +15,10 @@ type ScDockerTest struct {
 }
 
 // https://hub.docker.com/scylladb/scylla
+/*
+node=`docker ps | grep /scylla: | cut -f 1 -d ' '`
+docker exec -it $node cqlsh
+*/
 func (in *ScDockerTest) ImageVersion(pool *D.DockerTest, version string) *dockertest.RunOptions {
 	in.pool = pool
 	in.SetDefaults(version)
@@ -44,9 +48,9 @@ func (in *ScDockerTest) SetDefaults(img string) {
 	}
 }
 
-func (in *ScDockerTest) ConnectCheck(res *dockertest.Resource) (hostPort string, err error) {
+func (in *ScDockerTest) ConnectCheck(res *dockertest.Resource) (err error) {
 	in.Port = res.GetPort("9042/tcp")
-	hostPort = in.pool.HostPort(in.Port)
+	hostPort := in.pool.HostPort(in.Port)
 	// using net Dial instead of proper driver
 	var conn net.Conn
 	conn, err = net.DialTimeout("tcp", hostPort, 1*time.Second)
