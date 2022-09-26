@@ -16,6 +16,10 @@ type CoDockerTest struct {
 }
 
 // https://hub.docker.com/r/cockroachdb/cockroach
+/*
+node=`docker ps | grep cockroach | cut -f 1 -d ' '`
+docker exec -it $node cockroach sql --insecure
+*/
 func (in *CoDockerTest) ImageVersion(pool *D.DockerTest, version string) *dockertest.RunOptions {
 	in.pool = pool
 	in.SetDefaults(version)

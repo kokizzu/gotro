@@ -14,7 +14,7 @@ type ScDockerTest struct {
 	pool  *D.DockerTest
 }
 
-// https://hub.docker.com/_/influxdb
+// https://hub.docker.com/scylladb/scylla
 func (in *ScDockerTest) ImageVersion(pool *D.DockerTest, version string) *dockertest.RunOptions {
 	in.pool = pool
 	in.SetDefaults(version)
