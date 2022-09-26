@@ -3,7 +3,7 @@ package Pg
 import (
 	"context"
 
-	"github.com/jackc/pgx/v4"
+	"github.com/jackc/pgx/v5"
 	"github.com/kokizzu/gotro/D"
 	"github.com/ory/dockertest/v3"
 )
@@ -15,8 +15,9 @@ type PgDockerTest struct {
 	Image    string
 }
 
-func (in *PgDockerTest) Image96(pool *D.DockerTest) *dockertest.RunOptions {
-	in.SetDefaults()
+// https://hub.docker.com/_/postgres/tags
+func (in *PgDockerTest) ImageVersion(pool *D.DockerTest, version string) *dockertest.RunOptions {
+	in.SetDefaults(version)
 	return &dockertest.RunOptions{
 		Repository: `postgres`,
 		Name:       `dockertest-postgres-` + pool.Uniq,
@@ -30,9 +31,17 @@ func (in *PgDockerTest) Image96(pool *D.DockerTest) *dockertest.RunOptions {
 	}
 }
 
-func (in *PgDockerTest) SetDefaults() {
+func (in *PgDockerTest) Image96(pool *D.DockerTest) *dockertest.RunOptions {
+	return in.ImageVersion(pool, `9.6.14-alpine`)
+}
+
+func (in *PgDockerTest) ImageLatest(pool *D.DockerTest) *dockertest.RunOptions {
+	return in.ImageVersion(pool, `latest`)
+}
+
+func (in *PgDockerTest) SetDefaults(img string) {
 	if in.Image == `` {
-		in.Image = `9.6.14-alpine`
+		in.Image = img
 	}
 	if in.User == `` {
 		in.User = `pguser`

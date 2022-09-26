@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/jackc/pgx/v4/pgxpool"
+	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/kokizzu/gotro/L"
 )
 
@@ -24,7 +24,7 @@ func Connect1(user, pass, host, dbName string, port, maxConn int) *pgxpool.Pool 
 		maxConn,
 	)
 
-	db, err := pgxpool.Connect(context.Background(), connStr)
+	db, err := pgxpool.New(context.Background(), connStr)
 	L.PanicIf(err, `pgxpool.Connect `+connStr)
 	return db
 }
