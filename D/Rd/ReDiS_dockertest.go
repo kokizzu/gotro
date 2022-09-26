@@ -7,15 +7,16 @@ import (
 )
 
 type RdDockerTest struct {
-	// must use conf https://stackoverflow.com/a/70808430/1620210
-	//User     string
-	//Password string
+	// username and password must use conf https://stackoverflow.com/a/70808430/1620210
 	Database int
 	Image    string
+	pool     *D.DockerTest
+	Port     string
 }
 
 // https://hub.docker.com/_/redis
 func (in *RdDockerTest) ImageVersion(pool *D.DockerTest, version string) *dockertest.RunOptions {
+	in.pool = pool
 	in.SetDefaults(version)
 	return &dockertest.RunOptions{
 		Repository: `redis`,
@@ -37,8 +38,8 @@ func (in *RdDockerTest) SetDefaults(img string) {
 }
 
 func (in *RdDockerTest) ConnectCheck(res *dockertest.Resource) (rueidis.Client, error) {
-	port := res.GetPort("6379/tcp")
-	hostPort := `127.0.0.1:` + port
+	in.Port = res.GetPort("6379/tcp")
+	hostPort := in.pool.HostPort(in.Port)
 	conn, err := rueidis.NewClient(rueidis.ClientOption{
 		InitAddress: []string{hostPort},
 		SelectDB:    in.Database,

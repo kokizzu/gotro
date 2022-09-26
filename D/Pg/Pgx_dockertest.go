@@ -13,10 +13,14 @@ type PgDockerTest struct {
 	Password string
 	Database string
 	Image    string
+	pool     *D.DockerTest
+	Port     string
+	DSN      string
 }
 
 // https://hub.docker.com/_/postgres/tags
 func (in *PgDockerTest) ImageVersion(pool *D.DockerTest, version string) *dockertest.RunOptions {
+	in.pool = pool
 	in.SetDefaults(version)
 	return &dockertest.RunOptions{
 		Repository: `postgres`,
@@ -54,15 +58,11 @@ func (in *PgDockerTest) SetDefaults(img string) {
 	}
 }
 
-func (in *PgDockerTest) ConnectCheck(res *dockertest.Resource) (string, error) {
+func (in *PgDockerTest) ConnectCheck(res *dockertest.Resource) (conn *pgx.Conn, err error) {
 	ctx := context.Background()
-	port := res.GetPort("5432/tcp")
-	dsn := `postgres://` + in.User + `:` + in.Password + `@127.0.0.1:` + port + `/` + in.Database
-	conn, err := pgx.Connect(ctx, dsn)
-	if conn != nil {
-		defer func() {
-			_ = conn.Close(ctx)
-		}()
-	}
-	return dsn, err
+	in.Port = res.GetPort("5432/tcp")
+	hostPort := in.pool.HostPort(in.Port)
+	in.DSN = `postgres://` + in.User + `:` + in.Password + `@` + hostPort + `/` + in.Database
+	conn, err = pgx.Connect(ctx, in.DSN)
+	return
 }

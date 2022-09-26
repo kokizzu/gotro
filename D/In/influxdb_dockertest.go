@@ -12,10 +12,13 @@ type InDockerTest struct {
 	User     string
 	Password string
 	Image    string
+	Port     string
+	pool     *D.DockerTest
 }
 
 // https://hub.docker.com/_/influxdb
 func (in *InDockerTest) ImageVersion(pool *D.DockerTest, version string) *dockertest.RunOptions {
+	in.pool = pool
 	in.SetDefaults(version)
 	return &dockertest.RunOptions{
 		Repository: `influxdb`,
@@ -46,8 +49,8 @@ func (in *InDockerTest) SetDefaults(img string) {
 }
 
 func (in *InDockerTest) ConnectCheck(res *dockertest.Resource) (err error) {
-	port := res.GetPort("8086/tcp")
-	hostPort := `127.0.0.1:` + port
+	in.Port = res.GetPort("8086/tcp")
+	hostPort := in.pool.HostPort(in.Port)
 	// using net Dial instead of proper driver
 	var conn net.Conn
 	conn, err = net.DialTimeout("tcp", hostPort, 1*time.Second)

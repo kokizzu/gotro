@@ -15,10 +15,13 @@ type ChDockerTest struct {
 	Password string
 	Database string
 	Image    string
+	Port     string
+	pool     *D.DockerTest
 }
 
 // https://hub.docker.com/r/clickhouse/clickhouse-server
 func (in *ChDockerTest) ImageVersion(pool *D.DockerTest, version string) *dockertest.RunOptions {
+	in.pool = pool
 	in.SetDefaults(version)
 	return &dockertest.RunOptions{
 		Repository: `clickhouse/clickhouse-server`,
@@ -54,8 +57,8 @@ func (in *ChDockerTest) SetDefaults(img string) {
 }
 
 func (in *ChDockerTest) ConnectCheck(res *dockertest.Resource) (driver.Conn, error) {
-	port := res.GetPort("9000/tcp")
-	hostPort := `127.0.0.1:` + port
+	in.Port = res.GetPort("9000/tcp")
+	hostPort := in.pool.HostPort(in.Port)
 	conn, err := clickhouse.Open(&clickhouse.Options{
 		Addr: []string{hostPort},
 		Auth: clickhouse.Auth{

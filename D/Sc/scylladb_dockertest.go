@@ -10,22 +10,26 @@ import (
 
 type ScDockerTest struct {
 	Image string
+	Port  string
+	pool  *D.DockerTest
 }
 
 // https://hub.docker.com/_/influxdb
 func (in *ScDockerTest) ImageVersion(pool *D.DockerTest, version string) *dockertest.RunOptions {
+	in.pool = pool
 	in.SetDefaults(version)
 	return &dockertest.RunOptions{
-		Repository: `influxdb`,
-		Name:       `dockertest-influxdb-` + pool.Uniq,
+		Repository: `scylladb/scylla`,
+		Name:       `dockertest-scylla-` + pool.Uniq,
 		Tag:        in.Image,
 		NetworkID:  pool.Network.ID,
-		Env: []string{
-			`JVM_EXTRA_OPTS=-Dcassandra.skip_wait_for_gossip_to_settle=0 -Dcassandra.load_ring_state=false -Dcassandra.initial_token=1 -Dcassandra.num_tokens=nil -Dcassandra.allocate_tokens_for_local_replication_factor=nil`,
-			`CASSANDRA_BROADCAST_ADDRESS=`,
-			`CASSANDRA_CLUSTER_NAME=cluster1`,
-			`CASSANDRA_DC=dc1`,
-			`CASSANDRA_ENDPOINT_SNITCH=GossipingPropertyFileSnitch=`,
+		Env:        []string{},
+		Cmd: []string{
+			`--smp`, `1`,
+			`--memory`, `750M`,
+			`--overprovisioned`, `1`,
+			`--api-address`, `0.0.0.0`,
+			`--developer-mode`, `1`,
 		},
 	}
 }
@@ -40,9 +44,9 @@ func (in *ScDockerTest) SetDefaults(img string) {
 	}
 }
 
-func (in *ScDockerTest) ConnectCheck(res *dockertest.Resource) (err error) {
-	port := res.GetPort("9042/tcp")
-	hostPort := `127.0.0.1:` + port
+func (in *ScDockerTest) ConnectCheck(res *dockertest.Resource) (hostPort string, err error) {
+	in.Port = res.GetPort("9042/tcp")
+	hostPort = in.pool.HostPort(in.Port)
 	// using net Dial instead of proper driver
 	var conn net.Conn
 	conn, err = net.DialTimeout("tcp", hostPort, 1*time.Second)

@@ -10,10 +10,13 @@ import (
 
 type CaDockerTest struct {
 	Image string
+	Port  string
+	pool  *D.DockerTest
 }
 
 // https://hub.docker.com/_/cassandra
 func (in *CaDockerTest) ImageVersion(pool *D.DockerTest, version string) *dockertest.RunOptions {
+	in.pool = pool
 	in.SetDefaults(version)
 	return &dockertest.RunOptions{
 		Repository: `cassandra`,
@@ -40,9 +43,9 @@ func (in *CaDockerTest) SetDefaults(img string) {
 	}
 }
 
-func (in *CaDockerTest) ConnectCheck(res *dockertest.Resource) (hostPort string, err error) {
-	port := res.GetPort("9042/tcp")
-	hostPort = `127.0.0.1:` + port
+func (in *CaDockerTest) ConnectCheck(res *dockertest.Resource) (err error) {
+	in.Port = res.GetPort("9042/tcp")
+	hostPort := in.pool.HostPort(in.Port)
 	// using net Dial instead of proper driver
 	var conn net.Conn
 	conn, err = net.DialTimeout("tcp", hostPort, 1*time.Second)

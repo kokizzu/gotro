@@ -2,6 +2,7 @@ package D
 
 import (
 	"log"
+	"net"
 	"time"
 
 	"github.com/kokizzu/gotro/L"
@@ -52,4 +53,9 @@ func (d *DockerTest) Spawn(options *dockertest.RunOptions, checkFunc func(res *d
 	})
 	L.IsError(err, `failed Pool.Retry: `+label)
 	d.Resources = append(d.Resources, res)
+}
+
+func (d *DockerTest) HostPort(port string) string {
+	// TODO: fetch remote docker if any (eg. docker machine env for mac/windows)
+	return net.JoinHostPort(`127.0.0.1`, port)
 }

@@ -9,13 +9,18 @@ import (
 )
 
 type RaDockerTest struct {
-	User     string
-	Password string
-	Image    string
+	User           string
+	Password       string
+	Image          string
+	Port           string
+	ManagementPort string
+	DSN            string
+	pool           *D.DockerTest
 }
 
 // https://hub.docker.com/_/rabbitmq
 func (in *RaDockerTest) ImageVersion(pool *D.DockerTest, version string) *dockertest.RunOptions {
+	in.pool = pool
 	in.SetDefaults(version)
 	return &dockertest.RunOptions{
 		Repository: `rabbitmq`,
@@ -45,12 +50,12 @@ func (in *RaDockerTest) SetDefaults(img string) {
 	}
 }
 
-func (in *RaDockerTest) ConnectCheck(res *dockertest.Resource) (dsn string, managementPort string, err error) {
-	managementPort = res.GetPort("8080/tcp")
-	port := res.GetPort("5672/tcp")
-	hostPort := `127.0.0.1:` + port
+func (in *RaDockerTest) ConnectCheck(res *dockertest.Resource) (err error) {
+	in.ManagementPort = res.GetPort("8080/tcp")
+	in.Port = res.GetPort("5672/tcp")
+	hostPort := in.pool.HostPort(in.Port)
 	userPass := in.User + `:` + in.Password // default: guest:guest
-	dsn = `amqp://` + userPass + `@` + hostPort
+	in.DSN = `amqp://` + userPass + `@` + hostPort
 	// using net Dial instead of proper driver
 	var conn net.Conn
 	conn, err = net.DialTimeout("tcp", hostPort, 1*time.Second)
