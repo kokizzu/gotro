@@ -1,0 +1,19 @@
+version: '3'
+
+services:
+  sqlserver1:
+    image: mcr.microsoft.com/mssql/server:latest
+    user: root
+    ports:
+      - 1433:1433
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=StrongPassw0rd!
+#    volumes:
+#      - sqlserver1:/var/opt/mssql/data
+      
+#volumes:
+#  sqlserver1:
+#    driver_opts:
+#      type: tmpfs
+#      device: tmpfs
