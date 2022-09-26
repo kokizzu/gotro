@@ -45,11 +45,9 @@ func (in *InDockerTest) SetDefaults(img string) {
 	}
 }
 
-func (in *InDockerTest) ConnectCheck(res *dockertest.Resource) (dsn string, err error) {
+func (in *InDockerTest) ConnectCheck(res *dockertest.Resource) (err error) {
 	port := res.GetPort("8086/tcp")
 	hostPort := `127.0.0.1:` + port
-	userPass := in.User + `:` + in.Password
-	dsn = `amqp://` + userPass + `@` + hostPort
 	// using net Dial instead of proper driver
 	var conn net.Conn
 	conn, err = net.DialTimeout("tcp", hostPort, 1*time.Second)
