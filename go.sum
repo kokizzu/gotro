@@ -542,8 +542,8 @@ github.com/rs/zerolog v1.15.0/go.mod h1:xYTKnLHcpfU2225ny5qZjxnj9NvkumZYjJHlAThC
 github.com/rs/zerolog v1.26.1 h1:/ihwxqH+4z8UxyI70wM1z9yCvkWcfz/a3mj48k/Zngc=
 github.com/rs/zerolog v1.26.1/go.mod h1:/wSSJWX7lVrsOwlbyTRSOJvqRlc+WjWlfes+CiJ+tmc=
 github.com/rueian/rueidis v0.0.35/go.mod h1:Ml5FTH3WvbpOWr6ILWL1SZcaq3fvgCiaQjB6vnbmvjM=
-github.com/rueian/rueidis v0.0.73 h1:+r0Z6C6HMnkquPgY3zaHVpTqmCyJL56Z36GSlyBrufk=
-github.com/rueian/rueidis v0.0.73/go.mod h1:FwnfDILF2GETrvXcYFlhIiru/7NmSIm1f+7C5kutO0I=
+github.com/rueian/rueidis v0.0.77 h1:47D0CukYKTvXvBxvP1sygbw+aoNr2Rb4qFECWDXqJUE=
+github.com/rueian/rueidis v0.0.77/go.mod h1:FwnfDILF2GETrvXcYFlhIiru/7NmSIm1f+7C5kutO0I=
 github.com/russross/blackfriday v1.5.2/go.mod h1:JO/DiYxRf+HjHt06OyowR9PTA263kcR/rfWxYHBV53g=
 github.com/russross/blackfriday/v2 v2.0.1/go.mod h1:+Rmxgy9KzJVeS9/2gXHxylqXiyQDYRxCVz55jmeOWTM=
 github.com/ruudk/golang-pdf417 v0.0.0-20181029194003-1af4ab5afa58/go.mod h1:6lfFZQK844Gfx8o5WFuvpxWRwnSoipWe/p622j1v06w=
