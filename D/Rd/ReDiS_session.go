@@ -10,13 +10,13 @@ import (
 	"github.com/kokizzu/gotro/M"
 	"github.com/kokizzu/gotro/S"
 
-	redis "github.com/rueian/rueidis"
+	"github.com/rueian/rueidis"
 )
 
 const DEFAULT_HOST = `127.0.0.1:6379`
 
 type RedisSession struct {
-	Pool   redis.Client
+	Pool   rueidis.Client
 	Prefix string
 }
 
@@ -27,7 +27,7 @@ func (sess RedisSession) Product() string {
 // TryRedisSession non panic version, returns error if failed to connect
 func TryRedisSession(host, pass string, dbNum int, prefix string) (*RedisSession, error) {
 	host = S.IfEmpty(host, DEFAULT_HOST)
-	conn, err := redis.NewClient(redis.ClientOption{
+	conn, err := rueidis.NewClient(rueidis.ClientOption{
 		InitAddress: []string{host},
 		Password:    pass,
 		SelectDB:    dbNum,
@@ -41,7 +41,7 @@ func TryRedisSession(host, pass string, dbNum int, prefix string) (*RedisSession
 // NewRedisSession panic version
 func NewRedisSession(host, pass string, dbNum int, prefix string) *RedisSession {
 	host = S.IfEmpty(host, DEFAULT_HOST)
-	conn, err := redis.NewClient(redis.ClientOption{
+	conn, err := rueidis.NewClient(rueidis.ClientOption{
 		InitAddress: []string{host},
 		Password:    pass,
 		SelectDB:    dbNum,
