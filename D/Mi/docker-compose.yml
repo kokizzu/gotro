@@ -1,4 +1,4 @@
-version: '3.7'
+version: '3'
 
 services:
   
@@ -14,16 +14,19 @@ services:
     environment:
       MINIO_ROOT_USER: minio
       MINIO_ROOT_PASSWORD: minio123
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:19000/minio/health/live"]
-      interval: 30s
-      timeout: 20s
-      retries: 3
-    volumes:
-      - miniodata1:/data1
+#    healthcheck:
+#      test: ["CMD", "curl", "-f", "http://localhost:19000/minio/health/live"]
+#      interval: 30s
+#      timeout: 20s
+#      retries: 3
+#    volumes:
+#      - minio1:/data1
 
-volumes:
-  miniodata1:
+#volumes:
+#  minio1:
+#    driver_opts:
+#      type: tmpfs
+#      device: tmpfs
     
     
 

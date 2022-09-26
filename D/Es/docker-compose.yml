@@ -1,4 +1,4 @@
-version: '3.7'
+version: '3'
 
 services:
   # ELASTICSEARCH: 578 MB
@@ -19,12 +19,12 @@ services:
         hard: 65536
     cap_add:
       - IPC_LOCK
-    volumes:
-      - elasticsearchdata7:/usr/share/elasticsearch/data
-      - ./etc_elasticsearch_elasticsearch.yaml:/usr/share/elasticsearch/config/elasticsearch.yml
     ports:
       - "9200:9200"
       - "9300:9300"
+    volumes:
+#      - elasticsearchdata7:/usr/share/elasticsearch/data
+      - ./etc_elasticsearch_elasticsearch.yaml:/usr/share/elasticsearch/config/elasticsearch.yml
  
   # ELASTICVUE: 22 MB
   elasticvue3:
@@ -37,8 +37,11 @@ services:
       - elasticsearch7
     # note: wait a moment before accessing http://localhost:9400 elasticsearch might took a time to start
 
-volumes:
-  elasticsearchdata7:
+#volumes:
+#  elasticsearchdata7:
+#    driver_opts:
+#      type: tmpfs
+#      device: tmpfs
 
 
 

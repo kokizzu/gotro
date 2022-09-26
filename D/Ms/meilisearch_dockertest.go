@@ -9,9 +9,10 @@ import (
 )
 
 type MsDockerTest struct {
-	Image string
-	pool  *D.DockerTest
-	Port  string
+	MasterKey string
+	Image     string
+	pool      *D.DockerTest
+	Port      string
 }
 
 // https://hub.docker.com/getmeili/meilisearch
@@ -24,6 +25,7 @@ func (in *MsDockerTest) ImageVersion(pool *D.DockerTest, version string) *docker
 		Tag:        in.Image,
 		NetworkID:  pool.Network.ID,
 		Env:        []string{},
+		Cmd:        []string{`--master-key=` + in.MasterKey},
 	}
 }
 

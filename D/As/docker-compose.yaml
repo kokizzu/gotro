@@ -1,0 +1,24 @@
+version: "3.2"
+
+services:
+  aerospike1:
+    image: aerospike/aerospike-server:latest
+    deploy:
+        replicas: 1
+        endpoint_mode: dnsrr
+    labels:
+        com.aerospike.cluster: "myproject"
+    command: [ "--config-file","/run/secrets/aerospike.conf"]
+    secrets:
+      - source: conffile
+        target: aerospike.conf
+        mode: 0440
+    ports:
+      - "3000:3000"
+
+secrets:
+    conffile:
+        file: ./aerospike.conf
+
+# node=`docker ps | grep aerospike | cut -f 1 -d ' '`
+# docker exec -it $node aql

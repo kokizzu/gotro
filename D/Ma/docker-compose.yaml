@@ -1,0 +1,18 @@
+version: '3'
+
+services: 
+  mariadb1:
+    image: mariadb:latest
+    restart: always
+    ports:
+      - 3306:3306
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+#    volumes:
+#      - mariadb1:/var/lib/mysql
+
+#volumes:
+#  mariadb1:
+#    driver_opts:
+#      type: tmpfs
+#      device: tmpfs

@@ -16,6 +16,10 @@ type MaDockerTest struct {
 }
 
 // https://hub.docker.com/_/mariadb
+/*
+docker-compose exec --user root mariadb1 /bin/bash
+docker-compose exec --user root mariadb1 mysql -u root -p
+*/
 func (in *MaDockerTest) ImageVersion(pool *D.DockerTest, version string) *dockertest.RunOptions {
 	in.pool = pool
 	in.SetDefaults(version)
