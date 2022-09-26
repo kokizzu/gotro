@@ -9,7 +9,6 @@ import (
 )
 
 type RaDockerTest struct {
-	// can no longer be used
 	User     string
 	Password string
 	Image    string
@@ -49,8 +48,10 @@ func (in *RaDockerTest) SetDefaults(img string) {
 func (in *RaDockerTest) ConnectCheck(res *dockertest.Resource) (dsn string, managementPort string, err error) {
 	managementPort = res.GetPort("8080/tcp")
 	port := res.GetPort("5672/tcp")
-	hostPort := `127.0.0.1:` + port // default: guest:guest
-	dsn = `amqp://` + in.User + `:` + in.Password + `@` + hostPort
+	hostPort := `127.0.0.1:` + port
+	userPass := in.User + `:` + in.Password // default: guest:guest
+	dsn = `amqp://` + userPass + `@` + hostPort
+	// using net Dial instead of proper driver
 	var conn net.Conn
 	conn, err = net.DialTimeout("tcp", hostPort, 1*time.Second)
 	if conn != nil {
