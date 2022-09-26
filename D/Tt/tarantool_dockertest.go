@@ -16,8 +16,7 @@ type TtDockerTest struct {
 
 // https://hub.docker.com/r/tarantool/tarantool
 /*
-node=`docker ps | grep /scylla: | cut -f 1 -d ' '`
-docker exec -it $node cqlsh
+tarantoolctl connect 3301
 */
 func (in *TtDockerTest) ImageVersion(pool *D.DockerTest, version string) *dockertest.RunOptions {
 	in.pool = pool

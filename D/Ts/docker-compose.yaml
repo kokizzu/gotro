@@ -1,0 +1,16 @@
+version: '3'
+
+services:
+  typesense1:
+    image: typesense/typesense:0.23.1
+    command: ./typesense-server --data-dir=/data --api-key=123
+    ports:
+      - "8108:8108"
+#    volumes:
+#      - typesense1:/data
+      
+#volumes:
+#  typesense1:
+#    driver_opts:
+#      type: tmpfs
+#      device: tmpfs
