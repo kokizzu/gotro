@@ -1,0 +1,20 @@
+version: "3.2"
+
+services:
+  influx1:
+    image: influxdb:1.8.10
+    container_name: influxdb1.8.10
+    environment:
+      - INFLUX_USERNAME=influxuser
+      - INFLUX_PASSWORD=influxpassword
+    ports:
+      - 8086:8086
+    restart: unless-stopped
+    volumes:
+      - influx1:/var/lib/influxdb2:rw
+
+#volumes:
+#  influx1:
+#    driver_opts:
+#      type: tmpfs
+#      device: tmpfs

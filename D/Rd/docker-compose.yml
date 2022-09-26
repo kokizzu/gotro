@@ -10,11 +10,14 @@ services:
     ports:
       - '6379:6379'
     command: redis-server --save 20 1 --loglevel warning --requirepass kl234j23095125125125
-    volumes: 
-      - redisdata1:/data
+#    volumes: 
+#      - redis1:/data
 
-volumes:
-  redisdata1:
+#volumes:
+#  redis1:
+#    driver_opts:
+#      type: tmpfs
+#      device: tmpfs
 
 
 

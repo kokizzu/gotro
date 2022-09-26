@@ -17,8 +17,8 @@ services:
       - "3000:3000"
 
 secrets:
-    conffile:
-        file: ./aerospike.conf
+  conffile:
+    file: ./aerospike.conf
 
 # node=`docker ps | grep aerospike | cut -f 1 -d ' '`
 # docker exec -it $node aql

@@ -13,3 +13,6 @@ services:
 
 #volumes:
 #  mongo1:
+#    driver_opts:
+#      type: tmpfs
+#      device: tmpfs

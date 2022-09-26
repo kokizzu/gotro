@@ -1,7 +1,7 @@
 version: "3.2"
 
 services:
-  cockroach:
+  cockroach1:
     image: cockroachdb/cockroach:latest
     command: start-single-node --insecure --accept-sql-without-tls
     ports:

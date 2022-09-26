@@ -8,6 +8,7 @@ import (
 
 type RdDockerTest struct {
 	// username and password must use conf https://stackoverflow.com/a/70808430/1620210
+	Password string
 	Database int
 	Image    string
 	pool     *D.DockerTest
@@ -24,6 +25,10 @@ func (in *RdDockerTest) ImageVersion(pool *D.DockerTest, version string) *docker
 		Tag:        in.Image,
 		NetworkID:  pool.Network.ID,
 		Env:        []string{},
+		Cmd: []string{
+			`redis-server`,
+			`--requirepass`, in.Password,
+		},
 	}
 }
 
@@ -43,6 +48,7 @@ func (in *RdDockerTest) ConnectCheck(res *dockertest.Resource) (rueidis.Client, 
 	conn, err := rueidis.NewClient(rueidis.ClientOption{
 		InitAddress: []string{hostPort},
 		SelectDB:    in.Database,
+		Password:    in.Password,
 	})
 	return conn, err
 }
