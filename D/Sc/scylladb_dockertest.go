@@ -1,4 +1,4 @@
-package Ca
+package Sc
 
 import (
 	"net"
@@ -8,16 +8,16 @@ import (
 	"github.com/ory/dockertest/v3"
 )
 
-type CaDockerTest struct {
+type ScDockerTest struct {
 	Image string
 }
 
-// https://hub.docker.com/_/cassandra
-func (in *CaDockerTest) ImageVersion(pool *D.DockerTest, version string) *dockertest.RunOptions {
+// https://hub.docker.com/_/influxdb
+func (in *ScDockerTest) ImageVersion(pool *D.DockerTest, version string) *dockertest.RunOptions {
 	in.SetDefaults(version)
 	return &dockertest.RunOptions{
-		Repository: `cassandra`,
-		Name:       `dockertest-cassandra-` + pool.Uniq,
+		Repository: `influxdb`,
+		Name:       `dockertest-influxdb-` + pool.Uniq,
 		Tag:        in.Image,
 		NetworkID:  pool.Network.ID,
 		Env: []string{
@@ -30,19 +30,19 @@ func (in *CaDockerTest) ImageVersion(pool *D.DockerTest, version string) *docker
 	}
 }
 
-func (in *CaDockerTest) Image3(pool *D.DockerTest) *dockertest.RunOptions {
+func (in *ScDockerTest) Image3(pool *D.DockerTest) *dockertest.RunOptions {
 	return in.ImageVersion(pool, `3`)
 }
 
-func (in *CaDockerTest) SetDefaults(img string) {
+func (in *ScDockerTest) SetDefaults(img string) {
 	if in.Image == `` {
 		in.Image = img
 	}
 }
 
-func (in *CaDockerTest) ConnectCheck(res *dockertest.Resource) (hostPort string, err error) {
+func (in *ScDockerTest) ConnectCheck(res *dockertest.Resource) (err error) {
 	port := res.GetPort("9042/tcp")
-	hostPort = `127.0.0.1:` + port
+	hostPort := `127.0.0.1:` + port
 	// using net Dial instead of proper driver
 	var conn net.Conn
 	conn, err = net.DialTimeout("tcp", hostPort, 1*time.Second)
