@@ -1,6 +1,9 @@
 package Pg
 
 import (
+	"context"
+
+	"github.com/jackc/pgx/v4"
 	"github.com/kokizzu/gotro/D"
 	"github.com/ory/dockertest/v3"
 )
@@ -40,4 +43,17 @@ func (in *PgDockerTest) SetDefaults() {
 	if in.Database == `` {
 		in.Database = `pgdb`
 	}
+}
+
+func (in *PgDockerTest) ConnectCheck(res *dockertest.Resource) (string, error) {
+	ctx := context.Background()
+	port := res.GetPort("5432/tcp")
+	dsn := `postgres://` + in.User + `:` + in.Password + `@127.0.0.1:` + port + `/` + in.Database
+	conn, err := pgx.Connect(ctx, dsn)
+	if conn != nil {
+		defer func() {
+			_ = conn.Close(ctx)
+		}()
+	}
+	return dsn, err
 }
