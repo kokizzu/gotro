@@ -6,7 +6,7 @@ services:
   minio1:
     hostname: minio1
     container_name: minio1
-    image: quay.io/minio/minio:RELEASE.2022-02-01T18-00-14Z
+    image: quay.io/minio/minio:latest
     command: server /data1 --console-address ":9001"
     ports:
       - "19000:19000"
@@ -24,6 +24,8 @@ services:
 
 volumes:
   miniodata1:
+    
+    
 
 
 
