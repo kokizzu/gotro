@@ -8,6 +8,13 @@ func IsDigit(ch byte) bool {
 	return ch >= '0' && ch <= '9'
 }
 
+// IsAlpha check whether the character is a letter or not
+//  C.IsDigit('a') // true
+//  C.IsDigit('Z') // true
+func IsAlpha(ch byte) bool {
+	return (ch >= 'a' && ch <= 'z') || (ch >= 'A' && ch <= 'Z')
+}
+
 // IsIdentStart check whether the character is a valid identifier prefix (letter/underscore)
 //  C.IsIdentStart('-') // false
 //  C.IsIdentStart('_') // true
@@ -22,7 +29,7 @@ func IsIdent(ch byte) bool {
 }
 
 // IsValidFilename check whether the character is a safe file-name characters (alphanumeric/comma/full-stop/dash)
-//   C.IsValidFilename(' ') // output bool(true)
+//  C.IsValidFilename(' ') // output bool(true)
 func IsValidFilename(ch byte) bool {
 	return ch == ' ' || IsIdent(ch) || ch == ',' || ch == '.' || ch == '-'
 }

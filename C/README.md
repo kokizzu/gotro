@@ -5,6 +5,16 @@
 
 ## Usage
 
+#### func  IsAlpha
+
+```go
+func IsAlpha(ch byte) bool
+```
+IsAlpha check whether the character is a letter or not
+
+    C.IsDigit('a') // true
+    C.IsDigit('Z') // true
+
 #### func  IsDigit
 
 ```go
