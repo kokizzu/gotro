@@ -1,16 +1,17 @@
 package domain
 
 import (
+	"github.com/kokizzu/id64"
+	"github.com/vburenin/nsync"
+
 	"github.com/kokizzu/gotro/S"
 	"github.com/kokizzu/gotro/W2/example/conf"
 	"github.com/kokizzu/gotro/W2/example/model/mAuth/rqAuth"
 	"github.com/kokizzu/gotro/W2/example/model/mAuth/wcAuth"
 	"github.com/kokizzu/gotro/X"
-	"github.com/kokizzu/id64"
-	"github.com/vburenin/nsync"
 )
 
-//go:generate gomodifytags -file user.go -all -add-tags json,form,query,long,msg -transform camelcase --skip-unexported --skip-unexported -w -file user.go
+//go:generate gomodifytags -all -add-tags json,form,query,long,msg -transform camelcase --skip-unexported -w -file user.go
 //go:generate replacer 'Id" form' 'Id,string" form' type user.go
 //go:generate replacer 'json:"id"' 'json:"id,string"' type user.go
 //go:generate replacer 'By" form' 'By,string" form' type user.go
