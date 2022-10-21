@@ -14,21 +14,24 @@ import (
 )
 
 // X array (slice) of anything
-//  v := A.X{}
-//  v = append(v, any_value)
+//
+//	v := A.X{}
+//	v = append(v, any_value)
 type X []interface{}
 
 // MSX array (slice) of map with string key and any value
-//  v := A.MSX{}
-//  v = append(v, map[string]{
-//    `foo`: 123,
-//    `bar`: `yay`,
-//  })
+//
+//	v := A.MSX{}
+//	v = append(v, map[string]{
+//	  `foo`: 123,
+//	  `bar`: `yay`,
+//	})
 type MSX []map[string]interface{}
 
 // ToJson convert map array of string to JSON string type
-//  m:= []interface{}{123,`abc`}
-//  L.Print(A.ToJson(m)) // [123,"abc"]
+//
+//	m:= []interface{}{123,`abc`}
+//	L.Print(A.ToJson(m)) // [123,"abc"]
 func ToJson(arr []interface{}) string {
 	str, err := json.Marshal(arr)
 	L.IsError(err, `Slice.ToJson failed`, arr)
@@ -36,15 +39,17 @@ func ToJson(arr []interface{}) string {
 }
 
 // StrJoin combine strings in the array of string with the chosen string separator
-//  m1:= []string{`satu`,`dua`}
-//  A.StrJoin(m1,`-`) // satu-dua
+//
+//	m1:= []string{`satu`,`dua`}
+//	A.StrJoin(m1,`-`) // satu-dua
 func StrJoin(arr []string, sep string) string {
 	return strings.Join(arr, sep)
 }
 
 // IntJoin combine int64s in the array of int64 with the chosen string separator
-//  m1:= []int64{123,456}
-//  A.IntJoin(m1,`|`) // 123|456
+//
+//	m1:= []int64{123,456}
+//	A.IntJoin(m1,`|`) // 123|456
 func IntJoin(arr []int64, sep string) string {
 	buf := bytes.Buffer{}
 	len := len(arr) - 1
@@ -58,8 +63,9 @@ func IntJoin(arr []int64, sep string) string {
 }
 
 // UIntJoin combine uint64s in the array of int64 with the chosen string separator
-//  m1:= []uint64{123,456}
-//  A.UIntJoin(m1,`-`) // 123-456
+//
+//	m1:= []uint64{123,456}
+//	A.UIntJoin(m1,`-`) // 123-456
 func UIntJoin(arr []uint64, sep string) string {
 	buf := bytes.Buffer{}
 	len := len(arr) - 1
@@ -73,10 +79,12 @@ func UIntJoin(arr []uint64, sep string) string {
 }
 
 // StrToInt Convert array of string to array of int64
-//  func main() {
-//    m:= []string{`1`,`2`}
-//    L.Print(A.StrToInt(m))//output [1 2]
-//  }
+//
+//	func main() {
+//	  m:= []string{`1`,`2`}
+//	  L.Print(A.StrToInt(m))//output [1 2]
+//	}
+//
 // convert string list to integer list
 func StrToInt(arr []string) []int64 {
 	res := []int64{}

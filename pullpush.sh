@@ -10,7 +10,7 @@ if [ $# -eq 0 ] ; then
 fi
 
 # generate documentation
-for x in A B C F I L M T X; do # remove S until https://github.com/robertkrimen/godocdown/issues/17 fixed
+for x in A B F I L M T X; do # remove S C until https://github.com/robertkrimen/godocdown/issues/17 fixed
   godocdown $x > $x/README.md
   replacer gotro/$x github.com/kokizzu/gotro/$x '# ' $x/README.md
 done

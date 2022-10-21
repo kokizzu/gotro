@@ -34,28 +34,32 @@ func ZT2() string {
 }
 
 // Q add single quote in the beginning and the end of string, without escaping.
-//  S.Q(`coba`) // `'coba'`
-//  S.Q(`123`)  // `'123'`
+//
+//	S.Q(`coba`) // `'coba'`
+//	S.Q(`123`)  // `'123'`
 func Q(str string) string {
 	return `'` + str + `'`
 }
 
 // QQ add double quote in the beginning and the end of string, without escaping.
-//  S.Q(`coba`) // `"coba"`
-//  S.Q(`123`)  // `"123"`
+//
+//	S.Q(`coba`) // `"coba"`
+//	S.Q(`123`)  // `"123"`
 func QQ(str string) string {
 	return `"` + str + `"`
 }
 
 // BT add backtick quote in the beginning and the end of string, without escaping.
-//  S.Q(`coba`) // "`coba`"
-//  S.Q(`123`)  // "`123`"
+//
+//	S.Q(`coba`) // "`coba`"
+//	S.Q(`123`)  // "`123`"
 func BT(str string) string {
 	return "`" + str + "`"
 }
 
 // ZZ replace ` and give double quote (for table names)
-//  S.ZZ(`coba"`) // `"coba&quot;"`
+//
+//	S.ZZ(`coba"`) // `"coba&quot;"`
 func ZZ(str string) string {
 	str = Trim(str)
 	str = Replace(str, `"`, `&quot;`)
@@ -63,29 +67,33 @@ func ZZ(str string) string {
 }
 
 // ZB give ' to boolean value
-//  S.ZB(true)  // `'true'`
-//  S.ZB(false) // `'false'`
+//
+//	S.ZB(true)  // `'true'`
+//	S.ZB(false) // `'false'`
 func ZB(b bool) string {
 	return `'` + B.ToS(b) + `'`
 }
 
 // ZI give ' to int64 value
-//  S.ZI(23)) // '23'
-//  S.ZI(03)) // '3'
+//
+//	S.ZI(23)) // '23'
+//	S.ZI(03)) // '3'
 func ZI(num int64) string {
 	return `'` + I.ToS(num) + `'`
 }
 
 // ZU give ' to uint value
-//  S.ZI(23)) // '23'
-//  S.ZI(03)) // '3'
+//
+//	S.ZI(23)) // '23'
+//	S.ZI(03)) // '3'
 func ZU(num uint64) string {
 	return `'` + strconv.FormatUint(num, 10) + `'`
 }
 
 // ZJJ double quote a json string
-//  hai := `{'test':123,"bla":[1,2,3,4]}`
-//  S.ZJJ(hai) // "{'test':123,\"bla\":[1,2,3,4]}"
+//
+//	hai := `{'test':123,"bla":[1,2,3,4]}`
+//	S.ZJJ(hai) // "{'test':123,\"bla\":[1,2,3,4]}"
 func ZJJ(str string) string {
 	str = Replace(str, `\`, `\\`)
 	str = Replace(str, "\r", `\r`)
@@ -95,8 +103,9 @@ func ZJJ(str string) string {
 }
 
 // ZJ single quote a json string
-//  hai := `{'test':123,"bla":[1,2,3,4]}`
-//  S.ZJ(hai) // "{'test':123,\"bla\":[1,2,3,4]}"
+//
+//	hai := `{'test':123,"bla":[1,2,3,4]}`
+//	S.ZJ(hai) // "{'test':123,\"bla\":[1,2,3,4]}"
 func ZJ(str string) string {
 	str = Replace(str, `\`, `\\`)
 	str = Replace(str, "\r", `\r`)
@@ -106,7 +115,8 @@ func ZJ(str string) string {
 }
 
 // Z trim, replace <, >, ', " and gives single quote
-//  S.Z(`<>'"`) // `&lt;&gt;&apos;&quot;
+//
+//	S.Z(`<>'"`) // `&lt;&gt;&apos;&quot;
 func Z(str string) string {
 	str = Trim(str)
 	str = Replace(str, `<`, `&lt;`)
@@ -118,7 +128,8 @@ func Z(str string) string {
 }
 
 // ZS replace <, >, ', " and gives single quote (without trimming)
-//  S.Z(`<>'"`) // `&lt;&gt;&apos;&quot;
+//
+//	S.Z(`<>'"`) // `&lt;&gt;&apos;&quot;
 func ZS(str string) string {
 	str = Replace(str, `<`, `&lt;`)
 	str = Replace(str, `>`, `&gt;`)
@@ -129,8 +140,9 @@ func ZS(str string) string {
 }
 
 // ZLIKE replace <, >, ', ", % and gives single quote and %
-//  S.ZLIKE(`coba<`))  // output '%coba&lt;%'
-//  S.ZLIKE(`"coba"`)) // output '%&quot;coba&quot;%'
+//
+//	S.ZLIKE(`coba<`))  // output '%coba&lt;%'
+//	S.ZLIKE(`"coba"`)) // output '%&quot;coba&quot;%'
 func ZLIKE(str string) string {
 	str = Trim(str)
 	str = Replace(str, `<`, `&lt;`)

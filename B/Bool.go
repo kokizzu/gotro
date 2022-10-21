@@ -3,7 +3,8 @@ package B
 // Boolean support package
 
 // ToS converts boolean type to string type, writing "true" or "false"
-//   B.ToS(2 > 1)  // "true"
+//
+//	B.ToS(2 > 1)  // "true"
 func ToS(b bool) string {
 	if b {
 		return `true`

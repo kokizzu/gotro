@@ -24,9 +24,10 @@ import (
 )
 
 // ToU convert any data type to uint
-//  var m interface{}
-//  m = `123`
-//  L.ParentDescribe(X.ToI(m)) // uint(123)
+//
+//	var m interface{}
+//	m = `123`
+//	L.ParentDescribe(X.ToI(m)) // uint(123)
 func ToU(any interface{}) uint64 {
 	if any == nil {
 		return 0
@@ -141,9 +142,10 @@ func ToU(any interface{}) uint64 {
 }
 
 // ToByte convert any data type to int8
-//  var m interface{}
-//  m = `123`
-//  L.ParentDescribe(X.ToByte(m)) // byte(123)
+//
+//	var m interface{}
+//	m = `123`
+//	L.ParentDescribe(X.ToByte(m)) // byte(123)
 func ToByte(any interface{}) byte {
 	if any == nil {
 		return 0
@@ -255,9 +257,10 @@ func ToByte(any interface{}) byte {
 }
 
 // ToI convert any data type to int64
-//  var m interface{}
-//  m = `123`
-//  L.ParentDescribe(X.ToI(m)) // int64(123)
+//
+//	var m interface{}
+//	m = `123`
+//	L.ParentDescribe(X.ToI(m)) // int64(123)
 func ToI(any interface{}) int64 {
 	if any == nil {
 		return 0
@@ -370,9 +373,10 @@ func ToI(any interface{}) int64 {
 }
 
 // ToF Convert any data type to float64
-//  var m interface{}
-//  m = `123.5`
-//  L.ParentDescribe(X.ToF(m)) // float64(123.5)
+//
+//	var m interface{}
+//	m = `123.5`
+//	L.ParentDescribe(X.ToF(m)) // float64(123.5)
 func ToF(any interface{}) float64 {
 	if any == nil {
 		return 0
@@ -479,9 +483,10 @@ func ToF(any interface{}) float64 {
 }
 
 // ToS convert any data type to string
-//  var m interface{}
-//  m = `123`
-//  L.ParentDescribe(X.ToS(m)) // `123`
+//
+//	var m interface{}
+//	m = `123`
+//	L.ParentDescribe(X.ToS(m)) // `123`
 func ToS(any interface{}) string {
 	if any == nil {
 		return ``
@@ -628,9 +633,10 @@ func ToTime(any interface{}) time.Time {
 }
 
 // ToBool convert any data type to bool
-//  var m interface{}
-//  m = `123`
-//  L.ParentDescribe(X.ToBool(m)) // bool(true)
+//
+//	var m interface{}
+//	m = `123`
+//	L.ParentDescribe(X.ToBool(m)) // bool(true)
 func ToBool(any interface{}) bool {
 	if any == nil {
 		return false
@@ -726,9 +732,10 @@ func ToBool(any interface{}) bool {
 }
 
 // ToArr convert any data type to array of any
-//  var m3 interface{}
-//  m3 = []interface{}{1}   // tipe array
-//  L.ParentDescribe(X.ToArr(m3)) // []interface {}{int(1),}
+//
+//	var m3 interface{}
+//	m3 = []interface{}{1}   // tipe array
+//	L.ParentDescribe(X.ToArr(m3)) // []interface {}{int(1),}
 func ToArr(any interface{}) []interface{} {
 	if any == nil {
 		return []interface{}{}
@@ -741,9 +748,10 @@ func ToArr(any interface{}) []interface{} {
 }
 
 // ArrToStrArr convert array of any data type to array of string
-//  var m4 []interface{}
-//  m4 = []interface{}{1}     // // tipe array
-//  L.ParentDescribe(X.ArrToStrArr(m4)) // []string{"1"}
+//
+//	var m4 []interface{}
+//	m4 = []interface{}{1}     // // tipe array
+//	L.ParentDescribe(X.ArrToStrArr(m4)) // []string{"1"}
 func ArrToStrArr(any_arr []interface{}) []string {
 	res := []string{}
 	for _, val := range any_arr {
@@ -753,9 +761,10 @@ func ArrToStrArr(any_arr []interface{}) []string {
 }
 
 // ArrToIntArr Convert array of any data type to array of int64
-//  var m4 []interface{}
-//  m4 = []interface{}{1}     // // tipe array
-//  L.ParentDescribe(X.ArrToIntArr(m4)) // []int64{1}
+//
+//	var m4 []interface{}
+//	m4 = []interface{}{1}     // // tipe array
+//	L.ParentDescribe(X.ArrToIntArr(m4)) // []int64{1}
 func ArrToIntArr(any_arr []interface{}) []int64 {
 	res := []int64{}
 	for _, val := range any_arr {
@@ -937,14 +946,15 @@ func ToJson5(any interface{}) string {
 }
 
 // ToJsonPretty convert to beautiful json text
-//  m:= []interface {}{true,`1`,23,`wabcd`}
-//  L.Print(K.ToJsonPretty(m))
-//  // [
-//  //   true,
-//  //   "1",
-//  //   23,
-//  //   "wabcd"
-//  // ]
+//
+//	m:= []interface {}{true,`1`,23,`wabcd`}
+//	L.Print(K.ToJsonPretty(m))
+//	// [
+//	//   true,
+//	//   "1",
+//	//   23,
+//	//   "wabcd"
+//	// ]
 func ToJsonPretty(any interface{}) string {
 	res, err := json.MarshalIndent(any, ``, `  `)
 	L.IsError(err, `X.ToJsonPretty failed`, any)

@@ -59,7 +59,8 @@ func init() {
 }
 
 // PercentCPU get CPU usage percentage
-//  L.PercentCPU()
+//
+//	L.PercentCPU()
 func PercentCPU() float64 {
 	last_cpu_call := time.Now().Unix()
 	if last_cpu_call <= LAST_CPU_CALL {
@@ -95,7 +96,8 @@ func PercentCPU() float64 {
 }
 
 // PercentRAM get RAM usage percentage
-//  L.PercentRAM()
+//
+//	L.PercentRAM()
 func PercentRAM() float64 {
 	last_ram_call := time.Now().Unix()
 	if last_ram_call <= LAST_RAM_CALL {
@@ -121,8 +123,9 @@ func PercentRAM() float64 {
 }
 
 // StackTrace get a stacktrace as string
-//  L.StackTrace(0) // until current function
-//  L.StackTrace(1) // until function that call this function
+//
+//	L.StackTrace(0) // until current function
+//	L.StackTrace(1) // until function that call this function
 func StackTrace(start int) string {
 	str := ``
 	for {

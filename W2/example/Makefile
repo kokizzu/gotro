@@ -26,7 +26,7 @@ run:
 setup-deps:
 	curl -sSfL https://raw.githubusercontent.com/cosmtrek/air/master/install.sh | sh -s && mv bin/air ~/go/bin
 	go install github.com/alvaroloes/enumer@latest
-	go install github.com/fatih/gomodifytags@latest
+	go install -v github.com/kokizzu/gomodifytags@v1.12.1
 	go install github.com/tinylib/msgp@latest
 	go install github.com/kokizzu/replacer@latest
 	go install github.com/robertkrimen/godocdown/godocdown@latest

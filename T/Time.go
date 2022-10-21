@@ -26,7 +26,8 @@ const HMS = `150405`
 var EMPTY = time.Time{}
 
 // ToIsoStr convert time to iso formatted time string
-//  T.ToIsoStr(time.Now()) // "2016-03-17T10:04:50.6489"
+//
+//	T.ToIsoStr(time.Now()) // "2016-03-17T10:04:50.6489"
 func ToIsoStr(t time.Time) string {
 	if t == EMPTY {
 		return ``
@@ -35,13 +36,15 @@ func ToIsoStr(t time.Time) string {
 }
 
 // IsoStr current iso time
-//  T.IsoStr() // "2016-03-17T10:07:56.418728"
+//
+//	T.IsoStr() // "2016-03-17T10:07:56.418728"
 func IsoStr() string {
 	return time.Now().Format(ISO)
 }
 
 // ToDateStr convert time to iso date
-//  T.ToDateStr(time.Now()) // output "2016-03-17"
+//
+//	T.ToDateStr(time.Now()) // output "2016-03-17"
 func ToDateStr(t time.Time) string {
 	if t == EMPTY {
 		return ``
@@ -56,7 +59,8 @@ func DateStr() string {
 }
 
 // ToHumanStr convert time to human date
-//  T.ToHumanStr(time.Now()) // "17-Mar-2016 10:06"
+//
+//	T.ToHumanStr(time.Now()) // "17-Mar-2016 10:06"
 func ToHumanStr(t time.Time) string {
 	if t == EMPTY {
 		return ``
@@ -65,13 +69,15 @@ func ToHumanStr(t time.Time) string {
 }
 
 // HumanStr current human date
-//  T.HumanStr() // "17-Mar-2016 10:06"
+//
+//	T.HumanStr() // "17-Mar-2016 10:06"
 func HumanStr() string {
 	return time.Now().Format(HUMAN)
 }
 
 // ToDateHourStr convert time to iso date and hour:minute
-//  T.ToDateHourStr(time.Now()) // "2016-03-17 10:07"
+//
+//	T.ToDateHourStr(time.Now()) // "2016-03-17 10:07"
 func ToDateHourStr(t time.Time) string {
 	if t == EMPTY {
 		return ``
@@ -80,7 +86,8 @@ func ToDateHourStr(t time.Time) string {
 }
 
 // ToHhmmssStr convert time to iso date and hourminutesecond
-//  T.ToDateHourStr(time.Now()) // "230744"
+//
+//	T.ToDateHourStr(time.Now()) // "230744"
 func ToHhmmssStr(t time.Time) string {
 	if t == EMPTY {
 		return ``
@@ -89,19 +96,22 @@ func ToHhmmssStr(t time.Time) string {
 }
 
 // DateHhStr current iso date and hour
-//  T.DateHhStr()// output "20160317.10"
+//
+//	T.DateHhStr()// output "20160317.10"
 func DateHhStr() string {
 	return time.Now().Format(YMDH)
 }
 
 // DateHhMmStr current iso date and hour
-//  T.DateHhMmStr()// output "20160317.1059"
+//
+//	T.DateHhMmStr()// output "20160317.1059"
 func DateHhMmStr() string {
 	return time.Now().Format(YMDHM)
 }
 
 // ToDateTimeStr convert time to iso date and time
-//  T.ToDateTimeStr(time.Now()) // "2016-03-17 10:07:50"
+//
+//	T.ToDateTimeStr(time.Now()) // "2016-03-17 10:07:50"
 func ToDateTimeStr(t time.Time) string {
 	if t == EMPTY {
 		return ``
@@ -110,7 +120,8 @@ func ToDateTimeStr(t time.Time) string {
 }
 
 // DateTimeStr current iso date and time
-//  T.ToDateTimeStr(time.Now()) // "2016-03-17 10:07:50"
+//
+//	T.ToDateTimeStr(time.Now()) // "2016-03-17 10:07:50"
 func DateTimeStr() string {
 	return time.Now().Format(YMD_HMS)
 }
@@ -141,7 +152,8 @@ func YearDayInt() int64 {
 }
 
 // Filename get filename version of current date
-//  T.Filename()) // "20160317_102543"
+//
+//	T.Filename()) // "20160317_102543"
 func Filename() string {
 	return time.Now().Format(FILE)
 }
@@ -163,10 +175,11 @@ func RandomSleep() {
 }
 
 // Track measure elapsed time in nanosec
-//  T.Track(func(){
-//    x:=0
-//    T.Sleep(1)
-//  }) // "done in 1.00s"
+//
+//	T.Track(func(){
+//	  x:=0
+//	  T.Sleep(1)
+//	}) // "done in 1.00s"
 func Track(fun func()) time.Duration {
 	start := time.Now()
 	fun()
@@ -176,9 +189,10 @@ func Track(fun func()) time.Duration {
 }
 
 // IsValidTimeRange check if time in are in the range
-//  t1, _:=time.Parse(`1992-03-23`,T.DateFormat)
-//  t2, _:=time.Parse(`2016-03-17`,T.DateFormat)
-//  T.IsValidTimeRange(t1,t2,time.Now()) // bool(false)
+//
+//	t1, _:=time.Parse(`1992-03-23`,T.DateFormat)
+//	t2, _:=time.Parse(`2016-03-17`,T.DateFormat)
+//	T.IsValidTimeRange(t1,t2,time.Now()) // bool(false)
 func IsValidTimeRange(start, end, check time.Time) bool {
 	res := check.After(start) && check.Before(end)
 	return res
