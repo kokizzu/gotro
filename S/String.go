@@ -3,17 +3,19 @@ package S
 // String support package
 import (
 	"bytes"
-	"math/rand"
 	"strconv"
 	"strings"
 	"unicode"
 
+	"github.com/kokizzu/rand"
+
 	"github.com/goccy/go-json"
+
+	"github.com/yosuke-furukawa/json5/encoding/json5"
 
 	"github.com/kokizzu/gotro/C"
 	"github.com/kokizzu/gotro/I"
 	"github.com/kokizzu/gotro/L"
-	"github.com/yosuke-furukawa/json5/encoding/json5"
 )
 
 const WebBR = "\n<br/>"

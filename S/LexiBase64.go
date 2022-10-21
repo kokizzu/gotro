@@ -1,12 +1,18 @@
 package S
 
 import (
-	"math/rand"
 	"sync/atomic"
 	"time"
 
+	"github.com/kokizzu/rand"
+	"golang.org/x/exp/constraints"
+
 	"github.com/kokizzu/gotro/L"
 )
+
+type int64orUint64 interface {
+	~int64 | ~uint64
+}
 
 const i2c_cb63 = `-0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz`
 
@@ -29,21 +35,20 @@ func init() {
 	}
 	ModCB63 = append(ModCB63, 9223372036854775808)
 	atom = time.Now().UnixNano()
-
-	rand.Seed(atom)
 }
 
 // EncodeCB63 convert integer to custom base-63 encoding that lexicographically correct, positive integer only
-//  0       -
-//  1..10   0..9
-//  11..36  A..Z
-//  37      _
-//  38..63  a..z
-//  S.EncodeCB63(11,1) // `A`
-//  S.EncodeCB63(1,3) // `--0`
-func EncodeCB63(id int64, min_len int) string {
-	if min_len < 1 {
-		min_len = 1
+//
+//	0       -
+//	1..10   0..9
+//	11..36  A..Z
+//	37      _
+//	38..63  a..z
+//	S.EncodeCB63(11,1) // `A`
+//	S.EncodeCB63(1,3) // `--0`
+func EncodeCB63[T int64orUint64, L constraints.Integer](id T, minLen L) string {
+	if minLen < 1 {
+		minLen = 1
 	}
 	str := make([]byte, 0, 12)
 	for id > 0 {
@@ -51,7 +56,7 @@ func EncodeCB63(id int64, min_len int) string {
 		str = append(str, i2c_cb63[mod])
 		id /= 64
 	}
-	for len(str) < min_len {
+	for L(len(str)) < minLen {
 		str = append(str, i2c_cb63[0])
 	}
 	l := len(str)
@@ -62,26 +67,30 @@ func EncodeCB63(id int64, min_len int) string {
 }
 
 // DecodeCB63 convert custom base-63 encoding to int64
-//   S.DecodeCB63(`--0`) // 1, true
-//   S.DecodeCB64(`(*&#$`) // 0, false
-func DecodeCB63(str string) (int64, bool) {
-	res := int64(0)
+//
+//	S.DecodeCB63(`--0`) // 1, true
+//	S.DecodeCB64(`(*&#$`) // 0, false
+func DecodeCB63[T int64orUint64](str string) (T, bool) {
+	res := T(0)
 	for _, ch := range str {
 		res *= 64
 		val, ok := c2i_cb63[ch]
 		if L.CheckIf(!ok, `Invalid character for CB63: `+string(ch)) {
-			return -1, false
+			return 0, false
 		}
-		res += val
+		res += T(val)
 	}
 	return res, true
 }
 
 // RandomCB63 random CB63 n-times, the result is n*MaxStrLenCB63 bytes
-func RandomCB63(len int64) string {
+func RandomCB63[T constraints.Integer](len T) string {
+	if len == 1 {
+		return EncodeCB63(rand.Uint64(), MaxStrLenCB63)
+	}
 	res := ``
-	for z := int64(0); z < len-1; z++ {
-		res += EncodeCB63(rand.Int63(), MaxStrLenCB63)
+	for z := T(0); z < len-1; z++ {
+		res += EncodeCB63(rand.Uint64(), MaxStrLenCB63)
 	}
 	now := atomic.AddInt64(&atom, 1)
 	res += EncodeCB63(now, MaxStrLenCB63)

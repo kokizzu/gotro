@@ -16,7 +16,7 @@ func TestInit(t *testing.T) {
 	}
 }
 
-func testOk(t *testing.T, ok bool, oldv int64, newv int64, cb63 string, print bool) bool {
+func testOk[T int64 | uint64](t *testing.T, ok bool, oldv T, newv T, cb63 string, print bool) bool {
 	if !ok {
 		t.Errorf(`Error decoding [%s] back to integer, source: %d`, cb63, oldv)
 		return false
@@ -49,7 +49,7 @@ func testOk2(t *testing.T, ok bool, oldv string, newv string, cb63 int64, print 
 func TestEncodeDecodeCB63(t *testing.T) {
 	tested := map[int64]bool{}
 	x := int64(1)
-	global_count := int64(1)
+	globalCount := int64(1)
 	for m := int64(2); m < math.MaxInt16*math.MaxInt8; m += x {
 		if m == 3 {
 			if testing.Short() {
@@ -59,26 +59,71 @@ func TestEncodeDecodeCB63(t *testing.T) {
 			}
 		}
 		last := int64(-1)
-		tested_count := int64(0)
+		testedCount := int64(0)
 		for z := int64(0); z >= 0 && z < math.MaxInt64; z = z*m + 1 {
 			if last == z {
 				break
 			}
 			if tested[z] {
-				tested_count += 1
-				if tested_count > 4 {
+				testedCount += 1
+				if testedCount > 4 {
 					break
 				}
 				continue
 			}
 			cb := EncodeCB63(z, 0)
-			v, ok := DecodeCB63(cb)
-			if !testOk(t, ok, z, v, cb, global_count%100000 == 0) {
+			v, ok := DecodeCB63[int64](cb)
+			if !testOk(t, ok, z, v, cb, globalCount%100000 == 0) {
 				return
 			}
 			tested[z] = true
 			last = z
-			global_count += 1
+			globalCount += 1
+		}
+	}
+	//fmt.Println(`Unique numbers tested:`, len(tested))
+}
+
+func TestEncodeDecodeCB63Uint(t *testing.T) {
+	tested := map[uint64]bool{}
+	x := uint64(1)
+	globalCount := uint64(1)
+	for m := uint64(2); m < math.MaxInt16*math.MaxInt8; m += x {
+		if m == 3 {
+			if testing.Short() {
+				x = 14
+			} else {
+				x = 2
+			}
+		}
+		first := uint64(0)
+		last := uint64(math.MaxUint64)
+		testedCount := uint64(0)
+		for z := 0; z < 1000; z++ {
+			if tested[first] {
+				testedCount += 1
+				if testedCount > 4 {
+					break
+				}
+				continue
+			}
+			cb := EncodeCB63(first, 0)
+			v, ok := DecodeCB63[uint64](cb)
+			if !testOk(t, ok, first, v, cb, globalCount%100000 == 0) {
+				return
+			}
+			tested[first] = true
+			first *= 2 + 1
+
+			cb = EncodeCB63(last, 0)
+			v, ok = DecodeCB63[uint64](cb)
+			if !testOk(t, ok, last, v, cb, globalCount%100000 == 0) {
+				return
+			}
+			tested[last] = true
+			last /= 2 - 1
+
+			globalCount += 2
 		}
 	}
 	//fmt.Println(`Unique numbers tested:`, len(tested))
@@ -87,7 +132,7 @@ func TestEncodeDecodeCB63(t *testing.T) {
 func TestUnixNano(t *testing.T) {
 	z := time.Now().UnixNano()
 	cb := EncodeCB63(z, 0)
-	v, ok := DecodeCB63(cb)
+	v, ok := DecodeCB63[int64](cb)
 	if !testOk(t, ok, z, v, cb, true) {
 		return
 	}
@@ -106,7 +151,27 @@ func TestMaxInt(t *testing.T) {
 	}
 	for _, z := range arr {
 		cb := EncodeCB63(z, MaxStrLenCB63)
-		v, ok := DecodeCB63(cb)
+		v, ok := DecodeCB63[int64](cb)
+		if !testOk(t, ok, z, v, cb, true) {
+			break
+		}
+	}
+}
+
+func TestMaxUInt(t *testing.T) {
+	arr := []uint64{math.MaxUint8, math.MaxUint16, math.MaxUint32, math.MaxUint64, 0}
+	z := uint64(1)
+	for {
+		arr = append(arr, z)
+		z *= 10
+		if z < 0 {
+			break
+		}
+		arr = append(arr, z-1)
+	}
+	for _, z := range arr {
+		cb := EncodeCB63(z, MaxStrLenCB63)
+		v, ok := DecodeCB63[uint64](cb)
 		if !testOk(t, ok, z, v, cb, true) {
 			break
 		}
@@ -124,9 +189,21 @@ func TestRepeated(t *testing.T) {
 		}
 	}
 	for _, z := range arr {
-		v, ok := DecodeCB63(z)
+		v, ok := DecodeCB63[int64](z)
 		cb := EncodeCB63(v, len(z))
 		if !testOk2(t, ok, z, cb, v, true) {
+			break
+		}
+	}
+}
+
+func TestRandomCB63(t *testing.T) {
+	m := map[string]int{}
+	for z := 0; z < 1000; z++ {
+		v := RandomCB63(2)[:5]
+		m[v]++
+		if m[v] > 1 {
+			t.Errorf(`RandomCB63 should return unique values: dup=%v iter=%v`, v, z+1)
 			break
 		}
 	}

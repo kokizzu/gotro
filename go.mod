@@ -28,6 +28,7 @@ require (
 	github.com/kokizzu/id64 v1.1726.1650
 	github.com/kokizzu/lexid v1.1726.1650
 	github.com/kokizzu/overseer v1.1.8
+	github.com/kokizzu/rand v0.0.0-20221021123447-6043c55a8bad
 	github.com/kpango/fastime v1.1.4
 	github.com/kr/pretty v0.3.0
 	github.com/lib/pq v1.10.6
@@ -52,6 +53,7 @@ require (
 	go.opentelemetry.io/otel v1.9.0
 	go.opentelemetry.io/otel/trace v1.9.0
 	golang.org/x/crypto v0.1.0
+	golang.org/x/exp v0.0.0-20220713135740-79cabaa25d75
 	golang.org/x/oauth2 v0.0.0-20220524215830-622c5d57e401
 	gopkg.in/natefinch/lumberjack.v2 v2.0.0
 	gopkg.in/resty.v1 v1.12.0
@@ -131,7 +133,7 @@ require (
 	golang.org/x/net v0.1.0 // indirect
 	golang.org/x/sys v0.1.0 // indirect
 	golang.org/x/text v0.4.0 // indirect
-	golang.org/x/tools v0.1.12 // indirect
+	golang.org/x/tools v0.2.0 // indirect
 	golang.org/x/xerrors v0.0.0-20200804184101-5ec99f83aff1 // indirect
 	google.golang.org/appengine v1.6.7 // indirect
 	google.golang.org/protobuf v1.28.0 // indirect

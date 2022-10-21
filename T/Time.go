@@ -2,8 +2,9 @@ package T
 
 // Time support package
 import (
-	"math/rand"
 	"time"
+
+	"github.com/kokizzu/rand"
 
 	"github.com/kokizzu/gotro/F"
 	"github.com/kokizzu/gotro/I"
@@ -157,7 +158,7 @@ func Sleep(ns time.Duration) {
 
 // RandomSleep random 0.4-2 sec sleep
 func RandomSleep() {
-	dur := rand.Int63()%(1600*1000*1000) + (400 * 1000 * 1000)
+	dur := rand.Uint64()%(1600*1000*1000) + (400 * 1000 * 1000)
 	time.Sleep(time.Duration(dur))
 }
 

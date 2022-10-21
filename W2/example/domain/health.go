@@ -2,16 +2,17 @@ package domain
 
 import (
 	"math"
-	"math/rand"
 
-	"github.com/kokizzu/gotro/L"
-	"github.com/kokizzu/gotro/W2/example/model/mAuth/rqAuth"
-	"github.com/kokizzu/gotro/W2/example/model/mAuth/wcAuth"
 	"github.com/kokizzu/lexid"
+	"github.com/kokizzu/rand"
 	"github.com/kpango/fastime"
 	"github.com/shirou/gopsutil/v3/cpu"
 	"github.com/shirou/gopsutil/v3/disk"
 	"github.com/shirou/gopsutil/v3/mem"
+
+	"github.com/kokizzu/gotro/L"
+	"github.com/kokizzu/gotro/W2/example/model/mAuth/rqAuth"
+	"github.com/kokizzu/gotro/W2/example/model/mAuth/wcAuth"
 )
 
 //go:generate gomodifytags -file health.go -all -add-tags json,form,query,long,msg -transform camelcase --skip-unexported --skip-unexported -w -file health.go
@@ -94,7 +95,7 @@ const LoadTestWrite_Url = `/LoadTestWrite`
 
 var userIds = make([]uint64, 0, 1024*1024*32) // 32 million ids
 
-func (d *Domain) LoadTestWrite(in *LoadTestWrite_In) (out LoadTestWrite_Out) {
+func (d *Domain) LoadTestWrite(_ *LoadTestWrite_In) (out LoadTestWrite_Out) {
 	user := wcAuth.NewUsersMutator(d.Taran)
 	user.Email = lexid.ID() + `@localhost`
 	user.Password = `123`
@@ -119,9 +120,9 @@ type (
 
 const LoadTestRead_Url = `/LoadTestRead`
 
-func (d *Domain) LoadTestRead(in *LoadTestRead_In) (out LoadTestRead_Out) {
+func (d *Domain) LoadTestRead(_ *LoadTestRead_In) (out LoadTestRead_Out) {
 	user := rqAuth.NewUsers(d.Taran)
-	user.Id = userIds[rand.Int()%len(userIds)]
+	user.Id = userIds[rand.Intn(len(userIds)]
 	user.FindById()
 	out.User = *user
 	return
@@ -139,7 +140,7 @@ type (
 
 const LoadHello_Url = `/LoadHello`
 
-func (d *Domain) LoadHello(in *LoadHello_In) (out LoadHello_Out) {
+func (d *Domain) LoadHello(_ *LoadHello_In) (out LoadHello_Out) {
 	out.Hello = `world`
 	return
 }
