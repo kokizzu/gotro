@@ -19,7 +19,7 @@ Why is it tied to [Clickhouse](//clickhouse.tech)?
 - because it's currently the fastest OLAP database (can do ~600K inserts per second).
 
 Why is it tied to [Fiber](//gofiber.io/)?
-- because it's currently the [fastest](//www.techempower.com/benchmarks/#section=data-r20&hw=ph&test=update&l=zijocf-sf) minimalist golang framework, ones that are faster but not more painful to use is C#'s [bettlex](//beetlex.io/)
+- because it's currently the [fastest](//www.techempower.com/benchmarks/#section=data-r20&hw=ph&test=update&l=zijocf-sf) minimalist golang framework, ones that are faster but not more painful to use is C#'s [asp.net core](//learn.microsoft.com/en-us/aspnet/core/)
 
 Can I replace the components/database (so instead of using Tarantool/Clickhouse/Fiber)?
 - yes, write your own codegen for database and api generator, it's possible

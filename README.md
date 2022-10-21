@@ -99,3 +99,4 @@ For newer framework `W2` can achieve `20K` rps on Ryzen3 3100 without session lo
 - Add Catch NotFound (rewrite the `Response.Body`) if no route and static file found
 - add Generics support comes up (so we can embed the database connection dependencies inside the context without casting interface)
 - Make sure all `D/*/*` docker-compose and dockertest works, volumes commented, have note on how to connect client and documentation URL, add from [hugedbbench](//github.com/kokizzu/hugedbbench/)
+- Create [NBIO](https://github.com/lesismal/nbio) codegen for websocket presentation/transport layer.
