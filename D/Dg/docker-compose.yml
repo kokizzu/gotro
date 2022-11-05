@@ -1,0 +1,7 @@
+version: '3.3'
+services:
+  run:
+    image: dgraph/standalone
+  ports:
+    - "5080:5080"
+    - "6080:6080"

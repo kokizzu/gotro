@@ -1,10 +1,10 @@
-package Du
+package D
 
 import (
 	"time"
 
 	"github.com/OneOfOne/cmap"
-	"github.com/kokizzu/gotro/D"
+
 	"github.com/kokizzu/gotro/M"
 	"github.com/kokizzu/gotro/T"
 	"github.com/kokizzu/gotro/X"
@@ -27,7 +27,7 @@ func NewDummy() *DummySession {
 }
 
 func (sess *DummySession) Product() string {
-	return D.DUMMY
+	return DUMMY
 }
 
 func (sess DummySession) Del(key string) {

@@ -1,0 +1,9 @@
+version: '3.3'
+services:
+  run:
+    network_mode: host
+    ulimits:
+      memlock: -1
+    image: docker.dragonflydb.io/dragonflydb/dragonfly
+    # ports:
+    #  - "6379:6379"

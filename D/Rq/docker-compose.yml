@@ -1,0 +1,6 @@
+version: '3.3'
+services:
+  rqlite:
+    ports:
+      - '4001:4001'
+    image: rqlite/rqlite
