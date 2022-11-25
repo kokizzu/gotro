@@ -59,7 +59,7 @@ func (sess RedisSession) Del(key string) {
 	L.IsError(err, `failed to DEL`, key)
 }
 
-//Expiry check the expiry time in second
+// Expiry check the expiry time in second
 func (sess RedisSession) Expiry(key string) int64 {
 
 	val, err := sess.Pool.Do(context.Background(), sess.Pool.B().Ttl().Key(sess.Prefix+key).Build()).AsInt64()
@@ -84,7 +84,7 @@ func (sess RedisSession) FadeMSX(key string, val M.SX, sec int64) {
 
 func (sess RedisSession) GetStr(key string) string {
 	val, err := sess.Pool.Do(context.Background(), sess.Pool.B().Get().Key(sess.Prefix+key).Build()).ToString()
-	if err != nil && err.Error() != `redis: nil` {
+	if err != nil && !(err.Error() == `redis nil message` || err.Error() == `redis: nil`) {
 		L.IsError(err, `failed to GET`, key)
 	}
 	return strings.Trim(val, `"`) // remove quotes, khusus redis
