@@ -288,7 +288,7 @@ func (tm *TableModel) FieldModel_ByKey(name string) FieldModel {
 	return kv_map[name]
 }
 
-const ROWS_MAX_LIMIT = 200
+const ROWS_MAX_LIMIT = 2000
 
 // 2017-01-25 Prayogo
 type QueryParams struct {
