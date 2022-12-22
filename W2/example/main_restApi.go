@@ -3,19 +3,20 @@ package main
 import (
 	"time"
 
+	"github.com/goccy/go-json"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/pprof"
 	"github.com/gofiber/fiber/v2/middleware/recover"
-	"github.com/kokizzu/gotro/W2/example/svelte"
+	"github.com/kokizzu/overseer"
+	"github.com/kokizzu/overseer/fetcher"
 
 	"github.com/kokizzu/gotro/L"
 	"github.com/kokizzu/gotro/M"
 	"github.com/kokizzu/gotro/S"
 	"github.com/kokizzu/gotro/W2/example/conf"
 	"github.com/kokizzu/gotro/W2/example/domain"
-	"github.com/kokizzu/overseer"
-	"github.com/kokizzu/overseer/fetcher"
+	"github.com/kokizzu/gotro/W2/example/svelte"
 )
 
 const profilingEnabled = true // visit http://localhost:9090/debug/pprof
@@ -53,7 +54,7 @@ func webApiServer() func(state overseer.State) {
 		}
 		//seedInitialData()
 		domain := webApiInitRoutes(app)
-		webApiInitGraphql(app, domain)
+		//webApiInitGraphql(app, domain)
 		svelte.HandleSSR(app, `./svelte`, domain)
 		runCron(domain)
 		L.Print(conf.AdminTestSessionToken)

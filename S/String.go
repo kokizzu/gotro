@@ -3,11 +3,13 @@ package S
 // String support package
 import (
 	"bytes"
+	"fmt"
 	"strconv"
 	"strings"
 	"unicode"
 
 	"github.com/kokizzu/rand"
+	"github.com/vmihailenco/msgpack/v5"
 
 	"github.com/goccy/go-json"
 
@@ -266,8 +268,8 @@ func AsF(str string) (float64, bool) {
 
 // JsonToMap convert JSON object to map[string]interface{}, silently print and return empty map if failed
 //
-//	json_str := `{"test":123,"bla":[1,2,3,4]}`
-//	map1 := S.JsonToMap(json_str)
+//	jsonStr := `{"test":123,"bla":[1,2,3,4]}`
+//	map1 := S.JsonToMap(jsonStr)
 func JsonToMap(str string) (res map[string]interface{}) {
 	res = map[string]interface{}{}
 	if len(str) == 0 {
@@ -278,10 +280,24 @@ func JsonToMap(str string) (res map[string]interface{}) {
 	return
 }
 
+// MsgpToMap convert MsgPack object to map[string]interface{}, silently print and return empty map if failed
+//
+//	msgpStr := []byte(`��buah{�angka�dia`)
+//	map1 := S.MsgpToMap(msgpStr)
+func MsgpToMap(str []byte) (res map[string]interface{}) {
+	res = map[string]interface{}{}
+	if len(str) == 0 {
+		return
+	}
+	err := msgpack.Unmarshal(str, &res)
+	L.IsError(err, fmt.Sprint(str))
+	return
+}
+
 // JsonToStrStrMap convert JSON object to map[string]string, silently print and return empty map if failed
 //
-//	json_str := `{"test":123,"bla":[1,2,3,4]}`
-//	map1 := S.JsonToMap(json_str)
+//	jsonStr := `{"test":123,"bla":[1,2,3,4]}`
+//	map1 := S.JsonToMap(jsonStr)
 func JsonToStrStrMap(str string) (res map[string]string) {
 	res = map[string]string{}
 	if len(str) == 0 {
@@ -292,10 +308,23 @@ func JsonToStrStrMap(str string) (res map[string]string) {
 	return
 }
 
+// MsgpToStrStrMap convert Msgpack object to map[string]string, silently print and return empty map if failed
+//
+//	map1 := S.MsgpToStrStrMap(msgpStr)
+func MsgpToStrStrMap(str []byte) (res map[string]string) {
+	res = map[string]string{}
+	if len(str) == 0 {
+		return
+	}
+	err := msgpack.Unmarshal(str, &res)
+	L.IsError(err, fmt.Sprint(str))
+	return
+}
+
 // JsonToArr convert JSON object to []interface{}, silently print and return empty slice of interface if failed
 //
-//	json_str := `[1,2,['test'],'a']`
-//	arr := S.JsonToArr(json_str)
+//	jsonStr := `[1,2,['test'],'a']`
+//	arr := S.JsonToArr(jsonStr)
 func JsonToArr(str string) (res []interface{}) {
 	res = []interface{}{}
 	if len(str) == 0 {
@@ -306,10 +335,23 @@ func JsonToArr(str string) (res []interface{}) {
 	return
 }
 
+// MsgpToArr convert Msgpack object to []interface{}, silently print and return empty slice of interface if failed
+//
+//	arr := S.MsgpToArr(msgpStr)
+func MsgpToArr(str []byte) (res []interface{}) {
+	res = []interface{}{}
+	if len(str) == 0 {
+		return
+	}
+	err := msgpack.Unmarshal(str, &res)
+	L.IsError(err, fmt.Sprint(str))
+	return
+}
+
 // JsonToObjArr convert JSON object to []map[string]interface{}, silently print and return empty slice of interface if failed
 //
-//	json_str := `[{"x":"foo"},{"y":"bar"}]`
-//	arr := S.JsonToObjArr(json_str)
+//	jsonStr := `[{"x":"foo"},{"y":"bar"}]`
+//	arr := S.JsonToObjArr(jsonStr)
 func JsonToObjArr(str string) (res []map[string]interface{}) {
 	res = []map[string]interface{}{}
 	if len(str) == 0 {
@@ -320,10 +362,23 @@ func JsonToObjArr(str string) (res []map[string]interface{}) {
 	return
 }
 
+// MsgpToObjArr convert Msgpack object to []map[string]interface{}, silently print and return empty slice of interface if failed
+//
+//	arr := S.MsgpToObjArr(msgpStr)
+func MsgpToObjArr(str []byte) (res []map[string]interface{}) {
+	res = []map[string]interface{}{}
+	if len(str) == 0 {
+		return
+	}
+	err := msgpack.Unmarshal(str, &res)
+	L.IsError(err, fmt.Sprint(str))
+	return
+}
+
 // JsonToStrArr convert JSON object to []string, silently print and return empty slice of interface if failed
 //
-//	json_str := `["123","456",789]`
-//	arr := S.JsonToStrArr(json_str)
+//	jsonStr := `["123","456",789]`
+//	arr := S.JsonToStrArr(jsonStr)
 func JsonToStrArr(str string) (res []string) {
 	res = []string{}
 	if len(str) == 0 {
@@ -334,10 +389,23 @@ func JsonToStrArr(str string) (res []string) {
 	return
 }
 
+// MsgpToStrArr convert Msgpack object to []string, silently print and return empty slice of interface if failed
+//
+//	arr := S.MsgpToStrArr(msgpStr)
+func MsgpToStrArr(str []byte) (res []string) {
+	res = []string{}
+	if len(str) == 0 {
+		return
+	}
+	err := msgpack.Unmarshal(str, &res)
+	L.IsError(err, fmt.Sprint(str))
+	return
+}
+
 // JsonToIntArr convert JSON object to []int64, silently print and return empty slice of interface if failed
 //
-//	json_str := `[1,2,['test'],'a']`
-//	arr := S.JsonToArr(json_str)
+//	jsonStr := `[1,2,['test'],'a']`
+//	arr := S.JsonToArr(jsonStr)
 func JsonToIntArr(str string) (res []int64) {
 	res = []int64{}
 	if len(str) == 0 {
@@ -348,6 +416,19 @@ func JsonToIntArr(str string) (res []int64) {
 	return
 }
 
+// MsgpToIntArr convert Msgpack object to []int64, silently print and return empty slice of interface if failed
+//
+//	arr := S.MsgpToIntArr(msgpStr)
+func MsgpToIntArr(str []byte) (res []int64) {
+	res = []int64{}
+	if len(str) == 0 {
+		return
+	}
+	err := msgpack.Unmarshal(str, &res)
+	L.IsError(err, fmt.Sprint(str))
+	return
+}
+
 // repeat string
 func Repeat(str string, count int) string {
 	return strings.Repeat(str, count)
@@ -355,8 +436,8 @@ func Repeat(str string, count int) string {
 
 // JsonAsMap convert JSON object to map[string]interface{} with check
 //
-//	json_str := `{"test":123,"bla":[1,2,3,4]}`
-//	map1, ok := S.JsonAsMap(json_str)
+//	jsonStr := `{"test":123,"bla":[1,2,3,4]}`
+//	map1, ok := S.JsonAsMap(jsonStr)
 func JsonAsMap(str string) (res map[string]interface{}, ok bool) {
 	res = map[string]interface{}{}
 	err := json.Unmarshal([]byte(str), &res)
@@ -364,10 +445,20 @@ func JsonAsMap(str string) (res map[string]interface{}, ok bool) {
 	return
 }
 
+// MsgpAsMap convert Msgpack object to map[string]interface{} with check
+//
+//	map1, ok := S.MsgpAsMap(msgpStr)
+func MsgpAsMap(str []byte) (res map[string]interface{}, ok bool) {
+	res = map[string]interface{}{}
+	err := msgpack.Unmarshal(str, &res)
+	ok = err == nil
+	return
+}
+
 // JsonAsArr convert JSON object to []interface{} with check
 //
-//	json_str := `[1,2,['test'],'a']`
-//	arr, ok := S.JsonAsArr(json_str)
+//	jsonStr := `[1,2,['test'],'a']`
+//	arr, ok := S.JsonAsArr(jsonStr)
 func JsonAsArr(str string) (res []interface{}, ok bool) {
 	res = []interface{}{}
 	err := json.Unmarshal([]byte(str), &res)
@@ -375,10 +466,20 @@ func JsonAsArr(str string) (res []interface{}, ok bool) {
 	return
 }
 
+// MsgpAsArr convert Msgpack object to []interface{} with check
+//
+//	arr, ok := S.MsgpAsArr(msgpStr)
+func MsgpAsArr(str []byte) (res []interface{}, ok bool) {
+	res = []interface{}{}
+	err := msgpack.Unmarshal(str, &res)
+	ok = err == nil
+	return
+}
+
 // JsonAsStrArr convert JSON object to []string with check
 //
-//	json_str := `["a","b","c"]`
-//	arr, ok := S.JsonAsStrArr(json_str)
+//	jsonStr := `["a","b","c"]`
+//	arr, ok := S.JsonAsStrArr(jsonStr)
 func JsonAsStrArr(str string) (res []string, ok bool) {
 	res = []string{}
 	err := json.Unmarshal([]byte(str), &res)
@@ -386,10 +487,20 @@ func JsonAsStrArr(str string) (res []string, ok bool) {
 	return
 }
 
+// MsgpAsStrArr convert Msgpack object to []string with check
+//
+//	arr, ok := S.MsgpAsStrArr(msgpStr)
+func MsgpAsStrArr(str []byte) (res []string, ok bool) {
+	res = []string{}
+	err := msgpack.Unmarshal(str, &res)
+	ok = err == nil
+	return
+}
+
 // JsonAsIntArr convert JSON object to []int64 with check
 //
-//	json_str := `[1,2,3]`
-//	arr, ok := S.JsonAsIntArr(json_str)
+//	jsonStr := `[1,2,3]`
+//	arr, ok := S.JsonAsIntArr(jsonStr)
 func JsonAsIntArr(str string) (res []int64, ok bool) {
 	res = []int64{}
 	err := json.Unmarshal([]byte(str), &res)
@@ -397,13 +508,33 @@ func JsonAsIntArr(str string) (res []int64, ok bool) {
 	return
 }
 
+// MsgpAsIntArr convert Msgpack object to []int64 with check
+//
+//	arr, ok := S.MsgpAsIntArr(msgpStr)
+func MsgpAsIntArr(str []byte) (res []int64, ok bool) {
+	res = []int64{}
+	err := msgpack.Unmarshal(str, &res)
+	ok = err == nil
+	return
+}
+
 // JsonAsFloatArr convert JSON object to []float64 with check
 //
-//	json_str := `[1,2,3]`
-//	arr, ok := S.JsonAsFloatArr(json_str)
+//	jsonStr := `[1,2,3]`
+//	arr, ok := S.JsonAsFloatArr(jsonStr)
 func JsonAsFloatArr(str string) (res []float64, ok bool) {
 	res = []float64{}
 	err := json.Unmarshal([]byte(str), &res)
+	ok = err == nil
+	return
+}
+
+// MsgpAsFloatArr convert Msgpack object to []float64 with check
+//
+//	arr, ok := S.MsgpAsFloatArr(msgpStr)
+func MsgpAsFloatArr(str []byte) (res []float64, ok bool) {
+	res = []float64{}
+	err := msgpack.Unmarshal(str, &res)
 	ok = err == nil
 	return
 }

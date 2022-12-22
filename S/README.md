@@ -246,8 +246,8 @@ func JsonAsArr(str string) (res []interface{}, ok bool)
 ```
 JsonAsArr convert JSON object to []interface{} with check
 
-    json_str := `[1,2,['test'],'a']`
-    arr, ok := S.JsonAsArr(json_str)
+    jsonStr := `[1,2,['test'],'a']`
+    arr, ok := S.JsonAsArr(jsonStr)
 
 #### func  JsonAsFloatArr
 
@@ -256,8 +256,8 @@ func JsonAsFloatArr(str string) (res []float64, ok bool)
 ```
 JsonAsFloatArr convert JSON object to []float64 with check
 
-    json_str := `[1,2,3]`
-    arr, ok := S.JsonAsFloatArr(json_str)
+    jsonStr := `[1,2,3]`
+    arr, ok := S.JsonAsFloatArr(jsonStr)
 
 #### func  JsonAsIntArr
 
@@ -266,8 +266,8 @@ func JsonAsIntArr(str string) (res []int64, ok bool)
 ```
 JsonAsIntArr convert JSON object to []int64 with check
 
-    json_str := `[1,2,3]`
-    arr, ok := S.JsonAsIntArr(json_str)
+    jsonStr := `[1,2,3]`
+    arr, ok := S.JsonAsIntArr(jsonStr)
 
 #### func  JsonAsMap
 
@@ -276,8 +276,8 @@ func JsonAsMap(str string) (res map[string]interface{}, ok bool)
 ```
 JsonAsMap convert JSON object to map[string]interface{} with check
 
-    json_str := `{"test":123,"bla":[1,2,3,4]}`
-    map1, ok := S.JsonAsMap(json_str)
+    jsonStr := `{"test":123,"bla":[1,2,3,4]}`
+    map1, ok := S.JsonAsMap(jsonStr)
 
 #### func  JsonAsStrArr
 
@@ -286,8 +286,8 @@ func JsonAsStrArr(str string) (res []string, ok bool)
 ```
 JsonAsStrArr convert JSON object to []string with check
 
-    json_str := `["a","b","c"]`
-    arr, ok := S.JsonAsStrArr(json_str)
+    jsonStr := `["a","b","c"]`
+    arr, ok := S.JsonAsStrArr(jsonStr)
 
 #### func  JsonToArr
 
@@ -297,8 +297,8 @@ func JsonToArr(str string) (res []interface{})
 JsonToArr convert JSON object to []interface{}, silently print and return empty
 slice of interface if failed
 
-    json_str := `[1,2,['test'],'a']`
-    arr := S.JsonToArr(json_str)
+    jsonStr := `[1,2,['test'],'a']`
+    arr := S.JsonToArr(jsonStr)
 
 #### func  JsonToIntArr
 
@@ -308,8 +308,8 @@ func JsonToIntArr(str string) (res []int64)
 JsonToIntArr convert JSON object to []int64, silently print and return empty
 slice of interface if failed
 
-    json_str := `[1,2,['test'],'a']`
-    arr := S.JsonToArr(json_str)
+    jsonStr := `[1,2,['test'],'a']`
+    arr := S.JsonToArr(jsonStr)
 
 #### func  JsonToMap
 
@@ -319,8 +319,8 @@ func JsonToMap(str string) (res map[string]interface{})
 JsonToMap convert JSON object to map[string]interface{}, silently print and
 return empty map if failed
 
-    json_str := `{"test":123,"bla":[1,2,3,4]}`
-    map1 := S.JsonToMap(json_str)
+    jsonStr := `{"test":123,"bla":[1,2,3,4]}`
+    map1 := S.JsonToMap(jsonStr)
 
 #### func  JsonToObjArr
 
@@ -330,8 +330,8 @@ func JsonToObjArr(str string) (res []map[string]interface{})
 JsonToObjArr convert JSON object to []map[string]interface{}, silently print and
 return empty slice of interface if failed
 
-    json_str := `[{"x":"foo"},{"y":"bar"}]`
-    arr := S.JsonToObjArr(json_str)
+    jsonStr := `[{"x":"foo"},{"y":"bar"}]`
+    arr := S.JsonToObjArr(jsonStr)
 
 #### func  JsonToStrArr
 
@@ -341,8 +341,8 @@ func JsonToStrArr(str string) (res []string)
 JsonToStrArr convert JSON object to []string, silently print and return empty
 slice of interface if failed
 
-    json_str := `["123","456",789]`
-    arr := S.JsonToStrArr(json_str)
+    jsonStr := `["123","456",789]`
+    arr := S.JsonToStrArr(jsonStr)
 
 #### func  JsonToStrStrMap
 
@@ -352,8 +352,8 @@ func JsonToStrStrMap(str string) (res map[string]string)
 JsonToStrStrMap convert JSON object to map[string]string, silently print and
 return empty map if failed
 
-    json_str := `{"test":123,"bla":[1,2,3,4]}`
-    map1 := S.JsonToMap(json_str)
+    jsonStr := `{"test":123,"bla":[1,2,3,4]}`
+    map1 := S.JsonToMap(jsonStr)
 
 #### func  LastIndexOf
 

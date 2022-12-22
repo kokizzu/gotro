@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/goccy/go-json"
+	"github.com/vmihailenco/msgpack/v5"
 
 	"github.com/kokizzu/gotro/I"
 	"github.com/kokizzu/gotro/L"
@@ -109,6 +110,13 @@ func (hash SS) ToJson() string {
 	return string(str)
 }
 
+// ToMsgp convert to msgpack string, silently print error if failed
+func (hash SS) ToMsgp() []byte {
+	str, err := msgpack.Marshal(hash)
+	L.IsError(err, `M.ToMsgp failed`, hash)
+	return str
+}
+
 // SortedKeys get sorted keys
 //
 //	m := M.SS{`tes`:`tes`,`coba`:`saja`,`lah`:`lah`}
@@ -194,6 +202,13 @@ func (hash SB) ToJson() string {
 	return string(str)
 }
 
+// ToMsgp convert to msgpack string, silently print error if failed
+func (hash SB) ToMsgp() []byte {
+	str, err := msgpack.Marshal(hash)
+	L.IsError(err, `M.ToMsgp failed`, hash)
+	return str
+}
+
 // ToJsonPretty convert to pretty json string, silently print error if failed
 func (hash SB) ToJsonPretty() string {
 	str, err := json.MarshalIndent(hash, ``, `  `)
@@ -204,13 +219,19 @@ func (hash SB) ToJsonPretty() string {
 // IntoJson convert to json string with check
 func (hash SB) IntoJson() (string, bool) {
 	str, err := json.Marshal(hash)
-	return string(str), err != nil
+	return string(str), err == nil
+}
+
+// IntoMsgp convert to msgpack string with check
+func (hash SB) IntoMsgp() ([]byte, bool) {
+	str, err := msgpack.Marshal(hash)
+	return str, err == nil
 }
 
 // convert to pretty json string with check
 func (hash SB) IntoJsonPretty() (string, bool) {
 	str, err := json.MarshalIndent(hash, ``, `  `)
-	return string(str), err != nil
+	return string(str), err == nil
 }
 
 // SortedKeys get sorted keys
@@ -253,6 +274,13 @@ func (hash SX) ToJson() string {
 	return string(str)
 }
 
+// ToMsgp convert to msgpack string, silently print error if failed
+func (hash SX) ToMsgp() []byte {
+	str, err := msgpack.Marshal(hash)
+	L.IsError(err, `M.ToMsgp failed`, hash)
+	return str
+}
+
 // ToJsonPretty convert to pretty json string, silently print error if failed
 func (hash SX) ToJsonPretty() string {
 	str, err := json.MarshalIndent(hash, ``, `  `)
@@ -263,13 +291,19 @@ func (hash SX) ToJsonPretty() string {
 // IntoJson convert to json string with check
 func (hash SX) IntoJson() (string, bool) {
 	str, err := json.Marshal(hash)
-	return string(str), err != nil
+	return string(str), err == nil
+}
+
+// IntoMsgp convert to msgpack string with check
+func (hash SX) IntoMsgp() ([]byte, bool) {
+	str, err := msgpack.Marshal(hash)
+	return str, err == nil
 }
 
 // IntoJsonPretty convert to pretty json string with check
 func (hash SX) IntoJsonPretty() (string, bool) {
 	str, err := json.MarshalIndent(hash, ``, `  `)
-	return string(str), err != nil
+	return string(str), err == nil
 }
 
 // GetInt get int64 type from map
@@ -878,6 +912,16 @@ func ToJson(hash map[string]interface{}) string {
 	str, err := json.Marshal(hash)
 	L.IsError(err, `M.ToJson failed`, hash)
 	return string(str)
+}
+
+// ToMsgp convert map[string]interface{} to json
+//
+//	m :=  map[string]interface{}{`buah`:123,`angka`:`dia`}
+//	M.ToMsgp(m) // []byte{0x82, 0xa5, 0x61, 0x6e, 0x67, 0x6b, 0x61, 0xa3, 0x64, 0x69, 0x61, 0xa5, 0x62, 0x75, 0x61, 0x68, 0xcd, 0x7b}
+func ToMsgp(hash map[string]interface{}) []byte {
+	str, err := msgpack.Marshal(hash)
+	L.IsError(err, `M.ToMsgp failed`, hash)
+	return str
 }
 
 // Set set key with any value

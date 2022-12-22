@@ -33,7 +33,7 @@ func IntJoin(arr []int64, sep string) string
 ```
 IntJoin combine int64s in the array of int64 with the chosen string separator
 
-    m1:= []int64{123,456}
+    m1 := []int64{123,456}
     A.IntJoin(m1,`|`) // 123|456
 
 #### func  IntsAppendIfNotExists
@@ -71,7 +71,7 @@ func StrJoin(arr []string, sep string) string
 ```
 StrJoin combine strings in the array of string with the chosen string separator
 
-    m1:= []string{`satu`,`dua`}
+    m1 := []string{`satu`,`dua`}
     A.StrJoin(m1,`-`) // satu-dua
 
 #### func  StrToInt
@@ -82,7 +82,7 @@ func StrToInt(arr []string) []int64
 StrToInt Convert array of string to array of int64
 
     func main() {
-      m:= []string{`1`,`2`}
+      m := []string{`1`,`2`}
       L.Print(A.StrToInt(m))//output [1 2]
     }
 
@@ -102,8 +102,18 @@ func ToJson(arr []interface{}) string
 ```
 ToJson convert map array of string to JSON string type
 
-    m:= []interface{}{123,`abc`}
+    m := []interface{}{123,`abc`}
     L.Print(A.ToJson(m)) // [123,"abc"]
+
+#### func  ToMsgp
+
+```go
+func ToMsgp(arr []interface{}) []byte
+```
+ToMsgp convert map array of string to MsgPack string type
+
+    m := []interface{}{123,`abc`}
+    L.Print(string(A.ToMsgp(m))) // �{�abc
 
 #### func  UIntJoin
 
@@ -112,7 +122,7 @@ func UIntJoin(arr []uint64, sep string) string
 ```
 UIntJoin combine uint64s in the array of int64 with the chosen string separator
 
-    m1:= []uint64{123,456}
+    m1 := []uint64{123,456}
     A.UIntJoin(m1,`-`) // 123-456
 
 #### type MSX

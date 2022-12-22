@@ -5,10 +5,12 @@ import (
 	"io"
 	"net/http"
 
+	"github.com/goccy/go-json"
+	"github.com/kokizzu/id64"
+	"github.com/kokizzu/lexid"
 	"gopkg.in/resty.v1"
 
 	"github.com/kokizzu/gotro/A"
-
 	"github.com/kokizzu/gotro/L"
 	"github.com/kokizzu/gotro/M"
 	"github.com/kokizzu/gotro/S"
@@ -16,8 +18,6 @@ import (
 	"github.com/kokizzu/gotro/W2/example/model/mAuth/rqAuth"
 	"github.com/kokizzu/gotro/W2/example/model/mAuth/wcAuth"
 	"github.com/kokizzu/gotro/X"
-	"github.com/kokizzu/id64"
-	"github.com/kokizzu/lexid"
 )
 
 //go:generate gomodifytags -all -add-tags json,form,query,long,msg -transform camelcase --skip-unexported -w -file user_oauth.go

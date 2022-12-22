@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"github.com/goccy/go-json"
+	"github.com/vmihailenco/msgpack/v5"
 
 	"github.com/kokizzu/gotro/I"
 	"github.com/kokizzu/gotro/L"
@@ -30,7 +31,7 @@ type MSX []map[string]interface{}
 
 // ToJson convert map array of string to JSON string type
 //
-//	m:= []interface{}{123,`abc`}
+//	m := []interface{}{123,`abc`}
 //	L.Print(A.ToJson(m)) // [123,"abc"]
 func ToJson(arr []interface{}) string {
 	str, err := json.Marshal(arr)
@@ -38,9 +39,19 @@ func ToJson(arr []interface{}) string {
 	return string(str)
 }
 
+// ToMsgp convert map array of string to MsgPack string type
+//
+//	m := []interface{}{123,`abc`}
+//	L.Print(string(A.ToMsgp(m))) // �{�abc
+func ToMsgp(arr []interface{}) []byte {
+	str, err := msgpack.Marshal(arr)
+	L.IsError(err, `Slice.ToMsgp failed`, arr)
+	return str
+}
+
 // StrJoin combine strings in the array of string with the chosen string separator
 //
-//	m1:= []string{`satu`,`dua`}
+//	m1 := []string{`satu`,`dua`}
 //	A.StrJoin(m1,`-`) // satu-dua
 func StrJoin(arr []string, sep string) string {
 	return strings.Join(arr, sep)
@@ -48,7 +59,7 @@ func StrJoin(arr []string, sep string) string {
 
 // IntJoin combine int64s in the array of int64 with the chosen string separator
 //
-//	m1:= []int64{123,456}
+//	m1 := []int64{123,456}
 //	A.IntJoin(m1,`|`) // 123|456
 func IntJoin(arr []int64, sep string) string {
 	buf := bytes.Buffer{}
@@ -64,7 +75,7 @@ func IntJoin(arr []int64, sep string) string {
 
 // UIntJoin combine uint64s in the array of int64 with the chosen string separator
 //
-//	m1:= []uint64{123,456}
+//	m1 := []uint64{123,456}
 //	A.UIntJoin(m1,`-`) // 123-456
 func UIntJoin(arr []uint64, sep string) string {
 	buf := bytes.Buffer{}
@@ -81,7 +92,7 @@ func UIntJoin(arr []uint64, sep string) string {
 // StrToInt Convert array of string to array of int64
 //
 //	func main() {
-//	  m:= []string{`1`,`2`}
+//	  m := []string{`1`,`2`}
 //	  L.Print(A.StrToInt(m))//output [1 2]
 //	}
 //

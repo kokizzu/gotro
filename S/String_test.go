@@ -1,7 +1,11 @@
 package S
 
 import (
+	"fmt"
 	"testing"
+
+	"github.com/vmihailenco/msgpack/v5"
+	"github.com/zeebo/assert"
 
 	"github.com/kokizzu/gotro/L"
 )
@@ -38,4 +42,86 @@ func TestMidFunction(t *testing.T) {
 	L.Print(`4` + Mid(text, 4, 5))
 	L.Print(`5` + Mid(text, 6, 1))
 	L.Print(`6` + Mid(text, 2, 3))
+}
+
+func TestMsgpToMap(t *testing.T) {
+	map0 := map[string]interface{}{"a": 1, "b": 2}
+	msgpStr, _ := msgpack.Marshal(map0)
+	map1 := MsgpToMap(msgpStr)
+	assert.Equal(t, fmt.Sprint(map0), fmt.Sprint(map1))
+}
+
+func TestMsgpToStrStrMap(t *testing.T) {
+	map0 := map[string]string{"a": "1", "b": "2"}
+	msgpStr, _ := msgpack.Marshal(map0)
+	map1 := MsgpToStrStrMap(msgpStr)
+	assert.Equal(t, fmt.Sprint(map0), fmt.Sprint(map1))
+}
+
+func TestMsgpToArr(t *testing.T) {
+	arr0 := []interface{}{1, "test"}
+	msgpStr, _ := msgpack.Marshal(arr0)
+	arr1 := MsgpToArr(msgpStr)
+	assert.Equal(t, fmt.Sprint(arr0), fmt.Sprint(arr1))
+}
+
+func TestMsgpToObjArr(t *testing.T) {
+	arr0 := []map[string]interface{}{{"a": 1, "b": 2}, {"c": 3, "b": 4}}
+	msgpStr, _ := msgpack.Marshal(arr0)
+	arr1 := MsgpToObjArr(msgpStr)
+	assert.Equal(t, fmt.Sprint(arr0), fmt.Sprint(arr1))
+}
+
+func TestMsgpToStrArr(t *testing.T) {
+	arr0 := []string{"a", "b"}
+	msgpStr, _ := msgpack.Marshal(arr0)
+	arr1 := MsgpToStrArr(msgpStr)
+	assert.Equal(t, fmt.Sprint(arr0), fmt.Sprint(arr1))
+}
+
+func TestMsgpToIntArr(t *testing.T) {
+	arr0 := []int{1, 2}
+	msgpStr, _ := msgpack.Marshal(arr0)
+	arr1 := MsgpToIntArr(msgpStr)
+	assert.Equal(t, fmt.Sprint(arr0), fmt.Sprint(arr1))
+}
+
+func TestMsgpAsMap(t *testing.T) {
+	map0 := map[string]interface{}{"a": 1, "b": 2}
+	msgpStr, _ := msgpack.Marshal(map0)
+	map1, ok := MsgpAsMap(msgpStr)
+	assert.True(t, ok)
+	assert.Equal(t, fmt.Sprint(map0), fmt.Sprint(map1))
+}
+
+func TestMsgpAsArr(t *testing.T) {
+	arr0 := []interface{}{1, "test"}
+	msgpStr, _ := msgpack.Marshal(arr0)
+	arr1, ok := MsgpAsArr(msgpStr)
+	assert.True(t, ok)
+	assert.Equal(t, fmt.Sprint(arr0), fmt.Sprint(arr1))
+}
+
+func TestMsgpAsStrArr(t *testing.T) {
+	arr0 := []string{"a", "b"}
+	msgpStr, _ := msgpack.Marshal(arr0)
+	arr1, ok := MsgpAsStrArr(msgpStr)
+	assert.True(t, ok)
+	assert.Equal(t, fmt.Sprint(arr0), fmt.Sprint(arr1))
+}
+
+func TestMsgpAsIntArr(t *testing.T) {
+	arr0 := []int{1, 2}
+	msgpStr, _ := msgpack.Marshal(arr0)
+	arr1, ok := MsgpAsIntArr(msgpStr)
+	assert.True(t, ok)
+	assert.Equal(t, fmt.Sprint(arr0), fmt.Sprint(arr1))
+}
+
+func TestMsgpAsFloatArr(t *testing.T) {
+	arr0 := []float64{1, 2.3}
+	msgpStr, _ := msgpack.Marshal(arr0)
+	arr1, ok := MsgpAsFloatArr(msgpStr)
+	assert.True(t, ok)
+	assert.Equal(t, fmt.Sprint(arr0), fmt.Sprint(arr1))
 }

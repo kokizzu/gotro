@@ -22,6 +22,16 @@ ToJson convert map[string]interface{} to json
     m :=  map[string]interface{}{`buah`:123,`angka`:`dia`}
     M.ToJson(m) // {"angka":"dia","buah":123}
 
+#### func  ToMsgp
+
+```go
+func ToMsgp(hash map[string]interface{}) []byte
+```
+ToMsgp convert map[string]interface{} to json
+
+    m :=  map[string]interface{}{`buah`:123,`angka`:`dia`}
+    M.ToMsgp(m) // []byte{0x82, 0xa5, 0x61, 0x6e, 0x67, 0x6b, 0x61, 0xa3, 0x64, 0x69, 0x61, 0xa5, 0x62, 0x75, 0x61, 0x68, 0xcd, 0x7b}
+
 #### type FieldTag
 
 ```go
@@ -172,6 +182,13 @@ func (hash SB) IntoJsonPretty() (string, bool)
 ```
 convert to pretty json string with check
 
+#### func (SB) IntoMsgp
+
+```go
+func (hash SB) IntoMsgp() ([]byte, bool)
+```
+IntoMsgp convert to msgpack string with check
+
 #### func (SB) KeysConcat
 
 ```go
@@ -205,6 +222,13 @@ ToJson convert to json string, silently print error if failed
 func (hash SB) ToJsonPretty() string
 ```
 ToJsonPretty convert to pretty json string, silently print error if failed
+
+#### func (SB) ToMsgp
+
+```go
+func (hash SB) ToMsgp() []byte
+```
+ToMsgp convert to msgpack string, silently print error if failed
 
 #### type SF
 
@@ -315,6 +339,13 @@ SortedKeys get sorted keys
 func (hash SS) ToJson() string
 ```
 ToJson convert to json string, silently print error if failed
+
+#### func (SS) ToMsgp
+
+```go
+func (hash SS) ToMsgp() []byte
+```
+ToMsgp convert to msgpack string, silently print error if failed
 
 #### func (SS) ToScylla
 
@@ -487,6 +518,13 @@ func (hash SX) IntoJsonPretty() (string, bool)
 ```
 IntoJsonPretty convert to pretty json string with check
 
+#### func (SX) IntoMsgp
+
+```go
+func (hash SX) IntoMsgp() ([]byte, bool)
+```
+IntoMsgp convert to msgpack string with check
+
 #### func (SX) Keys
 
 ```go
@@ -534,6 +572,13 @@ ToJson convert to json string, silently print error if failed
 func (hash SX) ToJsonPretty() string
 ```
 ToJsonPretty convert to pretty json string, silently print error if failed
+
+#### func (SX) ToMsgp
+
+```go
+func (hash SX) ToMsgp() []byte
+```
+ToMsgp convert to msgpack string, silently print error if failed
 
 #### func (SX) ToStruct
 
