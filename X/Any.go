@@ -25,17 +25,17 @@ import (
 
 // ToU convert any data type to uint
 //
-//	var m interface{}
+//	var m any
 //	m = `123`
 //	L.ParentDescribe(X.ToI(m)) // uint(123)
-func ToU(any interface{}) uint64 {
-	if any == nil {
+func ToU(x any) uint64 {
+	if x == nil {
 		return 0
 	}
-	if val, ok := any.(uint64); ok {
+	if val, ok := x.(uint64); ok {
 		return val
 	}
-	switch v := any.(type) {
+	switch v := x.(type) {
 	case int:
 		return uint64(v)
 	case uint:
@@ -122,7 +122,7 @@ func ToU(any interface{}) uint64 {
 		if val, err := strconv.ParseFloat(string(v), 64); err == nil {
 			return uint64(val)
 		}
-		L.ParentDescribe(`Can't convert to uint64`, any)
+		L.ParentDescribe(`Can't convert to uint64`, x)
 	case string:
 		if val, err := strconv.ParseInt(v, 10, 64); err == nil {
 			return uint64(val)
@@ -130,27 +130,27 @@ func ToU(any interface{}) uint64 {
 		if val, err := strconv.ParseFloat(v, 64); err == nil {
 			return uint64(val)
 		}
-		L.ParentDescribe(`Can't convert to uint64`, any)
-	case *interface{}:
+		L.ParentDescribe(`Can't convert to uint64`, x)
+	case *any:
 		if v != nil {
 			return ToU(*v)
 		}
 	default:
-		L.ParentDescribe(`Can't convert to uint64`, any)
+		L.ParentDescribe(`Can't convert to uint64`, x)
 	}
 	return 0
 }
 
 // ToByte convert any data type to int8
 //
-//	var m interface{}
+//	var m any
 //	m = `123`
 //	L.ParentDescribe(X.ToByte(m)) // byte(123)
-func ToByte(any interface{}) byte {
-	if any == nil {
+func ToByte(x any) byte {
+	if x == nil {
 		return 0
 	}
-	switch v := any.(type) {
+	switch v := x.(type) {
 	case int:
 		return byte(v)
 	case uint:
@@ -237,7 +237,7 @@ func ToByte(any interface{}) byte {
 		if val, err := strconv.ParseFloat(string(v), 64); err == nil {
 			return byte(val)
 		}
-		L.ParentDescribe(`Can't convert to byte`, any)
+		L.ParentDescribe(`Can't convert to byte`, x)
 	case string:
 		if val, err := strconv.ParseInt(v, 10, 64); err == nil {
 			return byte(val)
@@ -245,30 +245,30 @@ func ToByte(any interface{}) byte {
 		if val, err := strconv.ParseFloat(v, 64); err == nil {
 			return byte(val)
 		}
-		L.ParentDescribe(`Can't convert to byte`, any)
-	case *interface{}:
+		L.ParentDescribe(`Can't convert to byte`, x)
+	case *any:
 		if v != nil {
 			return ToByte(*v)
 		}
 	default:
-		L.ParentDescribe(`Can't convert to byte`, any)
+		L.ParentDescribe(`Can't convert to byte`, x)
 	}
 	return 0
 }
 
 // ToI convert any data type to int64
 //
-//	var m interface{}
+//	var m any
 //	m = `123`
 //	L.ParentDescribe(X.ToI(m)) // int64(123)
-func ToI(any interface{}) int64 {
-	if any == nil {
+func ToI(x any) int64 {
+	if x == nil {
 		return 0
 	}
-	if val, ok := any.(int64); ok {
+	if val, ok := x.(int64); ok {
 		return val
 	}
-	switch v := any.(type) {
+	switch v := x.(type) {
 	case int:
 		return int64(v)
 	case uint:
@@ -353,7 +353,7 @@ func ToI(any interface{}) int64 {
 		if val, err := strconv.ParseFloat(string(v), 64); err == nil {
 			return int64(val)
 		}
-		L.ParentDescribe(`Can't convert to int64 from []byte`, any)
+		L.ParentDescribe(`Can't convert to int64 from []byte`, x)
 	case string:
 		if val, err := strconv.ParseInt(v, 10, 64); err == nil {
 			return val
@@ -361,30 +361,30 @@ func ToI(any interface{}) int64 {
 		if val, err := strconv.ParseFloat(v, 64); err == nil {
 			return int64(val)
 		}
-		L.ParentDescribe(`Can't convert to int64 from string`, any)
-	case *interface{}:
+		L.ParentDescribe(`Can't convert to int64 from string`, x)
+	case *any:
 		if v != nil {
 			return ToI(*v)
 		}
 	default:
-		L.ParentDescribe(`Can't convert to int64`, any)
+		L.ParentDescribe(`Can't convert to int64`, x)
 	}
 	return 0
 }
 
 // ToF Convert any data type to float64
 //
-//	var m interface{}
+//	var m any
 //	m = `123.5`
 //	L.ParentDescribe(X.ToF(m)) // float64(123.5)
-func ToF(any interface{}) float64 {
-	if any == nil {
+func ToF(x any) float64 {
+	if x == nil {
 		return 0
 	}
-	if val, ok := any.(float64); ok {
+	if val, ok := x.(float64); ok {
 		return val
 	}
-	switch v := any.(type) {
+	switch v := x.(type) {
 	case int:
 		return float64(v)
 	case int8:
@@ -466,38 +466,38 @@ func ToF(any interface{}) float64 {
 		if val, err := strconv.ParseFloat(string(v), 64); err == nil {
 			return val
 		}
-		L.ParentDescribe(`Can't convert to float64`, any)
+		L.ParentDescribe(`Can't convert to float64`, x)
 	case string:
 		if val, err := strconv.ParseFloat(v, 64); err == nil {
 			return val
 		}
-		L.ParentDescribe(`Can't convert to float64`, any)
-	case *interface{}:
+		L.ParentDescribe(`Can't convert to float64`, x)
+	case *any:
 		if v != nil {
 			return ToF(*v)
 		}
 	default:
-		L.ParentDescribe(`Can't convert to float64`, any)
+		L.ParentDescribe(`Can't convert to float64`, x)
 	}
 	return 0
 }
 
 // ToS convert any data type to string
 //
-//	var m interface{}
+//	var m any
 //	m = `123`
 //	L.ParentDescribe(X.ToS(m)) // `123`
-func ToS(any interface{}) string {
-	if any == nil {
+func ToS(x any) string {
+	if x == nil {
 		return ``
 	}
-	if val, ok := any.(string); ok {
+	if val, ok := x.(string); ok {
 		return val
 	}
-	if val, ok := any.([]byte); ok {
+	if val, ok := x.([]byte); ok {
 		return string(val)
 	}
-	switch v := any.(type) {
+	switch v := x.(type) {
 	case int:
 		return strconv.FormatInt(int64(v), 10)
 	case int8:
@@ -580,7 +580,7 @@ func ToS(any interface{}) string {
 			return ``
 		}
 		return v.String()
-	case *interface{}:
+	case *any:
 		if v != nil {
 			return ToS(*v)
 		}
@@ -591,11 +591,11 @@ func ToS(any interface{}) string {
 }
 
 // ToTime convert any to time
-func ToTime(any interface{}) time.Time {
-	if any == nil {
+func ToTime(x any) time.Time {
+	if x == nil {
 		return time.Time{}
 	}
-	switch v := any.(type) {
+	switch v := x.(type) {
 	case time.Time:
 		return v
 	case *time.Time:
@@ -604,40 +604,40 @@ func ToTime(any interface{}) time.Time {
 		}
 	case []byte: // "YYYY-MM-DD HH:MM:SS.MMMMMM"
 		res, err := parseDateTime(v, time.UTC)
-		L.IsError(err, `Can't convert to time.Time from []byte`, any)
+		L.IsError(err, `Can't convert to time.Time from []byte`, x)
 		return res
 	case string: // "YYYY-MM-DD HH:MM:SS.MMMMMM"
 		res, err := parseDateTime([]byte(v), time.UTC)
-		L.IsError(err, `Can't convert to time.Time from string`, any)
+		L.IsError(err, `Can't convert to time.Time from string`, x)
 		return res
 	case *[]byte: // "YYYY-MM-DD HH:MM:SS.MMMMMM"
 		if v != nil {
 			res, err := parseDateTime(*v, time.UTC)
-			L.IsError(err, `Can't convert to time.Time from []byte`, any)
+			L.IsError(err, `Can't convert to time.Time from []byte`, x)
 			return res
 		}
 	case *string: // "YYYY-MM-DD HH:MM:SS.MMMMMM"
 		if v != nil {
 			res, err := parseDateTime([]byte(*v), time.UTC)
-			L.IsError(err, `Can't convert to time.Time from []byte`, any)
+			L.IsError(err, `Can't convert to time.Time from []byte`, x)
 			return res
 		}
-	case *interface{}:
+	case *any:
 		if v != nil {
 			return ToTime(*v)
 		}
 	default:
-		L.CheckIf(false, `Can't convert to time.Time`, any)
+		L.CheckIf(false, `Can't convert to time.Time`, x)
 	}
 	return time.Time{}
 }
 
 // ToBool convert any data type to bool
 //
-//	var m interface{}
+//	var m any
 //	m = `123`
 //	L.ParentDescribe(X.ToBool(m)) // bool(true)
-func ToBool(any interface{}) bool {
+func ToBool(any any) bool {
 	if any == nil {
 		return false
 	}
@@ -733,26 +733,26 @@ func ToBool(any interface{}) bool {
 
 // ToArr convert any data type to array of any
 //
-//	var m3 interface{}
-//	m3 = []interface{}{1}   // tipe array
+//	var m3 any
+//	m3 = []any{1}   // tipe array
 //	L.ParentDescribe(X.ToArr(m3)) // []interface {}{int(1),}
-func ToArr(any interface{}) []interface{} {
-	if any == nil {
-		return []interface{}{}
+func ToArr(x any) []any {
+	if x == nil {
+		return []any{}
 	}
-	val, ok := any.([]interface{})
-	if L.CheckIf(!ok, `Can't convert to []interface{}`, any) {
-		return []interface{}{}
+	val, ok := x.([]any)
+	if L.CheckIf(!ok, `Can't convert to []any`, x) {
+		return []any{}
 	}
 	return val
 }
 
 // ArrToStrArr convert array of any data type to array of string
 //
-//	var m4 []interface{}
-//	m4 = []interface{}{1}     // // tipe array
+//	var m4 []any
+//	m4 = []any{1}     // // tipe array
 //	L.ParentDescribe(X.ArrToStrArr(m4)) // []string{"1"}
-func ArrToStrArr(any_arr []interface{}) []string {
+func ArrToStrArr(any_arr []any) []string {
 	res := []string{}
 	for _, val := range any_arr {
 		res = append(res, ToS(val))
@@ -762,10 +762,10 @@ func ArrToStrArr(any_arr []interface{}) []string {
 
 // ArrToIntArr Convert array of any data type to array of int64
 //
-//	var m4 []interface{}
-//	m4 = []interface{}{1}     // // tipe array
+//	var m4 []any
+//	m4 = []any{1}     // // tipe array
 //	L.ParentDescribe(X.ArrToIntArr(m4)) // []int64{1}
-func ArrToIntArr(any_arr []interface{}) []int64 {
+func ArrToIntArr(any_arr []any) []int64 {
 	res := []int64{}
 	for _, val := range any_arr {
 		res = append(res, ToI(val))
@@ -791,7 +791,7 @@ func json5fromMIB(orig map[int64]bool) string {
 	return b.String()
 }
 
-func json5fromMIX(orig map[int64]interface{}) string {
+func json5fromMIX(orig map[int64]any) string {
 	b := bytes.Buffer{}
 	b.WriteByte('{')
 	first := true
@@ -809,7 +809,7 @@ func json5fromMIX(orig map[int64]interface{}) string {
 	return b.String()
 }
 
-func json5fromMIAX(orig map[int64][]interface{}) string {
+func json5fromMIAX(orig map[int64][]any) string {
 	b := bytes.Buffer{}
 	b.WriteByte('{')
 	first := true
@@ -827,7 +827,7 @@ func json5fromMIAX(orig map[int64][]interface{}) string {
 	return b.String()
 }
 
-func json5fromMSAX(orig map[string][]interface{}) string {
+func json5fromMSAX(orig map[string][]any) string {
 	b := bytes.Buffer{}
 	b.WriteByte('{')
 	first := true
@@ -890,22 +890,34 @@ func json5fromMSI(orig map[string]int64) string {
 }
 
 // ToJson5 convert to json5
-func ToJson5(any interface{}) string {
-	// bug when using map[int64]interface{}
-	if any == nil {
+func ToJson5(x any) string {
+	// bug when using map[int64]any
+	if x == nil {
 		return `''`
 	}
-	switch orig := any.(type) {
+	switch orig := x.(type) {
 	case bytes.Buffer: // return as is
 		return orig.String()
 	case string:
 		return S.ZJJ(orig)
 	case []byte:
 		return S.ZJJ(string(orig))
-	case int, int64, int32:
-		return I.ToS(any.(int64))
-	case float32, float64:
-		return F.ToS(any.(float64))
+	case int:
+		return I.ToStr(orig)
+	case int64:
+		return I.ToS(orig)
+	case int32:
+		return I.ToS(int64(orig))
+	case uint:
+		return I.UToStr(orig)
+	case uint64:
+		return I.UToS(orig)
+	case uint32:
+		return I.UToS(uint64(orig))
+	case float32:
+		return F.ToS(float64(orig))
+	case float64:
+		return F.ToS(orig)
 	case bool:
 		return B.ToS(orig)
 	case M.IB:
@@ -914,19 +926,19 @@ func ToJson5(any interface{}) string {
 		return json5fromMIB(orig)
 	case M.IX:
 		return json5fromMIX(orig)
-	case map[int64]interface{}:
+	case map[int64]any:
 		return json5fromMIX(orig)
 	case M.IAX:
 		return json5fromMIAX(orig)
-	case map[int64][]interface{}:
+	case map[int64][]any:
 		return json5fromMIAX(orig)
 	case M.SAX:
 		return json5fromMSAX(orig)
-	case map[string][]interface{}:
+	case map[string][]any:
 		return json5fromMSAX(orig)
 	case M.SX:
 		return orig.ToJson()
-	case map[string]interface{}:
+	case map[string]any:
 		return M.ToJson(orig)
 	//   return any.(M.SX).ToJson()
 	case M.SI:
@@ -935,11 +947,11 @@ func ToJson5(any interface{}) string {
 		return json5fromMSI(orig)
 	case A.X:
 		return A.ToJson(orig)
-	case []interface{}:
+	case []any:
 		return A.ToJson(orig)
 	default:
-		str, err := json.Marshal(any)
-		L.IsError(err, `X.ToJson5 failed`, any)
+		str, err := json.Marshal(x)
+		L.IsError(err, `X.ToJson5 failed`, x)
 		return string(str)
 	}
 	// TODO: add more types (M/A) here, do not EVER TRY to use reflection in this case
@@ -955,45 +967,45 @@ func ToJson5(any interface{}) string {
 //	//   23,
 //	//   "wabcd"
 //	// ]
-func ToJsonPretty(any interface{}) string {
+func ToJsonPretty(any any) string {
 	res, err := json.MarshalIndent(any, ``, `  `)
 	L.IsError(err, `X.ToJsonPretty failed`, any)
 	return string(res)
 }
 
 // ToJson convert to standard json text
-func ToJson(any interface{}) string {
+func ToJson(any any) string {
 	res, err := json.Marshal(any)
 	L.IsError(err, `X.ToJson failed`, any)
 	return string(res)
 }
 
-// ToAX  convert to []interface{}
-func ToAX(any interface{}) A.X {
-	if any == nil {
+// ToAX  convert to []any
+func ToAX(x any) A.X {
+	if x == nil {
 		return A.X{}
 	}
-	val, ok := any.([]interface{})
-	if L.CheckIf(!ok, `Can't convert to A.X`, any) {
+	val, ok := x.([]any)
+	if L.CheckIf(!ok, `Can't convert to A.X`, x) {
 		return A.X{}
 	}
 	return val
 }
 
-// ToMSX convert to map[string]interface{}
-func ToMSX(any interface{}) M.SX {
-	if any == nil {
+// ToMSX convert to map[string]any
+func ToMSX(x any) M.SX {
+	if x == nil {
 		return M.SX{}
 	}
-	val, ok := any.(map[string]interface{})
-	if L.CheckIf(!ok, `Can't convert to M.SX`, any) {
+	val, ok := x.(map[string]any)
+	if L.CheckIf(!ok, `Can't convert to M.SX`, x) {
 		return M.SX{}
 	}
 	return val
 }
 
 // ToMSS convert to map[string]string
-func ToMSS(any interface{}) M.SS {
+func ToMSS(any any) M.SS {
 	if any == nil {
 		return M.SS{}
 	}
@@ -1005,7 +1017,7 @@ func ToMSS(any interface{}) M.SS {
 }
 
 // ToYaml convert to yaml text
-func ToYaml(any interface{}) string {
+func ToYaml(any any) string {
 	bytes, err := yaml.Marshal(any)
 	L.IsError(err, `yaml.Marshal`, any)
 	return string(bytes)

@@ -14,9 +14,10 @@ import (
 	"time"
 
 	"github.com/fatih/color"
-	"github.com/kokizzu/gotro/I"
 	"github.com/kr/pretty"
 	"github.com/op/go-logging"
+
+	"github.com/kokizzu/gotro/I"
 )
 
 var LOG *logging.Logger
@@ -31,7 +32,7 @@ var CPU_PERCENT, RAM_PERCENT float64
 var LAST_CPU_CALL, LAST_RAM_CALL int64
 var TIMETRACK_MIN_DURATION float64
 
-var BgRed, BgGreen (func(format string, a ...interface{}) string)
+var BgRed, BgGreen (func(format string, a ...any) string)
 
 const WebBR = "\n<br/>"
 
@@ -147,7 +148,7 @@ func StackTrace(start int) string {
 }
 
 // IsError print error
-func IsError(err error, msg string, args ...interface{}) bool {
+func IsError(err error, msg string, args ...any) bool {
 	if err == nil {
 		return false
 	}
@@ -164,7 +165,7 @@ func IsError(err error, msg string, args ...interface{}) bool {
 }
 
 // CheckIf print error
-func CheckIf(is_err bool, msg string, args ...interface{}) bool {
+func CheckIf(is_err bool, msg string, args ...any) bool {
 	if !is_err {
 		return false
 	}
@@ -181,7 +182,7 @@ func CheckIf(is_err bool, msg string, args ...interface{}) bool {
 }
 
 // Describe pretty print any variable
-func Describe(args ...interface{}) {
+func Describe(args ...any) {
 	pc, file, line, _ := runtime.Caller(1)
 	prefix := ``
 	if len(file) >= len(FILE_PATH) {
@@ -198,7 +199,7 @@ func Describe(args ...interface{}) {
 }
 
 // ParentDescribe describe anything
-func ParentDescribe(args ...interface{}) {
+func ParentDescribe(args ...any) {
 	pc, file, line, _ := runtime.Caller(2)
 	prefix := ``
 	if len(file) >= len(FILE_PATH) {
@@ -215,7 +216,7 @@ func ParentDescribe(args ...interface{}) {
 }
 
 // Print replacement for fmt.Println, gives line number
-func Print(any ...interface{}) {
+func Print(any ...any) {
 	_, file, line, _ := runtime.Caller(1)
 	str := color.CyanString(file[len(FILE_PATH):] + `:` + I.ToStr(line) + `: `)
 	LOG.Debug(strings.Replace(str, `%`, `%%`, -1))
@@ -223,7 +224,7 @@ func Print(any ...interface{}) {
 }
 
 // PrintParent print but show grandparent caller function
-func PrintParent(any ...interface{}) {
+func PrintParent(any ...any) {
 	_, file, line, _ := runtime.Caller(2)
 	str := color.CyanString(file[len(FILE_PATH):] + `:` + I.ToStr(line) + `: `)
 	LOG.Debug(strings.Replace(str, `%`, `%%`, -1))
@@ -231,7 +232,7 @@ func PrintParent(any ...interface{}) {
 }
 
 // PanicIf print error message and exit program
-func PanicIf(err error, msg string, args ...interface{}) {
+func PanicIf(err error, msg string, args ...any) {
 	if err == nil {
 		return
 	}

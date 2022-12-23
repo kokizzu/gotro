@@ -34,7 +34,7 @@ func NewRamCache(dur time.Duration, sizeMB int) *RamCache {
 	return res
 }
 
-func (r *RamCache) Set(key string, value interface{}) {
+func (r *RamCache) Set(key string, value any) {
 	suffix := r.secondSuffix()
 	if r.evictionLogic != nil && r.evictionLogic.Set(key+suffix, []byte{1}) == nil {
 		r.store.Set(key+suffix, value)
@@ -43,10 +43,10 @@ func (r *RamCache) Set(key string, value interface{}) {
 
 func (r *RamCache) ClearAll() {
 	r.store.Clear()
-	r.evictionLogic.Reset()
+	L.IsError(r.evictionLogic.Reset(), `RamCache.ClearAll`)
 }
 
-func (r *RamCache) Get(key string) interface{} {
+func (r *RamCache) Get(key string) any {
 	res, ok := r.store.Get(key + r.secondSuffix())
 	if !ok {
 		return nil
@@ -57,7 +57,7 @@ func (r *RamCache) Get(key string) interface{} {
 func (r *RamCache) Delete(k string) {
 	suffix := r.secondSuffix()
 	r.store.Remove(k + suffix)
-	r.evictionLogic.Delete(k + suffix)
+	L.IsError(r.evictionLogic.Delete(k+suffix), `RamCache.Delete`)
 }
 
 // force evict every n seconds

@@ -256,7 +256,7 @@ func GPlusExchangeInfo(provider *oauth2.Config, gets *W.QueryParams) (W.Ajax, er
 }
 
 // 2016-11-04 Prayogo, when using facebook SDK (2.8+)
-func CheckFacebook(posts *W.QueryParams) (map[string]interface{}, error) {
+func CheckFacebook(posts *W.QueryParams) (map[string]any, error) {
   fb.Version = FB_API_VER
   return fb.Get(`/`+posts.GetStr(`userID`), fb.Params{
     `fields`:       `name,email,birthday,gender,hometown,languages,location,religion,picture`,

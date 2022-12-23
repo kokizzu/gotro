@@ -18,7 +18,7 @@ function T(sql_statement)
 end
 */
 
-func (a *Adapter) ExecSql(query string, parameters ...MSX) map[interface{}]interface{} {
+func (a *Adapter) ExecSql(query string, parameters ...MSX) map[any]any {
 	// https://www.tarantool.io/en/doc/latest/reference/reference_lua/box_sql/#box-sql-box-execute
 	params := A.X{query}
 	for _, v := range parameters {
@@ -31,13 +31,13 @@ func (a *Adapter) ExecSql(query string, parameters ...MSX) map[interface{}]inter
 		//L.DescribeSql(query, parameters)
 		L.Describe(parameters)
 		//tracer.PanicOnDev(err)
-		return map[interface{}]interface{}{`error`: err.Error()}
+		return map[any]any{`error`: err.Error()}
 	}
 	tup := res.Tuples()
 	if len(tup) > 0 {
 		if len(tup[0]) > 0 {
 			if tup[0][0] != nil {
-				kv, ok := tup[0][0].(map[interface{}]interface{})
+				kv, ok := tup[0][0].(map[any]any)
 				// row_count for UPDATE
 				// metadata, rows for SELECT
 				if ok {
@@ -56,22 +56,22 @@ func (a *Adapter) ExecSql(query string, parameters ...MSX) map[interface{}]inter
 				L.Describe(query)
 				L.Describe(parameters)
 				//tracer.PanicOnDev(errors.New(errStr))
-				return map[interface{}]interface{}{`error`: tup[1][0]}
+				return map[any]any{`error`: tup[1][0]}
 			}
 		}
 	}
-	return map[interface{}]interface{}{}
+	return map[any]any{}
 }
 
-func (a *Adapter) QuerySql(query string, callback func(row []interface{}), parameters ...MSX) []interface{} {
+func (a *Adapter) QuerySql(query string, callback func(row []any), parameters ...MSX) []any {
 	if DebugPerf {
 		defer L.TimeTrack(time.Now(), query)
 	}
 	kv := a.ExecSql(query, parameters...)
-	rows, ok := kv[`rows`].([]interface{})
+	rows, ok := kv[`rows`].([]any)
 	if ok {
 		for _, v := range rows {
-			callback(v.([]interface{}))
+			callback(v.([]any))
 		}
 		return rows
 	}

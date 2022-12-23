@@ -122,7 +122,7 @@ const LoadTestRead_Url = `/LoadTestRead`
 
 func (d *Domain) LoadTestRead(_ *LoadTestRead_In) (out LoadTestRead_Out) {
 	user := rqAuth.NewUsers(d.Taran)
-	user.Id = userIds[rand.Intn(len(userIds)]
+	user.Id = userIds[rand.Intn(len(userIds))]
 	user.FindById()
 	out.User = *user
 	return

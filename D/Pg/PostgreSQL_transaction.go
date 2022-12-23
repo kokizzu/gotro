@@ -5,11 +5,12 @@ import (
 	"time"
 
 	"github.com/jmoiron/sqlx"
+	"github.com/kokizzu/gotro/W"
+
 	"github.com/kokizzu/gotro/I"
 	"github.com/kokizzu/gotro/L"
 	"github.com/kokizzu/gotro/M"
 	"github.com/kokizzu/gotro/S"
-	"github.com/kokizzu/gotro/W"
 	"github.com/kokizzu/gotro/X"
 )
 
@@ -18,7 +19,7 @@ type Tx struct {
 }
 
 // query 2 colums of integer-integer as map
-func (tx *Tx) QIntIntMap(query string, params ...interface{}) M.II {
+func (tx *Tx) QIntIntMap(query string, params ...any) M.II {
 	res := M.II{}
 	rows := tx.QAll(query, params...)
 	defer rows.Close()
@@ -32,7 +33,7 @@ func (tx *Tx) QIntIntMap(query string, params ...interface{}) M.II {
 }
 
 // query 2 colums of integer-string as map
-func (tx *Tx) QIntStrMap(query string, params ...interface{}) M.IS {
+func (tx *Tx) QIntStrMap(query string, params ...any) M.IS {
 	res := M.IS{}
 	rows := tx.QAll(query, params...)
 	defer rows.Close()
@@ -47,7 +48,7 @@ func (tx *Tx) QIntStrMap(query string, params ...interface{}) M.IS {
 
 // query 1 colums of string as map
 // SELECT unique_id
-func (tx *Tx) QStrBoolMap(query string, params ...interface{}) M.SB {
+func (tx *Tx) QStrBoolMap(query string, params ...any) M.SB {
 	res := M.SB{}
 	rows := tx.QAll(query, params...)
 	defer rows.Close()
@@ -60,7 +61,7 @@ func (tx *Tx) QStrBoolMap(query string, params ...interface{}) M.SB {
 }
 
 // query single column int64, return with true value
-func (tx *Tx) QIntBoolMap(query string, params ...interface{}) M.IB {
+func (tx *Tx) QIntBoolMap(query string, params ...any) M.IB {
 	res := M.IB{}
 	rows := tx.QAll(query, params...)
 	defer rows.Close()
@@ -73,7 +74,7 @@ func (tx *Tx) QIntBoolMap(query string, params ...interface{}) M.IB {
 }
 
 // query 2 colums of string-string as map
-func (tx *Tx) QStrStrMap(query string, params ...interface{}) M.SS {
+func (tx *Tx) QStrStrMap(query string, params ...any) M.SS {
 	res := M.SS{}
 	rows := tx.QAll(query, params...)
 	defer rows.Close()
@@ -87,7 +88,7 @@ func (tx *Tx) QStrStrMap(query string, params ...interface{}) M.SS {
 }
 
 // query 1+N colums of string-[]any as map
-func (tx *Tx) QStrArrMap(query string, params ...interface{}) M.SAX {
+func (tx *Tx) QStrArrMap(query string, params ...any) M.SAX {
 	res := M.SAX{}
 	rows := tx.QAll(query, params...)
 	defer rows.Close()
@@ -99,7 +100,7 @@ func (tx *Tx) QStrArrMap(query string, params ...interface{}) M.SAX {
 }
 
 // query 2 colums of string-integer as map
-func (tx *Tx) QStrIntMap(query string, params ...interface{}) M.SI {
+func (tx *Tx) QStrIntMap(query string, params ...any) M.SI {
 	res := M.SI{}
 	rows := tx.QAll(query, params...)
 	defer rows.Close()
@@ -113,7 +114,7 @@ func (tx *Tx) QStrIntMap(query string, params ...interface{}) M.SI {
 }
 
 // query 1 colums of integer
-func (tx *Tx) QIntCountMap(query string, params ...interface{}) M.II {
+func (tx *Tx) QIntCountMap(query string, params ...any) M.II {
 	res := M.II{}
 	rows := tx.QAll(query, params...)
 	defer rows.Close()
@@ -126,7 +127,7 @@ func (tx *Tx) QIntCountMap(query string, params ...interface{}) M.II {
 }
 
 // query 1 colums of string
-func (tx *Tx) QStrCountMap(query string, params ...interface{}) M.SI {
+func (tx *Tx) QStrCountMap(query string, params ...any) M.SI {
 	res := M.SI{}
 	rows := tx.QAll(query, params...)
 	defer rows.Close()
@@ -139,7 +140,7 @@ func (tx *Tx) QStrCountMap(query string, params ...interface{}) M.SI {
 }
 
 // query 1 colums of integer
-func (tx *Tx) QIntArr(query string, params ...interface{}) []int64 {
+func (tx *Tx) QIntArr(query string, params ...any) []int64 {
 	res := []int64{}
 	rows := tx.QAll(query, params...)
 	defer rows.Close()
@@ -152,7 +153,7 @@ func (tx *Tx) QIntArr(query string, params ...interface{}) []int64 {
 }
 
 // query one cell [1,2,3,...] and return array of int64
-func (tx *Tx) QJsonIntArr(query string, params ...interface{}) []int64 {
+func (tx *Tx) QJsonIntArr(query string, params ...any) []int64 {
 	str := tx.QStr(query, params...)
 	ax := S.JsonToArr(str)
 	ai := []int64{}
@@ -163,7 +164,7 @@ func (tx *Tx) QJsonIntArr(query string, params ...interface{}) []int64 {
 }
 
 // query 1 colums of string
-func (tx *Tx) QStrArr(query string, params ...interface{}) []string {
+func (tx *Tx) QStrArr(query string, params ...any) []string {
 	res := []string{}
 	rows := tx.QAll(query, params...)
 	defer rows.Close()
@@ -176,7 +177,7 @@ func (tx *Tx) QStrArr(query string, params ...interface{}) []string {
 }
 
 // do query all, also calls DoPrepare, don't forget to close the rows
-func (tx *Tx) QAll(query string, params ...interface{}) (rows Records) {
+func (tx *Tx) QAll(query string, params ...any) (rows Records) {
 	var start time.Time
 	if DEBUG {
 		start = time.Now()
@@ -192,7 +193,7 @@ func (tx *Tx) QAll(query string, params ...interface{}) (rows Records) {
 }
 
 // execute a select single value query, convert to string
-func (tx *Tx) QStr(query string, params ...interface{}) (dest string) {
+func (tx *Tx) QStr(query string, params ...any) (dest string) {
 	err := tx.Trans.Get(&dest, query, params...)
 	L.PanicIf(err, `failed to QStr: %s %# v`, query, params)
 	return
@@ -216,10 +217,7 @@ func (tx *Tx) QExists(table string, id int64) bool {
 	id_str := I.ToS(id)
 	query := `SELECT COUNT(*) FROM ` + table + ` WHERE id = ` + id_str
 	count := tx.QInt(query)
-	if count == 0 {
-		return false
-	}
-	return true
+	return count != 0
 }
 
 // return non-empty string if id exists
@@ -236,7 +234,7 @@ func (tx *Tx) QUniq(table string, id int64) (uniq string) {
 }
 
 // execute a select pair value query, convert to int64 and string
-func (tx *Tx) QIntStr(query string, params ...interface{}) (i int64, s string) {
+func (tx *Tx) QIntStr(query string, params ...any) (i int64, s string) {
 	rows := tx.QAll(query, params...)
 	defer rows.Close()
 	for rows.Next() {
@@ -247,7 +245,7 @@ func (tx *Tx) QIntStr(query string, params ...interface{}) (i int64, s string) {
 }
 
 // execute a select pair value query, convert to string and int
-func (tx *Tx) QStrInt(query string, params ...interface{}) (s string, i int64) {
+func (tx *Tx) QStrInt(query string, params ...any) (s string, i int64) {
 	rows := tx.QAll(query, params...)
 	defer rows.Close()
 	for rows.Next() {
@@ -258,7 +256,7 @@ func (tx *Tx) QStrInt(query string, params ...interface{}) (s string, i int64) {
 }
 
 // execute a select pair value query, convert to string and string
-func (tx *Tx) QStrStr(query string, params ...interface{}) (s string, ss string) {
+func (tx *Tx) QStrStr(query string, params ...any) (s string, ss string) {
 	rows := tx.QAll(query, params...)
 	defer rows.Close()
 	for rows.Next() {
@@ -269,13 +267,13 @@ func (tx *Tx) QStrStr(query string, params ...interface{}) (s string, ss string)
 }
 
 // execute a select single value query, convert to int64
-func (tx *Tx) QInt(query string, params ...interface{}) (dest int64) {
+func (tx *Tx) QInt(query string, params ...any) (dest int64) {
 	err := tx.Trans.Get(&dest, query, params...)
 	L.PanicIf(err, `failed to QInt: %s %# v`, query, params)
 	return
 }
 
-func (tx *Tx) QFloat(query string, params ...interface{}) (dest float64) {
+func (tx *Tx) QFloat(query string, params ...any) (dest float64) {
 	err := tx.Trans.Get(&dest, query, params...)
 	L.PanicIf(err, `failed to QFloat: %s %# v`, query, params)
 	return
@@ -307,7 +305,7 @@ func (tx *Tx) QBaseUniq(table, uid string) (base Base) {
 }
 
 // execute anything that doesn't need LastInsertId or RowsAffected
-func (tx *Tx) DoExec(query string, params ...interface{}) sql.Result {
+func (tx *Tx) DoExec(query string, params ...any) sql.Result {
 	res, err := tx.Trans.Exec(query, params...)
 	L.PanicIf(err, query)
 	return res
@@ -495,7 +493,7 @@ func (tx *Tx) DataJsonMapIdAndIsDeleted_ByUniq(table, unique_id string) (res M.S
 }
 
 // query any number of columns, returns first line of line
-func (db *Tx) QFirstMap(query string, params ...interface{}) M.SX {
+func (db *Tx) QFirstMap(query string, params ...any) M.SX {
 	rows := db.QAll(query)
 	defer rows.Close()
 	for rows.Next() {

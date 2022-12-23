@@ -39,7 +39,7 @@ type RequestCommon struct {
 	Host          string            `json:"host" form:"host" query:"host" long:"host" msg:"host"`
 }
 
-func (l *RequestCommon) ToFiberCtx(ctx *fiber.Ctx, out interface{}) error {
+func (l *RequestCommon) ToFiberCtx(ctx *fiber.Ctx, out any) error {
 	defer l.deleteTempFiles()
 	switch l.OutputFormat {
 	case ``, `json`, fiber.MIMEApplicationJSON:
@@ -93,7 +93,7 @@ func (l *RequestCommon) FromFiberCtx(ctx *fiber.Ctx, tracerCtx context.Context) 
 	l.TracerContext = tracerCtx
 }
 
-func (l *RequestCommon) ToCli(file *os.File, out interface{}) {
+func (l *RequestCommon) ToCli(file *os.File, out any) {
 	defer l.deleteTempFiles()
 	switch l.OutputFormat {
 	case ``, `json`, fiber.MIMEApplicationJSON:
@@ -131,11 +131,11 @@ func (l *RequestCommon) deleteTempFiles() {
 }
 
 type ResponseCommon struct {
-	SessionToken string      `json:"sessionToken" form:"sessionToken" query:"sessionToken" long:"sessionToken" msg:"sessionToken"`
-	Error        string      `json:"error" form:"error" query:"error" long:"error" msg:"error"`
-	StatusCode   int         `json:"status" form:"statusCode" query:"statusCode" long:"statusCode" msg:"statusCode"`
-	Debug        interface{} `json:"debug,omitempty" form:"debug" query:"debug" long:"debug" msg:"debug"`
-	Redirect     string      `json:"redirect,omitempty" form:"redirect" query:"redirect" long:"redirect" msg:"redirect"`
+	SessionToken string `json:"sessionToken" form:"sessionToken" query:"sessionToken" long:"sessionToken" msg:"sessionToken"`
+	Error        string `json:"error" form:"error" query:"error" long:"error" msg:"error"`
+	StatusCode   int    `json:"status" form:"statusCode" query:"statusCode" long:"statusCode" msg:"statusCode"`
+	Debug        any    `json:"debug,omitempty" form:"debug" query:"debug" long:"debug" msg:"debug"`
+	Redirect     string `json:"redirect,omitempty" form:"redirect" query:"redirect" long:"redirect" msg:"redirect"`
 }
 
 func (o *ResponseCommon) HasError() bool {
@@ -152,7 +152,7 @@ func (o *ResponseCommon) SetError(code int, errStr string) {
 	o.Error = errStr
 }
 
-func (l *ResponseCommon) ToFiberCtx(ctx *fiber.Ctx, inRc *RequestCommon, in interface{}) {
+func (l *ResponseCommon) ToFiberCtx(ctx *fiber.Ctx, inRc *RequestCommon, in any) {
 	if l.SessionToken != `` {
 		if l.SessionToken == conf.CookieLogoutValue {
 			ctx.ClearCookie(conf.CookieName)
@@ -168,7 +168,8 @@ func (l *ResponseCommon) ToFiberCtx(ctx *fiber.Ctx, inRc *RequestCommon, in inte
 		res := ctx.Response()
 		res.SetStatusCode(l.StatusCode)
 		if l.Redirect != `` {
-			ctx.Redirect(l.Redirect)
+			err := ctx.Redirect(l.Redirect)
+			L.IsError(err, `ResponseCommon.ToFiberCtx.Redirect failed: `+l.Redirect)
 		}
 	}
 	if inRc.Debug {

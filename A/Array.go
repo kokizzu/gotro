@@ -18,7 +18,7 @@ import (
 //
 //	v := A.X{}
 //	v = append(v, any_value)
-type X []interface{}
+type X []any
 
 // MSX array (slice) of map with string key and any value
 //
@@ -27,13 +27,13 @@ type X []interface{}
 //	  `foo`: 123,
 //	  `bar`: `yay`,
 //	})
-type MSX []map[string]interface{}
+type MSX []map[string]any
 
 // ToJson convert map array of string to JSON string type
 //
-//	m := []interface{}{123,`abc`}
+//	m := []any{123,`abc`}
 //	L.Print(A.ToJson(m)) // [123,"abc"]
-func ToJson(arr []interface{}) string {
+func ToJson(arr []any) string {
 	str, err := json.Marshal(arr)
 	L.IsError(err, `Slice.ToJson failed`, arr)
 	return string(str)
@@ -41,9 +41,9 @@ func ToJson(arr []interface{}) string {
 
 // ToMsgp convert map array of string to MsgPack string type
 //
-//	m := []interface{}{123,`abc`}
+//	m := []any{123,`abc`}
 //	L.Print(string(A.ToMsgp(m))) // �{�abc
-func ToMsgp(arr []interface{}) []byte {
+func ToMsgp(arr []any) []byte {
 	str, err := msgpack.Marshal(arr)
 	L.IsError(err, `Slice.ToMsgp failed`, arr)
 	return str

@@ -24,9 +24,9 @@ func TestParseStruct(t *testing.T) {
 	}
 
 	type Test1 struct {
-		StrVal       string      `json:"str,omitempty" ion:"foo"`
-		IntValue     int         `json:"int,omitempty" ion:"bar"`
-		WhateverItIs interface{} `json:"whatever"`
+		StrVal       string `json:"str,omitempty" ion:"foo"`
+		IntValue     int    `json:"int,omitempty" ion:"bar"`
+		WhateverItIs any    `json:"whatever"`
 		private      float32
 		Byte         byte
 		I8           int8
@@ -44,7 +44,7 @@ func TestParseStruct(t *testing.T) {
 		PI64     *int64
 		PF64     *float64
 		IntSlice []int
-		SX       map[string]interface{}
+		SX       map[string]any
 		Bool     bool
 	}
 
@@ -79,7 +79,7 @@ func TestParseStruct(t *testing.T) {
 			PI64:     &i64,
 			PF64:     &f64,
 			IntSlice: []int{1, 2, 3},
-			SX: map[string]interface{}{
+			SX: map[string]any{
 				`a`: 1,
 				`b`: 2,
 			},
@@ -194,7 +194,7 @@ func TestParseStruct(t *testing.T) {
 			"PF64": valast.Addr(67.8).(*float64),
 			"PI64": valast.Addr(int64(567)).(*int64),
 			"Rune": 114,
-			"SX": map[string]interface{}{
+			"SX": map[string]any{
 				"a": 1,
 				"b": 2,
 			},
@@ -236,7 +236,7 @@ func TestParseStruct(t *testing.T) {
 				2,
 				3,
 			},
-			SX: map[string]interface{}{
+			SX: map[string]any{
 				"a": 1,
 				"b": 2,
 			},
@@ -381,7 +381,7 @@ func TestParseStruct(t *testing.T) {
 			"pi_64":   valast.Addr(int64(567)).(*int64),
 			"rune":    114,
 			"str_val": "1",
-			"sx": map[string]interface{}{
+			"sx": map[string]any{
 				"a": 1,
 				"b": 2,
 			},
@@ -422,7 +422,7 @@ func TestParseStruct(t *testing.T) {
 				2,
 				3,
 			},
-			SX: map[string]interface{}{
+			SX: map[string]any{
 				"a": 1,
 				"b": 2,
 			},
@@ -534,7 +534,7 @@ func TestParseStruct(t *testing.T) {
 			"pF64": valast.Addr(67.8).(*float64),
 			"pI64": valast.Addr(int64(567)).(*int64),
 			"rune": 114,
-			"sX": map[string]interface{}{
+			"sX": map[string]any{
 				"a": 1,
 				"b": 2,
 			},
@@ -576,7 +576,7 @@ func TestParseStruct(t *testing.T) {
 				2,
 				3,
 			},
-			SX: map[string]interface{}{
+			SX: map[string]any{
 				"a": 1,
 				"b": 2,
 			},
@@ -795,7 +795,7 @@ func TestParseStruct(t *testing.T) {
 			"PF64": valast.Addr(67.8).(*float64),
 			"PI64": valast.Addr(int64(567)).(*int64),
 			"Rune": 114,
-			"SX": map[string]interface{}{
+			"SX": map[string]any{
 				"a": 1,
 				"b": 2,
 			},
@@ -837,7 +837,7 @@ func TestParseStruct(t *testing.T) {
 				2,
 				3,
 			},
-			SX: map[string]interface{}{
+			SX: map[string]any{
 				"a": 1,
 				"b": 2,
 			},

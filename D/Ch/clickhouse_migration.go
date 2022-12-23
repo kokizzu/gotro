@@ -7,7 +7,7 @@ import (
 
 const DEBUG = true
 
-func Descr(args ...interface{}) {
+func Descr(args ...any) {
 	if DEBUG {
 		L.ParentDescribe(args...)
 	}

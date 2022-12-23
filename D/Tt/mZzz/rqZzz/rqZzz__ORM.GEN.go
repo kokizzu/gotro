@@ -84,7 +84,7 @@ func (z *Zzz) sqlCreatedAt() string { //nolint:dupl false positive
 }
 
 func (z *Zzz) ToArray() A.X { //nolint:dupl false positive
-	var id interface{} = nil
+	var id any = nil
 	if z.Id != 0 {
 		id = z.Id
 	}

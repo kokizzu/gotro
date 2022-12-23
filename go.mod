@@ -12,7 +12,7 @@ require (
 	github.com/buaazp/fasthttprouter v0.1.1
 	github.com/fatih/color v1.13.0
 	github.com/francoispqt/onelog v0.0.0-20190306043706-8c2bb31b10a4
-	github.com/goccy/go-json v0.9.11
+	github.com/goccy/go-json v0.10.0
 	github.com/goccy/go-yaml v1.9.5
 	github.com/gofiber/fiber/v2 v2.34.0
 	github.com/hexops/autogold v1.3.0
@@ -25,14 +25,15 @@ require (
 	github.com/jordan-wright/email v4.0.1-0.20210109023952-943e75fe5223+incompatible
 	github.com/kokizzu/ch-timed-buffer v1.2025.1416
 	github.com/kokizzu/goproc v1.1403.2143
-	github.com/kokizzu/id64 v1.1726.1650
-	github.com/kokizzu/lexid v1.1726.1650
+	github.com/kokizzu/id64 v1.2423.1343
+	github.com/kokizzu/lexid v1.2423.1347
 	github.com/kokizzu/overseer v1.1.8
 	github.com/kokizzu/rand v0.0.0-20221021123447-6043c55a8bad
-	github.com/kpango/fastime v1.1.4
-	github.com/kr/pretty v0.3.0
+	github.com/kpango/fastime v1.1.6
+	github.com/kr/pretty v0.3.1
 	github.com/lib/pq v1.10.6
 	github.com/meilisearch/meilisearch-go v0.19.1
+	github.com/mitchellh/mapstructure v1.5.0
 	github.com/mojura/enkodo v0.5.6
 	github.com/olivere/elastic/v7 v7.0.32
 	github.com/op/go-logging v0.0.0-20160315200505-970db520ece7
@@ -41,8 +42,9 @@ require (
 	github.com/rs/zerolog v1.26.1
 	github.com/rueian/rueidis v0.0.77
 	github.com/segmentio/fasthash v1.0.3
+	github.com/shamaton/msgpack/v2 v2.1.1
 	github.com/shirou/gopsutil/v3 v3.22.4
-	github.com/stretchr/testify v1.8.0
+	github.com/stretchr/testify v1.8.1
 	github.com/tarantool/go-tarantool v1.8.0
 	github.com/tdewolff/minify v2.3.6+incompatible
 	github.com/valyala/bytebufferpool v1.0.0
@@ -54,9 +56,10 @@ require (
 	github.com/zeebo/xxh3 v1.0.2
 	go.opentelemetry.io/otel v1.9.0
 	go.opentelemetry.io/otel/trace v1.9.0
-	golang.org/x/crypto v0.1.0
-	golang.org/x/exp v0.0.0-20220713135740-79cabaa25d75
+	golang.org/x/crypto v0.4.0
+	golang.org/x/exp v0.0.0-20221217163422-3c43f8badb15
 	golang.org/x/oauth2 v0.0.0-20220524215830-622c5d57e401
+	golang.org/x/text v0.5.0
 	gopkg.in/natefinch/lumberjack.v2 v2.0.0
 	gopkg.in/resty.v1 v1.12.0
 )
@@ -96,14 +99,13 @@ require (
 	github.com/jmespath/go-jmespath v0.4.0 // indirect
 	github.com/josharian/intern v1.0.0 // indirect
 	github.com/klauspost/compress v1.15.9 // indirect
-	github.com/klauspost/cpuid/v2 v2.1.0 // indirect
+	github.com/klauspost/cpuid/v2 v2.2.2 // indirect
 	github.com/kr/text v0.2.0 // indirect
 	github.com/lufia/plan9stats v0.0.0-20211012122336-39d0f177ccd0 // indirect
 	github.com/mailru/easyjson v0.7.7 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect
 	github.com/mattn/go-isatty v0.0.16 // indirect
 	github.com/mattn/go-pointer v0.0.1 // indirect
-	github.com/mitchellh/mapstructure v1.5.0 // indirect
 	github.com/moby/term v0.0.0-20221205130635-1aeaba878587 // indirect
 	github.com/nightlyone/lockfile v1.0.0 // indirect
 	github.com/opencontainers/go-digest v1.0.0 // indirect
@@ -122,6 +124,7 @@ require (
 	github.com/spacemonkeygo/spacelog v0.0.0-20180420211403-2296661a0572 // indirect
 	github.com/tarantool/go-openssl v0.0.8-0.20220711094538-d93c1eff4f49 // indirect
 	github.com/tdewolff/parse v2.3.4+incompatible // indirect
+	github.com/tdewolff/test v1.0.7 // indirect
 	github.com/tklauser/go-sysconf v0.3.10 // indirect
 	github.com/tklauser/numcpus v0.4.0 // indirect
 	github.com/valyala/tcplisten v1.0.0 // indirect
@@ -133,7 +136,6 @@ require (
 	golang.org/x/mod v0.7.0 // indirect
 	golang.org/x/net v0.4.0 // indirect
 	golang.org/x/sys v0.3.0 // indirect
-	golang.org/x/text v0.5.0 // indirect
 	golang.org/x/tools v0.4.0 // indirect
 	golang.org/x/xerrors v0.0.0-20200804184101-5ec99f83aff1 // indirect
 	google.golang.org/appengine v1.6.7 // indirect

@@ -25,7 +25,7 @@ func InitLogger() *zerolog.Logger {
 			zerolog.LevelFieldName,
 			zerolog.CallerFieldName, // clickable on IntelliJ if first or starts with ./
 			zerolog.MessageFieldName,
-		}, FormatCaller: func(i interface{}) string {
+		}, FormatCaller: func(i any) string {
 			var c string
 			if cc, ok := i.(string); ok {
 				c = cc
@@ -116,7 +116,7 @@ func Logger(log zerolog.Logger) func(*fiber.Ctx) error {
 				fields.Stack = debug.Stack()
 
 				c.Status(http.StatusInternalServerError)
-				_ = c.JSON(map[string]interface{}{
+				_ = c.JSON(map[string]any{
 					"status": http.StatusText(http.StatusInternalServerError),
 				})
 			}

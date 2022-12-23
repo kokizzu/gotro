@@ -1,10 +1,11 @@
 package rqAuth
 
 import (
+	"golang.org/x/crypto/bcrypt"
+
 	"github.com/kokizzu/gotro/L"
 	"github.com/kokizzu/gotro/W2/example/conf"
 	"github.com/kokizzu/gotro/X"
-	"golang.org/x/crypto/bcrypt"
 )
 
 func (s *Users) FindOffsetLimit(offset, limit uint32) (res []*Users) {
@@ -17,7 +18,7 @@ OFFSET ` + X.ToS(offset)
 	if conf.DEBUG_MODE {
 		L.Print(query)
 	}
-	s.Adapter.QuerySql(query, func(row []interface{}) {
+	s.Adapter.QuerySql(query, func(row []any) {
 		obj := &Users{}
 		obj.FromArray(row)
 		obj.CensorFields()

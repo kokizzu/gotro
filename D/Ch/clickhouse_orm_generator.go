@@ -25,9 +25,9 @@ func bq(importPath string) string {
 }
 
 // double quote
-func dq(str string) string {
-	return `"` + str + `"`
-}
+//func dq(str string) string {
+//	return `"` + str + `"`
+//}
 
 var typeTranslator = map[DataType]string{
 	//Uuid:     `string`,
@@ -41,13 +41,14 @@ var typeTranslator = map[DataType]string{
 	DateTime64: `time.Time`,
 	Int8:       `int8`,
 }
-var typeConverter = map[DataType]string{
-	UInt64:  `X.ToU`,
-	Float64: `X.ToF`,
-	String:  `X.ToS`,
-	Int64:   `X.ToI`,
-	Int8:    `X.ToByte`,
-}
+
+//var typeConverter = map[DataType]string{
+//	UInt64:  `X.ToU`,
+//	Float64: `X.ToF`,
+//	String:  `X.ToS`,
+//	Int64:   `X.ToI`,
+//	Int8:    `X.ToByte`,
+//}
 
 const connStruct = `Ch.Adapter`
 const connImport = "\n\n\t_ `github.com/ClickHouse/clickhouse-go/v2`"
@@ -190,8 +191,8 @@ func GenerateOrm(tables map[TableName]*TableProp) {
 		SA("}\n\n")
 
 		// to Insert parameter
-		SA(`func (` + receiverName + ` ` + structName + ") SqlInsertParam() []interface{} { //nolint:dupl false positive\n")
-		SA("	return []interface{}{\n")
+		SA(`func (` + receiverName + ` ` + structName + ") SqlInsertParam() []any { //nolint:dupl false positive\n")
+		SA("	return []any{\n")
 		for idx, prop := range props.Fields {
 			SA("		" + receiverName + "." + S.PascalCase(prop.Name) + ", // " + I.ToStr(idx) + " \n")
 		}

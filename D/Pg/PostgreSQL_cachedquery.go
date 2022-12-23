@@ -5,11 +5,12 @@ import (
 	"time"
 
 	"github.com/OneOfOne/cmap"
+	"github.com/kokizzu/gotro/W"
+
 	"github.com/kokizzu/gotro/A"
 	"github.com/kokizzu/gotro/L"
 	"github.com/kokizzu/gotro/M"
 	"github.com/kokizzu/gotro/T"
-	"github.com/kokizzu/gotro/W"
 )
 
 // cached query module, all queries will be cached for TTL seconds per ram_key, expired per ram bucket
@@ -79,7 +80,7 @@ func RamExpired_ByBucket_ByKey(bucket, ram_key string) bool {
 	return false
 }
 
-func RamSet_ByBucket_ByRamKey_ByQuery(bucket, ram_key, query string, val interface{}, sec int64) {
+func RamSet_ByBucket_ByRamKey_ByQuery(bucket, ram_key, query string, val any, sec int64) {
 	if DEBUG {
 		L.Print(`RamSet_ByBucket_ByRamKey_ByQuery: ` + bucket + ` ` + ram_key + fmt.Sprintf("\n%# v", val))
 	}
@@ -94,7 +95,7 @@ func RamSet_ByBucket_ByRamKey_ByQuery(bucket, ram_key, query string, val interfa
 }
 
 // returns false when cache expired
-func RamGet_ByRamKey_ByQuery(ram_key, query string) interface{} {
+func RamGet_ByRamKey_ByQuery(ram_key, query string) any {
 	res := CACHE.Get(ram_key)
 	if res == nil {
 		if DEBUG {

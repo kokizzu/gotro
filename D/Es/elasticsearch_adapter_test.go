@@ -8,11 +8,12 @@ import (
 	"testing"
 
 	"github.com/hexops/autogold"
+	"github.com/olivere/elastic/v7"
+	"github.com/ory/dockertest/v3"
+
 	"github.com/kokizzu/gotro/D/Es"
 	"github.com/kokizzu/gotro/L"
 	"github.com/kokizzu/gotro/M"
-	"github.com/olivere/elastic/v7"
-	"github.com/ory/dockertest/v3"
 )
 
 var adapter Es.Adapter
@@ -128,7 +129,7 @@ func TestElasticSearch(t *testing.T) {
 		adapter.QueryRaw(indexName, M.SX{
 			`query`: M.SX{
 				`bool`: M.SX{
-					`must`: []interface{}{
+					`must`: []any{
 						M.SX{`match`: M.SX{`type2`: `X`}},
 						M.SX{`match`: M.SX{`type1`: `C`}},
 					},
@@ -149,7 +150,7 @@ func TestElasticSearch(t *testing.T) {
 		adapter.QueryRaw(indexName, M.SX{
 			`query`: M.SX{
 				`bool`: M.SX{
-					`should`: []interface{}{
+					`should`: []any{
 						M.SX{`match`: M.SX{`type2`: `Z`}},
 						M.SX{`match`: M.SX{`type1`: `B`}},
 						M.SX{`match`: M.SX{`type1`: `C`}},

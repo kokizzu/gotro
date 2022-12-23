@@ -2,9 +2,10 @@ package Ms
 
 import (
 	"github.com/francoispqt/onelog"
+	"github.com/meilisearch/meilisearch-go"
+
 	"github.com/kokizzu/gotro/A"
 	"github.com/kokizzu/gotro/L"
-	"github.com/meilisearch/meilisearch-go"
 )
 
 type Meili struct {
@@ -32,7 +33,7 @@ func (m *Meili) MigrateMeilisearch(space string, primaryKey string, rankingRules
 	if L.IsError(err, `Ms.Client.CreateIndex`) {
 		return err
 	}
-	task, err = m.Client.WaitForTask(task)
+	_, err = m.Client.WaitForTask(task)
 	if L.IsError(err, `Ms.Client.WaitForTask.CreateIndex`) {
 		return err
 	}
@@ -40,7 +41,7 @@ func (m *Meili) MigrateMeilisearch(space string, primaryKey string, rankingRules
 	if L.IsError(err, `Ms.Index.UpdateRankingRules`) {
 		return err
 	}
-	task, err = m.Client.WaitForTask(task)
+	_, err = m.Client.WaitForTask(task)
 	L.IsError(err, `Ms.Client.WaitForTask.UpdateRankingRules`)
 	return err
 }

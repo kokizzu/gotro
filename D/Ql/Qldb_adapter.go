@@ -10,6 +10,7 @@ import (
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/qldbsession"
 	"github.com/awslabs/amazon-qldb-driver-go/v2/qldbdriver"
+
 	"github.com/kokizzu/gotro/L"
 	"github.com/kokizzu/gotro/M"
 )
@@ -52,7 +53,7 @@ func Connect1(keyId, secret, region, ledger string) *qldbdriver.QLDBDriver {
 }
 
 func (a *Adapter) QMapArray(query string, eachRowFunc func(row M.SX) (exitEarly bool)) bool {
-	_, err := a.Execute(context.Background(), func(txn qldbdriver.Transaction) (interface{}, error) {
+	_, err := a.Execute(context.Background(), func(txn qldbdriver.Transaction) (any, error) {
 		tables, err := txn.Execute(query)
 		if L.IsError(err, `QMapArray.txn.Execute: `+query) {
 			return nil, err
@@ -73,8 +74,8 @@ func (a *Adapter) QMapArray(query string, eachRowFunc func(row M.SX) (exitEarly 
 	return err == nil
 }
 
-func (a *Adapter) QAll(selectQuery string, scanner func(rawRow []byte) error, args ...interface{}) (total int) {
-	_, _ = a.Execute(context.Background(), func(txn qldbdriver.Transaction) (interface{}, error) {
+func (a *Adapter) QAll(selectQuery string, scanner func(rawRow []byte) error, args ...any) (total int) {
+	_, _ = a.Execute(context.Background(), func(txn qldbdriver.Transaction) (any, error) {
 
 		result, err := txn.Execute(selectQuery, args...)
 		if L.IsError(err, `QAll.Execute: `+selectQuery) {
@@ -104,8 +105,8 @@ func (a *Adapter) QAll(selectQuery string, scanner func(rawRow []byte) error, ar
 	return
 }
 
-func (a *Adapter) QLine(selectQuery string, target interface{}, args ...interface{}) bool {
-	_, err := a.Execute(context.Background(), func(txn qldbdriver.Transaction) (interface{}, error) {
+func (a *Adapter) QLine(selectQuery string, target any, args ...any) bool {
+	_, err := a.Execute(context.Background(), func(txn qldbdriver.Transaction) (any, error) {
 
 		result, err := txn.Execute(selectQuery, args...)
 		if L.IsError(err, `QLine.Execute: `+selectQuery) {
@@ -128,8 +129,8 @@ func (a *Adapter) QLine(selectQuery string, target interface{}, args ...interfac
 	return err == nil
 }
 
-func (a *Adapter) DoExec(execQuery string, args ...interface{}) bool {
-	_, err := a.Execute(context.Background(), func(txn qldbdriver.Transaction) (interface{}, error) {
+func (a *Adapter) DoExec(execQuery string, args ...any) bool {
+	_, err := a.Execute(context.Background(), func(txn qldbdriver.Transaction) (any, error) {
 		_, err := txn.Execute(execQuery, args...)
 
 		if L.IsError(err, `DoExec: `+execQuery) {

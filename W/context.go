@@ -81,7 +81,7 @@ func (ctx *Context) ParamJsonStrArr(key string) []string {
 // check if request method is POST
 func (ctx *Context) IsAjax() bool {
 	method := ctx.Request.Header.Method()
-	return bytes.Compare(method, strPost) == 0
+	return bytes.Equal(method, strPost)
 }
 
 // get requested host
@@ -228,7 +228,8 @@ func (ctx *Context) UploadedFile(id string) (fileName, ext, contentType string, 
 		return
 	}
 	contentType = http.DetectContentType(buff) // do not trust header.Get(`content-type`)[0]
-	reader.Seek(0, 0)
+	_, err = reader.Seek(0, 0)
+	L.IsError(err, `UploadedFile.Seek`)
 	fileName = fh.Filename
 	if fileName == `` {
 		fileName = `tmp`

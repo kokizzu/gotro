@@ -8,6 +8,6 @@ import (
 )
 
 func TestFoo(t *testing.T) {
-	m := []interface{}{123, `abc`}
+	m := []any{123, `abc`}
 	L.Print(A.ToMsgp(m))
 }

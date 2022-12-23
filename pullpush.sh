@@ -21,6 +21,8 @@ goimports -w **/*.go
 echo "codes formatted.."
 
 go get -u -v github.com/ory/dockertest/v3@latest
+go get -u -v github.com/kokizzu/id64@latest
+go get -u -v github.com/kokizzu/lexid@latest
 go mod tidy
 
 # testing if has error
@@ -30,6 +32,12 @@ echo "codes tested.."
 # testing if has "gokil" included
 ag gokil **/*.go && ( echo 'echo should not import previous gokil library..' ; kill 0 )
 echo "imports checked.."
+
+# run linter
+golangci-lint run 
+
+# run tests
+go test ./...
 
 # add and commit all files
 git add .

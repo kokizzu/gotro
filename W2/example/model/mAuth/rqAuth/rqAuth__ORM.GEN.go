@@ -377,7 +377,7 @@ func (u *Users) sqlLastLoginAt() string { //nolint:dupl false positive
 }
 
 func (u *Users) ToArray() A.X { //nolint:dupl false positive
-	var id interface{} = nil
+	var id any = nil
 	if u.Id != 0 {
 		id = u.Id
 	}

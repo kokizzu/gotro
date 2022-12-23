@@ -5,9 +5,10 @@ import (
 	"log"
 	"os"
 
+	"github.com/olivere/elastic/v7"
+
 	"github.com/kokizzu/gotro/L"
 	"github.com/kokizzu/gotro/M"
-	"github.com/olivere/elastic/v7"
 )
 
 type Adapter struct {
@@ -53,7 +54,7 @@ became:
 M.SX{
 	`query`: M.SX{
 		`bool`: M.SX{
-			`must`: []interface{}{
+			`must`: []any{
 				M.SX{`match`: M.SX{`cards.token`: Token}},
 			},
 		},

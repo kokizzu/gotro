@@ -9,13 +9,14 @@ import (
 	"io"
 	"strings"
 
-	"github.com/kokizzu/gotro/I"
-	"github.com/kokizzu/gotro/L"
-	"github.com/kokizzu/gotro/S"
 	"github.com/kokizzu/lexid"
 	"github.com/mojura/enkodo"
 	"github.com/segmentio/fasthash/fnv1a"
 	"github.com/zeebo/xxh3"
+
+	"github.com/kokizzu/gotro/I"
+	"github.com/kokizzu/gotro/L"
+	"github.com/kokizzu/gotro/S"
 )
 
 const CookieName = `auth:`
@@ -29,9 +30,9 @@ type Session struct {
 }
 
 func (u *Session) MarshalEnkodo(enc *enkodo.Encoder) (err error) {
-	enc.Uint64(u.UserId)
-	enc.Int64(u.ExpiredAt)
-	enc.String(u.Email)
+	_ = enc.Uint64(u.UserId)
+	_ = enc.Int64(u.ExpiredAt)
+	_ = enc.String(u.Email)
 	return
 }
 
@@ -59,7 +60,7 @@ func createHash(key1, key2 string) string {
 		byte(res.Hi >> (64 - 40) % x),
 		byte(res.Hi >> (64 - 48) % x),
 		byte(res.Hi >> (64 - 56) % x),
-		byte(res.Hi >> (64 - 64) % x),
+		byte(res.Hi >> (64 - 64) % x), // nolint: staticcheck
 		byte(res.Lo >> (64 - 8) % x),
 		byte(res.Lo >> (64 - 16) % x),
 		byte(res.Lo >> (64 - 24) % x),
@@ -67,7 +68,7 @@ func createHash(key1, key2 string) string {
 		byte(res.Lo >> (64 - 40) % x),
 		byte(res.Lo >> (64 - 48) % x),
 		byte(res.Lo >> (64 - 56) % x),
-		byte(res.Lo >> (64 - 64) % x),
+		byte(res.Lo >> (64 - 64) % x), // nolint: staticcheck
 	})
 }
 

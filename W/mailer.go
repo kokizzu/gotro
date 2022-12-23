@@ -58,7 +58,8 @@ func (mc *SmtpConfig) SendSyncAttachBCC(bcc []string, subject string, message st
 	e.Subject = subject
 	attach := A.StrJoin(files, ` `)
 	for _, file := range files {
-		e.AttachFile(file)
+		_, err := e.AttachFile(file)
+		L.IsError(err, `SmtpConfig.SendSyncAttachBCC.AttachFile`)
 	}
 	if attach != `` {
 		attach = `; attachments: ` + attach

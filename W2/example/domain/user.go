@@ -248,13 +248,13 @@ type (
 const UserResetPassword_Url = `/UserResetPassword`
 
 func (d *Domain) UserResetPassword(in *UserResetPassword_In) (out UserResetPassword_Out) {
-	userId, ok := S.DecodeCB63(in.Hash)
+	userId, ok := S.DecodeCB63[uint64](in.Hash)
 	if !ok {
 		out.SetError(400, `invalid hash`)
 		return
 	}
 	user := wcAuth.NewUsersMutator(d.Taran)
-	user.Id = uint64(userId)
+	user.Id = userId
 	if !user.FindById() {
 		out.SetError(400, `cannot find user, wrong env?`)
 		return

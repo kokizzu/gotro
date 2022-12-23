@@ -49,8 +49,9 @@ type Engine struct {
 }
 
 func (engine *Engine) Log(message string) {
-	engine.Logger.WriteString(T.DateTimeStr() + "\t" + message + "\n\n")
-	engine.Logger.Sync()
+	_, err := engine.Logger.WriteString(T.DateTimeStr() + "\t" + message + "\n\n")
+	L.IsError(err, `Engine.Log.WriteString`)
+	L.IsError(engine.Logger.Sync(), `Engine.Log.Sync`)
 }
 
 // send debug mail
@@ -316,7 +317,7 @@ func NewEngine(debugMode, multiApp bool, projectName, baseDir string) *Engine {
 	}
 
 	log_dir := baseDir + LOG_SUBDIR
-	os.Mkdir(log_dir, os.ModePerm)
+	L.IsError(os.Mkdir(log_dir, os.ModePerm), `NewEngine.Mkdir: `+log_dir)
 	log_file := log_dir + S.If(debugMode, `local_`) + `ajax_` + T.Filename() + `.log`
 	logger, err := os.OpenFile(log_file, os.O_CREATE|os.O_APPEND|os.O_WRONLY, os.ModePerm)
 	L.PanicIf(err, `failed create log file: `+log_file)

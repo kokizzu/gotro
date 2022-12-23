@@ -6,13 +6,14 @@ import (
 	"strings"
 
 	"github.com/joho/godotenv"
-	"github.com/kokizzu/gotro/L"
-	"github.com/kokizzu/gotro/S"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/facebook"
 	"golang.org/x/oauth2/github"
 	"golang.org/x/oauth2/google"
 	"golang.org/x/oauth2/yahoo"
+
+	"github.com/kokizzu/gotro/L"
+	"github.com/kokizzu/gotro/S"
 )
 
 const PROJECT_NAME = `github.com/kokizzu/gotro/W2/example` // must be the same as go.mod
@@ -103,7 +104,7 @@ func strArr(envName string, separator string) []string {
 	return S.Split(str, separator)
 }
 
-func LoadFromEnv(ignoreBinary ...interface{}) {
+func LoadFromEnv(ignoreBinary ...any) {
 	// TODO: change to loop from struct's tag and print the result
 	TARANTOOL_HOST = S.IfEmpty(os.Getenv(`TARANTOOL_HOST`), `127.0.0.1`)
 	TARANTOOL_PORT = S.IfEmpty(os.Getenv(`TARANTOOL_PORT`), `3301`)

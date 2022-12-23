@@ -200,7 +200,7 @@ func IsValidTimeRange(start, end, check time.Time) bool {
 
 // Age returns age from current date
 func Age(birthdate time.Time) float64 {
-	return float64(time.Now().Sub(birthdate)/time.Hour) / 24 / 365.25
+	return float64(time.Since(birthdate)/time.Hour) / 24 / 365.25
 }
 
 // AgeAt returns age from within 2 date

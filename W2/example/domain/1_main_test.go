@@ -10,13 +10,14 @@ import (
 
 	"github.com/goccy/go-yaml"
 	"github.com/kokizzu/goproc"
+	"github.com/kpango/fastime"
+	"github.com/ory/dockertest/v3"
+
 	"github.com/kokizzu/gotro/L"
 	"github.com/kokizzu/gotro/S"
 	"github.com/kokizzu/gotro/W2/example/conf"
 	"github.com/kokizzu/gotro/W2/example/model"
 	"github.com/kokizzu/gotro/W2/example/model/mAuth/wcAuth"
-	"github.com/kpango/fastime"
-	"github.com/ory/dockertest/v3"
 )
 
 type DockerComposeConf struct { // https://zhwt.github.io/yaml-to-go/
@@ -74,8 +75,9 @@ func ConnectLocalDocker() *dockertest.Pool {
 	endpoint := `http://localhost:2375`
 	conn, err := net.DialTimeout("tcp", net.JoinHostPort(`127.0.0.1`, `2375`), time.Second)
 	if conn != nil {
-		conn.Close()
+		_ = conn.Close()
 	} else {
+		L.IsError(err, `failed connect to docker`)
 		endpoint = ``
 
 		// intellij does not load env properly on run
@@ -97,7 +99,7 @@ func ConnectLocalDocker() *dockertest.Pool {
 				return nil
 			},
 		})
-		daemon.Start(cmdId)
+		_ = daemon.Start(cmdId)
 	}
 	pool, err := dockertest.NewPool(endpoint)
 	if err != nil {

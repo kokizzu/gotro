@@ -7,7 +7,7 @@ import (
 
 // purpose: convert CLI/STDIN input into STDOUT/STDERR output thru domain functions
 
-func cliParseInput(file *os.File, in interface{}) error {
+func cliParseInput(file *os.File, in any) error {
 	// TODO: parse input from stdin, depends on input format: json, yaml, toml, ini/env-like
 	return nil
 }

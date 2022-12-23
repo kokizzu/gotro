@@ -19,16 +19,16 @@ import (
 // Map support package
 
 // SX map with string key and any value
-type SX map[string]interface{}
+type SX map[string]any
 
 // IX map with int64 key and any value
-type IX map[int64]interface{}
+type IX map[int64]any
 
 // SAX map with string key and array of any value
-type SAX map[string][]interface{}
+type SAX map[string][]any
 
 // IAX map with int64 key and array of any value
-type IAX map[int64][]interface{}
+type IAX map[int64][]any
 
 // SS map with string key and string value
 type SS map[string]string
@@ -598,15 +598,15 @@ func (json SX) GetBool(key string) bool {
 //	m := M.SX{`tes`:M.SB{`1`:true,`2`:false}}
 //	m.GetMSB(`tes`) // M.SB{"1":true, "2":false}
 func (json SX) GetMSB(key string) SB {
-	any := json[key]
-	if any == nil {
+	v := json[key]
+	if v == nil {
 		return SB{}
 	}
-	if val, ok := any.(map[string]bool); ok {
+	if val, ok := v.(map[string]bool); ok {
 		return val
-	} else if val, ok := any.(SB); ok {
+	} else if val, ok := v.(SB); ok {
 		return val
-	} else if val, ok := any.(map[string]interface{}); ok {
+	} else if val, ok := v.(map[string]any); ok {
 		res := SB{}
 		for k, vx := range val {
 			if vb, ok := vx.(bool); ok {
@@ -615,7 +615,7 @@ func (json SX) GetMSB(key string) SB {
 		}
 		return res
 	} else {
-		L.Describe(`Property [` + key + `] is not a M.SB: ` + fmt.Sprintf("%T", any))
+		L.Describe(`Property [` + key + `] is not a M.SB: ` + fmt.Sprintf("%T", v))
 		return SB{}
 	}
 }
@@ -625,15 +625,15 @@ func (json SX) GetMSB(key string) SB {
 //	m := M.SX{`tes`:M.SF{`satu`:32.45,`2`:12}}
 //	m.GetMSF(`tes`) // M.SF{"satu":32.45, "2":12}
 func (json SX) GetMSF(key string) SF {
-	any := json[key]
-	if any == nil {
+	v := json[key]
+	if v == nil {
 		return SF{}
 	}
-	if val, ok := any.(map[string]float64); ok {
+	if val, ok := v.(map[string]float64); ok {
 		return val
-	} else if val, ok := any.(SF); ok {
+	} else if val, ok := v.(SF); ok {
 		return val
-	} else if val, ok := any.(map[string]interface{}); ok {
+	} else if val, ok := v.(map[string]any); ok {
 		res := SF{}
 		for k, vx := range val {
 			if vf, ok := vx.(float64); ok {
@@ -644,7 +644,7 @@ func (json SX) GetMSF(key string) SF {
 		}
 		return res
 	} else {
-		L.Describe(`Property [` + key + `] is not a M.SF: ` + fmt.Sprintf("%T", any))
+		L.Describe(`Property [` + key + `] is not a M.SF: ` + fmt.Sprintf("%T", v))
 		return SF{}
 	}
 }
@@ -654,15 +654,15 @@ func (json SX) GetMSF(key string) SF {
 //	m := M.SX{`tes`:M.SF{`satu`:32,`2`:12}}
 //	m.GetMSI(`tes`) // M.SF{"satu":32, "2":12}
 func (json SX) GetMSI(key string) SI {
-	any := json[key]
-	if any == nil {
+	v := json[key]
+	if v == nil {
 		return SI{}
 	}
-	if val, ok := any.(map[string]int64); ok {
+	if val, ok := v.(map[string]int64); ok {
 		return val
-	} else if val, ok := any.(SI); ok {
+	} else if val, ok := v.(SI); ok {
 		return val
-	} else if val, ok := any.(map[string]interface{}); ok {
+	} else if val, ok := v.(map[string]any); ok {
 		res := SI{}
 		for k, vx := range val {
 			if vi, ok := vx.(int64); ok {
@@ -673,7 +673,7 @@ func (json SX) GetMSI(key string) SI {
 		}
 		return res
 	} else {
-		L.Describe(`Property [` + key + `] is not a M.SF: ` + fmt.Sprintf("%T", any))
+		L.Describe(`Property [` + key + `] is not a M.SF: ` + fmt.Sprintf("%T", v))
 		return SI{}
 	}
 }
@@ -683,15 +683,15 @@ func (json SX) GetMSI(key string) SI {
 //	m := M.SX{`tes`:M.SB{`satu`:true,`2`:false}}
 //	m.GetMSB(`tes`) // M.SB{"satu":true, "2":false}
 func (json SX) GetMIB(key string) IB {
-	any := json[key]
-	if any == nil {
+	v := json[key]
+	if v == nil {
 		return IB{}
 	}
-	if val, ok := any.(map[int64]bool); ok {
+	if val, ok := v.(map[int64]bool); ok {
 		return val
-	} else if val, ok := any.(IB); ok {
+	} else if val, ok := v.(IB); ok {
 		return val
-	} else if val, ok := any.(map[int64]interface{}); ok {
+	} else if val, ok := v.(map[int64]any); ok {
 		res := IB{}
 		for k, vx := range val {
 			if vb, ok := vx.(bool); ok {
@@ -700,7 +700,7 @@ func (json SX) GetMIB(key string) IB {
 		}
 		return res
 	} else {
-		L.Describe(`Property [` + key + `] is not a M.SB: ` + fmt.Sprintf("%T", any))
+		L.Describe(`Property [` + key + `] is not a M.SB: ` + fmt.Sprintf("%T", v))
 		return IB{}
 	}
 }
@@ -710,34 +710,34 @@ func (json SX) GetMIB(key string) IB {
 //	m :=  M.SX{`tes`:M.SX{`satu`:234.345,`dua`:`huruf`,`tiga`:123}}
 //	m.GetMSX(`tes`) // M.SX{"tiga": int(123),"satu": float64(234.345),"dua":  "huruf"}
 func (json SX) GetMSX(key string) SX {
-	any := json[key]
-	if any == nil {
+	v := json[key]
+	if v == nil {
 		return SX{}
 	}
-	if val, ok := any.(map[string]interface{}); ok {
+	if val, ok := v.(map[string]any); ok {
 		return val
-	} else if val, ok := any.(SX); ok {
+	} else if val, ok := v.(SX); ok {
 		return val
 	} else {
-		L.Describe(`Property [` + key + `] is not a M.SX: ` + fmt.Sprintf("%T", any))
+		L.Describe(`Property [` + key + `] is not a M.SX: ` + fmt.Sprintf("%T", v))
 		return SX{}
 	}
 }
 
 // GetAX get array of anything value from map
 //
-//	m :=  M.SX{`tes`:[]interface{}{123,`buah`}}
+//	m :=  M.SX{`tes`:[]any{123,`buah`}}
 //	m.GetAX(`tes`) // []interface {}{int(123),"buah"}
-func (json SX) GetAX(key string) []interface{} {
-	any := json[key]
-	if any == nil {
-		return []interface{}{}
+func (json SX) GetAX(key string) []any {
+	v := json[key]
+	if v == nil {
+		return []any{}
 	}
-	if val, ok := any.([]interface{}); ok {
+	if val, ok := v.([]any); ok {
 		return val
 	} else {
-		L.Describe(`Property [` + key + `] is not a A.X: ` + fmt.Sprintf("%T", any))
-		return []interface{}{}
+		L.Describe(`Property [` + key + `] is not a A.X: ` + fmt.Sprintf("%T", v))
+		return []any{}
 	}
 }
 
@@ -746,19 +746,19 @@ func (json SX) GetAX(key string) []interface{} {
 //	m :=  M.SX{`tes`:[]int64{123,234}}
 //	m.GetIntArr(`tes`)) // []int64{123, 234}
 func (json SX) GetIntArr(key string) []int64 {
-	any := json[key]
-	if any == nil {
+	v := json[key]
+	if v == nil {
 		return []int64{}
 	}
-	if val, ok := any.([]int64); ok {
+	if val, ok := v.([]int64); ok {
 		return val
-	} else if val, ok := any.([]float64); ok {
+	} else if val, ok := v.([]float64); ok {
 		res := []int64{}
 		for _, vf := range val {
 			res = append(res, int64(vf))
 		}
 		return res
-	} else if val, ok := any.([]interface{}); ok {
+	} else if val, ok := v.([]any); ok {
 		res := []int64{}
 		for k, vx := range val {
 			switch v := vx.(type) {
@@ -796,7 +796,7 @@ func (json SX) GetIntArr(key string) []int64 {
 		}
 		return res
 	} else {
-		L.Describe(`Property [` + key + `] is not a []int64: ` + fmt.Sprintf("%T", any))
+		L.Describe(`Property [` + key + `] is not a []int64: ` + fmt.Sprintf("%T", v))
 		return []int64{}
 	}
 }
@@ -904,28 +904,28 @@ func (hash IX) ToSX() SX {
 	return res
 }
 
-// ToJson convert map[string]interface{} to json
+// ToJson convert map[string]any to json
 //
-//	m :=  map[string]interface{}{`buah`:123,`angka`:`dia`}
+//	m :=  map[string]any{`buah`:123,`angka`:`dia`}
 //	M.ToJson(m) // {"angka":"dia","buah":123}
-func ToJson(hash map[string]interface{}) string {
+func ToJson(hash map[string]any) string {
 	str, err := json.Marshal(hash)
 	L.IsError(err, `M.ToJson failed`, hash)
 	return string(str)
 }
 
-// ToMsgp convert map[string]interface{} to json
+// ToMsgp convert map[string]any to json
 //
-//	m :=  map[string]interface{}{`buah`:123,`angka`:`dia`}
+//	m :=  map[string]any{`buah`:123,`angka`:`dia`}
 //	M.ToMsgp(m) // []byte{0x82, 0xa5, 0x61, 0x6e, 0x67, 0x6b, 0x61, 0xa3, 0x64, 0x69, 0x61, 0xa5, 0x62, 0x75, 0x61, 0x68, 0xcd, 0x7b}
-func ToMsgp(hash map[string]interface{}) []byte {
+func ToMsgp(hash map[string]any) []byte {
 	str, err := msgpack.Marshal(hash)
 	L.IsError(err, `M.ToMsgp failed`, hash)
 	return str
 }
 
 // Set set key with any value
-func (hash SX) Set(key string, val interface{}) {
+func (hash SX) Set(key string, val any) {
 	hash[key] = val
 }
 

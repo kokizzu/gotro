@@ -67,7 +67,7 @@ func webApiServer() func(state overseer.State) {
 // 1. query string
 // 2. body
 // 3. params
-func webApiParseInput(ctx *fiber.Ctx, reqCommon *domain.RequestCommon, in interface{}, url string) error {
+func webApiParseInput(ctx *fiber.Ctx, reqCommon *domain.RequestCommon, in any, url string) error {
 	body := ctx.Body()
 	path := S.LeftOf(url, `?`) // without API_PREFIX
 	if header, ok := requiredHeader[path]; ok {

@@ -164,7 +164,7 @@ func TestMaxUInt(t *testing.T) {
 	for {
 		arr = append(arr, z)
 		z *= 10
-		if z < 0 {
+		if z <= 0 {
 			break
 		}
 		arr = append(arr, z-1)

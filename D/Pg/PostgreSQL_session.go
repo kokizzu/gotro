@@ -55,7 +55,7 @@ func (sess PostgreSession) Expiry(key string) int64 {
 	return expired_at - T.Epoch()
 }
 
-func (sess PostgreSession) FadeVal(key string, val interface{}, sec int64) {
+func (sess PostgreSession) FadeVal(key string, val any, sec int64) {
 	sess.Pool.DoTransaction(func(tx *Tx) string {
 		dm := tx.QBaseUniq(sess.Table, key)
 		dm.SetVal(SESSION_VALUE_KEY, val)
@@ -125,7 +125,7 @@ func (sess PostgreSession) Inc(key string) (ival int64) {
 	return ival
 }
 
-func (sess PostgreSession) SetVal(key string, val interface{}) {
+func (sess PostgreSession) SetVal(key string, val any) {
 	sess.Pool.DoTransaction(func(tx *Tx) string {
 		dm := tx.QBaseUniq(sess.Table, key)
 		dm.SetVal(SESSION_VALUE_KEY, val)

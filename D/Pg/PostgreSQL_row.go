@@ -1,12 +1,13 @@
 package Pg
 
 import (
+	"github.com/kokizzu/gotro/W"
+
 	"github.com/kokizzu/gotro/I"
 	"github.com/kokizzu/gotro/L"
 	"github.com/kokizzu/gotro/M"
 	"github.com/kokizzu/gotro/S"
 	"github.com/kokizzu/gotro/T"
-	"github.com/kokizzu/gotro/W"
 	"github.com/kokizzu/gotro/X"
 )
 
@@ -263,7 +264,7 @@ func (mp *Row) IndateRow() int64 {
 }
 
 // log the changes
-func (mp *Row) LogIt(key string, val interface{}) {
+func (mp *Row) LogIt(key string, val any) {
 	key_label := ZZ(key)
 	newv := X.ToS(val)
 	new_label := ZZ(newv)
@@ -278,7 +279,7 @@ func (mp *Row) LogIt(key string, val interface{}) {
 }
 
 // log the changes
-func (mp *Row) NotLogIt(key string, val interface{}) {
+func (mp *Row) NotLogIt(key string, val any) {
 	key_label := ZZ(key)
 	newv := X.ToS(val)
 	new_label := ZZ(newv)
@@ -289,7 +290,7 @@ func (mp *Row) NotLogIt(key string, val interface{}) {
 }
 
 // log the changes
-func (mp *Row) LogNonData(key string, val interface{}) {
+func (mp *Row) LogNonData(key string, val any) {
 	key_label := ZZ(key)
 	newv := X.ToS(val)
 	new_label := ZZ(newv)
@@ -396,8 +397,8 @@ func (mp *Row) GetInt(key string) int64 {
 	return X.ToI(mp.Row[key])
 }
 
-// get []interface{} from Row
-func (mp *Row) GetAX(key string) []interface{} {
+// get []any from Row
+func (mp *Row) GetAX(key string) []any {
 	return X.ToArr(mp.Row[key])
 }
 
@@ -538,7 +539,7 @@ func (mp *Row) Check_UserPassword(pass string) bool {
 }
 
 // set Row value
-func (mp *Row) SetVal(key string, val interface{}) interface{} {
+func (mp *Row) SetVal(key string, val any) any {
 	switch v := val.(type) {
 	case string:
 		val = S.XSS(v)
@@ -573,10 +574,10 @@ func (mp *Row) SetJsonStrArr(key string) []string {
 }
 
 // set Row from json object[]
-func (mp *Row) SetJsonObjArr(key string) []map[string]interface{} {
+func (mp *Row) SetJsonObjArr(key string) []map[string]any {
 	str := S.Trim(mp.Posts.GetStr(key))
 	if str == `` || str[0] != '[' {
-		return []map[string]interface{}{}
+		return []map[string]any{}
 	}
 	val := mp.Posts.GetJsonObjArr(key)
 	mp.LogIt(key, str)
@@ -597,7 +598,7 @@ func (mp *Row) SetJsonMap(key string) M.SX {
 }
 
 // set Row value only if still empty, or never being saved
-func (mp *Row) SetValOnce(key string, val interface{}) interface{} {
+func (mp *Row) SetValOnce(key string, val any) any {
 	if _, ok := mp.Row[key]; mp.Id != 0 && ok {
 		mp.NotLogIt(key, val)
 		return mp.Row[key]
@@ -616,14 +617,14 @@ func (mp *Row) IsChanged() bool {
 }
 
 // set val without XSS filtering
-func (mp *Row) SetValNoXSS(key string, val interface{}) interface{} {
+func (mp *Row) SetValNoXSS(key string, val any) any {
 	mp.LogIt(key, val)
 	mp.Row[key] = val
 	return val
 }
 
 // set Row value if ok
-func (mp *Row) SetValIf(ok bool, key string, val interface{}) {
+func (mp *Row) SetValIf(ok bool, key string, val any) {
 	if ok {
 		mp.SetVal(key, val)
 	}
@@ -736,7 +737,7 @@ func (mp *Row) SetType(val string) string {
 }
 
 // set raw data
-func (mp *Row) SetNonDataVal(key string, val interface{}) {
+func (mp *Row) SetNonDataVal(key string, val any) {
 	if val != nil {
 		mp.NonData.Set(key, val)
 		mp.LogNonData(key, val)

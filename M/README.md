@@ -5,6 +5,27 @@
 
 ## Usage
 
+#### func  FastestMapToStruct
+
+```go
+func FastestMapToStruct(m any, s any)
+```
+FastestMapToStruct only for exact match of field name and map key
+
+#### func  FastestStructToMap
+
+```go
+func FastestStructToMap(s any) (m map[string]any)
+```
+FastestStructToMap using struct's field name as map key
+
+#### func  FastestStructToStruct
+
+```go
+func FastestStructToStruct(src any, dst any)
+```
+FastestStructToStruct
+
 #### func  SSKeysStartedWith
 
 ```go
@@ -15,21 +36,21 @@ SSKeysStartedWith retrieve all keys started with
 #### func  ToJson
 
 ```go
-func ToJson(hash map[string]interface{}) string
+func ToJson(hash map[string]any) string
 ```
-ToJson convert map[string]interface{} to json
+ToJson convert map[string]any to json
 
-    m :=  map[string]interface{}{`buah`:123,`angka`:`dia`}
+    m :=  map[string]any{`buah`:123,`angka`:`dia`}
     M.ToJson(m) // {"angka":"dia","buah":123}
 
 #### func  ToMsgp
 
 ```go
-func ToMsgp(hash map[string]interface{}) []byte
+func ToMsgp(hash map[string]any) []byte
 ```
-ToMsgp convert map[string]interface{} to json
+ToMsgp convert map[string]any to json
 
-    m :=  map[string]interface{}{`buah`:123,`angka`:`dia`}
+    m :=  map[string]any{`buah`:123,`angka`:`dia`}
     M.ToMsgp(m) // []byte{0x82, 0xa5, 0x61, 0x6e, 0x67, 0x6b, 0x61, 0xa3, 0x64, 0x69, 0x61, 0xa5, 0x62, 0x75, 0x61, 0x68, 0xcd, 0x7b}
 
 #### type FieldTag
@@ -51,7 +72,7 @@ const (
 #### type IAX
 
 ```go
-type IAX map[int64][]interface{}
+type IAX map[int64][]any
 ```
 
 IAX map with int64 key and array of any value
@@ -125,7 +146,7 @@ IS map with int64 key and string value
 #### type IX
 
 ```go
-type IX map[int64]interface{}
+type IX map[int64]any
 ```
 
 IX map with int64 key and any value
@@ -155,7 +176,7 @@ convert integer keys to string keys
 #### type SAX
 
 ```go
-type SAX map[string][]interface{}
+type SAX map[string][]any
 ```
 
 SAX map with string key and array of any value
@@ -357,7 +378,7 @@ ToScylla convert to scylla based map<text,text>
 #### type SX
 
 ```go
-type SX map[string]interface{}
+type SX map[string]any
 ```
 
 SX map with string key and any value
@@ -365,18 +386,18 @@ SX map with string key and any value
 #### func  FromStruct
 
 ```go
-func FromStruct(srcStructPtr interface{}) SX
+func FromStruct(srcStructPtr any) SX
 ```
 FromStruct convert any struct to map
 
 #### func (SX) GetAX
 
 ```go
-func (json SX) GetAX(key string) []interface{}
+func (json SX) GetAX(key string) []any
 ```
 GetAX get array of anything value from map
 
-    m :=  M.SX{`tes`:[]interface{}{123,`buah`}}
+    m :=  M.SX{`tes`:[]any{123,`buah`}}
     m.GetAX(`tes`) // []interface {}{int(123),"buah"}
 
 #### func (SX) GetBool
@@ -545,7 +566,7 @@ Pretty get pretty printed values
 #### func (SX) Set
 
 ```go
-func (hash SX) Set(key string, val interface{})
+func (hash SX) Set(key string, val any)
 ```
 Set set key with any value
 
@@ -583,7 +604,7 @@ ToMsgp convert to msgpack string, silently print error if failed
 #### func (SX) ToStruct
 
 ```go
-func (m SX) ToStruct(targetStructPtr interface{})
+func (m SX) ToStruct(targetStructPtr any)
 ```
 ToStruct convert to struct
 
@@ -601,25 +622,25 @@ type StructMapper struct {
 #### func  ParseStruct
 
 ```go
-func ParseStruct(s interface{}, tag FieldTag) (sm *StructMapper)
+func ParseStruct(s any, tag FieldTag) (sm *StructMapper)
 ```
 ParseStruct convert struct to structMapper
 
 #### func  StructMap
 
 ```go
-func StructMap(structPtr interface{}) *StructMapper
+func StructMap(structPtr any) *StructMapper
 ```
 StructMap get or create a struct mapper
 
 #### func (*StructMapper) MapToStruct
 
 ```go
-func (sm *StructMapper) MapToStruct(m SX, s interface{})
+func (sm *StructMapper) MapToStruct(m SX, s any)
 ```
 
 #### func (*StructMapper) StructToMap
 
 ```go
-func (sm *StructMapper) StructToMap(s interface{}) (m SX)
+func (sm *StructMapper) StructToMap(s any) (m SX)
 ```

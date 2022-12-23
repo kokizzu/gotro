@@ -14,8 +14,9 @@ import (
 	"github.com/kokizzu/gotro/W2/example/model/mAuth/saAuth"
 
 	chBuffer "github.com/kokizzu/ch-timed-buffer"
-	"github.com/kokizzu/gotro/L"
 	"github.com/kpango/fastime"
+
+	"github.com/kokizzu/gotro/L"
 )
 
 type Domain struct {
@@ -64,7 +65,7 @@ func (d *Domain) handleTermSignal() {
 }
 
 type AnalyticsRow interface {
-	SqlInsertParam() []interface{}
+	SqlInsertParam() []any
 	TableName() Ch.TableName
 }
 

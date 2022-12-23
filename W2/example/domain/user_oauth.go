@@ -366,7 +366,7 @@ func (d *Domain) UserOauth(in *UserOauth_In) (out UserOauth_Out) {
 		// use: https://developer.twitter.com/en/docs/authentication/oauth-2-0/user-access-token
 		r := resty.New()
 		r.SetBasicAuth(conf.TWITTER_CLIENTID, conf.TWITTER_CLIENTSECRET)
-		res, err := r.R().SetBody(map[string]interface{}{
+		res, err := r.R().SetBody(map[string]any{
 			`code`:          in.Code,
 			`grant_type`:    `authorization_code`,
 			`client_id`:     conf.TWITTER_CLIENTID,

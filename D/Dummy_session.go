@@ -16,7 +16,7 @@ type DummySession struct {
 }
 
 type DummyRecord struct {
-	Value     interface{}
+	Value     any
 	ExpiredAt int64
 }
 
@@ -48,7 +48,7 @@ func (sess DummySession) Expiry(key string) int64 {
 	return 0
 }
 
-func (sess DummySession) FadeVal(key string, val interface{}, sec int64) {
+func (sess DummySession) FadeVal(key string, val any, sec int64) {
 	sess.Pool.Set(key, DummyRecord{
 		Value:     val,
 		ExpiredAt: T.EpochAfter(time.Second * time.Duration(sec)),
@@ -70,7 +70,7 @@ func (sess DummySession) FadeMSX(key string, val M.SX, sec int64) {
 	sess.FadeVal(key, val, sec)
 }
 
-func (sess DummySession) GetVal(key string) interface{} {
+func (sess DummySession) GetVal(key string) any {
 	val := sess.Pool.Get(key)
 	if val == nil {
 		return nil

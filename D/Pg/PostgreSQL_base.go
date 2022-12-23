@@ -3,10 +3,11 @@ package Pg
 import (
 	"database/sql"
 
+	"github.com/lib/pq"
+
 	"github.com/kokizzu/gotro/M"
 	"github.com/kokizzu/gotro/S"
 	"github.com/kokizzu/gotro/X"
-	"github.com/lib/pq"
 )
 
 // base structure for all model, including schema
@@ -96,8 +97,8 @@ func (b *Base) GetInt(key string) int64 {
 	return b.XData.GetInt(key)
 }
 
-// get []interface{} from Data
-func (b *Base) GetArr(key string) []interface{} {
+// get []any from Data
+func (b *Base) GetArr(key string) []any {
 	return X.ToArr(b.XData[key])
 }
 
@@ -116,6 +117,6 @@ func (b *Base) GetUniqueId() string {
 	return b.UniqueId.String
 }
 
-func (b *Base) SetVal(key string, val interface{}) {
+func (b *Base) SetVal(key string, val any) {
 	b.XData[key] = val
 }

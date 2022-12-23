@@ -8,10 +8,11 @@ import (
 	"strings"
 	"unicode"
 
+	"github.com/goccy/go-json"
 	"github.com/kokizzu/rand"
 	"github.com/vmihailenco/msgpack/v5"
-
-	"github.com/goccy/go-json"
+	"golang.org/x/text/cases"
+	"golang.org/x/text/language"
 
 	"github.com/yosuke-furukawa/json5/encoding/json5"
 
@@ -145,11 +146,13 @@ func RemoveCharAt(str string, index int) string {
 	return string(chars)
 }
 
+var enCaser = cases.Title(language.English)
+
 // ToTitle Change first letter for every word to uppercase
 //
 //	S.ToTitle(`Disa dasi`)) // output "Disa Dasi"
 func ToTitle(str string) string {
-	return strings.Title(str)
+	return enCaser.String(str)
 }
 
 // If simplified ternary operator (bool ? val : 0), returns second argument, if the condition (first arg) is true, returns empty string if not
@@ -266,12 +269,12 @@ func AsF(str string) (float64, bool) {
 	return res, err == nil
 }
 
-// JsonToMap convert JSON object to map[string]interface{}, silently print and return empty map if failed
+// JsonToMap convert JSON object to map[string]any, silently print and return empty map if failed
 //
 //	jsonStr := `{"test":123,"bla":[1,2,3,4]}`
 //	map1 := S.JsonToMap(jsonStr)
-func JsonToMap(str string) (res map[string]interface{}) {
-	res = map[string]interface{}{}
+func JsonToMap(str string) (res map[string]any) {
+	res = map[string]any{}
 	if len(str) == 0 {
 		return
 	}
@@ -280,12 +283,12 @@ func JsonToMap(str string) (res map[string]interface{}) {
 	return
 }
 
-// MsgpToMap convert MsgPack object to map[string]interface{}, silently print and return empty map if failed
+// MsgpToMap convert MsgPack object to map[string]any, silently print and return empty map if failed
 //
 //	msgpStr := []byte(`��buah{�angka�dia`)
 //	map1 := S.MsgpToMap(msgpStr)
-func MsgpToMap(str []byte) (res map[string]interface{}) {
-	res = map[string]interface{}{}
+func MsgpToMap(str []byte) (res map[string]any) {
+	res = map[string]any{}
 	if len(str) == 0 {
 		return
 	}
@@ -321,12 +324,12 @@ func MsgpToStrStrMap(str []byte) (res map[string]string) {
 	return
 }
 
-// JsonToArr convert JSON object to []interface{}, silently print and return empty slice of interface if failed
+// JsonToArr convert JSON object to []any, silently print and return empty slice of interface if failed
 //
 //	jsonStr := `[1,2,['test'],'a']`
 //	arr := S.JsonToArr(jsonStr)
-func JsonToArr(str string) (res []interface{}) {
-	res = []interface{}{}
+func JsonToArr(str string) (res []any) {
+	res = []any{}
 	if len(str) == 0 {
 		return
 	}
@@ -335,11 +338,11 @@ func JsonToArr(str string) (res []interface{}) {
 	return
 }
 
-// MsgpToArr convert Msgpack object to []interface{}, silently print and return empty slice of interface if failed
+// MsgpToArr convert Msgpack object to []any, silently print and return empty slice of interface if failed
 //
 //	arr := S.MsgpToArr(msgpStr)
-func MsgpToArr(str []byte) (res []interface{}) {
-	res = []interface{}{}
+func MsgpToArr(str []byte) (res []any) {
+	res = []any{}
 	if len(str) == 0 {
 		return
 	}
@@ -348,12 +351,12 @@ func MsgpToArr(str []byte) (res []interface{}) {
 	return
 }
 
-// JsonToObjArr convert JSON object to []map[string]interface{}, silently print and return empty slice of interface if failed
+// JsonToObjArr convert JSON object to []map[string]any, silently print and return empty slice of interface if failed
 //
 //	jsonStr := `[{"x":"foo"},{"y":"bar"}]`
 //	arr := S.JsonToObjArr(jsonStr)
-func JsonToObjArr(str string) (res []map[string]interface{}) {
-	res = []map[string]interface{}{}
+func JsonToObjArr(str string) (res []map[string]any) {
+	res = []map[string]any{}
 	if len(str) == 0 {
 		return
 	}
@@ -362,11 +365,11 @@ func JsonToObjArr(str string) (res []map[string]interface{}) {
 	return
 }
 
-// MsgpToObjArr convert Msgpack object to []map[string]interface{}, silently print and return empty slice of interface if failed
+// MsgpToObjArr convert Msgpack object to []map[string]any, silently print and return empty slice of interface if failed
 //
 //	arr := S.MsgpToObjArr(msgpStr)
-func MsgpToObjArr(str []byte) (res []map[string]interface{}) {
-	res = []map[string]interface{}{}
+func MsgpToObjArr(str []byte) (res []map[string]any) {
+	res = []map[string]any{}
 	if len(str) == 0 {
 		return
 	}
@@ -434,43 +437,43 @@ func Repeat(str string, count int) string {
 	return strings.Repeat(str, count)
 }
 
-// JsonAsMap convert JSON object to map[string]interface{} with check
+// JsonAsMap convert JSON object to map[string]any with check
 //
 //	jsonStr := `{"test":123,"bla":[1,2,3,4]}`
 //	map1, ok := S.JsonAsMap(jsonStr)
-func JsonAsMap(str string) (res map[string]interface{}, ok bool) {
-	res = map[string]interface{}{}
+func JsonAsMap(str string) (res map[string]any, ok bool) {
+	res = map[string]any{}
 	err := json.Unmarshal([]byte(str), &res)
 	ok = err == nil
 	return
 }
 
-// MsgpAsMap convert Msgpack object to map[string]interface{} with check
+// MsgpAsMap convert Msgpack object to map[string]any with check
 //
 //	map1, ok := S.MsgpAsMap(msgpStr)
-func MsgpAsMap(str []byte) (res map[string]interface{}, ok bool) {
-	res = map[string]interface{}{}
+func MsgpAsMap(str []byte) (res map[string]any, ok bool) {
+	res = map[string]any{}
 	err := msgpack.Unmarshal(str, &res)
 	ok = err == nil
 	return
 }
 
-// JsonAsArr convert JSON object to []interface{} with check
+// JsonAsArr convert JSON object to []any with check
 //
 //	jsonStr := `[1,2,['test'],'a']`
 //	arr, ok := S.JsonAsArr(jsonStr)
-func JsonAsArr(str string) (res []interface{}, ok bool) {
-	res = []interface{}{}
+func JsonAsArr(str string) (res []any, ok bool) {
+	res = []any{}
 	err := json.Unmarshal([]byte(str), &res)
 	ok = err == nil
 	return
 }
 
-// MsgpAsArr convert Msgpack object to []interface{} with check
+// MsgpAsArr convert Msgpack object to []any with check
 //
 //	arr, ok := S.MsgpAsArr(msgpStr)
-func MsgpAsArr(str []byte) (res []interface{}, ok bool) {
-	res = []interface{}{}
+func MsgpAsArr(str []byte) (res []any, ok bool) {
+	res = []any{}
 	err := msgpack.Unmarshal(str, &res)
 	ok = err == nil
 	return
@@ -553,15 +556,13 @@ func SplitFunc(str string, fun func(rune) bool) []string {
 
 // PadLeft append padStr to left until length is lenStr
 func PadLeft(s string, padStr string, lenStr int) string {
-	var padCount int
-	padCount = I.MaxOf(lenStr-len(s), 0)
+	padCount := I.MaxOf(lenStr-len(s), 0)
 	return strings.Repeat(padStr, padCount) + s
 }
 
 // PadRight append padStr to right until length is lenStr
 func PadRight(s string, padStr string, lenStr int) string {
-	var padCount int
-	padCount = I.MaxOf(lenStr-len(s), 0)
+	padCount := I.MaxOf(lenStr-len(s), 0)
 	return s + strings.Repeat(padStr, padCount)
 }
 

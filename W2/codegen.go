@@ -13,11 +13,12 @@ import (
 
 	"github.com/kokizzu/gotro/A"
 
+	"github.com/kpango/fastime"
+
 	"github.com/kokizzu/gotro/I"
 	"github.com/kokizzu/gotro/L"
 	"github.com/kokizzu/gotro/M"
 	"github.com/kokizzu/gotro/S"
-	"github.com/kpango/fastime"
 )
 
 const WARNING = `
@@ -1193,7 +1194,7 @@ var graphqlType` + methodName + `Out = graphql.NewObject(graphql.ObjectConfig{
 
 		toBuf.WriteString(`
 				}, // ` + methodName + `In
-				Resolve: func(p graphql.ResolveParams) (res interface{}, err error) {
+				Resolve: func(p graphql.ResolveParams) (res any, err error) {
 					defer func() {
 						rErr := recover()
 						if rErr != nil {

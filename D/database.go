@@ -10,7 +10,7 @@ type Record interface {
 	GetStr(string) string
 	GetFloat(string) float64
 	GetInt(string) int64
-	GetArr(string) []interface{}
+	GetArr(string) []any
 	GetBool(string) bool
 }
 

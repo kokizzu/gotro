@@ -2,6 +2,8 @@ package Pg
 
 import (
 	"github.com/OneOfOne/cmap"
+	"github.com/kokizzu/gotro/W"
+
 	"github.com/kokizzu/gotro/A"
 	"github.com/kokizzu/gotro/C"
 	"github.com/kokizzu/gotro/F"
@@ -9,7 +11,6 @@ import (
 	"github.com/kokizzu/gotro/L"
 	"github.com/kokizzu/gotro/M"
 	"github.com/kokizzu/gotro/S"
-	"github.com/kokizzu/gotro/W"
 	"github.com/kokizzu/gotro/X"
 )
 
@@ -55,7 +56,7 @@ type FieldModel struct {
 }
 
 func (field *FieldModel) SqlColumn() string {
-	query := ``
+	var query string
 	switch field.Key {
 	case `id`, `is_deleted`, `unique_id`:
 		if field.CustomQuery == `` {
@@ -387,7 +388,7 @@ func (qp *QueryParams) SearchQuery_ByConn(conn *RDBMS) {
 		v_str := X.ToS(val)
 		val_arr := S.Split(v_str, `|`)
 		where_add := []string{}
-		criteria := ``
+		var criteria string
 		if fm.CustomQuery != `` {
 			criteria = `(` + fm.CustomQuery + `)`
 		} else {

@@ -20,6 +20,6 @@ import (
 	_ "github.com/kokizzu/gotro/Z"
 )
 
-func main() {
+func _() {
 
 }

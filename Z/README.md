@@ -45,8 +45,8 @@ buff := bytes.Buffer{}
 tc.Render(&buff,M.SX{
 	`title`: `this is a title`,
 	`aNumber`: 123,
-	`anArray`: A.X{1,`b`,`c`,4}, // == []interface{}
-	`aMap`: M.SX{ // == map[string]interface{}
+	`anArray`: A.X{1,`b`,`c`,4}, // == []any
+	`aMap`: M.SX{ // == map[string]any
 		`a`:1,
 		`b`:`test`,
 		`c`:`something`,

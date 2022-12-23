@@ -98,21 +98,21 @@ StrsAppendIfNotExists Append slices if not exists
 #### func  ToJson
 
 ```go
-func ToJson(arr []interface{}) string
+func ToJson(arr []any) string
 ```
 ToJson convert map array of string to JSON string type
 
-    m := []interface{}{123,`abc`}
+    m := []any{123,`abc`}
     L.Print(A.ToJson(m)) // [123,"abc"]
 
 #### func  ToMsgp
 
 ```go
-func ToMsgp(arr []interface{}) []byte
+func ToMsgp(arr []any) []byte
 ```
 ToMsgp convert map array of string to MsgPack string type
 
-    m := []interface{}{123,`abc`}
+    m := []any{123,`abc`}
     L.Print(string(A.ToMsgp(m))) // �{�abc
 
 #### func  UIntJoin
@@ -128,7 +128,7 @@ UIntJoin combine uint64s in the array of int64 with the chosen string separator
 #### type MSX
 
 ```go
-type MSX []map[string]interface{}
+type MSX []map[string]any
 ```
 
 MSX array (slice) of map with string key and any value
@@ -142,7 +142,7 @@ MSX array (slice) of map with string key and any value
 #### type X
 
 ```go
-type X []interface{}
+type X []any
 ```
 
 X array (slice) of anything

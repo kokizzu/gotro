@@ -95,10 +95,9 @@ func (s *Session) Login(val M.SX) {
 // should be called after receiving request
 func (s *Session) Load(ctx *Context) {
 	r := ctx.RequestCtx
-	h := r.Request.Header
-	s.UserAgent = string(h.UserAgent())
+	s.UserAgent = string(r.Request.Header.UserAgent())
 	s.IpAddr = r.RemoteAddr().String()
-	cookie := string(h.Cookie(SESS_KEY))
+	cookie := string(r.Request.Header.Cookie(SESS_KEY))
 	if cookie == `` {
 		s.SX = M.SX{}
 		s.RandomKey()

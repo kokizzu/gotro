@@ -2,13 +2,14 @@ package Pg
 
 import (
 	"github.com/jmoiron/sqlx"
+
 	"github.com/kokizzu/gotro/L"
 )
 
 type Records struct {
 	ResultSet   *sqlx.Rows
 	Query       string
-	QueryParams []interface{}
+	QueryParams []any
 }
 
 func (r *Records) ErrorCheck(err error, msg string) {
@@ -27,7 +28,7 @@ func (r *Records) Next() bool {
 func (r *Records) Close() {
 	r.ResultSet.Close()
 }
-func (r *Records) ScanSlice() []interface{} {
+func (r *Records) ScanSlice() []any {
 	arr, err := r.ResultSet.SliceScan()
 	r.ErrorCheck(err, `ScanSlice`)
 	for k, v := range arr {
@@ -38,18 +39,18 @@ func (r *Records) ScanSlice() []interface{} {
 	}
 	return arr
 }
-func (r *Records) ScanStruct(dest interface{}) bool {
+func (r *Records) ScanStruct(dest any) bool {
 	err := r.ResultSet.StructScan(dest)
 	r.ErrorCheck(err, `StructScan`)
 	return err == nil
 }
-func (r *Records) Scan(dest ...interface{}) bool {
+func (r *Records) Scan(dest ...any) bool {
 	err := r.ResultSet.Scan(dest...)
 	r.ErrorCheck(err, `Scan`)
 	return err == nil
 }
-func (r *Records) ScanMap() map[string]interface{} {
-	res := map[string]interface{}{}
+func (r *Records) ScanMap() map[string]any {
+	res := map[string]any{}
 	err := r.ResultSet.MapScan(res)
 	r.ErrorCheck(err, `MapScan`)
 	for k, v := range res {

@@ -8,105 +8,105 @@
 #### func  ArrToIntArr
 
 ```go
-func ArrToIntArr(any_arr []interface{}) []int64
+func ArrToIntArr(any_arr []any) []int64
 ```
 ArrToIntArr Convert array of any data type to array of int64
 
-    var m4 []interface{}
-    m4 = []interface{}{1}     // // tipe array
+    var m4 []any
+    m4 = []any{1}     // // tipe array
     L.ParentDescribe(X.ArrToIntArr(m4)) // []int64{1}
 
 #### func  ArrToStrArr
 
 ```go
-func ArrToStrArr(any_arr []interface{}) []string
+func ArrToStrArr(any_arr []any) []string
 ```
 ArrToStrArr convert array of any data type to array of string
 
-    var m4 []interface{}
-    m4 = []interface{}{1}     // // tipe array
+    var m4 []any
+    m4 = []any{1}     // // tipe array
     L.ParentDescribe(X.ArrToStrArr(m4)) // []string{"1"}
 
 #### func  ToAX
 
 ```go
-func ToAX(any interface{}) A.X
+func ToAX(x any) A.X
 ```
-ToAX convert to []interface{}
+ToAX convert to []any
 
 #### func  ToArr
 
 ```go
-func ToArr(any interface{}) []interface{}
+func ToArr(x any) []any
 ```
 ToArr convert any data type to array of any
 
-    var m3 interface{}
-    m3 = []interface{}{1}   // tipe array
+    var m3 any
+    m3 = []any{1}   // tipe array
     L.ParentDescribe(X.ToArr(m3)) // []interface {}{int(1),}
 
 #### func  ToBool
 
 ```go
-func ToBool(any interface{}) bool
+func ToBool(any any) bool
 ```
 ToBool convert any data type to bool
 
-    var m interface{}
+    var m any
     m = `123`
     L.ParentDescribe(X.ToBool(m)) // bool(true)
 
 #### func  ToByte
 
 ```go
-func ToByte(any interface{}) byte
+func ToByte(x any) byte
 ```
 ToByte convert any data type to int8
 
-    var m interface{}
+    var m any
     m = `123`
     L.ParentDescribe(X.ToByte(m)) // byte(123)
 
 #### func  ToF
 
 ```go
-func ToF(any interface{}) float64
+func ToF(x any) float64
 ```
 ToF Convert any data type to float64
 
-    var m interface{}
+    var m any
     m = `123.5`
     L.ParentDescribe(X.ToF(m)) // float64(123.5)
 
 #### func  ToI
 
 ```go
-func ToI(any interface{}) int64
+func ToI(x any) int64
 ```
 ToI convert any data type to int64
 
-    var m interface{}
+    var m any
     m = `123`
     L.ParentDescribe(X.ToI(m)) // int64(123)
 
 #### func  ToJson
 
 ```go
-func ToJson(any interface{}) string
+func ToJson(any any) string
 ```
 ToJson convert to standard json text
 
 #### func  ToJson5
 
 ```go
-func ToJson5(any interface{}) string
+func ToJson5(x any) string
 ```
 ToJson5 convert to json5
 
 #### func  ToJsonPretty
 
 ```go
-func ToJsonPretty(any interface{}) string
+func ToJsonPretty(any any) string
 ```
 ToJsonPretty convert to beautiful json text
 
@@ -122,49 +122,49 @@ ToJsonPretty convert to beautiful json text
 #### func  ToMSS
 
 ```go
-func ToMSS(any interface{}) M.SS
+func ToMSS(any any) M.SS
 ```
 ToMSS convert to map[string]string
 
 #### func  ToMSX
 
 ```go
-func ToMSX(any interface{}) M.SX
+func ToMSX(x any) M.SX
 ```
-ToMSX convert to map[string]interface{}
+ToMSX convert to map[string]any
 
 #### func  ToS
 
 ```go
-func ToS(any interface{}) string
+func ToS(x any) string
 ```
 ToS convert any data type to string
 
-    var m interface{}
+    var m any
     m = `123`
     L.ParentDescribe(X.ToS(m)) // `123`
 
 #### func  ToTime
 
 ```go
-func ToTime(any interface{}) time.Time
+func ToTime(x any) time.Time
 ```
 ToTime convert any to time
 
 #### func  ToU
 
 ```go
-func ToU(any interface{}) uint64
+func ToU(x any) uint64
 ```
 ToU convert any data type to uint
 
-    var m interface{}
+    var m any
     m = `123`
     L.ParentDescribe(X.ToI(m)) // uint(123)
 
 #### func  ToYaml
 
 ```go
-func ToYaml(any interface{}) string
+func ToYaml(any any) string
 ```
 ToYaml convert to yaml text

@@ -6,13 +6,14 @@ import (
 	"time"
 
 	"github.com/jmoiron/sqlx"
+	"github.com/kokizzu/gotro/W"
+
 	"github.com/kokizzu/gotro/A"
 	"github.com/kokizzu/gotro/D"
 	"github.com/kokizzu/gotro/I"
 	"github.com/kokizzu/gotro/L"
 	"github.com/kokizzu/gotro/M"
 	"github.com/kokizzu/gotro/S"
-	"github.com/kokizzu/gotro/W"
 	"github.com/kokizzu/gotro/X"
 )
 
@@ -218,7 +219,7 @@ func (db *RDBMS) FixSerialSequence(table string) {
 }
 
 // query any number of columns, returns array of slice (to be exported directly to json, not for processing)
-func (db *RDBMS) QArray(query string, params ...interface{}) A.X {
+func (db *RDBMS) QArray(query string, params ...any) A.X {
 	rows := db.QAll(query)
 	res := A.X{}
 	defer rows.Close()
@@ -229,7 +230,7 @@ func (db *RDBMS) QArray(query string, params ...interface{}) A.X {
 }
 
 // query any number of columns, returns first line of line
-func (db *RDBMS) QFirstMap(query string, params ...interface{}) M.SX {
+func (db *RDBMS) QFirstMap(query string, params ...any) M.SX {
 	rows := db.QAll(query)
 	defer rows.Close()
 	for rows.Next() {
@@ -239,7 +240,7 @@ func (db *RDBMS) QFirstMap(query string, params ...interface{}) M.SX {
 }
 
 // query any number of columns, returns first line of line
-func (db *RDBMS) QFirstArray(query string, params ...interface{}) A.X {
+func (db *RDBMS) QFirstArray(query string, params ...any) A.X {
 	rows := db.QAll(query)
 	defer rows.Close()
 	for rows.Next() {
@@ -249,7 +250,7 @@ func (db *RDBMS) QFirstArray(query string, params ...interface{}) A.X {
 }
 
 // query any number of columns, returns array of slice (to be exported directly to json, not for processing)
-func (db *RDBMS) QMapArray(query string, params ...interface{}) A.MSX {
+func (db *RDBMS) QMapArray(query string, params ...any) A.MSX {
 	rows := db.QAll(query)
 	res := A.MSX{}
 	defer rows.Close()
@@ -260,7 +261,7 @@ func (db *RDBMS) QMapArray(query string, params ...interface{}) A.MSX {
 }
 
 // query to tsv file
-func (db *RDBMS) QTsv(header, query string, params ...interface{}) bytes.Buffer {
+func (db *RDBMS) QTsv(header, query string, params ...any) bytes.Buffer {
 	res := bytes.Buffer{}
 	res.WriteString(header)
 	rows := db.QAll(query)
@@ -278,7 +279,7 @@ func (db *RDBMS) QTsv(header, query string, params ...interface{}) bytes.Buffer 
 
 // query any number of columns, returns map of string, array (to be exported directly to json, not for processing)
 // the key_idx will be converted to string and taken as key
-func (db *RDBMS) QStrIdxArrMap(key_idx int64, query string, params ...interface{}) M.SAX {
+func (db *RDBMS) QStrIdxArrMap(key_idx int64, query string, params ...any) M.SAX {
 	rows := db.QAll(query)
 	res := M.SAX{}
 	defer rows.Close()
@@ -292,7 +293,7 @@ func (db *RDBMS) QStrIdxArrMap(key_idx int64, query string, params ...interface{
 
 // query any number of columns, returns map of string, array (to be exported directly to json, not for processing)
 // the first index will be converted to string and taken as key
-func (db *RDBMS) QStrShiftArrMap(query string, params ...interface{}) M.SAX {
+func (db *RDBMS) QStrShiftArrMap(query string, params ...any) M.SAX {
 	rows := db.QAll(query)
 	res := M.SAX{}
 	defer rows.Close()
@@ -306,7 +307,7 @@ func (db *RDBMS) QStrShiftArrMap(query string, params ...interface{}) M.SAX {
 
 // query any number of columns, returns map of string, map (to be exported directly to json, not for processing)
 // the key_idx will be converted to string and taken as key
-func (db *RDBMS) QStrMapMap(key_idx string, query string, params ...interface{}) M.SX {
+func (db *RDBMS) QStrMapMap(key_idx string, query string, params ...any) M.SX {
 	rows := db.QAll(query)
 	res := M.SX{}
 	defer rows.Close()
@@ -320,7 +321,7 @@ func (db *RDBMS) QStrMapMap(key_idx string, query string, params ...interface{})
 
 // query 2 colums of integer-integer as map
 // SELECT id, COUNT(*)
-func (db *RDBMS) QIntIntMap(query string, params ...interface{}) M.II {
+func (db *RDBMS) QIntIntMap(query string, params ...any) M.II {
 	res := M.II{}
 	rows := db.QAll(query, params...)
 	defer rows.Close()
@@ -335,7 +336,7 @@ func (db *RDBMS) QIntIntMap(query string, params ...interface{}) M.II {
 
 // query 2 colums of integer-string as map
 // SELECT id, unique_id
-func (db *RDBMS) QIntStrMap(query string, params ...interface{}) M.IS {
+func (db *RDBMS) QIntStrMap(query string, params ...any) M.IS {
 	res := M.IS{}
 	rows := db.QAll(query, params...)
 	defer rows.Close()
@@ -350,7 +351,7 @@ func (db *RDBMS) QIntStrMap(query string, params ...interface{}) M.IS {
 
 // query 1 colums of string as map
 // SELECT unique_id
-func (db *RDBMS) QStrBoolMap(query string, params ...interface{}) M.SB {
+func (db *RDBMS) QStrBoolMap(query string, params ...any) M.SB {
 	res := M.SB{}
 	rows := db.QAll(query, params...)
 	defer rows.Close()
@@ -363,7 +364,7 @@ func (db *RDBMS) QStrBoolMap(query string, params ...interface{}) M.SB {
 }
 
 // query single column int64, return with true value
-func (db *RDBMS) QIntBoolMap(query string, params ...interface{}) M.IB {
+func (db *RDBMS) QIntBoolMap(query string, params ...any) M.IB {
 	res := M.IB{}
 	rows := db.QAll(query, params...)
 	defer rows.Close()
@@ -376,7 +377,7 @@ func (db *RDBMS) QIntBoolMap(query string, params ...interface{}) M.IB {
 }
 
 // query 2 colums of string-string as map
-func (db *RDBMS) QStrStrMap(query string, params ...interface{}) M.SS {
+func (db *RDBMS) QStrStrMap(query string, params ...any) M.SS {
 	res := M.SS{}
 	rows := db.QAll(query, params...)
 	defer rows.Close()
@@ -390,7 +391,7 @@ func (db *RDBMS) QStrStrMap(query string, params ...interface{}) M.SS {
 }
 
 // query 1+N columns of string-[]any as map
-func (db *RDBMS) QStrArrMap(query string, params ...interface{}) M.SAX {
+func (db *RDBMS) QStrArrMap(query string, params ...any) M.SAX {
 	res := M.SAX{}
 	rows := db.QAll(query, params...)
 	defer rows.Close()
@@ -402,7 +403,7 @@ func (db *RDBMS) QStrArrMap(query string, params ...interface{}) M.SAX {
 }
 
 // query 2 colums of string-integer as map
-func (db *RDBMS) QStrIntMap(query string, params ...interface{}) M.SI {
+func (db *RDBMS) QStrIntMap(query string, params ...any) M.SI {
 	res := M.SI{}
 	rows := db.QAll(query, params...)
 	defer rows.Close()
@@ -416,7 +417,7 @@ func (db *RDBMS) QStrIntMap(query string, params ...interface{}) M.SI {
 }
 
 // query 1 colums of integer as map
-func (db *RDBMS) QIntCountMap(query string, params ...interface{}) M.II {
+func (db *RDBMS) QIntCountMap(query string, params ...any) M.II {
 	res := M.II{}
 	rows := db.QAll(query, params...)
 	defer rows.Close()
@@ -431,7 +432,7 @@ func (db *RDBMS) QIntCountMap(query string, params ...interface{}) M.II {
 // query 1 colums of string as map
 // result equal to: SELECT name, COUNT(*) FROM tabel1 GROUP BY 1
 // map[string]int
-func (db *RDBMS) QStrCountMap(query string, params ...interface{}) M.SI {
+func (db *RDBMS) QStrCountMap(query string, params ...any) M.SI {
 	res := M.SI{}
 	rows := db.QAll(query, params...)
 	defer rows.Close()
@@ -444,7 +445,7 @@ func (db *RDBMS) QStrCountMap(query string, params ...interface{}) M.SI {
 }
 
 // query 1 colums of integer
-func (db *RDBMS) QIntArr(query string, params ...interface{}) []int64 {
+func (db *RDBMS) QIntArr(query string, params ...any) []int64 {
 	res := []int64{}
 	rows := db.QAll(query, params...)
 	defer rows.Close()
@@ -457,7 +458,7 @@ func (db *RDBMS) QIntArr(query string, params ...interface{}) []int64 {
 }
 
 // query one cell [1,2,3,...] and return array of int64
-func (db *RDBMS) QJsonIntArr(query string, params ...interface{}) []int64 {
+func (db *RDBMS) QJsonIntArr(query string, params ...any) []int64 {
 	str := db.QStr(query, params...)
 	ax := S.JsonToArr(str)
 	ai := []int64{}
@@ -468,7 +469,7 @@ func (db *RDBMS) QJsonIntArr(query string, params ...interface{}) []int64 {
 }
 
 // query 1 colums of string
-func (db *RDBMS) QStrArr(query string, params ...interface{}) []string {
+func (db *RDBMS) QStrArr(query string, params ...any) []string {
 	res := []string{}
 	rows := db.QAll(query, params...)
 	defer rows.Close()
@@ -481,7 +482,7 @@ func (db *RDBMS) QStrArr(query string, params ...interface{}) []string {
 }
 
 // do query all, also calls DoPrepare, don't forget to close the rows
-func (db *RDBMS) QAll(query string, params ...interface{}) (rows Records) {
+func (db *RDBMS) QAll(query string, params ...any) (rows Records) {
 	var start time.Time
 	if DEBUG {
 		start = time.Now()
@@ -498,7 +499,7 @@ func (db *RDBMS) QAll(query string, params ...interface{}) (rows Records) {
 }
 
 // execute a select single value query, convert to string
-func (db *RDBMS) QStr(query string, params ...interface{}) (dest string) {
+func (db *RDBMS) QStr(query string, params ...any) (dest string) {
 	err := db.Adapter.Get(&dest, query, params...)
 	L.PanicIf(err, `failed to QStr: %s %# v`, query, params)
 	return
@@ -532,7 +533,7 @@ func (db *RDBMS) QUniq(table string, key int64) (uniq string) {
 }
 
 // execute a select pair query, convert to int64 and string
-func (db *RDBMS) QIntStr(query string, params ...interface{}) (i int64, s string) {
+func (db *RDBMS) QIntStr(query string, params ...any) (i int64, s string) {
 	db.DoTransaction(func(tx *Tx) string {
 		i, s = tx.QIntStr(query, params...)
 		return ``
@@ -541,7 +542,7 @@ func (db *RDBMS) QIntStr(query string, params ...interface{}) (i int64, s string
 }
 
 // execute a select pair query, convert to string and int64
-func (db *RDBMS) QStrInt(query string, params ...interface{}) (s string, i int64) {
+func (db *RDBMS) QStrInt(query string, params ...any) (s string, i int64) {
 	db.DoTransaction(func(tx *Tx) string {
 		s, i = tx.QStrInt(query, params...)
 		return ``
@@ -550,7 +551,7 @@ func (db *RDBMS) QStrInt(query string, params ...interface{}) (s string, i int64
 }
 
 // execute a select pair query, convert to string and string
-func (db *RDBMS) QStrStr(query string, params ...interface{}) (s string, ss string) {
+func (db *RDBMS) QStrStr(query string, params ...any) (s string, ss string) {
 	db.DoTransaction(func(tx *Tx) string {
 		s, ss = tx.QStrStr(query, params...)
 		return ``
@@ -561,14 +562,14 @@ func (db *RDBMS) QStrStr(query string, params ...interface{}) (s string, ss stri
 // query single column string, return with true value
 
 // execute a select single value query, convert to int64
-func (db *RDBMS) QBool(query string, params ...interface{}) (dest bool) {
+func (db *RDBMS) QBool(query string, params ...any) (dest bool) {
 	err := db.Adapter.Get(&dest, query, params...)
 	L.PanicIf(err, `failed to QBool: %s %# v`, query, params)
 	return
 }
 
 // execute a select single value query, convert to int64
-func (db *RDBMS) QInt(query string, params ...interface{}) (dest int64) {
+func (db *RDBMS) QInt(query string, params ...any) (dest int64) {
 	err := db.Adapter.Get(&dest, query, params...)
 	L.PanicIf(err, `failed to QInt: %s %# v`, query, params)
 	return
@@ -586,7 +587,7 @@ FROM (
 	return
 }
 
-func (db *RDBMS) QFloat(query string, params ...interface{}) (dest float64) {
+func (db *RDBMS) QFloat(query string, params ...any) (dest float64) {
 	err := db.Adapter.Get(&dest, query, params...)
 	L.PanicIf(err, `failed to QFloat: %s %# v`, query, params)
 	return
@@ -719,7 +720,7 @@ func (db *RDBMS) DoTransaction(lambda func(tx *Tx) string) {
 			return
 		}
 		L.Describe(ok)
-		tx.Rollback() // rollback when there is a string
+		L.IsError(tx.Rollback(), `RDBMS.DoTransaction.Rollback`) // rollback when there is a string
 	}()
 	ok = lambda(&Tx{tx})
 }

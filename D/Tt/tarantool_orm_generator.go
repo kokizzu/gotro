@@ -60,7 +60,8 @@ func TypeGraphql(field Field) string {
 const connStruct = `Tt.Adapter`
 const connImport = "\n\n\t`github.com/tarantool/go-tarantool`"
 const iterEq = `tarantool.IterEq`
-const iterAll = `tarantool.IterAll`
+
+//const iterAll = `tarantool.IterAll`
 
 const NL = "\n"
 
@@ -386,7 +387,7 @@ func GenerateOrm(tables map[TableName]*TableProp, withGraphql ...bool) {
 		// to AX
 		RQ(`func (` + receiverName + ` *` + structName + ") ToArray() A.X { //nolint:dupl false positive\n")
 		if props.AutoIncrementId {
-			RQ("	var " + IdCol + " interface{} = nil\n")
+			RQ("	var " + IdCol + " any = nil\n")
 			idProp := receiverName + "." + S.PascalCase(IdCol)
 			RQ("	if " + idProp + " != 0 {\n")
 			RQ("		" + IdCol + " = " + idProp + "\n")
@@ -542,7 +543,7 @@ func generateGraphqlQueryField(structName string, uniqueFieldName string, field 
 	// graphql field resolver
 	RQ(`func (g *` + structName + `) GraphqlField` + structName + "By" + uniqueFieldName + "WithResolver() *graphql.Field {\n")
 	RQ("	field := *GraphqlField" + structName + "By" + uniqueFieldName + "\n")
-	RQ("	field.Resolve = func(p graphql.ResolveParams) (interface{}, error) {\n")
+	RQ("	field.Resolve = func(p graphql.ResolveParams) (any, error) {\n")
 	RQ("		q := g\n")
 	RQ("		v, ok := p.Args[" + S.BT(S.LowerFirst(uniqueFieldName)) + "]\n")
 	RQ("		if !ok {\n")

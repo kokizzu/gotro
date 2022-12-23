@@ -10,7 +10,7 @@ const WebBR = "\n<br/>"
 ```
 
 ```go
-var BgRed, BgGreen (func(format string, a ...interface{}) string)
+var BgRed, BgGreen (func(format string, a ...any) string)
 ```
 
 ```go
@@ -56,7 +56,7 @@ var TIMETRACK_MIN_DURATION float64
 #### func  CheckIf
 
 ```go
-func CheckIf(is_err bool, msg string, args ...interface{}) bool
+func CheckIf(is_err bool, msg string, args ...any) bool
 ```
 CheckIf print error
 
@@ -77,7 +77,7 @@ CreateFile create file with specific content
 #### func  Describe
 
 ```go
-func Describe(args ...interface{})
+func Describe(args ...any)
 ```
 Describe pretty print any variable
 
@@ -98,7 +98,7 @@ FileExists check file exists
 #### func  IsError
 
 ```go
-func IsError(err error, msg string, args ...interface{}) bool
+func IsError(err error, msg string, args ...any) bool
 ```
 IsError print error
 
@@ -112,14 +112,14 @@ LogTrack return elapsed time in ms, show 3nd level, returns in ms
 #### func  PanicIf
 
 ```go
-func PanicIf(err error, msg string, args ...interface{})
+func PanicIf(err error, msg string, args ...any)
 ```
 PanicIf print error message and exit program
 
 #### func  ParentDescribe
 
 ```go
-func ParentDescribe(args ...interface{})
+func ParentDescribe(args ...any)
 ```
 ParentDescribe describe anything
 
@@ -151,14 +151,14 @@ PipeRunCmd run cmd and pipe to stdout
 #### func  Print
 
 ```go
-func Print(any ...interface{})
+func Print(any ...any)
 ```
 Print replacement for fmt.Println, gives line number
 
 #### func  PrintParent
 
 ```go
-func PrintParent(any ...interface{})
+func PrintParent(any ...any)
 ```
 PrintParent print but show grandparent caller function
 

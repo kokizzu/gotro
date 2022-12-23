@@ -45,7 +45,7 @@ func TestMidFunction(t *testing.T) {
 }
 
 func TestMsgpToMap(t *testing.T) {
-	map0 := map[string]interface{}{"a": 1, "b": 2}
+	map0 := map[string]any{"a": 1, "b": 2}
 	msgpStr, _ := msgpack.Marshal(map0)
 	map1 := MsgpToMap(msgpStr)
 	assert.Equal(t, fmt.Sprint(map0), fmt.Sprint(map1))
@@ -59,14 +59,14 @@ func TestMsgpToStrStrMap(t *testing.T) {
 }
 
 func TestMsgpToArr(t *testing.T) {
-	arr0 := []interface{}{1, "test"}
+	arr0 := []any{1, "test"}
 	msgpStr, _ := msgpack.Marshal(arr0)
 	arr1 := MsgpToArr(msgpStr)
 	assert.Equal(t, fmt.Sprint(arr0), fmt.Sprint(arr1))
 }
 
 func TestMsgpToObjArr(t *testing.T) {
-	arr0 := []map[string]interface{}{{"a": 1, "b": 2}, {"c": 3, "b": 4}}
+	arr0 := []map[string]any{{"a": 1, "b": 2}, {"c": 3, "b": 4}}
 	msgpStr, _ := msgpack.Marshal(arr0)
 	arr1 := MsgpToObjArr(msgpStr)
 	assert.Equal(t, fmt.Sprint(arr0), fmt.Sprint(arr1))
@@ -87,7 +87,7 @@ func TestMsgpToIntArr(t *testing.T) {
 }
 
 func TestMsgpAsMap(t *testing.T) {
-	map0 := map[string]interface{}{"a": 1, "b": 2}
+	map0 := map[string]any{"a": 1, "b": 2}
 	msgpStr, _ := msgpack.Marshal(map0)
 	map1, ok := MsgpAsMap(msgpStr)
 	assert.True(t, ok)
@@ -95,7 +95,7 @@ func TestMsgpAsMap(t *testing.T) {
 }
 
 func TestMsgpAsArr(t *testing.T) {
-	arr0 := []interface{}{1, "test"}
+	arr0 := []any{1, "test"}
 	msgpStr, _ := msgpack.Marshal(arr0)
 	arr1, ok := MsgpAsArr(msgpStr)
 	assert.True(t, ok)

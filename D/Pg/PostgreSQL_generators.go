@@ -8,9 +8,9 @@ import (
 )
 
 // generate insert, requires table name and field-value params
-func GenInsert(table string, kvparams M.SX) (string, []interface{}) {
+func GenInsert(table string, kvparams M.SX) (string, []any) {
 	query := bytes.Buffer{}
-	params := []interface{}{}
+	params := []any{}
 	query.WriteString(`INSERT INTO ` + table + `( `)
 	len := 0
 	for key, val := range kvparams {
@@ -33,14 +33,14 @@ func GenInsert(table string, kvparams M.SX) (string, []interface{}) {
 }
 
 // generate update, requires table name, id and field-value params
-func GenUpdateId(table string, id int64, kvparams M.SX) (string, []interface{}) {
+func GenUpdateId(table string, id int64, kvparams M.SX) (string, []any) {
 	return GenUpdateWhere(table, `id = `+I.ToS(id), kvparams)
 }
 
 // generate update, requires table, id and
-func GenUpdateWhere(table, where string, kvparams M.SX) (string, []interface{}) {
+func GenUpdateWhere(table, where string, kvparams M.SX) (string, []any) {
 	query := bytes.Buffer{}
-	params := []interface{}{}
+	params := []any{}
 	query.WriteString(`UPDATE ` + table + ` SET `)
 	len := 1
 	for key, val := range kvparams {

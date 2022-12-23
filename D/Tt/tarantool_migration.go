@@ -11,7 +11,7 @@ import (
 
 const DEBUG = false
 
-func Descr(args ...interface{}) {
+func Descr(args ...any) {
 	if DEBUG {
 		L.ParentDescribe(args...)
 	}
@@ -91,7 +91,7 @@ type Index struct {
 	Sequence    string   `msgpack:"sequence,omitempty"`
 }
 
-type MSX map[string]interface{}
+type MSX map[string]any
 
 func (a *Adapter) UpsertTable(tableName TableName, prop *TableProp) bool {
 	if DEBUG {
@@ -213,7 +213,7 @@ func (a *Adapter) ExecBoxSpaceVerbose(funcName string, params A.X) string {
 }
 
 // ignore return value
-func (a *Adapter) CallBoxSpace(funcName string, params A.X) (rows [][]interface{}) {
+func (a *Adapter) CallBoxSpace(funcName string, params A.X) (rows [][]any) {
 	Descr(funcName)
 	Descr(params)
 	res, err := a.Call(BoxSpacePrefix+funcName, params)
@@ -240,15 +240,12 @@ func (a *Adapter) ReformatTable(tableName string, fields []Field) bool {
 	schema := a.Schema
 	table := schema.Spaces[tableName]
 	if len(table.Fields) == 0 { // new table, create anyway
-		if !a.ExecBoxSpace(tableName+`:format`, A.X{
+		return a.ExecBoxSpace(tableName+`:format`, A.X{
 			&fields,
-		}) {
-			return false // failed to create table
-		}
-		return true
+		}) // failed to create table
 	}
 	// table already exists
-	newFields := []NullableField{}
+	var newFields []NullableField
 	nullFields := map[string]DataType{}
 	for idx, newField := range fields { // diff and create nullable field
 		origField := table.FieldsById[uint32(idx)]
@@ -287,7 +284,7 @@ func (a *Adapter) ReformatTable(tableName string, fields []Field) bool {
 func (a *Adapter) CreateSpace(tableName string, engine EngineType) bool {
 	err := a.ExecTarantoolVerbose(`box.schema.space.create`, A.X{
 		tableName,
-		map[string]interface{}{
+		map[string]any{
 			Engine: string(engine),
 			//IfNotExists: true,
 		},

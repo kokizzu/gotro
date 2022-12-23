@@ -32,19 +32,13 @@ func CreateFile(path string, content string) bool {
 	}
 
 	err = file.Sync()
-	if IsError(err, `CreateFile.SyncFile: %s`, path) {
-		return false
-	}
-	return true
+	return !IsError(err, `CreateFile.SyncFile: %s`, path)
 }
 
 // CreateDir create directory recursively
 func CreateDir(path string) bool {
 	err := os.MkdirAll(path, 0777)
-	if IsError(err, `CreateDir: `+path) {
-		return false
-	}
-	return true
+	return !IsError(err, `CreateDir: `+path)
 }
 
 // ReadFile read file content as string

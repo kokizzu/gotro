@@ -269,7 +269,7 @@ OFFSET ` + X.ToS(offset) // note: for string, use S.Z or S.XSS to prevent SQL in
 	if conf.DEBUG_MODE {
 		L.Print(query)
 	}
-	s.Adapter.QuerySql(query, func(row []interface{}) {
+	s.Adapter.QuerySql(query, func(row []any) {
 		obj := &Users{}
 		obj.FromArray(row)
 		obj.CensorFields()

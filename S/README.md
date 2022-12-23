@@ -242,9 +242,9 @@ IndexOf get first index of S.IndexOf(`abcdcd`,`c) // 2, -1 if not exists
 #### func  JsonAsArr
 
 ```go
-func JsonAsArr(str string) (res []interface{}, ok bool)
+func JsonAsArr(str string) (res []any, ok bool)
 ```
-JsonAsArr convert JSON object to []interface{} with check
+JsonAsArr convert JSON object to []any with check
 
     jsonStr := `[1,2,['test'],'a']`
     arr, ok := S.JsonAsArr(jsonStr)
@@ -272,9 +272,9 @@ JsonAsIntArr convert JSON object to []int64 with check
 #### func  JsonAsMap
 
 ```go
-func JsonAsMap(str string) (res map[string]interface{}, ok bool)
+func JsonAsMap(str string) (res map[string]any, ok bool)
 ```
-JsonAsMap convert JSON object to map[string]interface{} with check
+JsonAsMap convert JSON object to map[string]any with check
 
     jsonStr := `{"test":123,"bla":[1,2,3,4]}`
     map1, ok := S.JsonAsMap(jsonStr)
@@ -292,9 +292,9 @@ JsonAsStrArr convert JSON object to []string with check
 #### func  JsonToArr
 
 ```go
-func JsonToArr(str string) (res []interface{})
+func JsonToArr(str string) (res []any)
 ```
-JsonToArr convert JSON object to []interface{}, silently print and return empty
+JsonToArr convert JSON object to []any, silently print and return empty
 slice of interface if failed
 
     jsonStr := `[1,2,['test'],'a']`
@@ -314,9 +314,9 @@ slice of interface if failed
 #### func  JsonToMap
 
 ```go
-func JsonToMap(str string) (res map[string]interface{})
+func JsonToMap(str string) (res map[string]any)
 ```
-JsonToMap convert JSON object to map[string]interface{}, silently print and
+JsonToMap convert JSON object to map[string]any, silently print and
 return empty map if failed
 
     jsonStr := `{"test":123,"bla":[1,2,3,4]}`
@@ -325,9 +325,9 @@ return empty map if failed
 #### func  JsonToObjArr
 
 ```go
-func JsonToObjArr(str string) (res []map[string]interface{})
+func JsonToObjArr(str string) (res []map[string]any)
 ```
-JsonToObjArr convert JSON object to []map[string]interface{}, silently print and
+JsonToObjArr convert JSON object to []map[string]any, silently print and
 return empty slice of interface if failed
 
     jsonStr := `[{"x":"foo"},{"y":"bar"}]`

@@ -1,12 +1,12 @@
 package W
 
 import (
-	"errors"
 	"fmt"
 	"runtime"
 	"time"
 
 	"github.com/fatih/color"
+
 	"github.com/kokizzu/gotro/I"
 	"github.com/kokizzu/gotro/L"
 	"github.com/kokizzu/gotro/S"
@@ -37,14 +37,14 @@ func PanicFilter(ctx *Context) {
 			//L.Panic(errors.New(`Internal Server Error`), ``, err)
 			err2, ok := err.(error)
 			if !ok {
-				err2 = errors.New(fmt.Sprintf("%# v", err))
+				err2 = fmt.Errorf("%# v", err)
 			}
 			err_str := err2.Error()
 			L.LOG.Errorf(err_str)
 			str := L.StackTrace(2)
 			L.LOG.Criticalf("StackTrace: %s", str)
 			ctx.Title += ` (error)`
-			detail := ``
+			var detail string
 			if ctx.Engine.DebugMode {
 				detail = err_str + string(L.StackTrace(3))
 			} else {

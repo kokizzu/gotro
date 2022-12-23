@@ -79,8 +79,8 @@ func (u *UserLogs) sqlAllFields() string { //nolint:dupl false positive
 	return `createdAt, requestId, actorId, error, ipAddr4, ipAddr6, userAgent`
 }
 
-func (u UserLogs) SqlInsertParam() []interface{} { //nolint:dupl false positive
-	return []interface{}{
+func (u UserLogs) SqlInsertParam() []any { //nolint:dupl false positive
+	return []any{
 		u.CreatedAt, // 0
 		u.RequestId, // 1
 		u.ActorId,   // 2
