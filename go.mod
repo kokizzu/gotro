@@ -42,7 +42,6 @@ require (
 	github.com/rs/zerolog v1.26.1
 	github.com/rueian/rueidis v0.0.77
 	github.com/segmentio/fasthash v1.0.3
-	github.com/shamaton/msgpack/v2 v2.1.1
 	github.com/shirou/gopsutil/v3 v3.22.4
 	github.com/stretchr/testify v1.8.1
 	github.com/tarantool/go-tarantool v1.8.0

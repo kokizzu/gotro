@@ -5,7 +5,6 @@ import (
 	"sync"
 
 	"github.com/mitchellh/mapstructure"
-	msgpack2 "github.com/shamaton/msgpack/v2"
 	"github.com/vmihailenco/msgpack/v5"
 
 	"github.com/kokizzu/gotro/L"
@@ -175,8 +174,7 @@ func FastestStructToMap(s any) (m map[string]any) {
 	return
 }
 
-// FastestStructToStruct
-func FastestStructToStruct(src any, dst any) {
-	b, _ := msgpack2.Marshal(src)
-	_ = msgpack.Unmarshal(b, dst)
+// FastestCopyStruct target can be struct or map
+func FastestCopyStruct(s, d any) {
+	_ = mapstructure.Decode(s, d)
 }

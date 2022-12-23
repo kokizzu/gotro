@@ -5,6 +5,13 @@
 
 ## Usage
 
+#### func  FastestCopyStruct
+
+```go
+func FastestCopyStruct(s, d any)
+```
+FastestCopyStruct target can be struct or map
+
 #### func  FastestMapToStruct
 
 ```go
@@ -18,13 +25,6 @@ FastestMapToStruct only for exact match of field name and map key
 func FastestStructToMap(s any) (m map[string]any)
 ```
 FastestStructToMap using struct's field name as map key
-
-#### func  FastestStructToStruct
-
-```go
-func FastestStructToStruct(src any, dst any)
-```
-FastestStructToStruct
 
 #### func  SSKeysStartedWith
 
