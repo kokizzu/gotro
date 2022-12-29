@@ -3,6 +3,7 @@ package S
 import (
 	"fmt"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/assert"
 	"golang.org/x/exp/rand"
@@ -29,6 +30,18 @@ func TestStructAES(t *testing.T) {
 	type Foo struct {
 		A string
 		B int
+		C int8
+		D int16
+		E int32
+		F int64
+		G uint
+		H uint8
+		I uint16
+		J uint32
+		K uint64
+		L float32
+		M float64
+		N time.Time
 	}
 	for z := 1; z <= 33; z++ {
 		pass := RandomPassword(int64(z))
@@ -36,6 +49,19 @@ func TestStructAES(t *testing.T) {
 			plain := Foo{
 				A: RandomPassword(int64(z)),
 				B: rand.Int(),
+				C: int8(rand.Int()),
+				D: int16(rand.Int()),
+				E: int32(rand.Int()),
+				F: rand.Int63(),
+				G: uint(rand.Uint32()),
+				H: uint8(rand.Uint32()),
+				I: uint16(rand.Uint32()),
+				J: rand.Uint32(),
+				K: rand.Uint64(),
+				L: rand.Float32(),
+				M: rand.Float64(),
+				N: time.Unix(time.Now().Unix(), 0),
+				// time.Now always have wall and ext that always deserialized wrongly
 			}
 			crypt := EncryptAES(plain, pass)
 			fmt.Println(len(crypt))
@@ -53,7 +79,19 @@ func TestMapAES(t *testing.T) {
 		t.Run(fmt.Sprintf("keyLen=%d", z), func(t *testing.T) {
 			plain := map[string]any{
 				`A`: RandomPassword(int64(z)),
-				`B`: rand.Uint64(), // msgpack always have length, so we cannot use int
+				// msgpack always have integer size, so we cannot use int or uint
+				`C`: int8(rand.Int()),
+				`D`: int16(rand.Int()),
+				`E`: int32(rand.Int()),
+				`F`: rand.Int63(),
+				`H`: uint8(rand.Uint32()),
+				`I`: uint16(rand.Uint32()),
+				`J`: rand.Uint32(),
+				`K`: rand.Uint64(),
+				`L`: rand.Float32(),
+				`M`: rand.Float64(),
+				`N`: time.Unix(time.Now().Unix(), 0),
+				// time.Now always have wall and ext that always deserialized wrongly
 			}
 			crypt := EncryptAES(plain, pass)
 			fmt.Println(len(crypt))
