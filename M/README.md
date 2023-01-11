@@ -390,6 +390,14 @@ func FromStruct(srcStructPtr any) SX
 ```
 FromStruct convert any struct to map
 
+#### func (*SX) FromJson
+
+```go
+func (hash *SX) FromJson(str string) (ok bool)
+```
+FromJson convert string to map, silently print error if failed doesn't overwrite
+existing value if json doesn't have the same key returns true if ok
+
 #### func (SX) GetAX
 
 ```go

@@ -267,6 +267,20 @@ func (hash IB) KeysConcat(with string) string {
 	return res.String()
 }
 
+// FromJson convert string to map, silently print error if failed
+// doesn't overwrite existing value if json doesn't have the same key
+// returns true if ok
+func (hash *SX) FromJson(str string) (ok bool) {
+	if hash == nil {
+		return false
+	}
+	if len(str) < 3 {
+		return false
+	}
+	err := json.Unmarshal([]byte(str), &hash)
+	return !L.IsError(err, `M.SX.FromJson failed`, str)
+}
+
 // ToJson convert to json string, silently print error if failed
 func (hash SX) ToJson() string {
 	str, err := json.Marshal(hash)
