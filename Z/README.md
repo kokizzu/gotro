@@ -109,5 +109,5 @@ BenchmarkRenderGoTemplate-32       1736002   678.9 ns/op
 ## Performance Optimization Tips
 
 - build/load the template once (`Z.ParseFile` or `Z.FromString`), call `.Render` multiple times
-- preallocate `bytes.Buffer` so it won't need to resize, eg. using [valyala/bytebufferpool](//github.com/valyala/bytebufferpool)
+- preallocate `bytes.Buffer` so it won't need to resize, eg. using [valyala/bytebufferpool](//github.com/valyala/bytebufferpool) or `sync.Pool`
 - for static values, use another caching library like `bigcache` so no need to call `.Render` again and again, the render itself is fast `O(n)` where `n` is the bytes, but the serialization to JSON string might be slow.
