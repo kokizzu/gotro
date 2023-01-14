@@ -148,7 +148,10 @@ func StackTrace(start int) string {
 }
 
 // IsError print error
-func IsError(err error, msg string, args ...any) bool {
+var IsError = DefaultIsError
+
+// DefaultIsError function that prints error with stacktrace
+func DefaultIsError(err error, msg string, args ...any) bool {
 	if err == nil {
 		return false
 	}
@@ -165,18 +168,18 @@ func IsError(err error, msg string, args ...any) bool {
 }
 
 // CheckIf print error
-func CheckIf(is_err bool, msg string, args ...any) bool {
-	if !is_err {
+func CheckIf(isErr bool, msg string, args ...any) bool {
+	if !isErr {
 		return false
 	}
 	pc, file, line, _ := runtime.Caller(1)
 	str := color.MagentaString(file[len(FILE_PATH):] + `:` + I.ToStr(line) + `: `)
 	str += color.YellowString(` ` + runtime.FuncForPC(pc).Name() + `: `)
 	LOG.Errorf(str+msg, args...)
-	res := pretty.Formatter(is_err)
+	res := pretty.Formatter(isErr)
 	LOG.Errorf("%# v\n", res)
 	str = StackTrace(3)
-	res = pretty.Formatter(is_err)
+	res = pretty.Formatter(isErr)
 	LOG.Criticalf("%# v\n    StackTrace: %s", res, str)
 	return true
 }

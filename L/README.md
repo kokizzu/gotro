@@ -38,6 +38,11 @@ var GO_ROOT string
 ```
 
 ```go
+var IsError = DefaultIsError
+```
+IsError print error
+
+```go
 var LAST_CPU_CALL, LAST_RAM_CALL int64
 ```
 
@@ -56,7 +61,7 @@ var TIMETRACK_MIN_DURATION float64
 #### func  CheckIf
 
 ```go
-func CheckIf(is_err bool, msg string, args ...any) bool
+func CheckIf(isErr bool, msg string, args ...any) bool
 ```
 CheckIf print error
 
@@ -73,6 +78,13 @@ CreateDir create directory recursively
 func CreateFile(path string, content string) bool
 ```
 CreateFile create file with specific content
+
+#### func  DefaultIsError
+
+```go
+func DefaultIsError(err error, msg string, args ...any) bool
+```
+DefaultIsError function that prints error with stacktrace
 
 #### func  Describe
 
@@ -94,13 +106,6 @@ FileEmpty check file missing or has zero size
 func FileExists(name string) bool
 ```
 FileExists check file exists
-
-#### func  IsError
-
-```go
-func IsError(err error, msg string, args ...any) bool
-```
-IsError print error
 
 #### func  LogTrack
 
