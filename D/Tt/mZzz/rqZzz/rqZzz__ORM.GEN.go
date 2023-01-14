@@ -113,7 +113,7 @@ func (z *Zzz) FromArray(a A.X) *Zzz { //nolint:dupl false positive
 	return z
 }
 
-// FindOffsetLimit order by idx, eg. .UniqueIndex*()
+// FindOffsetLimit returns slice of struct, order by idx, eg. .UniqueIndex*()
 func (z *Zzz) FindOffsetLimit(offset, limit uint32, idx string) []Zzz { //nolint:dupl false positive
 	var rows []Zzz
 	res, err := z.Adapter.Select(z.SpaceName(), idx, offset, limit, 2, A.X{})
@@ -123,6 +123,21 @@ func (z *Zzz) FindOffsetLimit(offset, limit uint32, idx string) []Zzz { //nolint
 	for _, row := range res.Tuples() {
 		item := Zzz{}
 		rows = append(rows, *item.FromArray(row))
+	}
+	return rows
+}
+
+// FindArrOffsetLimit returns as slice of slice order by idx eg. .UniqueIndex*()
+func (z *Zzz) FindArrOffsetLimit(offset, limit uint32, idx string) []A.X { //nolint:dupl false positive
+	var rows []A.X
+	res, err := z.Adapter.Select(z.SpaceName(), idx, offset, limit, 2, A.X{})
+	if L.IsError(err, `Zzz.FindOffsetLimit failed: `+z.SpaceName()) {
+		return rows
+	}
+	tuples := res.Tuples()
+	rows = make([]A.X, len(tuples))
+	for z, row := range tuples {
+		rows[z] = row
 	}
 	return rows
 }

@@ -6,13 +6,14 @@ import (
 	"os"
 	"testing"
 
-	"github.com/kokizzu/gotro/D/Tt"
-	"github.com/kokizzu/gotro/D/Tt/mZzz"
-	"github.com/kokizzu/gotro/L"
 	"github.com/kpango/fastime"
 	"github.com/ory/dockertest/v3"
 	"github.com/stretchr/testify/assert"
 	"github.com/tarantool/go-tarantool"
+
+	"github.com/kokizzu/gotro/D/Tt"
+	"github.com/kokizzu/gotro/D/Tt/mZzz"
+	"github.com/kokizzu/gotro/L"
 )
 
 var globalPool *dockertest.Pool
