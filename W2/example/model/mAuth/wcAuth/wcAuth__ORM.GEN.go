@@ -66,7 +66,7 @@ func (s *SessionsMutator) DoInsert() bool { //nolint:dupl false positive
 }
 
 // replace = upsert, only error when there's unique secondary key
-func (s *SessionsMutator) DoReplace() bool { //nolint:dupl false positive
+func (s *SessionsMutator) DoUpsert() bool { //nolint:dupl false positive
 	_, err := s.Adapter.Replace(s.SpaceName(), s.ToArray())
 	return !L.IsError(err, `Sessions.DoReplace failed: `+s.SpaceName())
 }
@@ -190,7 +190,7 @@ func (u *UsersMutator) DoInsert() bool { //nolint:dupl false positive
 }
 
 // replace = upsert, only error when there's unique secondary key
-func (u *UsersMutator) DoReplace() bool { //nolint:dupl false positive
+func (u *UsersMutator) DoUpsert() bool { //nolint:dupl false positive
 	_, err := u.Adapter.Replace(u.SpaceName(), u.ToArray())
 	return !L.IsError(err, `Users.DoReplace failed: `+u.SpaceName())
 }

@@ -28,5 +28,5 @@ func RunMigration() {
 	rootUser.FindById()
 	rootUser.SetEmail(`root@localhost`)
 	rootUser.SetEncryptPassword(`test123`)
-	rootUser.DoReplace()
+	rootUser.DoUpsert()
 }

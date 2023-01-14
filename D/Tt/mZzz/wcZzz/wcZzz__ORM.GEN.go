@@ -17,26 +17,34 @@ import (
 //go:generate replacer 'By" form' 'By,string" form' type wcZzz__ORM.GEN.go
 // go:generate msgp -tests=false -file wcZzz__ORM.GEN.go -o wcZzz__MSG.GEN.go
 
+// ZzzMutator DAO writer/command struct
 type ZzzMutator struct {
 	rqZzz.Zzz
 	mutations []A.X
 }
 
+// NewZzzMutator create new ORM writer/command object
 func NewZzzMutator(adapter *Tt.Adapter) *ZzzMutator {
 	return &ZzzMutator{Zzz: rqZzz.Zzz{Adapter: adapter}}
 }
 
+// HaveMutation check whether Set* methods ever called
 func (z *ZzzMutator) HaveMutation() bool { //nolint:dupl false positive
 	return len(z.mutations) > 0
 }
 
-// Overwrite all columns, error if not exists
+// ClearMutations clear all previously called Set* methods
+func (z *ZzzMutator) ClearMutations() { //nolint:dupl false positive
+	z.mutations = []A.X{}
+}
+
+// DoOverwriteById update all columns, error if not exists, not using mutations/Set*
 func (z *ZzzMutator) DoOverwriteById() bool { //nolint:dupl false positive
 	_, err := z.Adapter.Update(z.SpaceName(), z.UniqueIndexId(), A.X{z.Id}, z.ToUpdateArray())
 	return !L.IsError(err, `Zzz.DoOverwriteById failed: `+z.SpaceName())
 }
 
-// Update only mutated, error if not exists, use Find* and Set* methods instead of direct assignment
+// DoUpdateById update only mutated fields, error if not exists, use Find* and Set* methods instead of direct assignment
 func (z *ZzzMutator) DoUpdateById() bool { //nolint:dupl false positive
 	if !z.HaveMutation() {
 		return true
@@ -45,6 +53,7 @@ func (z *ZzzMutator) DoUpdateById() bool { //nolint:dupl false positive
 	return !L.IsError(err, `Zzz.DoUpdateById failed: `+z.SpaceName())
 }
 
+// DoDeletePermanentById permanent delete
 func (z *ZzzMutator) DoDeletePermanentById() bool { //nolint:dupl false positive
 	_, err := z.Adapter.Delete(z.SpaceName(), z.UniqueIndexId(), A.X{z.Id})
 	return !L.IsError(err, `Zzz.DoDeletePermanentById failed: `+z.SpaceName())
@@ -58,7 +67,7 @@ func (z *ZzzMutator) DoDeletePermanentById() bool { //nolint:dupl false positive
 //	return !L.IsError(err, `Zzz.DoUpsert failed: `+z.SpaceName())
 // }
 
-// insert, error if exists
+// DoInsert insert, error if already exists
 func (z *ZzzMutator) DoInsert() bool { //nolint:dupl false positive
 	row, err := z.Adapter.Insert(z.SpaceName(), z.ToArray())
 	if err == nil {
@@ -70,12 +79,14 @@ func (z *ZzzMutator) DoInsert() bool { //nolint:dupl false positive
 	return !L.IsError(err, `Zzz.DoInsert failed: `+z.SpaceName())
 }
 
+// DoReplace upsert, insert or overwrite, will error only when there's unique secondary key being violated
 // replace = upsert, only error when there's unique secondary key
-func (z *ZzzMutator) DoReplace() bool { //nolint:dupl false positive
+func (z *ZzzMutator) DoUpsert() bool { //nolint:dupl false positive
 	_, err := z.Adapter.Replace(z.SpaceName(), z.ToArray())
 	return !L.IsError(err, `Zzz.DoReplace failed: `+z.SpaceName())
 }
 
+// SetId create mutations, should not duplicate
 func (z *ZzzMutator) SetId(val uint64) bool { //nolint:dupl false positive
 	if val != z.Id {
 		z.mutations = append(z.mutations, A.X{`=`, 0, val})
@@ -85,6 +96,7 @@ func (z *ZzzMutator) SetId(val uint64) bool { //nolint:dupl false positive
 	return false
 }
 
+// SetCreatedAt create mutations, should not duplicate
 func (z *ZzzMutator) SetCreatedAt(val int64) bool { //nolint:dupl false positive
 	if val != z.CreatedAt {
 		z.mutations = append(z.mutations, A.X{`=`, 1, val})
