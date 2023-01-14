@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/goccy/go-json"
+	"github.com/vmihailenco/msgpack/v5"
 
 	"github.com/goccy/go-yaml"
 
@@ -1021,4 +1022,21 @@ func ToYaml(any any) string {
 	bytes, err := yaml.Marshal(any)
 	L.IsError(err, `yaml.Marshal`, any)
 	return string(bytes)
+}
+
+// ToMsgp convert anything to Msgpack
+//
+//	msgpStr := X.ToMsgp(struct{ A int }{A: 1})
+func ToMsgp(v any) (res []byte) {
+	byt, err := msgpack.Marshal(v)
+	L.IsError(err, `msgpack.Marshal`, v)
+	return byt
+}
+
+// FromMsgp convert Msgpack to anything
+//
+// ok := X.FromMsgp(`\x81\xa1A\x01`, &struct{ A int }{})
+func FromMsgp(byt []byte, v any) bool {
+	err := msgpack.Unmarshal(byt, v)
+	return !L.IsError(err, `msgpack.Unmarshal`, byt)
 }

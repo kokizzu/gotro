@@ -2,12 +2,21 @@ version: '3.2'
 
 services:
   tarantool1:
-    image: tarantool/tarantool:2.10.2
+    image: tarantool/tarantool:latest # 2.10.4 
     # x.x.0 = alpha, x.x.1 = beta, x.x.2+ = stable, latest not always stable
+    #environment:
+    #  TARANTOOL_USER_NAME: "myusername" 
+    #  TARANTOOL_USER_PASSWORD: "mysecretpassword"
+    #  #TT_READAHEAD: '1632000' # 10x   
+    #  #TT_VINYL_MEMORY: '2684354560' # 20x
+    #  #TT_VINYL_CACHE: '2684354560' # 20x
+    #  #TT_NET_MSG_MAX: '76800' # 100x
+    #  #TT_MEMTX_MEMORY: '268435456' # 1x
+    #  #TT_VINYL_PAGE_SIZE: '8192' # 1x
+    #volumes:
+    #  - ./tarantool1:/var/lib/tarantool
     ports:
       - "3301:3301"
-#    volumes:
-#      - ./tarantool1:/usr/local/share/tarantool
 
 #volumes:
 #  tarantool1:

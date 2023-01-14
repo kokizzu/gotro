@@ -147,7 +147,7 @@ func (a *Adapter) UpsertTable(tableName TableName, prop *TableProp) bool {
 			panic(`Unique2 and Unique3 must be unique`)
 		}
 	}
-	if prop.Unique3 != `` && !(prop.AutoIncrementId && prop.Unique2 == IdCol) {
+	if prop.Unique3 != `` && !(prop.AutoIncrementId && prop.Unique3 == IdCol) {
 		a.ExecBoxSpace(string(tableName)+`:create_index`, A.X{
 			prop.Unique3, Index{Parts: []string{prop.Unique3}, IfNotExists: true, Unique: true},
 		})

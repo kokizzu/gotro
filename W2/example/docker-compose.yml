@@ -15,7 +15,7 @@ services:
 #      - ./config/local.xml:/etc/clickhouse-server/config.d/local.xml
   
   tarantool1:
-    image: tarantool/tarantool:latest # 2.8.2 
+    image: tarantool/tarantool:latest # 2.10.4 
     # x.x.0 = alpha, x.x.1 = beta, x.x.2+ = stable, latest not always stable
     environment:
       TARANTOOL_USER_NAME: "myusername" 
