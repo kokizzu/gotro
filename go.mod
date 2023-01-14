@@ -57,7 +57,7 @@ require (
 	go.opentelemetry.io/otel v1.9.0
 	go.opentelemetry.io/otel/trace v1.9.0
 	golang.org/x/crypto v0.5.0
-	golang.org/x/exp v0.0.0-20230108222341-4b8118a2686a
+	golang.org/x/exp v0.0.0-20230113213754-f9f960f08ad4
 	golang.org/x/oauth2 v0.0.0-20220524215830-622c5d57e401
 	golang.org/x/text v0.6.0
 	gopkg.in/natefinch/lumberjack.v2 v2.0.0

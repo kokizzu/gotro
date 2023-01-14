@@ -1024,7 +1024,7 @@ func ToYaml(any any) string {
 	return string(bytes)
 }
 
-// ToMsgp convert anything to Msgpack
+// ToMsgp convert anything to Msgpack bytes
 //
 //	msgpStr := X.ToMsgp(struct{ A int }{A: 1})
 func ToMsgp(v any) (res []byte) {
@@ -1033,7 +1033,7 @@ func ToMsgp(v any) (res []byte) {
 	return byt
 }
 
-// FromMsgp convert Msgpack to anything
+// FromMsgp convert Msgpack bytes to anything
 //
 // ok := X.FromMsgp(`\x81\xa1A\x01`, &struct{ A int }{})
 func FromMsgp(byt []byte, v any) bool {

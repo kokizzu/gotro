@@ -27,6 +27,15 @@ ArrToStrArr convert array of any data type to array of string
     m4 = []any{1}     // // tipe array
     L.ParentDescribe(X.ArrToStrArr(m4)) // []string{"1"}
 
+#### func  FromMsgp
+
+```go
+func FromMsgp(byt []byte, v any) bool
+```
+FromMsgp convert Msgpack bytes to anything
+
+ok := X.FromMsgp(`\x81\xa1A\x01`, &struct{ A int }{})
+
 #### func  ToAX
 
 ```go
@@ -132,6 +141,15 @@ ToMSS convert to map[string]string
 func ToMSX(x any) M.SX
 ```
 ToMSX convert to map[string]any
+
+#### func  ToMsgp
+
+```go
+func ToMsgp(v any) (res []byte)
+```
+ToMsgp convert anything to Msgpack bytes
+
+    msgpStr := X.ToMsgp(struct{ A int }{A: 1})
 
 #### func  ToS
 
