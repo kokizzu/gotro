@@ -7,6 +7,8 @@ import (
 	"sort"
 	"strings"
 
+	"github.com/tarantool/go-tarantool"
+
 	"github.com/kokizzu/gotro/I"
 	"github.com/kokizzu/gotro/L"
 	"github.com/kokizzu/gotro/S"
@@ -414,18 +416,18 @@ func GenerateOrm(tables map[TableName]*TableProp, withGraphql ...bool) {
 		RQ("}\n\n")
 
 		// find many
-		//RQ(`func (` + receiverName + ` *` + structName + ") FindOffsetLimit(offset, limit uint32, idx string) []*" + structName + " { //nolint:dupl false positive\n")
-		//RQ("	var rows []*" + structName + NL)
-		//RQ("	res, err := " + receiverName + ".Adapter.Select(" + receiverName + ".SpaceName(), idx, offset, limit, " + iterAll + ", A.X{})\n")
-		//RQ("	if L.IsError(err, `" + structName + ".FindOffsetLimit failed: `+" + receiverName + ".SpaceName()) {\n")
-		//RQ("		return rows\n")
-		//RQ("	}\n")
-		//RQ("	for _, row := range res.Tuples() {\n")
-		//RQ("		item := &" + structName + "{}\n")
-		//RQ("		rows = append(rows, item.FromArray(row))\n")
-		//RQ("	}\n")
-		//RQ("	return rows\n")
-		//RQ("}\n\n")
+		RQ(`func (` + receiverName + ` *` + structName + ") FindOffsetLimit(offset, limit uint32, idx string) []" + structName + " { //nolint:dupl false positive\n")
+		RQ("	var rows []" + structName + NL)
+		RQ("	res, err := " + receiverName + ".Adapter.Select(" + receiverName + ".SpaceName(), idx, offset, limit, " + X.ToS(tarantool.IterAll) + ", A.X{})\n")
+		RQ("	if L.IsError(err, `" + structName + ".FindOffsetLimit failed: `+" + receiverName + ".SpaceName()) {\n")
+		RQ("		return rows\n")
+		RQ("	}\n")
+		RQ("	for _, row := range res.Tuples() {\n")
+		RQ("		item := " + structName + "{}\n")
+		RQ("		rows = append(rows, *item.FromArray(row))\n")
+		RQ("	}\n")
+		RQ("	return rows\n")
+		RQ("}\n\n")
 
 		// total records
 		RQ(`func (` + receiverName + ` *` + structName + ") Total() int64 { //nolint:dupl false positive\n")

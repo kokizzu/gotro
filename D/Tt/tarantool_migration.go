@@ -165,6 +165,9 @@ func (a *Adapter) UpsertTable(tableName TableName, prop *TableProp) bool {
 			index, Index{Parts: []string{index}, IfNotExists: true},
 		})
 	}
+	// need refresh index after migrate
+	// https://github.com/tarantool/go-tarantool/pull/259#pullrequestreview-1242058107
+	a.Connection = a.Reconnect()
 	return true
 }
 

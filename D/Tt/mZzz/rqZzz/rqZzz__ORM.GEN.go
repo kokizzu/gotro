@@ -100,6 +100,19 @@ func (z *Zzz) FromArray(a A.X) *Zzz { //nolint:dupl false positive
 	return z
 }
 
+func (z *Zzz) FindOffsetLimit(offset, limit uint32, idx string) []Zzz { //nolint:dupl false positive
+	var rows []Zzz
+	res, err := z.Adapter.Select(z.SpaceName(), idx, offset, limit, 2, A.X{})
+	if L.IsError(err, `Zzz.FindOffsetLimit failed: `+z.SpaceName()) {
+		return rows
+	}
+	for _, row := range res.Tuples() {
+		item := Zzz{}
+		rows = append(rows, *item.FromArray(row))
+	}
+	return rows
+}
+
 func (z *Zzz) Total() int64 { //nolint:dupl false positive
 	rows := z.Adapter.CallBoxSpace(z.SpaceName() + `:count`, A.X{})
 	if len(rows) > 0 && len(rows[0]) > 0 {
