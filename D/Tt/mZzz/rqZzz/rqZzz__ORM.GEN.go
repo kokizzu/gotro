@@ -128,18 +128,18 @@ func (z *Zzz) FindOffsetLimit(offset, limit uint32, idx string) []Zzz { //nolint
 }
 
 // FindArrOffsetLimit returns as slice of slice order by idx eg. .UniqueIndex*()
-func (z *Zzz) FindArrOffsetLimit(offset, limit uint32, idx string) []A.X { //nolint:dupl false positive
+func (z *Zzz) FindArrOffsetLimit(offset, limit uint32, idx string) ([]A.X, Tt.QueryMeta) { //nolint:dupl false positive
 	var rows []A.X
 	res, err := z.Adapter.Select(z.SpaceName(), idx, offset, limit, 2, A.X{})
 	if L.IsError(err, `Zzz.FindOffsetLimit failed: `+z.SpaceName()) {
-		return rows
+		return rows, Tt.QueryMetaFrom(res, err)
 	}
 	tuples := res.Tuples()
 	rows = make([]A.X, len(tuples))
 	for z, row := range tuples {
 		rows[z] = row
 	}
-	return rows
+	return rows, Tt.QueryMetaFrom(res, nil)
 }
 
 // Total count number of rows

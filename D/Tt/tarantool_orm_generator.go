@@ -457,18 +457,18 @@ func GenerateOrm(tables map[TableName]*TableProp, withGraphql ...bool) {
 		// find many
 
 		RQ("// FindArrOffsetLimit returns as slice of slice order by idx eg. .UniqueIndex*()\n")
-		RQ(`func (` + receiverName + ` *` + structName + ") FindArrOffsetLimit(offset, limit uint32, idx string) []A.X { //nolint:dupl false positive\n")
+		RQ(`func (` + receiverName + ` *` + structName + ") FindArrOffsetLimit(offset, limit uint32, idx string) ([]A.X, Tt.QueryMeta) { //nolint:dupl false positive\n")
 		RQ("	var rows []A.X" + NL)
 		RQ("	res, err := " + receiverName + ".Adapter.Select(" + receiverName + ".SpaceName(), idx, offset, limit, " + X.ToS(tarantool.IterAll) + ", A.X{})\n")
 		RQ("	if L.IsError(err, `" + structName + ".FindOffsetLimit failed: `+" + receiverName + ".SpaceName()) {\n")
-		RQ("		return rows\n")
+		RQ("		return rows, Tt.QueryMetaFrom(res, err)\n")
 		RQ("	}\n")
 		RQ("	tuples := res.Tuples()\n")
 		RQ("	rows = make([]A.X, len(tuples))\n")
 		RQ("	for z, row := range tuples {\n")
 		RQ("		rows[z] = row\n")
 		RQ("	}\n")
-		RQ("	return rows\n")
+		RQ("	return rows, Tt.QueryMetaFrom(res, nil)\n")
 		RQ("}\n\n")
 
 		// total records

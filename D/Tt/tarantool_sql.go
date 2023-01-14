@@ -4,6 +4,8 @@ import (
 	"log"
 	"time"
 
+	"github.com/tarantool/go-tarantool"
+
 	"github.com/kokizzu/gotro/A"
 	"github.com/kokizzu/gotro/L"
 	"github.com/kokizzu/gotro/X"
@@ -79,3 +81,24 @@ func (a *Adapter) QuerySql(query string, callback func(row []any), parameters ..
 }
 
 var DebugPerf = false
+
+type QueryMeta struct {
+	Columns []tarantool.ColumnMetaData
+	SqlInfo tarantool.SQLInfo
+	Err     string
+	Code    uint32
+}
+
+func QueryMetaFrom(res *tarantool.Response, err error) QueryMeta {
+	if res == nil {
+		return QueryMeta{
+			Err: err.Error(),
+		}
+	}
+	return QueryMeta{
+		Columns: res.MetaData,
+		SqlInfo: res.SQLInfo,
+		Err:     res.Error,
+		Code:    res.Code,
+	}
+}
