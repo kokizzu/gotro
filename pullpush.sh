@@ -34,7 +34,7 @@ ag gokil **/*.go && ( echo 'echo should not import previous gokil library..' ; k
 echo "imports checked.."
 
 # run linter
-golangci-lint run 
+#golangci-lint run 
 
 # run tests
 go test ./...

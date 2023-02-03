@@ -45,7 +45,10 @@ func NewWebApi() {
 func webApiServer() func(state overseer.State) {
 	return func(state overseer.State) {
 		log.Info().Str("state", state.ID).Str(`listen`, conf.WEBAPI_HOSTPORT)
-		app := fiber.New()
+		app := fiber.New(fiber.Config{
+			JSONEncoder: json.Marshal,
+			JSONDecoder: json.Unmarshal,
+		})
 		app.Use(conf.Logger(*log))
 		app.Use(recover.New())
 		app.Use(cors.New()) // allow from any host
