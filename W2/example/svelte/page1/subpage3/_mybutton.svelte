@@ -1,6 +1,7 @@
 <script>
-	import Links from '../../_components/links.svelte'
-	let count = 0;
+  import Links from '../../_components/links.svelte'
+  
+  let count = 0;
 
 	function doSomething() {
 		count++

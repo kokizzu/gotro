@@ -4,13 +4,14 @@ import (
 	"testing"
 	"time"
 
-	"github.com/kokizzu/gotro/L"
-	"github.com/kokizzu/gotro/S"
-	"github.com/kokizzu/gotro/W2/example/model/mAuth/wcAuth"
 	"github.com/kokizzu/id64"
 	"github.com/kokizzu/lexid"
 	"github.com/kpango/fastime"
 	"github.com/stretchr/testify/assert"
+
+	"github.com/kokizzu/gotro/L"
+	"github.com/kokizzu/gotro/S"
+	"github.com/kokizzu/gotro/W2/example/model/mAuth/wcAuth"
 )
 
 const testDomain = `@localhost`

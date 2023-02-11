@@ -1,6 +1,5 @@
 <script>
-	import Links from '../_components/links.svelte'
-	
+  import Links from '../_components/links.svelte'
 </script>
 another dummy page
 

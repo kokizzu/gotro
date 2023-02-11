@@ -2,6 +2,8 @@ package svelte
 
 import (
 	"github.com/gofiber/fiber/v2"
+	"github.com/valyala/bytebufferpool"
+
 	"github.com/kokizzu/gotro/A"
 	"github.com/kokizzu/gotro/L"
 	"github.com/kokizzu/gotro/M"
@@ -9,7 +11,6 @@ import (
 	"github.com/kokizzu/gotro/W2/example/conf"
 	"github.com/kokizzu/gotro/W2/example/domain"
 	"github.com/kokizzu/gotro/Z"
-	"github.com/valyala/bytebufferpool"
 )
 
 var Domain *domain.Domain

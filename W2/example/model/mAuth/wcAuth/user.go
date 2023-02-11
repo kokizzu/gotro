@@ -1,8 +1,9 @@
 package wcAuth
 
 import (
-	"github.com/kokizzu/gotro/L"
 	"golang.org/x/crypto/bcrypt"
+
+	"github.com/kokizzu/gotro/L"
 )
 
 func (p *UsersMutator) SetEncryptPassword(password string) bool {
