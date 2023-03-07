@@ -1,7 +1,6 @@
 package W
 
 import (
-	"math/rand"
 	"time"
 
 	"github.com/kokizzu/gotro/L"
@@ -163,7 +162,7 @@ func (s *Session) HeaderString() string {
 }
 
 func InitSession(sess_key string, expire_ns, renew_ns time.Duration, conn SessionConnector, glob SessionConnector) {
-	rand.Seed(T.UnixNano())
+	//rand.Seed(T.UnixNano())
 	SESS_KEY = S.IfEmpty(sess_key, SESS_KEY)
 	EXPIRE_SEC = int64(expire_ns / NS2SEC)
 	RENEW_SEC = int64(renew_ns / NS2SEC)
