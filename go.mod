@@ -1,6 +1,6 @@
 module github.com/kokizzu/gotro
 
-go 1.18
+go 1.20
 
 require (
 	github.com/ClickHouse/clickhouse-go/v2 v2.6.0
@@ -10,9 +10,9 @@ require (
 	github.com/aws/aws-sdk-go v1.44.22
 	github.com/awslabs/amazon-qldb-driver-go/v2 v2.0.2
 	github.com/buaazp/fasthttprouter v0.1.1
-	github.com/fatih/color v1.14.1
+	github.com/fatih/color v1.15.0
 	github.com/francoispqt/onelog v0.0.0-20190306043706-8c2bb31b10a4
-	github.com/goccy/go-json v0.10.0
+	github.com/goccy/go-json v0.10.2
 	github.com/goccy/go-yaml v1.9.5
 	github.com/gofiber/fiber/v2 v2.42.0
 	github.com/hexops/autogold v1.3.0
@@ -30,7 +30,7 @@ require (
 	github.com/kokizzu/lexid v1.2423.1347
 	github.com/kokizzu/overseer v1.1.8
 	github.com/kokizzu/rand v0.0.0-20221021123447-6043c55a8bad
-	github.com/kpango/fastime v1.1.7
+	github.com/kpango/fastime v1.1.9
 	github.com/kr/pretty v0.3.1
 	github.com/lib/pq v1.10.6
 	github.com/meilisearch/meilisearch-go v0.19.1
@@ -44,7 +44,7 @@ require (
 	github.com/rueian/rueidis v0.0.77
 	github.com/segmentio/fasthash v1.0.3
 	github.com/shirou/gopsutil/v3 v3.22.4
-	github.com/stretchr/testify v1.8.1
+	github.com/stretchr/testify v1.8.2
 	github.com/tarantool/go-tarantool v1.10.0
 	github.com/tdewolff/minify v2.3.6+incompatible
 	github.com/valyala/bytebufferpool v1.0.0
@@ -57,7 +57,7 @@ require (
 	go.opentelemetry.io/otel v1.12.0
 	go.opentelemetry.io/otel/trace v1.12.0
 	golang.org/x/crypto v0.7.0
-	golang.org/x/exp v0.0.0-20230306221820-f0f767cdffd6
+	golang.org/x/exp v0.0.0-20230321023759-10a507213a29
 	golang.org/x/oauth2 v0.0.0-20220524215830-622c5d57e401
 	golang.org/x/text v0.8.0
 	gopkg.in/natefinch/lumberjack.v2 v2.0.0
@@ -92,7 +92,7 @@ require (
 	github.com/google/shlex v0.0.0-20191202100458-e7afc7fbc510 // indirect
 	github.com/google/uuid v1.3.0 // indirect
 	github.com/hexops/gotextdiff v1.0.3 // indirect
-	github.com/imdario/mergo v0.3.13 // indirect
+	github.com/imdario/mergo v0.3.15 // indirect
 	github.com/jackc/pgpassfile v1.0.0 // indirect
 	github.com/jackc/pgservicefile v0.0.0-20200714003250-2b9c44734f2b // indirect
 	github.com/jackc/puddle/v2 v2.1.2 // indirect
@@ -104,7 +104,7 @@ require (
 	github.com/lufia/plan9stats v0.0.0-20211012122336-39d0f177ccd0 // indirect
 	github.com/mailru/easyjson v0.7.7 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect
-	github.com/mattn/go-isatty v0.0.17 // indirect
+	github.com/mattn/go-isatty v0.0.18 // indirect
 	github.com/mattn/go-pointer v0.0.1 // indirect
 	github.com/mattn/go-runewidth v0.0.14 // indirect
 	github.com/moby/term v0.0.0-20221205130635-1aeaba878587 // indirect
@@ -144,7 +144,7 @@ require (
 	golang.org/x/net v0.8.0 // indirect
 	golang.org/x/sync v0.1.0 // indirect
 	golang.org/x/sys v0.6.0 // indirect
-	golang.org/x/tools v0.6.0 // indirect
+	golang.org/x/tools v0.7.0 // indirect
 	golang.org/x/xerrors v0.0.0-20200804184101-5ec99f83aff1 // indirect
 	google.golang.org/appengine v1.6.7 // indirect
 	google.golang.org/protobuf v1.28.1 // indirect

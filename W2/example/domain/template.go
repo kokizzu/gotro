@@ -1,9 +1,9 @@
 package domain
 
 //go:generate gomodifytags -all -add-tags json,form,query,long,msg -transform camelcase --skip-unexported -w -file template.go
-//go:generate replacer 'Id" form' 'Id,string" form' type template.go
-//go:generate replacer 'json:"id"' 'json:"id,string"' type template.go
-//go:generate replacer 'By" form' 'By,string" form' type template.go
+//go:generate replacer -afterprefix 'Id" form' 'Id,string" form' type template.go
+//go:generate replacer -afterprefix 'json:"id"' 'json:"id,string"' type template.go
+//go:generate replacer -afterprefix 'By" form' 'By,string" form' type template.go
 // go:generate msgp -tests=false -file template.go -o template__MSG.GEN.go
 //go:generate farify doublequote --file template.go
 // copy this template if need new API

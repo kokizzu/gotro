@@ -12,9 +12,9 @@ import (
 )
 
 //go:generate gomodifytags -all -add-tags json,form,query,long,msg -transform camelcase --skip-unexported -w -file user.go
-//go:generate replacer 'Id" form' 'Id,string" form' type user.go
-//go:generate replacer 'json:"id"' 'json:"id,string"' type user.go
-//go:generate replacer 'By" form' 'By,string" form' type user.go
+//go:generate replacer -afterprefix 'Id" form' 'Id,string" form' type user.go
+//go:generate replacer -afterprefix 'json:"id"' 'json:"id,string"' type user.go
+//go:generate replacer -afterprefix 'By" form' 'By,string" form' type user.go
 //go:generate farify doublequote --file user.go
 type (
 	UserRegister_In struct {

@@ -12,9 +12,9 @@ import (
 )
 
 //go:generate gomodifytags -all -add-tags json,form,query,long,msg -transform camelcase --skip-unexported -w -file wcAuth__ORM.GEN.go
-//go:generate replacer 'Id" form' 'Id,string" form' type wcAuth__ORM.GEN.go
-//go:generate replacer 'json:"id"' 'json:"id,string"' type wcAuth__ORM.GEN.go
-//go:generate replacer 'By" form' 'By,string" form' type wcAuth__ORM.GEN.go
+//go:generate replacer -afterprefix 'Id" form' 'Id,string" form' type wcAuth__ORM.GEN.go
+//go:generate replacer -afterprefix 'json:"id"' 'json:"id,string"' type wcAuth__ORM.GEN.go
+//go:generate replacer -afterprefix 'By" form' 'By,string" form' type wcAuth__ORM.GEN.go
 // go:generate msgp -tests=false -file wcAuth__ORM.GEN.go -o wcAuth__MSG.GEN.go
 
 type SessionsMutator struct {
