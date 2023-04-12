@@ -986,7 +986,11 @@ func ToAX(x any) A.X {
 	if x == nil {
 		return A.X{}
 	}
-	val, ok := x.([]any)
+	val, ok := x.(A.X)
+	if ok {
+		return val
+	}
+	val, ok = x.([]any)
 	if L.CheckIf(!ok, `Can't convert to A.X`, x) {
 		return A.X{}
 	}
@@ -998,7 +1002,11 @@ func ToMSX(x any) M.SX {
 	if x == nil {
 		return M.SX{}
 	}
-	val, ok := x.(map[string]any)
+	val, ok := x.(M.SX)
+	if ok {
+		return val
+	}
+	val, ok = x.(map[string]any)
 	if L.CheckIf(!ok, `Can't convert to M.SX`, x) {
 		return M.SX{}
 	}
@@ -1006,12 +1014,16 @@ func ToMSX(x any) M.SX {
 }
 
 // ToMSS convert to map[string]string
-func ToMSS(any any) M.SS {
-	if any == nil {
+func ToMSS(x any) M.SS {
+	if x == nil {
 		return M.SS{}
 	}
-	val, ok := any.(map[string]string)
-	if L.CheckIf(!ok, `Can't convert to M.SS`, any) {
+	val, ok := x.(M.SS)
+	if ok {
+		return val
+	}
+	val, ok = x.(map[string]string)
+	if L.CheckIf(!ok, `Can't convert to M.SS`, x) {
 		return M.SS{}
 	}
 	return val

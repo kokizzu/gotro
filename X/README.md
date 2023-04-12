@@ -131,7 +131,7 @@ ToJsonPretty convert to beautiful json text
 #### func  ToMSS
 
 ```go
-func ToMSS(any any) M.SS
+func ToMSS(x any) M.SS
 ```
 ToMSS convert to map[string]string
 
