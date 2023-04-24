@@ -401,13 +401,20 @@ func GenerateOrm(tables map[TableName]*TableProp, withGraphql ...bool) {
 
 			// mutator methods
 			WC("// Set" + propName + " create mutations, should not duplicate\n")
-			WC(`func (` + receiverName + ` *` + structName + "Mutator) Set" + propName + "(val " + typeTranslator[prop.Type] + ") bool { //nolint:dupl false positive\n")
-			WC("	if val != " + receiverName + `.` + propName + " {\n")
-			WC("		" + receiverName + ".mutations = append(" + receiverName + ".mutations, A.X{`=`, " + I.ToStr(idx) + ", val})\n")
-			WC("		" + receiverName + `.` + propName + " = val\n")
-			WC("		return true\n")
-			WC("	}\n")
-			WC("	return false\n")
+			propType := typeTranslator[prop.Type]
+			WC(`func (` + receiverName + ` *` + structName + "Mutator) Set" + propName + "(val " + propType + ") bool { //nolint:dupl false positive\n")
+			if propType != `array` {
+				WC("	if val != " + receiverName + `.` + propName + " {\n")
+				WC("		" + receiverName + ".mutations = append(" + receiverName + ".mutations, A.X{`=`, " + I.ToStr(idx) + ", val})\n")
+				WC("		" + receiverName + `.` + propName + " = val\n")
+				WC("		return true\n")
+				WC("	}\n")
+				WC("	return false\n")
+			} else { // always overwrite for array
+				WC("	" + receiverName + ".mutations = append(" + receiverName + ".mutations, A.X{`=`, " + I.ToStr(idx) + ", val})\n")
+				WC("	" + receiverName + `.` + propName + " = val\n")
+				WC("	return true\n")
+			}
 			WC("}\n\n")
 		}
 
