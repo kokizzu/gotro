@@ -403,7 +403,7 @@ func GenerateOrm(tables map[TableName]*TableProp, withGraphql ...bool) {
 			WC("// Set" + propName + " create mutations, should not duplicate\n")
 			propType := typeTranslator[prop.Type]
 			WC(`func (` + receiverName + ` *` + structName + "Mutator) Set" + propName + "(val " + propType + ") bool { //nolint:dupl false positive\n")
-			if propType != `[]any` {
+			if prop.Type != Array {
 				WC("	if val != " + receiverName + `.` + propName + " {\n")
 				WC("		" + receiverName + ".mutations = append(" + receiverName + ".mutations, A.X{`=`, " + I.ToStr(idx) + ", val})\n")
 				WC("		" + receiverName + `.` + propName + " = val\n")
