@@ -35,6 +35,10 @@ const (
 	Scalar   DataType = `scalar`
 	Array    DataType = `array`
 	Map      DataType = `map`
+
+	ArrayFloat    DataType = `array`
+	ArrayUnsigned DataType = `array`
+	ArrayInteger  DataType = `array`
 )
 
 var EmptyValue = map[DataType]string{
@@ -45,6 +49,7 @@ var EmptyValue = map[DataType]string{
 	Boolean:  `false`,
 	Decimal:  `0`,
 	Double:   `0`,
+	Array:    `nil`,
 }
 
 // misc

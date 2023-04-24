@@ -33,6 +33,7 @@ var typeTranslator = map[DataType]string{
 	String:   `string`,
 	Integer:  `int64`,
 	Boolean:  `bool`,
+	Array:    `[]any`,
 }
 var typeConverter = map[DataType]string{
 	Unsigned: `X.ToU`,
@@ -40,6 +41,7 @@ var typeConverter = map[DataType]string{
 	String:   `X.ToS`,
 	Integer:  `X.ToI`,
 	Boolean:  `X.ToBool`,
+	Array:    `X.ToArr`,
 }
 var typeGraphql = map[DataType]string{
 	Unsigned: `Int`,
