@@ -997,6 +997,26 @@ func ToAX(x any) A.X {
 	return val
 }
 
+// ToAF convert to []float64
+func ToAF(x any) []float64 {
+	if x == nil {
+		return []float64{}
+	}
+	val, ok := x.([]float64)
+	if ok {
+		return val
+	}
+	arr, ok := x.([]any)
+	if L.CheckIf(!ok, `Can't convert to []float64`, x) {
+		return []float64{}
+	}
+	res := make([]float64, len(arr))
+	for i, v := range arr {
+		res[i] = ToF(v)
+	}
+	return res
+}
+
 // ToMSX convert to map[string]any
 func ToMSX(x any) M.SX {
 	if x == nil {

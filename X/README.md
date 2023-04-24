@@ -36,6 +36,13 @@ FromMsgp convert Msgpack bytes to anything
 
 ok := X.FromMsgp(`\x81\xa1A\x01`, &struct{ A int }{})
 
+#### func  ToAF
+
+```go
+func ToAF(x any) []float64
+```
+ToAF convert to []float64
+
 #### func  ToAX
 
 ```go
