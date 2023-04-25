@@ -34,7 +34,7 @@ func NewZzz(adapter *Tt.Adapter) *Zzz {
 
 // SpaceName returns full package and table name
 func (z *Zzz) SpaceName() string { //nolint:dupl false positive
-	return string(mZzz.TableZzz)
+	return mZzz.TableZzz
 }
 
 // sqlTableName returns quoted table name

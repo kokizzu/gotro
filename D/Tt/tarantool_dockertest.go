@@ -1,9 +1,10 @@
 package Tt
 
 import (
-	"github.com/kokizzu/gotro/D"
 	"github.com/ory/dockertest/v3"
 	"github.com/tarantool/go-tarantool"
+
+	"github.com/kokizzu/gotro/D"
 )
 
 type TtDockerTest struct {
@@ -14,7 +15,7 @@ type TtDockerTest struct {
 	pool     *D.DockerTest
 }
 
-// https://hub.docker.com/r/tarantool/tarantool
+// ImageVersion https://hub.docker.com/r/tarantool/tarantool
 /*
 tarantoolctl connect 3301
 */
