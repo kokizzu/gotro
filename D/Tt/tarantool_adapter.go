@@ -3,8 +3,9 @@ package Tt
 import (
 	"fmt"
 
-	"github.com/kokizzu/gotro/L"
 	"github.com/tarantool/go-tarantool"
+
+	"github.com/kokizzu/gotro/L"
 )
 
 type Adapter struct {
@@ -12,6 +13,18 @@ type Adapter struct {
 	Reconnect func() *tarantool.Connection
 }
 
+// NewAdapter create new tarantool adapter
+// adapter contains helper methods for schema manipulation and query execution
+func NewAdapter(connectFunc func() *tarantool.Connection) *Adapter {
+	return &Adapter{
+		Reconnect:  connectFunc,
+		Connection: connectFunc(),
+	}
+}
+
+// Connect1 is example of connect function
+// to connect on terminal locally, use:
+// tarantoolctl connect user:password@localhost:3301
 func Connect1(host, port, user, pass string) *tarantool.Connection {
 	hostPort := fmt.Sprintf(`%s:%s`,
 		host,

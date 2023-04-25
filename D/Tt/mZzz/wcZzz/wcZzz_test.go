@@ -81,7 +81,7 @@ func TestMain(m *testing.M) {
 }
 
 func TestAutoIncrement(t *testing.T) {
-	a := &Tt.Adapter{dbConn, reconnect}
+	a := &Tt.Adapter{Connection: dbConn, Reconnect: reconnect}
 	t.Run(`test zzz table`, func(t *testing.T) {
 		ok := a.UpsertTable(mZzz.TableZzz, mZzz.TarantoolTables[mZzz.TableZzz])
 		assert.True(t, ok)
