@@ -23,6 +23,18 @@ echo "codes formatted.."
 go get -u -v github.com/ory/dockertest/v3@latest
 go get -u -v github.com/kokizzu/id64@latest
 go get -u -v github.com/kokizzu/lexid@latest
+go get -u -v github.com/ClickHouse/clickhouse-go/v2@latest
+go get -u -v github.com/tarantool/go-tarantool@latest
+go get -u -v github.com/jackc/pgx/v5@latest
+go get -u -v github.com/mitchellh/mapstructure@latest
+go get -u -v github.com/vmihailenco/msgpack/v5@latest
+go get -u -v github.com/goccy/go-json@latest
+go get -u -v github.com/zeebo/xxh3@latest
+go get -u -v github.com/rueian/rueidis@latest
+go get -u -v github.com/kpango/fastime@latest
+go get -u -v github.com/fatih/color@latest
+go get -u -v github.com/kr/pretty@latest
+go get -u -v github.com/op/go-logging@latest
 go mod tidy
 
 # testing if has error

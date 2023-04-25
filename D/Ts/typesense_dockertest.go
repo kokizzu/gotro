@@ -4,8 +4,9 @@ import (
 	"net"
 	"time"
 
-	"github.com/kokizzu/gotro/D"
 	"github.com/ory/dockertest/v3"
+
+	"github.com/kokizzu/gotro/D"
 )
 
 type TsDockerTest struct {
@@ -15,7 +16,7 @@ type TsDockerTest struct {
 	pool   *D.DockerTest
 }
 
-// https://hub.docker.com/r/typesense/typesense
+// ImageVersion https://hub.docker.com/r/typesense/typesense
 /*
 default empty api key = 123
 */

@@ -1,9 +1,10 @@
 package Rd
 
 import (
-	"github.com/kokizzu/gotro/D"
 	"github.com/ory/dockertest/v3"
 	"github.com/rueian/rueidis"
+
+	"github.com/kokizzu/gotro/D"
 )
 
 type RdDockerTest struct {

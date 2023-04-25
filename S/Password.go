@@ -4,8 +4,9 @@ import (
 	"crypto/sha256"
 	"encoding/base64"
 
-	"github.com/kokizzu/gotro/L"
 	"golang.org/x/crypto/bcrypt"
+
+	"github.com/kokizzu/gotro/L"
 )
 
 // HashPassword hash password with sha256 (without salt)

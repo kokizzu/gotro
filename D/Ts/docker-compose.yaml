@@ -2,7 +2,7 @@ version: '3'
 
 services:
   typesense1:
-    image: typesense/typesense:0.23.1
+    image: typesense/typesense:0.24.1
     command: ./typesense-server --data-dir=/data --api-key=123
     ports:
       - "8108:8108"

@@ -5,9 +5,10 @@ import (
 	"net"
 	"time"
 
-	"github.com/kokizzu/gotro/L"
 	"github.com/ory/dockertest/v3"
 	"github.com/ory/dockertest/v3/docker"
+
+	"github.com/kokizzu/gotro/L"
 )
 
 type DockerTest struct {

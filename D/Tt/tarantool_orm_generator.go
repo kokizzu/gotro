@@ -228,7 +228,7 @@ func GenerateOrm(tables map[TableName]*TableProp, withGraphql ...bool) {
 		receiverName := strings.ToLower(string(structName[0]))
 		RQ("// SpaceName returns full package and table name\n")
 		RQ(`func (` + receiverName + ` *` + structName + ") SpaceName() string { //nolint:dupl false positive\n")
-		RQ("	return " + mPkgName + `.Table` + structName + "\n")
+		RQ("	return string(" + mPkgName + `.Table` + structName + ") // casting required to string from Tt.TableName\n")
 		RQ("}\n\n")
 
 		// sql table name

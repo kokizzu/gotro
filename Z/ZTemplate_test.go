@@ -5,11 +5,12 @@ import (
 	"testing"
 	"text/template"
 
+	"github.com/stretchr/testify/assert"
+
 	"github.com/kokizzu/gotro/A"
 	"github.com/kokizzu/gotro/L"
 	"github.com/kokizzu/gotro/M"
 	"github.com/kokizzu/gotro/Z"
-	"github.com/stretchr/testify/assert"
 )
 
 const exampleZ = `hi my name #{name}, my age #{age}`

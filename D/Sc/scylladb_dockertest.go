@@ -4,8 +4,9 @@ import (
 	"net"
 	"time"
 
-	"github.com/kokizzu/gotro/D"
 	"github.com/ory/dockertest/v3"
+
+	"github.com/kokizzu/gotro/D"
 )
 
 type ScDockerTest struct {

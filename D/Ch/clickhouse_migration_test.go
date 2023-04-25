@@ -8,9 +8,10 @@ import (
 	"testing"
 
 	_ "github.com/ClickHouse/clickhouse-go/v2"
-	"github.com/kokizzu/gotro/L"
 	"github.com/ory/dockertest/v3"
 	"github.com/stretchr/testify/assert"
+
+	"github.com/kokizzu/gotro/L"
 )
 
 var globalPool *dockertest.Pool
