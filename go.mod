@@ -45,7 +45,7 @@ require (
 	github.com/segmentio/fasthash v1.0.3
 	github.com/shirou/gopsutil/v3 v3.22.4
 	github.com/stretchr/testify v1.8.2
-	github.com/tarantool/go-tarantool v1.10.0
+	github.com/tarantool/go-tarantool v1.10.1-0.20230324130228-888d74defea8
 	github.com/tdewolff/minify v2.3.6+incompatible
 	github.com/valyala/bytebufferpool v1.0.0
 	github.com/valyala/fasthttp v1.44.0
@@ -57,7 +57,7 @@ require (
 	go.opentelemetry.io/otel v1.12.0
 	go.opentelemetry.io/otel/trace v1.12.0
 	golang.org/x/crypto v0.8.0
-	golang.org/x/exp v0.0.0-20230420155640-133eef4313cb
+	golang.org/x/exp v0.0.0-20230425010034-47ecfdc1ba53
 	golang.org/x/oauth2 v0.0.0-20220524215830-622c5d57e401
 	golang.org/x/text v0.9.0
 	gopkg.in/natefinch/lumberjack.v2 v2.0.0
@@ -89,7 +89,7 @@ require (
 	github.com/go-ole/go-ole v1.2.6 // indirect
 	github.com/gogo/protobuf v1.3.2 // indirect
 	github.com/golang-jwt/jwt v3.2.2+incompatible // indirect
-	github.com/golang/protobuf v1.5.2 // indirect
+	github.com/golang/protobuf v1.5.3 // indirect
 	github.com/google/go-cmp v0.5.9 // indirect
 	github.com/google/shlex v0.0.0-20191202100458-e7afc7fbc510 // indirect
 	github.com/google/uuid v1.3.0 // indirect
@@ -129,7 +129,7 @@ require (
 	github.com/shurcooL/go-goon v0.0.0-20210110234559-7585751d9a17 // indirect
 	github.com/sirupsen/logrus v1.9.0 // indirect
 	github.com/spacemonkeygo/spacelog v0.0.0-20180420211403-2296661a0572 // indirect
-	github.com/tarantool/go-openssl v0.0.8-0.20220711094538-d93c1eff4f49 // indirect
+	github.com/tarantool/go-openssl v0.0.8-0.20230307065445-720eeb389195 // indirect
 	github.com/tdewolff/parse v2.3.4+incompatible // indirect
 	github.com/tdewolff/test v1.0.7 // indirect
 	github.com/tinylib/msgp v1.1.6 // indirect

@@ -6,6 +6,7 @@ const (
 	TableZzz  Tt.TableName = `zzz`
 	Id                     = `id`
 	CreatedAt              = `created_at`
+	Coords                 = `coords`
 )
 
 var TarantoolTables = map[Tt.TableName]*Tt.TableProp{
@@ -15,8 +16,10 @@ var TarantoolTables = map[Tt.TableName]*Tt.TableProp{
 		Fields: []Tt.Field{
 			{Id, Tt.Unsigned},
 			{CreatedAt, Tt.Integer},
+			{Coords, Tt.Array},
 		},
 		Engine:          Tt.Memtx,
 		AutoIncrementId: true,
+		Spatial:         Coords,
 	},
 }

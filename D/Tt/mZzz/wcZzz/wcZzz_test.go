@@ -90,6 +90,7 @@ func TestAutoIncrement(t *testing.T) {
 		zzz := NewZzzMutator(a)
 		now := fastime.Now().Unix()
 		zzz.CreatedAt = now
+		zzz.Coords = []any{12.34, 56.78}
 		ok := zzz.DoInsert()
 		assert.True(t, ok)
 		assert.Greater(t, zzz.Id, uint64(0))

@@ -6,10 +6,11 @@ import (
 	"os"
 	"testing"
 
-	"github.com/kokizzu/gotro/L"
 	"github.com/ory/dockertest/v3"
 	"github.com/stretchr/testify/assert"
 	"github.com/tarantool/go-tarantool"
+
+	"github.com/kokizzu/gotro/L"
 )
 
 var globalPool *dockertest.Pool
@@ -131,7 +132,7 @@ func TestMigration(t *testing.T) {
 		})
 		assert.True(t, ok)
 	})
-	t.Run(`auto increment`, func(t *testing.T) {
+	t.Run(`auto increment again`, func(t *testing.T) {
 		ok := a.UpsertTable(tableName, &TableProp{
 			Fields: []Field{
 				{`id`, Unsigned},

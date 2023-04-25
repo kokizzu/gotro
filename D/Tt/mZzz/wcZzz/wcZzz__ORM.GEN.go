@@ -15,8 +15,6 @@ import (
 //go:generate replacer -afterprefix 'Id" form' 'Id,string" form' type wcZzz__ORM.GEN.go
 //go:generate replacer -afterprefix 'json:"id"' 'json:"id,string"' type wcZzz__ORM.GEN.go
 //go:generate replacer -afterprefix 'By" form' 'By,string" form' type wcZzz__ORM.GEN.go
-// go:generate msgp -tests=false -file wcZzz__ORM.GEN.go -o wcZzz__MSG.GEN.go
-
 // ZzzMutator DAO writer/command struct
 type ZzzMutator struct {
 	rqZzz.Zzz
@@ -63,6 +61,7 @@ func (z *ZzzMutator) DoDeletePermanentById() bool { //nolint:dupl false positive
 //	_, err := z.Adapter.Upsert(z.SpaceName(), z.ToArray(), A.X{
 //		A.X{`=`, 0, z.Id},
 //		A.X{`=`, 1, z.CreatedAt},
+//		A.X{`=`, 2, z.Coords},
 //	})
 //	return !L.IsError(err, `Zzz.DoUpsert failed: `+z.SpaceName())
 // }
@@ -79,11 +78,12 @@ func (z *ZzzMutator) DoInsert() bool { //nolint:dupl false positive
 	return !L.IsError(err, `Zzz.DoInsert failed: `+z.SpaceName())
 }
 
-// DoReplace upsert, insert or overwrite, will error only when there's unique secondary key being violated
+// DoUpsert upsert, insert or overwrite, will error only when there's unique secondary key being violated
 // replace = upsert, only error when there's unique secondary key
+// previous name: DoReplace
 func (z *ZzzMutator) DoUpsert() bool { //nolint:dupl false positive
 	_, err := z.Adapter.Replace(z.SpaceName(), z.ToArray())
-	return !L.IsError(err, `Zzz.DoReplace failed: `+z.SpaceName())
+	return !L.IsError(err, `Zzz.DoUpsert failed: `+z.SpaceName())
 }
 
 // SetId create mutations, should not duplicate
@@ -104,6 +104,13 @@ func (z *ZzzMutator) SetCreatedAt(val int64) bool { //nolint:dupl false positive
 		return true
 	}
 	return false
+}
+
+// SetCoords create mutations, should not duplicate
+func (z *ZzzMutator) SetCoords(val []any) bool { //nolint:dupl false positive
+	z.mutations = append(z.mutations, A.X{`=`, 2, val})
+	z.Coords = val
+	return true
 }
 
 // DO NOT EDIT, will be overwritten by github.com/kokizzu/D/Tt/tarantool_orm_generator.go

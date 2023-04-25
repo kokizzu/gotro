@@ -24,6 +24,7 @@ type Zzz struct {
 	Adapter *Tt.Adapter `json:"-" msg:"-" query:"-" form:"-"`
 	Id        uint64
 	CreatedAt int64
+	Coords    []any
 }
 
 // NewZzz create new ORM reader/query object
@@ -31,7 +32,7 @@ func NewZzz(adapter *Tt.Adapter) *Zzz {
 	return &Zzz{Adapter: adapter}
 }
 
-// sqlTableName returns full package and table name
+// SpaceName returns full package and table name
 func (z *Zzz) SpaceName() string { //nolint:dupl false positive
 	return string(mZzz.TableZzz)
 }
@@ -59,10 +60,16 @@ func (z *Zzz) FindById() bool { //nolint:dupl false positive
 	return false
 }
 
+// SpatialIndexCoords return spatial index name
+func (z *Zzz) SpatialIndexCoords() string { //nolint:dupl false positive
+	return `coords`
+}
+
 // sqlSelectAllFields generate sql select fields
 func (z *Zzz) sqlSelectAllFields() string { //nolint:dupl false positive
 	return ` "id"
 	, "created_at"
+	, "coords"
 	`
 }
 
@@ -71,6 +78,7 @@ func (z *Zzz) ToUpdateArray() A.X { //nolint:dupl false positive
 	return A.X{
 		A.X{`=`, 0, z.Id},
 		A.X{`=`, 1, z.CreatedAt},
+		A.X{`=`, 2, z.Coords},
 	}
 }
 
@@ -79,7 +87,7 @@ func (z *Zzz) IdxId() int { //nolint:dupl false positive
 	return 0
 }
 
-// sqlIdxId return name of the column being indexed
+// sqlId return name of the column being indexed
 func (z *Zzz) sqlId() string { //nolint:dupl false positive
 	return `"id"`
 }
@@ -89,9 +97,19 @@ func (z *Zzz) IdxCreatedAt() int { //nolint:dupl false positive
 	return 1
 }
 
-// sqlIdxCreatedAt return name of the column being indexed
+// sqlCreatedAt return name of the column being indexed
 func (z *Zzz) sqlCreatedAt() string { //nolint:dupl false positive
 	return `"created_at"`
+}
+
+// IdxCoords return name of the index
+func (z *Zzz) IdxCoords() int { //nolint:dupl false positive
+	return 2
+}
+
+// sqlCoords return name of the column being indexed
+func (z *Zzz) sqlCoords() string { //nolint:dupl false positive
+	return `"coords"`
 }
 
 // ToArray receiver fields to slice
@@ -103,6 +121,7 @@ func (z *Zzz) ToArray() A.X { //nolint:dupl false positive
 	return A.X{
 		id,
 		z.CreatedAt, // 1
+		z.Coords,    // 2
 	}
 }
 
@@ -110,6 +129,7 @@ func (z *Zzz) ToArray() A.X { //nolint:dupl false positive
 func (z *Zzz) FromArray(a A.X) *Zzz { //nolint:dupl false positive
 	z.Id = X.ToU(a[0])
 	z.CreatedAt = X.ToI(a[1])
+	z.Coords = X.ToArr(a[2])
 	return z
 }
 

@@ -64,6 +64,9 @@ func TypeGraphql(field Field) string {
 const connStruct = `Tt.Adapter`
 const connImport = "\n\n\t`github.com/tarantool/go-tarantool`"
 const iterEq = `tarantool.IterEq`
+const iterNeighbor = `tarantool.IterNeighbor`
+
+var _ = iterNeighbor
 
 //const iterAll = `tarantool.IterAll`
 
@@ -175,7 +178,7 @@ func GenerateOrm(tables map[TableName]*TableProp, withGraphql ...bool) {
 	WC(`//go:generate replacer -afterprefix 'Id" form' 'Id,string" form' type ` + wcPkgName + "__ORM.GEN.go\n")
 	WC(`//go:generate replacer -afterprefix 'json:"id"' 'json:"id,string"' type ` + wcPkgName + "__ORM.GEN.go\n")
 	WC(`//go:generate replacer -afterprefix 'By" form' 'By,string" form' type ` + wcPkgName + "__ORM.GEN.go\n")
-	WC(`// go:generate msgp -tests=false -file ` + wcPkgName + `__ORM.GEN.go -o ` + wcPkgName + `__MSG.GEN.go` + "\n\n")
+	//WC(` //go:generate msgp -tests=false -file ` + wcPkgName + `__ORM.GEN.go -o ` + wcPkgName + `__MSG.GEN.go` + "\n\n")
 
 	// for each table generate in order
 	for _, tableName := range tableNames {
@@ -272,6 +275,16 @@ func GenerateOrm(tables map[TableName]*TableProp, withGraphql ...bool) {
 		WC("//	return !L.IsError(err, `" + structName + ".DoUpsert failed: `+" + receiverName + ".SpaceName())\n")
 		WC("// }\n\n")
 
+		// spatial index
+		if props.Spatial != `` {
+			uniquePropCamel := S.PascalCase(props.Spatial)
+
+			RQ("// SpatialIndex" + uniquePropCamel + " return spatial index name\n")
+			RQ(`func (` + receiverName + ` *` + structName + `) SpatialIndex` + uniquePropCamel + "() string { //nolint:dupl false positive\n")
+			RQ("	return " + S.BT(props.Spatial) + NL)
+			RQ("}\n\n")
+		}
+
 		// unique index1
 		if props.Unique1 != `` && !(props.AutoIncrementId && props.Unique1 == IdCol) {
 			uniquePropCamel := S.PascalCase(props.Unique1)
@@ -352,11 +365,12 @@ func GenerateOrm(tables map[TableName]*TableProp, withGraphql ...bool) {
 		WC("}\n\n")
 
 		// replace = upsert, only error when there's unique secondary key
-		WC("// DoReplace upsert, insert or overwrite, will error only when there's unique secondary key being violated\n")
+		WC("// DoUpsert upsert, insert or overwrite, will error only when there's unique secondary key being violated\n")
 		WC("// replace = upsert, only error when there's unique secondary key\n")
+		WC("// previous name: DoReplace\n")
 		WC(`func (` + receiverName + ` *` + structName + "Mutator) DoUpsert() bool { //nolint:dupl false positive\n")
 		WC("	_, err := " + receiverName + ".Adapter.Replace(" + receiverName + ".SpaceName(), " + receiverName + ".ToArray())\n")
-		WC("	return !L.IsError(err, `" + structName + ".DoReplace failed: `+" + receiverName + ".SpaceName())\n")
+		WC("	return !L.IsError(err, `" + structName + ".DoUpsert failed: `+" + receiverName + ".SpaceName())\n")
 		WC("}\n\n")
 
 		// sql select all fields, used when need to mutate or show every fields
@@ -394,7 +408,7 @@ func GenerateOrm(tables map[TableName]*TableProp, withGraphql ...bool) {
 			//RQ("}\n\n")
 
 			// sql column name functions
-			RQ("// sqlIdx" + propName + " return name of the column being indexed\n")
+			RQ("// sql" + propName + " return name of the column being indexed\n")
 			RQ(`func (` + receiverName + ` *` + structName + ") sql" + propName + "() string { //nolint:dupl false positive\n")
 			RQ("	return " + S.BT(S.QQ(prop.Name)) + NL)
 			RQ("}\n\n")

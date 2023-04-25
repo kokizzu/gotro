@@ -67,12 +67,16 @@ const IfNotExists = `if_not_exists`
 const IdCol = `id`
 
 type TableProp struct {
-	Fields          []Field
-	Unique1         string
-	Unique2         string
-	Unique3         string
-	Uniques         []string // multicolumn unique
-	Indexes         []string
+	Fields []Field
+
+	// indexes
+	Unique1 string
+	Unique2 string
+	Unique3 string
+	Uniques []string // multicolumn unique
+	Indexes []string
+	Spatial string
+
 	Engine          EngineType
 	HiddenFields    []string
 	AutoIncrementId bool // "id" column will be used to generate sequence, can only be created at beginning
@@ -94,6 +98,7 @@ type Index struct {
 	IfNotExists bool     `msgpack:"if_not_exists"`
 	Unique      bool     `msgpack:"unique"`
 	Sequence    string   `msgpack:"sequence,omitempty"`
+	Type        string   `msgpack:"type,omitempty"`
 }
 
 type MSX map[string]any
@@ -161,6 +166,12 @@ func (a *Adapter) UpsertTable(tableName TableName, prop *TableProp) bool {
 	if len(prop.Uniques) > 1 {
 		a.ExecBoxSpace(string(tableName)+`:create_index`, A.X{
 			strings.Join(prop.Uniques, `__`), Index{Parts: prop.Uniques, IfNotExists: true, Unique: true},
+		})
+	}
+	// create spatial index
+	if prop.Spatial != `` {
+		a.ExecBoxSpace(string(tableName)+`:create_index`, A.X{
+			prop.Spatial, Index{Parts: []string{prop.Spatial}, IfNotExists: true, Type: `RTREE`},
 		})
 	}
 	// create other indexes
