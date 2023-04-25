@@ -1,6 +1,7 @@
 package Tt
 
 import (
+	"errors"
 	"strings"
 
 	"github.com/kokizzu/gotro/A"
@@ -10,6 +11,8 @@ import (
 )
 
 const DEBUG = false
+
+var ErrMiscaonfiguration = errors.New(`misconfiguration`)
 
 func Descr(args ...any) {
 	if DEBUG {
@@ -168,7 +171,7 @@ func (a *Adapter) UpsertTable(tableName TableName, prop *TableProp) bool {
 			strings.Join(prop.Uniques, `__`), Index{Parts: prop.Uniques, IfNotExists: true, Unique: true},
 		})
 	}
-	// create spatial index
+	// create spatial index (only works for memtx)
 	if prop.Spatial != `` {
 		a.ExecBoxSpace(string(tableName)+`:create_index`, A.X{
 			prop.Spatial, Index{Parts: []string{prop.Spatial}, IfNotExists: true, Type: `RTREE`},
@@ -317,6 +320,10 @@ func (a *Adapter) CreateSpace(tableName string, engine EngineType) bool {
 func (a *Adapter) MigrateTables(tables map[TableName]*TableProp) {
 	for name, props := range tables {
 		Descr(name, props)
+		// validity check
+		if props.Engine == Vinyl && props.Spatial != `` {
+			L.PanicIf(ErrMiscaonfiguration, `spatial index is not supported in vinyl engine`)
+		}
 		a.UpsertTable(name, props)
 	}
 }
