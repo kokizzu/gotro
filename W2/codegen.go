@@ -597,11 +597,16 @@ func (r *RoutesArgs) Visit(n ast.Node) ast.Visitor { // parse domain
 						if lit, ok := call.Args[1].(*ast.BasicLit); ok {
 							ep.Msg = lit.Value
 						} else {
-							list, _ := call.Args[1].(*ast.BinaryExpr)
-							// if got error when make gen-route, make sure the
-							// out.SetError( NUM, `STRING`)
-							// ^ should have this exact format and type/literal
-							ep.Msg = list.X.(*ast.BasicLit).Value
+							errConst, ok := call.Args[1].(*ast.Ident)
+							if ok {
+								ep.Msg = errConst.Name
+							} else {
+								list, ok := call.Args[1].(*ast.BinaryExpr)
+								// if got error when make gen-route, make sure the
+								// out.SetError( NUM, `STRING`)
+								// ^ should have this exact format and type/literal
+								ep.Msg = list.X.(*ast.BasicLit).Value
+							}
 						}
 						r.funcSetErrorMap[r.lastFuncDecl] = r.funcSetErrorMap[r.lastFuncDecl].Add(ep)
 					}
