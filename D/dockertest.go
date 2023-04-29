@@ -48,11 +48,11 @@ func (d *DockerTest) Cleanup() {
 func (d *DockerTest) Spawn(options *dockertest.RunOptions, checkFunc func(res *dockertest.Resource) error) {
 	res, err := d.Pool.RunWithOptions(options)
 	label := options.Repository + `:` + options.Tag
-	L.IsError(err, `failed RunWithOptions: `+label)
+	L.PanicIf(err, `failed RunWithOptions: `+label)
 	err = d.Pool.Retry(func() error {
 		return checkFunc(res)
 	})
-	L.IsError(err, `failed Pool.Retry: `+label)
+	L.PanicIf(err, `failed Pool.Retry: `+label)
 	d.Resources = append(d.Resources, res)
 }
 
