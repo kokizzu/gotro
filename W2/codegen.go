@@ -601,7 +601,7 @@ func (r *RoutesArgs) Visit(n ast.Node) ast.Visitor { // parse domain
 							if ok {
 								ep.Msg = errConst.Name
 							} else {
-								list, ok := call.Args[1].(*ast.BinaryExpr)
+								list, _ := call.Args[1].(*ast.BinaryExpr)
 								// if got error when make gen-route, make sure the
 								// out.SetError( NUM, `STRING`)
 								// ^ should have this exact format and type/literal
