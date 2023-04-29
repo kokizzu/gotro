@@ -34,10 +34,6 @@ func (in *TtDockerTest) ImageVersion(pool *D.DockerTest, version string) *docker
 	}
 }
 
-func (in *TtDockerTest) Image3(pool *D.DockerTest) *dockertest.RunOptions {
-	return in.ImageVersion(pool, `3`)
-}
-
 func (in *TtDockerTest) SetDefaults(img string) {
 	if in.Image == `` {
 		in.Image = img

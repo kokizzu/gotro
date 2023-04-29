@@ -19,7 +19,7 @@ type ChDockerTest struct {
 	pool     *D.DockerTest
 }
 
-// https://hub.docker.com/r/clickhouse/clickhouse-server
+// ImageVersion https://hub.docker.com/r/clickhouse/clickhouse-server
 func (in *ChDockerTest) ImageVersion(pool *D.DockerTest, version string) *dockertest.RunOptions {
 	in.pool = pool
 	in.SetDefaults(version)
