@@ -1,11 +1,10 @@
 package Ch
 
 import (
-	"crypto/tls"
+	"database/sql"
 	"time"
 
 	"github.com/ClickHouse/clickhouse-go/v2"
-	"github.com/ClickHouse/clickhouse-go/v2/lib/driver"
 	"github.com/ory/dockertest/v3"
 
 	"github.com/kokizzu/gotro/D"
@@ -57,18 +56,15 @@ func (in *ChDockerTest) SetDefaults(img string) {
 	}
 }
 
-func (in *ChDockerTest) ConnectCheck(res *dockertest.Resource) (driver.Conn, error) {
+func (in *ChDockerTest) ConnectCheck(res *dockertest.Resource) (conn *sql.DB, err error) {
 	in.Port = res.GetPort("9000/tcp")
 	hostPort := in.pool.HostPort(in.Port)
-	conn, err := clickhouse.Open(&clickhouse.Options{
+	conn = clickhouse.OpenDB(&clickhouse.Options{
 		Addr: []string{hostPort},
 		Auth: clickhouse.Auth{
 			Database: in.Database,
 			Username: in.User,
 			Password: in.Password,
-		},
-		TLS: &tls.Config{
-			InsecureSkipVerify: true,
 		},
 		Settings: clickhouse.Settings{
 			`max_execution_time`: 60,
@@ -82,5 +78,6 @@ func (in *ChDockerTest) ConnectCheck(res *dockertest.Resource) (driver.Conn, err
 		MaxOpenConns:    10,
 		ConnMaxLifetime: time.Hour,
 	})
+	err = conn.Ping()
 	return conn, err
 }

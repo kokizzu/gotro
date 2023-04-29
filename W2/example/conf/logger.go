@@ -84,7 +84,7 @@ func (lf *logFields) MarshalZerologObject(e *zerolog.Event) {
 	}
 }
 
-//Middleware requestid + logger + recover for request traceability
+// Logger Middleware requestid + logger + recover for request traceability
 func Logger(log zerolog.Logger) func(*fiber.Ctx) error {
 	return func(c *fiber.Ctx) error {
 		start := time.Now()
