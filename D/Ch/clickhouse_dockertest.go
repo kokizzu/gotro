@@ -73,11 +73,11 @@ func (in *ChDockerTest) ConnectCheck(res *dockertest.Resource) (conn *sql.DB, er
 		Compression: &clickhouse.Compression{
 			Method: clickhouse.CompressionLZ4,
 		},
-		Debug:           true,
-		MaxIdleConns:    5,
-		MaxOpenConns:    10,
-		ConnMaxLifetime: time.Hour,
+		Debug: true,
 	})
+	conn.SetConnMaxLifetime(time.Hour)
+	conn.SetMaxIdleConns(5)
+	conn.SetMaxOpenConns(10)
 	err = conn.Ping()
 	return conn, err
 }
