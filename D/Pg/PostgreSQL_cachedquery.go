@@ -266,201 +266,201 @@ func RamGetStr(ram_key, query string) (string, bool) {
 }
 
 // query and cache AMSX for TTL seconds
-func (conn *RDBMS) CQMapArray(bucket, ram_key, query string) A.MSX {
+func (db *RDBMS) CQMapArray(bucket, ram_key, query string) A.MSX {
 	if val, ok := RamGetAMSX(ram_key, query); ok {
 		return val
 	}
-	val := conn.QMapArray(query)
+	val := db.QMapArray(query)
 	return RamSetAMSX(bucket, ram_key, query, val, TTL)
 }
 
 // query and cache M.SX for TTL seconds
-func (conn *RDBMS) CQFirstMap(bucket, ram_key, query string) M.SX {
+func (db *RDBMS) CQFirstMap(bucket, ram_key, query string) M.SX {
 	if val, ok := RamGetMSX(ram_key, query); ok {
 		return val
 	}
-	val := conn.QFirstMap(query)
+	val := db.QFirstMap(query)
 	return RamSetMSX(bucket, ram_key, query, val, TTL)
 }
 
 // query and cache []string for TTL seconds
-func (conn *RDBMS) CQStrArr(bucket, ram_key, query string) []string {
+func (db *RDBMS) CQStrArr(bucket, ram_key, query string) []string {
 	if val, ok := RamGetAS(ram_key, query); ok {
 		return val
 	}
-	val := conn.QStrArr(query)
+	val := db.QStrArr(query)
 	return RamSetAS(bucket, ram_key, query, val, TTL)
 }
 
 // query and cache bool for TTL seconds
-func (conn *RDBMS) CQBool(bucket, ram_key, query string) bool {
+func (db *RDBMS) CQBool(bucket, ram_key, query string) bool {
 	if val, ok := RamGetBool(ram_key, query); ok {
 		return val
 	}
-	val := conn.QBool(query)
+	val := db.QBool(query)
 	return RamSetBool(bucket, ram_key, query, val, TTL)
 }
 
 // query and cache int64 for TTL seconds
-func (conn *RDBMS) CQInt(bucket, ram_key, query string) int64 {
+func (db *RDBMS) CQInt(bucket, ram_key, query string) int64 {
 	if val, ok := RamGetInt(ram_key, query); ok {
 		return val
 	}
-	val := conn.QInt(query)
+	val := db.QInt(query)
 	return RamSetInt(bucket, ram_key, query, val, TTL)
 }
 
 // Query and cache float64 for TTL seconds
-func (conn *RDBMS) CQFloat(bucket, ram_key, query string) float64 {
+func (db *RDBMS) CQFloat(bucket, ram_key, query string) float64 {
 	if val, ok := RamGetFloat(ram_key, query); ok {
 		return val
 	}
-	val := conn.QFloat(query)
+	val := db.QFloat(query)
 	return RamSetFloat(bucket, ram_key, query, val, TTL)
 }
 
 // query and cache string for TTL seconds
-func (conn *RDBMS) CQStr(bucket, ram_key, query string) string {
+func (db *RDBMS) CQStr(bucket, ram_key, query string) string {
 	if val, ok := RamGetStr(ram_key, query); ok {
 		return val
 	}
-	val := conn.QStr(query)
+	val := db.QStr(query)
 	return RamSetStr(bucket, ram_key, query, val, TTL)
 }
 
 // query and cache M.SX for TTL seconds
-func (conn *RDBMS) CQStrMapMap(bucket, ram_key, index, query string) M.SX {
+func (db *RDBMS) CQStrMapMap(bucket, ram_key, index, query string) M.SX {
 	if val, ok := RamGetMSX(ram_key, query); ok {
 		return val
 	}
-	val := conn.QStrMapMap(index, query)
+	val := db.QStrMapMap(index, query)
 	return RamSetMSX(bucket, ram_key, query, val, TTL)
 }
 
 // query and cache []int64 for TTL seconds
-func (conn *RDBMS) CQIntArr(bucket, ram_key, query string) []int64 {
+func (db *RDBMS) CQIntArr(bucket, ram_key, query string) []int64 {
 	if val, ok := RamGetAI(ram_key, query); ok {
 		return val
 	}
-	val := conn.QIntArr(query)
+	val := db.QIntArr(query)
 	return RamSetAI(bucket, ram_key, query, val, TTL)
 }
 
 // query and cache map[int64]string for TTL seconds
-func (conn *RDBMS) CQIntStrMap(bucket, ram_key, query string) map[int64]string {
+func (db *RDBMS) CQIntStrMap(bucket, ram_key, query string) map[int64]string {
 	if val, ok := RamGetMIS(ram_key, query); ok {
 		return val
 	}
-	val := conn.QIntStrMap(query)
+	val := db.QIntStrMap(query)
 	return RamSetMIS(bucket, ram_key, query, val, TTL)
 }
 
 // query and cache map[string]string for TTL seconds
-func (conn *RDBMS) CQStrStrMap(bucket, ram_key, query string) map[string]string {
+func (db *RDBMS) CQStrStrMap(bucket, ram_key, query string) map[string]string {
 	if val, ok := RamGetMSS(ram_key, query); ok {
 		return val
 	}
-	val := conn.QStrStrMap(query)
+	val := db.QStrStrMap(query)
 	return RamSetMSS(bucket, ram_key, query, val, TTL)
 }
 
 // with ttl
 
 // query and cache AMSX for TTL seconds
-func (conn *RDBMS) CTQMapArray(ttl int64, bucket, ram_key, query string) A.MSX {
+func (db *RDBMS) CTQMapArray(ttl int64, bucket, ram_key, query string) A.MSX {
 	if val, ok := RamGetAMSX(ram_key, query); ok {
 		return val
 	}
-	val := conn.QMapArray(query)
+	val := db.QMapArray(query)
 	return RamSetAMSX(bucket, ram_key, query, val, ttl)
 }
 
 // query and cache M.SX for TTL seconds
-func (conn *RDBMS) CTQFirstMap(ttl int64, bucket, ram_key, query string) M.SX {
+func (db *RDBMS) CTQFirstMap(ttl int64, bucket, ram_key, query string) M.SX {
 	if val, ok := RamGetMSX(ram_key, query); ok {
 		return val
 	}
-	val := conn.QFirstMap(query)
+	val := db.QFirstMap(query)
 	return RamSetMSX(bucket, ram_key, query, val, ttl)
 }
 
 // query and cache []string for TTL seconds
-func (conn *RDBMS) CTQStrArr(ttl int64, bucket, ram_key, query string) []string {
+func (db *RDBMS) CTQStrArr(ttl int64, bucket, ram_key, query string) []string {
 	if val, ok := RamGetAS(ram_key, query); ok {
 		return val
 	}
-	val := conn.QStrArr(query)
+	val := db.QStrArr(query)
 	return RamSetAS(bucket, ram_key, query, val, ttl)
 }
 
 // query and cache bool for TTL seconds
-func (conn *RDBMS) CTQBool(ttl int64, bucket, ram_key, query string) bool {
+func (db *RDBMS) CTQBool(ttl int64, bucket, ram_key, query string) bool {
 	if val, ok := RamGetBool(ram_key, query); ok {
 		return val
 	}
-	val := conn.QBool(query)
+	val := db.QBool(query)
 	return RamSetBool(bucket, ram_key, query, val, ttl)
 }
 
 // query and cache int64 for TTL seconds
-func (conn *RDBMS) CTQInt(ttl int64, bucket, ram_key, query string) int64 {
+func (db *RDBMS) CTQInt(ttl int64, bucket, ram_key, query string) int64 {
 	if val, ok := RamGetInt(ram_key, query); ok {
 		return val
 	}
-	val := conn.QInt(query)
+	val := db.QInt(query)
 	return RamSetInt(bucket, ram_key, query, val, ttl)
 }
 
 // Query and cache float64 for TTL seconds
-func (conn *RDBMS) CTQFloat(ttl int64, bucket, ram_key, query string) float64 {
+func (db *RDBMS) CTQFloat(ttl int64, bucket, ram_key, query string) float64 {
 	if val, ok := RamGetFloat(ram_key, query); ok {
 		return val
 	}
-	val := conn.QFloat(query)
+	val := db.QFloat(query)
 	return RamSetFloat(bucket, ram_key, query, val, ttl)
 }
 
 // query and cache string for TTL seconds
-func (conn *RDBMS) CTQStr(ttl int64, bucket, ram_key, query string) string {
+func (db *RDBMS) CTQStr(ttl int64, bucket, ram_key, query string) string {
 	if val, ok := RamGetStr(ram_key, query); ok {
 		return val
 	}
-	val := conn.QStr(query)
+	val := db.QStr(query)
 	return RamSetStr(bucket, ram_key, query, val, ttl)
 }
 
 // query and cache M.SX for TTL seconds
-func (conn *RDBMS) CTQStrMapMap(ttl int64, bucket, ram_key, index, query string) M.SX {
+func (db *RDBMS) CTQStrMapMap(ttl int64, bucket, ram_key, index, query string) M.SX {
 	if val, ok := RamGetMSX(ram_key, query); ok {
 		return val
 	}
-	val := conn.QStrMapMap(index, query)
+	val := db.QStrMapMap(index, query)
 	return RamSetMSX(bucket, ram_key, query, val, ttl)
 }
 
 // query and cache []int64 for TTL seconds
-func (conn *RDBMS) CTQIntArr(ttl int64, bucket, ram_key, query string) []int64 {
+func (db *RDBMS) CTQIntArr(ttl int64, bucket, ram_key, query string) []int64 {
 	if val, ok := RamGetAI(ram_key, query); ok {
 		return val
 	}
-	val := conn.QIntArr(query)
+	val := db.QIntArr(query)
 	return RamSetAI(bucket, ram_key, query, val, ttl)
 }
 
 // query and cache map[int64]string for TTL seconds
-func (conn *RDBMS) CTQIntStrMap(ttl int64, bucket, ram_key, query string) map[int64]string {
+func (db *RDBMS) CTQIntStrMap(ttl int64, bucket, ram_key, query string) map[int64]string {
 	if val, ok := RamGetMIS(ram_key, query); ok {
 		return val
 	}
-	val := conn.QIntStrMap(query)
+	val := db.QIntStrMap(query)
 	return RamSetMIS(bucket, ram_key, query, val, ttl)
 }
 
 // query and cache map[string]string for TTL seconds
-func (conn *RDBMS) CTQStrStrMap(ttl int64, bucket, ram_key, query string) map[string]string {
+func (db *RDBMS) CTQStrStrMap(ttl int64, bucket, ram_key, query string) map[string]string {
 	if val, ok := RamGetMSS(ram_key, query); ok {
 		return val
 	}
-	val := conn.QStrStrMap(query)
+	val := db.QStrStrMap(query)
 	return RamSetMSS(bucket, ram_key, query, val, ttl)
 }
