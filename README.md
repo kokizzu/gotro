@@ -56,6 +56,7 @@ For newer framework `W2` can achieve `20K` rps on Ryzen3 3100 without session lo
 ## Contributors
 
 - [Ahmad Akbar Fauzi](//github.com/akbarfa49)
+- [Anton Sofyan](//github.com/antonsofyan)
 - [Dikaimin Simon](//github.com/dikaimins)
 - [Dimas Yudha Prawira](//github.com/dhiemaz)
 - [Marcelinus Devin Yonas](//github.com/davey06)
