@@ -493,8 +493,8 @@ func (tx *Tx) DataJsonMapIdAndIsDeleted_ByUniq(table, unique_id string) (res M.S
 }
 
 // query any number of columns, returns first line of line
-func (db *Tx) QFirstMap(query string, params ...any) M.SX {
-	rows := db.QAll(query)
+func (tx *Tx) QFirstMap(query string, params ...any) M.SX {
+	rows := tx.QAll(query)
 	defer rows.Close()
 	for rows.Next() {
 		return rows.ScanMap()
