@@ -3,7 +3,7 @@ module github.com/kokizzu/gotro
 go 1.20
 
 require (
-	github.com/ClickHouse/clickhouse-go/v2 v2.9.1
+	github.com/ClickHouse/clickhouse-go/v2 v2.10.0
 	github.com/OneOfOne/cmap v0.0.0-20170825200327-ccaef7657ab8
 	github.com/allegro/bigcache v1.2.1
 	github.com/amzn/ion-go v1.1.3
@@ -40,12 +40,12 @@ require (
 	github.com/op/go-logging v0.0.0-20160315200505-970db520ece7
 	github.com/orcaman/concurrent-map v1.0.0
 	github.com/ory/dockertest/v3 v3.10.0
+	github.com/redis/rueidis v1.0.4
 	github.com/rs/zerolog v1.26.1
-	github.com/rueian/rueidis v0.0.100
 	github.com/segmentio/fasthash v1.0.3
 	github.com/shirou/gopsutil/v3 v3.22.4
 	github.com/stretchr/testify v1.8.2
-	github.com/tarantool/go-tarantool v1.10.0
+	github.com/tarantool/go-tarantool v1.11.0
 	github.com/tdewolff/minify v2.3.6+incompatible
 	github.com/valyala/bytebufferpool v1.0.0
 	github.com/valyala/fasthttp v1.44.0
@@ -54,10 +54,10 @@ require (
 	github.com/yosuke-furukawa/json5 v0.1.1
 	github.com/zeebo/assert v1.3.0
 	github.com/zeebo/xxh3 v1.0.2
-	go.opentelemetry.io/otel v1.15.0
-	go.opentelemetry.io/otel/trace v1.15.0
-	golang.org/x/crypto v0.8.0
-	golang.org/x/exp v0.0.0-20230425010034-47ecfdc1ba53
+	go.opentelemetry.io/otel v1.15.1
+	go.opentelemetry.io/otel/trace v1.15.1
+	golang.org/x/crypto v0.9.0
+	golang.org/x/exp v0.0.0-20230515195305-f3d0a9c9a5cc
 	golang.org/x/oauth2 v0.0.0-20220524215830-622c5d57e401
 	golang.org/x/text v0.9.0
 	gopkg.in/natefinch/lumberjack.v2 v2.0.0
@@ -74,10 +74,10 @@ require (
 	github.com/amzn/ion-hash-go v1.1.1 // indirect
 	github.com/andybalholm/brotli v1.0.5 // indirect
 	github.com/cenkalti/backoff/v4 v4.2.1 // indirect
-	github.com/containerd/continuity v0.3.0 // indirect
+	github.com/containerd/continuity v0.4.0 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
-	github.com/docker/cli v23.0.5+incompatible // indirect
-	github.com/docker/docker v23.0.5+incompatible // indirect
+	github.com/docker/cli v24.0.0+incompatible // indirect
+	github.com/docker/docker v24.0.0+incompatible // indirect
 	github.com/docker/go-connections v0.4.0 // indirect
 	github.com/docker/go-units v0.5.0 // indirect
 	github.com/francoispqt/gojay v1.2.13 // indirect
@@ -109,12 +109,12 @@ require (
 	github.com/mattn/go-isatty v0.0.18 // indirect
 	github.com/mattn/go-pointer v0.0.1 // indirect
 	github.com/mattn/go-runewidth v0.0.14 // indirect
-	github.com/moby/term v0.0.0-20221205130635-1aeaba878587 // indirect
+	github.com/moby/term v0.5.0 // indirect
 	github.com/nightlyone/lockfile v1.0.0 // indirect
 	github.com/opencontainers/go-digest v1.0.0 // indirect
 	github.com/opencontainers/image-spec v1.1.0-rc3 // indirect
 	github.com/opencontainers/runc v1.1.7 // indirect
-	github.com/paulmach/orb v0.9.1 // indirect
+	github.com/paulmach/orb v0.9.2 // indirect
 	github.com/philhofer/fwd v1.1.1 // indirect
 	github.com/pierrec/lz4/v4 v4.1.17 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
@@ -127,7 +127,7 @@ require (
 	github.com/segmentio/asm v1.2.0 // indirect
 	github.com/shopspring/decimal v1.3.1 // indirect
 	github.com/shurcooL/go-goon v0.0.0-20210110234559-7585751d9a17 // indirect
-	github.com/sirupsen/logrus v1.9.0 // indirect
+	github.com/sirupsen/logrus v1.9.2 // indirect
 	github.com/spacemonkeygo/spacelog v0.0.0-20180420211403-2296661a0572 // indirect
 	github.com/tarantool/go-openssl v0.0.8-0.20230307065445-720eeb389195 // indirect
 	github.com/tdewolff/parse v2.3.4+incompatible // indirect
@@ -142,10 +142,10 @@ require (
 	github.com/xeipuuv/gojsonschema v1.2.0 // indirect
 	github.com/yusufpapurcu/wmi v1.2.2 // indirect
 	golang.org/x/mod v0.10.0 // indirect
-	golang.org/x/net v0.9.0 // indirect
-	golang.org/x/sync v0.1.0 // indirect
-	golang.org/x/sys v0.7.0 // indirect
-	golang.org/x/tools v0.8.0 // indirect
+	golang.org/x/net v0.10.0 // indirect
+	golang.org/x/sync v0.2.0 // indirect
+	golang.org/x/sys v0.8.0 // indirect
+	golang.org/x/tools v0.9.1 // indirect
 	golang.org/x/xerrors v0.0.0-20200804184101-5ec99f83aff1 // indirect
 	google.golang.org/appengine v1.6.7 // indirect
 	google.golang.org/protobuf v1.30.0 // indirect

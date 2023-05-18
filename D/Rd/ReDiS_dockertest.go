@@ -2,7 +2,7 @@ package Rd
 
 import (
 	"github.com/ory/dockertest/v3"
-	"github.com/rueian/rueidis"
+	"github.com/redis/rueidis"
 
 	"github.com/kokizzu/gotro/D"
 )

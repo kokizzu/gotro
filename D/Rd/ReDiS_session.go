@@ -10,7 +10,7 @@ import (
 	"github.com/kokizzu/gotro/M"
 	"github.com/kokizzu/gotro/S"
 
-	"github.com/rueian/rueidis"
+	"github.com/redis/rueidis"
 )
 
 const DEFAULT_HOST = `127.0.0.1:6379`

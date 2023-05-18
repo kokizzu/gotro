@@ -30,7 +30,7 @@ go get -u -v github.com/mitchellh/mapstructure@latest
 go get -u -v github.com/vmihailenco/msgpack/v5@latest
 go get -u -v github.com/goccy/go-json@latest
 go get -u -v github.com/zeebo/xxh3@latest
-go get -u -v github.com/rueian/rueidis@latest
+go get -u -v github.com/redis/rueidis@latest
 go get -u -v github.com/kpango/fastime@latest
 go get -u -v github.com/fatih/color@latest
 go get -u -v github.com/kr/pretty@latest
