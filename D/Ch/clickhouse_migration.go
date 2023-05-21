@@ -17,6 +17,7 @@ func Descr(args ...any) {
 
 const MergeTree = `MergeTree`
 const ReplacingMergeTree = `ReplacingMergeTree`
+const CodecLz4hc = `CODEC(LZ4HC)`
 const SummingMergeTree = `SummingMergeTree`
 const AggregatingMergeTree = `AggregatingMergeTree`
 const CollapsingMergeTree = `CollapsingMergeTree`
@@ -84,6 +85,8 @@ type TableProp struct {
 	Fields []Field
 	Engine string
 	Orders []string
+
+	DefaultCodec string
 }
 
 type Field struct {
@@ -95,7 +98,7 @@ func (a *Adapter) CreateTable(tableName TableName, props *TableProp) bool {
 	query := `
 CREATE TABLE IF NOT EXISTS ` + string(tableName) + ` (`
 	for idx, field := range props.Fields {
-		query += field.Name + ` ` + string(field.Type)
+		query += field.Name + ` ` + string(field.Type) + ` ` + props.DefaultCodec
 		if idx < len(props.Fields)-1 {
 			query += `,`
 		}
@@ -111,6 +114,9 @@ ORDER BY (` + A.StrJoin(props.Orders, `, `) + `)`
 func (a *Adapter) UpsertTable(tableName TableName, props *TableProp) bool {
 	if props.Engine == `` {
 		props.Engine = ReplacingMergeTree
+	}
+	if props.DefaultCodec == `` {
+		props.DefaultCodec = CodecLz4hc
 	}
 	if !a.CreateTable(tableName, props) {
 		return false
@@ -169,7 +175,7 @@ ORDER BY "position"`
 	}
 	for ; pos < len(props.Fields); pos++ {
 		field := props.Fields[pos]
-		query := `ALTER TABLE ` + string(tableName) + ` ADD COLUMN ` + field.Name + ` ` + string(field.Type)
+		query := `ALTER TABLE ` + string(tableName) + ` ADD COLUMN ` + field.Name + ` ` + string(field.Type) + ` ` + props.DefaultCodec
 		_, err := a.Exec(query)
 		hasError = hasError || L.IsError(err, query)
 	}
