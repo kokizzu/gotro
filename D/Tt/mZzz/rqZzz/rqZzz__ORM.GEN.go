@@ -136,7 +136,7 @@ func (z *Zzz) FromArray(a A.X) *Zzz { //nolint:dupl false positive
 // FindOffsetLimit returns slice of struct, order by idx, eg. .UniqueIndex*()
 func (z *Zzz) FindOffsetLimit(offset, limit uint32, idx string) []Zzz { //nolint:dupl false positive
 	var rows []Zzz
-	res, err := z.Adapter.Select(z.SpaceName(), idx, offset, limit, 2, A.X{})
+	res, err := z.Adapter.Select(z.SpaceName(), idx, offset, limit, tarantool.IterAll, A.X{})
 	if L.IsError(err, `Zzz.FindOffsetLimit failed: `+z.SpaceName()) {
 		return rows
 	}
@@ -150,7 +150,7 @@ func (z *Zzz) FindOffsetLimit(offset, limit uint32, idx string) []Zzz { //nolint
 // FindArrOffsetLimit returns as slice of slice order by idx eg. .UniqueIndex*()
 func (z *Zzz) FindArrOffsetLimit(offset, limit uint32, idx string) ([]A.X, Tt.QueryMeta) { //nolint:dupl false positive
 	var rows []A.X
-	res, err := z.Adapter.Select(z.SpaceName(), idx, offset, limit, 2, A.X{})
+	res, err := z.Adapter.Select(z.SpaceName(), idx, offset, limit, tarantool.IterAll, A.X{})
 	if L.IsError(err, `Zzz.FindOffsetLimit failed: `+z.SpaceName()) {
 		return rows, Tt.QueryMetaFrom(res, err)
 	}

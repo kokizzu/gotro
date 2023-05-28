@@ -179,7 +179,7 @@ const UserList_Url = `/UserList`
 
 func (d *Domain) UserList(in *UserList_In) (out UserList_Out) {
 	user := rqAuth.NewUsers(d.Taran)
-	out.Users = user.FindOffsetLimit(in.Offset, in.Limit)
+	out.Users = user.AllOffsetLimit(in.Offset, in.Limit)
 	out.Total = uint32(user.Total())
 	out.Limit = in.Limit
 	out.Offset = in.Offset

@@ -123,7 +123,7 @@ echo "> Moving executables and scripts.. ${EXECUTABLES}" \
 --exclude '.sublime-project' \
 --exclude '*.md' \
 --exclude '.env' \
---exclude '*.sql' \
+--exclude '*.Sql' \
 --exclude '*.pem' \
 --exclude '*.ppk' \
 --exclude '*.yml' \

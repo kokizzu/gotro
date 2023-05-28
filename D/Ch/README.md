@@ -243,13 +243,13 @@ type TopUser struct {
 
 func (m *UserLogs) FindTop1k(daySpan int, offset int64) (res []TopUser) {
 	query := `
-SELECT ` + m.sqlActorId() + `
+SELECT ` + m.SqlActorId() + `
 	, COUNT(1) 
-FROM ` + m.sqlTableName() + ` 
-WHERE ` + m.sqlCreatedAt() + ` >= subtractDays(now(),` + I.ToStr(daySpan) + `) 
-GROUP BY ` + m.sqlActorId() + ` 
+FROM ` + m.SqlTableName() + ` 
+WHERE ` + m.SqlCreatedAt() + ` >= subtractDays(now(),` + I.ToStr(daySpan) + `) 
+GROUP BY ` + m.SqlActorId() + ` 
 ORDER BY COUNT(1) DESC
-	,  MAX(` + m.sqlCreatedAt() + `)
+	,  MAX(` + m.SqlCreatedAt() + `)
 LIMIT 1000
 OFFSET ` + X.ToS(offset) + `
 ` // note: for string, use S.Z or S.XSS to prevent SQL injection

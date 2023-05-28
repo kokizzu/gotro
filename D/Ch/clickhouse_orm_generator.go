@@ -121,7 +121,7 @@ func GenerateOrm(tables map[TableName]*TableProp) {
 	SA("var Preparators = map[Ch.TableName]chBuffer.Preparator{\n")
 	for _, tableName := range tableNames {
 		SA(`	` + mPkgName + `.Table` + S.PascalCase(tableName) + `: func(tx *sql.Tx) *sql.Stmt {
-		query := ` + tableName + `Dummy.sqlInsert()
+		query := ` + tableName + `Dummy.SqlInsert()
 		stmt, err := tx.Prepare(query)
 		L.IsError(err, ` + "`failed to tx.Prepare: `+query" + `)
 		return stmt
@@ -171,12 +171,12 @@ func GenerateOrm(tables map[TableName]*TableProp) {
 		SA("// insert, error if exists\n")
 		SA(`func (` + receiverName + ` *` + structName + ") SqlInsert() string { //nolint:dupl false positive\n")
 		qMark := S.Repeat(`,?`, len(props.Fields))[1:]
-		SA("	return `INSERT INTO ` + " + receiverName + ".sqlTableName() + `(` + " + receiverName + ".sqlAllFields() + `) VALUES (" + qMark + ")`\n")
+		SA("	return `INSERT INTO ` + " + receiverName + ".SqlTableName() + `(` + " + receiverName + ".SqlAllFields() + `) VALUES (" + qMark + ")`\n")
 		SA("}\n\n")
 
 		// total records
 		SA(`func (` + receiverName + ` *` + structName + ") SqlCount() string { //nolint:dupl false positive\n")
-		SA("	return `SELECT COUNT(*) FROM ` + " + receiverName + ".sqlTableName()\n")
+		SA("	return `SELECT COUNT(*) FROM ` + " + receiverName + ".SqlTableName()\n")
 		SA("}\n\n")
 
 		// Sql select all fields, used when need to mutate or show every fields

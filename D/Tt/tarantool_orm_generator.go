@@ -7,8 +7,6 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/tarantool/go-tarantool"
-
 	"github.com/kokizzu/gotro/I"
 	"github.com/kokizzu/gotro/L"
 	"github.com/kokizzu/gotro/S"
@@ -64,6 +62,7 @@ func TypeGraphql(field Field) string {
 const connStruct = `Tt.Adapter`
 const connImport = "\n\n\t`github.com/tarantool/go-tarantool`"
 const iterEq = `tarantool.IterEq`
+const iterAll = `tarantool.IterAll`
 const iterNeighbor = `tarantool.IterNeighbor`
 
 var _ = iterNeighbor
@@ -467,7 +466,7 @@ func GenerateOrm(tables map[TableName]*TableProp, withGraphql ...bool) {
 		RQ("// FindOffsetLimit returns slice of struct, order by idx, eg. .UniqueIndex*()\n")
 		RQ(`func (` + receiverName + ` *` + structName + ") FindOffsetLimit(offset, limit uint32, idx string) []" + structName + " { //nolint:dupl false positive\n")
 		RQ("	var rows []" + structName + NL)
-		RQ("	res, err := " + receiverName + ".Adapter.Select(" + receiverName + ".SpaceName(), idx, offset, limit, " + X.ToS(tarantool.IterAll) + ", A.X{})\n")
+		RQ("	res, err := " + receiverName + ".Adapter.Select(" + receiverName + ".SpaceName(), idx, offset, limit, " + iterAll + ", A.X{})\n")
 		RQ("	if L.IsError(err, `" + structName + ".FindOffsetLimit failed: `+" + receiverName + ".SpaceName()) {\n")
 		RQ("		return rows\n")
 		RQ("	}\n")
@@ -482,7 +481,7 @@ func GenerateOrm(tables map[TableName]*TableProp, withGraphql ...bool) {
 		RQ("// FindArrOffsetLimit returns as slice of slice order by idx eg. .UniqueIndex*()\n")
 		RQ(`func (` + receiverName + ` *` + structName + ") FindArrOffsetLimit(offset, limit uint32, idx string) ([]A.X, Tt.QueryMeta) { //nolint:dupl false positive\n")
 		RQ("	var rows []A.X" + NL)
-		RQ("	res, err := " + receiverName + ".Adapter.Select(" + receiverName + ".SpaceName(), idx, offset, limit, " + X.ToS(tarantool.IterAll) + ", A.X{})\n")
+		RQ("	res, err := " + receiverName + ".Adapter.Select(" + receiverName + ".SpaceName(), idx, offset, limit, " + iterAll + ", A.X{})\n")
 		RQ("	if L.IsError(err, `" + structName + ".FindOffsetLimit failed: `+" + receiverName + ".SpaceName()) {\n")
 		RQ("		return rows, Tt.QueryMetaFrom(res, err)\n")
 		RQ("	}\n")

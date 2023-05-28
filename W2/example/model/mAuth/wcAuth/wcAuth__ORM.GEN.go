@@ -3,31 +3,37 @@ package wcAuth
 // DO NOT EDIT, will be overwritten by github.com/kokizzu/D/Tt/tarantool_orm_generator.go
 
 import (
-	"github.com/kokizzu/gotro/W2/example/model/mAuth/rqAuth"
+	`github.com/kokizzu/gotro/W2/example/model/mAuth/rqAuth`
 
-	"github.com/kokizzu/gotro/A"
-	"github.com/kokizzu/gotro/D/Tt"
-	"github.com/kokizzu/gotro/L"
-	"github.com/kokizzu/gotro/X"
+	`github.com/kokizzu/gotro/A`
+	`github.com/kokizzu/gotro/D/Tt`
+	`github.com/kokizzu/gotro/L`
+	`github.com/kokizzu/gotro/X`
 )
 
 //go:generate gomodifytags -all -add-tags json,form,query,long,msg -transform camelcase --skip-unexported -w -file wcAuth__ORM.GEN.go
 //go:generate replacer -afterprefix 'Id" form' 'Id,string" form' type wcAuth__ORM.GEN.go
 //go:generate replacer -afterprefix 'json:"id"' 'json:"id,string"' type wcAuth__ORM.GEN.go
 //go:generate replacer -afterprefix 'By" form' 'By,string" form' type wcAuth__ORM.GEN.go
-// go:generate msgp -tests=false -file wcAuth__ORM.GEN.go -o wcAuth__MSG.GEN.go
-
+// SessionsMutator DAO writer/command struct
 type SessionsMutator struct {
 	rqAuth.Sessions
 	mutations []A.X
 }
 
+// NewSessionsMutator create new ORM writer/command object
 func NewSessionsMutator(adapter *Tt.Adapter) *SessionsMutator {
 	return &SessionsMutator{Sessions: rqAuth.Sessions{Adapter: adapter}}
 }
 
+// HaveMutation check whether Set* methods ever called
 func (s *SessionsMutator) HaveMutation() bool { //nolint:dupl false positive
 	return len(s.mutations) > 0
+}
+
+// ClearMutations clear all previously called Set* methods
+func (s *SessionsMutator) ClearMutations() { //nolint:dupl false positive
+	s.mutations = []A.X{}
 }
 
 // func (s *SessionsMutator) DoUpsert() bool { //nolint:dupl false positive
@@ -39,13 +45,13 @@ func (s *SessionsMutator) HaveMutation() bool { //nolint:dupl false positive
 //	return !L.IsError(err, `Sessions.DoUpsert failed: `+s.SpaceName())
 // }
 
-// Overwrite all columns, error if not exists
+// DoOverwriteBySessionToken update all columns, error if not exists, not using mutations/Set*
 func (s *SessionsMutator) DoOverwriteBySessionToken() bool { //nolint:dupl false positive
 	_, err := s.Adapter.Update(s.SpaceName(), s.UniqueIndexSessionToken(), A.X{s.SessionToken}, s.ToUpdateArray())
 	return !L.IsError(err, `Sessions.DoOverwriteBySessionToken failed: `+s.SpaceName())
 }
 
-// Update only mutated, error if not exists, use Find* and Set* methods instead of direct assignment
+// DoUpdateBySessionToken update only mutated fields, error if not exists, use Find* and Set* methods instead of direct assignment
 func (s *SessionsMutator) DoUpdateBySessionToken() bool { //nolint:dupl false positive
 	if !s.HaveMutation() {
 		return true
@@ -54,23 +60,27 @@ func (s *SessionsMutator) DoUpdateBySessionToken() bool { //nolint:dupl false po
 	return !L.IsError(err, `Sessions.DoUpdateBySessionToken failed: `+s.SpaceName())
 }
 
+// DoDeletePermanentBySessionToken permanent delete
 func (s *SessionsMutator) DoDeletePermanentBySessionToken() bool { //nolint:dupl false positive
 	_, err := s.Adapter.Delete(s.SpaceName(), s.UniqueIndexSessionToken(), A.X{s.SessionToken})
 	return !L.IsError(err, `Sessions.DoDeletePermanentBySessionToken failed: `+s.SpaceName())
 }
 
-// insert, error if exists
+// DoInsert insert, error if already exists
 func (s *SessionsMutator) DoInsert() bool { //nolint:dupl false positive
 	_, err := s.Adapter.Insert(s.SpaceName(), s.ToArray())
 	return !L.IsError(err, `Sessions.DoInsert failed: `+s.SpaceName())
 }
 
+// DoUpsert upsert, insert or overwrite, will error only when there's unique secondary key being violated
 // replace = upsert, only error when there's unique secondary key
+// previous name: DoReplace
 func (s *SessionsMutator) DoUpsert() bool { //nolint:dupl false positive
 	_, err := s.Adapter.Replace(s.SpaceName(), s.ToArray())
-	return !L.IsError(err, `Sessions.DoReplace failed: `+s.SpaceName())
+	return !L.IsError(err, `Sessions.DoUpsert failed: `+s.SpaceName())
 }
 
+// SetSessionToken create mutations, should not duplicate
 func (s *SessionsMutator) SetSessionToken(val string) bool { //nolint:dupl false positive
 	if val != s.SessionToken {
 		s.mutations = append(s.mutations, A.X{`=`, 0, val})
@@ -80,6 +90,7 @@ func (s *SessionsMutator) SetSessionToken(val string) bool { //nolint:dupl false
 	return false
 }
 
+// SetUserId create mutations, should not duplicate
 func (s *SessionsMutator) SetUserId(val uint64) bool { //nolint:dupl false positive
 	if val != s.UserId {
 		s.mutations = append(s.mutations, A.X{`=`, 1, val})
@@ -89,6 +100,7 @@ func (s *SessionsMutator) SetUserId(val uint64) bool { //nolint:dupl false posit
 	return false
 }
 
+// SetExpiredAt create mutations, should not duplicate
 func (s *SessionsMutator) SetExpiredAt(val int64) bool { //nolint:dupl false positive
 	if val != s.ExpiredAt {
 		s.mutations = append(s.mutations, A.X{`=`, 2, val})
@@ -100,26 +112,34 @@ func (s *SessionsMutator) SetExpiredAt(val int64) bool { //nolint:dupl false pos
 
 // DO NOT EDIT, will be overwritten by github.com/kokizzu/D/Tt/tarantool_orm_generator.go
 
+// UsersMutator DAO writer/command struct
 type UsersMutator struct {
 	rqAuth.Users
 	mutations []A.X
 }
 
+// NewUsersMutator create new ORM writer/command object
 func NewUsersMutator(adapter *Tt.Adapter) *UsersMutator {
 	return &UsersMutator{Users: rqAuth.Users{Adapter: adapter}}
 }
 
+// HaveMutation check whether Set* methods ever called
 func (u *UsersMutator) HaveMutation() bool { //nolint:dupl false positive
 	return len(u.mutations) > 0
 }
 
-// Overwrite all columns, error if not exists
+// ClearMutations clear all previously called Set* methods
+func (u *UsersMutator) ClearMutations() { //nolint:dupl false positive
+	u.mutations = []A.X{}
+}
+
+// DoOverwriteById update all columns, error if not exists, not using mutations/Set*
 func (u *UsersMutator) DoOverwriteById() bool { //nolint:dupl false positive
 	_, err := u.Adapter.Update(u.SpaceName(), u.UniqueIndexId(), A.X{u.Id}, u.ToUpdateArray())
 	return !L.IsError(err, `Users.DoOverwriteById failed: `+u.SpaceName())
 }
 
-// Update only mutated, error if not exists, use Find* and Set* methods instead of direct assignment
+// DoUpdateById update only mutated fields, error if not exists, use Find* and Set* methods instead of direct assignment
 func (u *UsersMutator) DoUpdateById() bool { //nolint:dupl false positive
 	if !u.HaveMutation() {
 		return true
@@ -128,6 +148,7 @@ func (u *UsersMutator) DoUpdateById() bool { //nolint:dupl false positive
 	return !L.IsError(err, `Users.DoUpdateById failed: `+u.SpaceName())
 }
 
+// DoDeletePermanentById permanent delete
 func (u *UsersMutator) DoDeletePermanentById() bool { //nolint:dupl false positive
 	_, err := u.Adapter.Delete(u.SpaceName(), u.UniqueIndexId(), A.X{u.Id})
 	return !L.IsError(err, `Users.DoDeletePermanentById failed: `+u.SpaceName())
@@ -157,13 +178,13 @@ func (u *UsersMutator) DoDeletePermanentById() bool { //nolint:dupl false positi
 //	return !L.IsError(err, `Users.DoUpsert failed: `+u.SpaceName())
 // }
 
-// Overwrite all columns, error if not exists
+// DoOverwriteByEmail update all columns, error if not exists, not using mutations/Set*
 func (u *UsersMutator) DoOverwriteByEmail() bool { //nolint:dupl false positive
 	_, err := u.Adapter.Update(u.SpaceName(), u.UniqueIndexEmail(), A.X{u.Email}, u.ToUpdateArray())
 	return !L.IsError(err, `Users.DoOverwriteByEmail failed: `+u.SpaceName())
 }
 
-// Update only mutated, error if not exists, use Find* and Set* methods instead of direct assignment
+// DoUpdateByEmail update only mutated fields, error if not exists, use Find* and Set* methods instead of direct assignment
 func (u *UsersMutator) DoUpdateByEmail() bool { //nolint:dupl false positive
 	if !u.HaveMutation() {
 		return true
@@ -172,12 +193,13 @@ func (u *UsersMutator) DoUpdateByEmail() bool { //nolint:dupl false positive
 	return !L.IsError(err, `Users.DoUpdateByEmail failed: `+u.SpaceName())
 }
 
+// DoDeletePermanentByEmail permanent delete
 func (u *UsersMutator) DoDeletePermanentByEmail() bool { //nolint:dupl false positive
 	_, err := u.Adapter.Delete(u.SpaceName(), u.UniqueIndexEmail(), A.X{u.Email})
 	return !L.IsError(err, `Users.DoDeletePermanentByEmail failed: `+u.SpaceName())
 }
 
-// insert, error if exists
+// DoInsert insert, error if already exists
 func (u *UsersMutator) DoInsert() bool { //nolint:dupl false positive
 	row, err := u.Adapter.Insert(u.SpaceName(), u.ToArray())
 	if err == nil {
@@ -189,12 +211,15 @@ func (u *UsersMutator) DoInsert() bool { //nolint:dupl false positive
 	return !L.IsError(err, `Users.DoInsert failed: `+u.SpaceName())
 }
 
+// DoUpsert upsert, insert or overwrite, will error only when there's unique secondary key being violated
 // replace = upsert, only error when there's unique secondary key
+// previous name: DoReplace
 func (u *UsersMutator) DoUpsert() bool { //nolint:dupl false positive
 	_, err := u.Adapter.Replace(u.SpaceName(), u.ToArray())
-	return !L.IsError(err, `Users.DoReplace failed: `+u.SpaceName())
+	return !L.IsError(err, `Users.DoUpsert failed: `+u.SpaceName())
 }
 
+// SetId create mutations, should not duplicate
 func (u *UsersMutator) SetId(val uint64) bool { //nolint:dupl false positive
 	if val != u.Id {
 		u.mutations = append(u.mutations, A.X{`=`, 0, val})
@@ -204,6 +229,7 @@ func (u *UsersMutator) SetId(val uint64) bool { //nolint:dupl false positive
 	return false
 }
 
+// SetEmail create mutations, should not duplicate
 func (u *UsersMutator) SetEmail(val string) bool { //nolint:dupl false positive
 	if val != u.Email {
 		u.mutations = append(u.mutations, A.X{`=`, 1, val})
@@ -213,6 +239,7 @@ func (u *UsersMutator) SetEmail(val string) bool { //nolint:dupl false positive
 	return false
 }
 
+// SetPassword create mutations, should not duplicate
 func (u *UsersMutator) SetPassword(val string) bool { //nolint:dupl false positive
 	if val != u.Password {
 		u.mutations = append(u.mutations, A.X{`=`, 2, val})
@@ -222,6 +249,7 @@ func (u *UsersMutator) SetPassword(val string) bool { //nolint:dupl false positi
 	return false
 }
 
+// SetCreatedAt create mutations, should not duplicate
 func (u *UsersMutator) SetCreatedAt(val int64) bool { //nolint:dupl false positive
 	if val != u.CreatedAt {
 		u.mutations = append(u.mutations, A.X{`=`, 3, val})
@@ -231,6 +259,7 @@ func (u *UsersMutator) SetCreatedAt(val int64) bool { //nolint:dupl false positi
 	return false
 }
 
+// SetCreatedBy create mutations, should not duplicate
 func (u *UsersMutator) SetCreatedBy(val uint64) bool { //nolint:dupl false positive
 	if val != u.CreatedBy {
 		u.mutations = append(u.mutations, A.X{`=`, 4, val})
@@ -240,6 +269,7 @@ func (u *UsersMutator) SetCreatedBy(val uint64) bool { //nolint:dupl false posit
 	return false
 }
 
+// SetUpdatedAt create mutations, should not duplicate
 func (u *UsersMutator) SetUpdatedAt(val int64) bool { //nolint:dupl false positive
 	if val != u.UpdatedAt {
 		u.mutations = append(u.mutations, A.X{`=`, 5, val})
@@ -249,6 +279,7 @@ func (u *UsersMutator) SetUpdatedAt(val int64) bool { //nolint:dupl false positi
 	return false
 }
 
+// SetUpdatedBy create mutations, should not duplicate
 func (u *UsersMutator) SetUpdatedBy(val uint64) bool { //nolint:dupl false positive
 	if val != u.UpdatedBy {
 		u.mutations = append(u.mutations, A.X{`=`, 6, val})
@@ -258,6 +289,7 @@ func (u *UsersMutator) SetUpdatedBy(val uint64) bool { //nolint:dupl false posit
 	return false
 }
 
+// SetDeletedAt create mutations, should not duplicate
 func (u *UsersMutator) SetDeletedAt(val int64) bool { //nolint:dupl false positive
 	if val != u.DeletedAt {
 		u.mutations = append(u.mutations, A.X{`=`, 7, val})
@@ -267,6 +299,7 @@ func (u *UsersMutator) SetDeletedAt(val int64) bool { //nolint:dupl false positi
 	return false
 }
 
+// SetDeletedBy create mutations, should not duplicate
 func (u *UsersMutator) SetDeletedBy(val uint64) bool { //nolint:dupl false positive
 	if val != u.DeletedBy {
 		u.mutations = append(u.mutations, A.X{`=`, 8, val})
@@ -276,6 +309,7 @@ func (u *UsersMutator) SetDeletedBy(val uint64) bool { //nolint:dupl false posit
 	return false
 }
 
+// SetIsDeleted create mutations, should not duplicate
 func (u *UsersMutator) SetIsDeleted(val bool) bool { //nolint:dupl false positive
 	if val != u.IsDeleted {
 		u.mutations = append(u.mutations, A.X{`=`, 9, val})
@@ -285,6 +319,7 @@ func (u *UsersMutator) SetIsDeleted(val bool) bool { //nolint:dupl false positiv
 	return false
 }
 
+// SetRestoredAt create mutations, should not duplicate
 func (u *UsersMutator) SetRestoredAt(val int64) bool { //nolint:dupl false positive
 	if val != u.RestoredAt {
 		u.mutations = append(u.mutations, A.X{`=`, 10, val})
@@ -294,6 +329,7 @@ func (u *UsersMutator) SetRestoredAt(val int64) bool { //nolint:dupl false posit
 	return false
 }
 
+// SetRestoredBy create mutations, should not duplicate
 func (u *UsersMutator) SetRestoredBy(val uint64) bool { //nolint:dupl false positive
 	if val != u.RestoredBy {
 		u.mutations = append(u.mutations, A.X{`=`, 11, val})
@@ -303,6 +339,7 @@ func (u *UsersMutator) SetRestoredBy(val uint64) bool { //nolint:dupl false posi
 	return false
 }
 
+// SetPasswordSetAt create mutations, should not duplicate
 func (u *UsersMutator) SetPasswordSetAt(val int64) bool { //nolint:dupl false positive
 	if val != u.PasswordSetAt {
 		u.mutations = append(u.mutations, A.X{`=`, 12, val})
@@ -312,6 +349,7 @@ func (u *UsersMutator) SetPasswordSetAt(val int64) bool { //nolint:dupl false po
 	return false
 }
 
+// SetSecretCode create mutations, should not duplicate
 func (u *UsersMutator) SetSecretCode(val string) bool { //nolint:dupl false positive
 	if val != u.SecretCode {
 		u.mutations = append(u.mutations, A.X{`=`, 13, val})
@@ -321,6 +359,7 @@ func (u *UsersMutator) SetSecretCode(val string) bool { //nolint:dupl false posi
 	return false
 }
 
+// SetSecretCodeAt create mutations, should not duplicate
 func (u *UsersMutator) SetSecretCodeAt(val int64) bool { //nolint:dupl false positive
 	if val != u.SecretCodeAt {
 		u.mutations = append(u.mutations, A.X{`=`, 14, val})
@@ -330,6 +369,7 @@ func (u *UsersMutator) SetSecretCodeAt(val int64) bool { //nolint:dupl false pos
 	return false
 }
 
+// SetVerificationSentAt create mutations, should not duplicate
 func (u *UsersMutator) SetVerificationSentAt(val int64) bool { //nolint:dupl false positive
 	if val != u.VerificationSentAt {
 		u.mutations = append(u.mutations, A.X{`=`, 15, val})
@@ -339,6 +379,7 @@ func (u *UsersMutator) SetVerificationSentAt(val int64) bool { //nolint:dupl fal
 	return false
 }
 
+// SetVerifiedAt create mutations, should not duplicate
 func (u *UsersMutator) SetVerifiedAt(val int64) bool { //nolint:dupl false positive
 	if val != u.VerifiedAt {
 		u.mutations = append(u.mutations, A.X{`=`, 16, val})
@@ -348,6 +389,7 @@ func (u *UsersMutator) SetVerifiedAt(val int64) bool { //nolint:dupl false posit
 	return false
 }
 
+// SetLastLoginAt create mutations, should not duplicate
 func (u *UsersMutator) SetLastLoginAt(val int64) bool { //nolint:dupl false positive
 	if val != u.LastLoginAt {
 		u.mutations = append(u.mutations, A.X{`=`, 17, val})
@@ -358,3 +400,4 @@ func (u *UsersMutator) SetLastLoginAt(val int64) bool { //nolint:dupl false posi
 }
 
 // DO NOT EDIT, will be overwritten by github.com/kokizzu/D/Tt/tarantool_orm_generator.go
+

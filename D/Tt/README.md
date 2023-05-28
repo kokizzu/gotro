@@ -261,9 +261,9 @@ import (
 
 func (s *Users) FindOffsetLimit(offset, limit uint32) (res []*Users) {
 	query := `
-SELECT ` + s.sqlSelectAllFields() + `
-FROM ` + s.sqlTableName() + `
-ORDER BY ` + s.sqlId() + `
+SELECT ` + s.SqlSelectAllFields() + `
+FROM ` + s.SqlTableName() + `
+ORDER BY ` + s.SqlId() + `
 LIMIT ` + X.ToS(limit) + `
 OFFSET ` + X.ToS(offset) // note: for string, use S.Z or S.XSS to prevent SQL injection
 	if conf.DEBUG_MODE {

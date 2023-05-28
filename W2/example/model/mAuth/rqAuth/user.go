@@ -8,11 +8,11 @@ import (
 	"github.com/kokizzu/gotro/X"
 )
 
-func (s *Users) FindOffsetLimit(offset, limit uint32) (res []*Users) {
+func (s *Users) AllOffsetLimit(offset, limit uint32) (res []*Users) {
 	query := `
-SELECT ` + s.sqlSelectAllFields() + `
-FROM ` + s.sqlTableName() + `
-ORDER BY ` + s.sqlId() + `
+SELECT ` + s.SqlSelectAllFields() + `
+FROM ` + s.SqlTableName() + `
+ORDER BY ` + s.SqlId() + `
 LIMIT ` + X.ToS(limit) + `
 OFFSET ` + X.ToS(offset)
 	if conf.DEBUG_MODE {
