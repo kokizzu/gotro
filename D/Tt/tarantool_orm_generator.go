@@ -232,8 +232,8 @@ func GenerateOrm(tables map[TableName]*TableProp, withGraphql ...bool) {
 		RQ("}\n\n")
 
 		// sql table name
-		RQ("// sqlTableName returns quoted table name\n")
-		RQ(`func (` + receiverName + ` *` + structName + ") sqlTableName() string { //nolint:dupl false positive\n")
+		RQ("// SqlTableName returns quoted table name\n")
+		RQ(`func (` + receiverName + ` *` + structName + ") SqlTableName() string { //nolint:dupl false positive\n")
 		RQ("	return " + S.BT(S.QQ(tableName)) + NL)
 		RQ("}\n\n")
 
@@ -373,9 +373,9 @@ func GenerateOrm(tables map[TableName]*TableProp, withGraphql ...bool) {
 		WC("	return !L.IsError(err, `" + structName + ".DoUpsert failed: `+" + receiverName + ".SpaceName())\n")
 		WC("}\n\n")
 
-		// sql select all fields, used when need to mutate or show every fields
-		RQ("// sqlSelectAllFields generate sql select fields\n")
-		RQ(`func (` + receiverName + ` *` + structName + ") sqlSelectAllFields() string { //nolint:dupl false positive\n")
+		// Sql select all fields, used when need to mutate or show every fields
+		RQ("// SqlSelectAllFields generate Sql select fields\n")
+		RQ(`func (` + receiverName + ` *` + structName + ") SqlSelectAllFields() string { //nolint:dupl false positive\n")
 		sqlFields := ``
 		for _, prop := range props.Fields {
 			sqlFields += `, ` + dq(prop.Name) + "\n\t"
@@ -407,9 +407,9 @@ func GenerateOrm(tables map[TableName]*TableProp, withGraphql ...bool) {
 			//RQ("	return " + S.BT(prop.Name) + NL)
 			//RQ("}\n\n")
 
-			// sql column name functions
-			RQ("// sql" + propName + " return name of the column being indexed\n")
-			RQ(`func (` + receiverName + ` *` + structName + ") sql" + propName + "() string { //nolint:dupl false positive\n")
+			// Sql column name functions
+			RQ("// Sql" + propName + " return name of the column being indexed\n")
+			RQ(`func (` + receiverName + ` *` + structName + ") Sql" + propName + "() string { //nolint:dupl false positive\n")
 			RQ("	return " + S.BT(S.QQ(prop.Name)) + NL)
 			RQ("}\n\n")
 

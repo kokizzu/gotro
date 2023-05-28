@@ -37,8 +37,8 @@ func (z *Zzz) SpaceName() string { //nolint:dupl false positive
 	return string(mZzz.TableZzz) // casting required to string from Tt.TableName
 }
 
-// sqlTableName returns quoted table name
-func (z *Zzz) sqlTableName() string { //nolint:dupl false positive
+// SqlTableName returns quoted table name
+func (z *Zzz) SqlTableName() string { //nolint:dupl false positive
 	return `"zzz"`
 }
 
@@ -65,8 +65,8 @@ func (z *Zzz) SpatialIndexCoords() string { //nolint:dupl false positive
 	return `coords`
 }
 
-// sqlSelectAllFields generate sql select fields
-func (z *Zzz) sqlSelectAllFields() string { //nolint:dupl false positive
+// SqlSelectAllFields generate Sql select fields
+func (z *Zzz) SqlSelectAllFields() string { //nolint:dupl false positive
 	return ` "id"
 	, "created_at"
 	, "coords"
@@ -87,8 +87,8 @@ func (z *Zzz) IdxId() int { //nolint:dupl false positive
 	return 0
 }
 
-// sqlId return name of the column being indexed
-func (z *Zzz) sqlId() string { //nolint:dupl false positive
+// SqlId return name of the column being indexed
+func (z *Zzz) SqlId() string { //nolint:dupl false positive
 	return `"id"`
 }
 
@@ -97,8 +97,8 @@ func (z *Zzz) IdxCreatedAt() int { //nolint:dupl false positive
 	return 1
 }
 
-// sqlCreatedAt return name of the column being indexed
-func (z *Zzz) sqlCreatedAt() string { //nolint:dupl false positive
+// SqlCreatedAt return name of the column being indexed
+func (z *Zzz) SqlCreatedAt() string { //nolint:dupl false positive
 	return `"created_at"`
 }
 
@@ -107,8 +107,8 @@ func (z *Zzz) IdxCoords() int { //nolint:dupl false positive
 	return 2
 }
 
-// sqlCoords return name of the column being indexed
-func (z *Zzz) sqlCoords() string { //nolint:dupl false positive
+// SqlCoords return name of the column being indexed
+func (z *Zzz) SqlCoords() string { //nolint:dupl false positive
 	return `"coords"`
 }
 
