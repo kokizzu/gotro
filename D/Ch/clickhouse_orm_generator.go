@@ -162,25 +162,25 @@ func GenerateOrm(tables map[TableName]*TableProp) {
 		SA("	return " + mPkgName + `.Table` + structName + "\n")
 		SA("}\n\n")
 
-		// sql table name
-		SA(`func (` + receiverName + ` *` + structName + ") sqlTableName() string { //nolint:dupl false positive\n")
+		// Sql table name
+		SA(`func (` + receiverName + ` *` + structName + ") SqlTableName() string { //nolint:dupl false positive\n")
 		SA("	return `" + `"` + tableName + `"` + "`\n")
 		SA("}\n\n")
 
 		// insert, error if exists
 		SA("// insert, error if exists\n")
-		SA(`func (` + receiverName + ` *` + structName + ") sqlInsert() string { //nolint:dupl false positive\n")
+		SA(`func (` + receiverName + ` *` + structName + ") SqlInsert() string { //nolint:dupl false positive\n")
 		qMark := S.Repeat(`,?`, len(props.Fields))[1:]
 		SA("	return `INSERT INTO ` + " + receiverName + ".sqlTableName() + `(` + " + receiverName + ".sqlAllFields() + `) VALUES (" + qMark + ")`\n")
 		SA("}\n\n")
 
 		// total records
-		SA(`func (` + receiverName + ` *` + structName + ") sqlCount() string { //nolint:dupl false positive\n")
+		SA(`func (` + receiverName + ` *` + structName + ") SqlCount() string { //nolint:dupl false positive\n")
 		SA("	return `SELECT COUNT(*) FROM ` + " + receiverName + ".sqlTableName()\n")
 		SA("}\n\n")
 
-		// sql select all fields, used when need to mutate or show every fields
-		SA(`func (` + receiverName + ` *` + structName + ") sqlSelectAllFields() string { //nolint:dupl false positive\n")
+		// Sql select all fields, used when need to mutate or show every fields
+		SA(`func (` + receiverName + ` *` + structName + ") SqlSelectAllFields() string { //nolint:dupl false positive\n")
 		sqlFields := ``
 		for _, prop := range props.Fields {
 			sqlFields += `, ` + (prop.Name) + "\n\t"
@@ -188,7 +188,7 @@ func GenerateOrm(tables map[TableName]*TableProp) {
 		SA(`	return ` + bq(sqlFields[1:]) + "\n")
 		SA("}\n\n")
 
-		SA(`func (` + receiverName + ` *` + structName + ") sqlAllFields() string { //nolint:dupl false positive\n")
+		SA(`func (` + receiverName + ` *` + structName + ") SqlAllFields() string { //nolint:dupl false positive\n")
 		sqlFields = ``
 		for _, prop := range props.Fields {
 			sqlFields += `, ` + prop.Name + ""
@@ -218,8 +218,8 @@ func GenerateOrm(tables map[TableName]*TableProp) {
 			//SA("	return `" + prop.Name + "`\n")
 			//SA("}\n\n")
 
-			// sql column name functions
-			SA(`func (` + receiverName + ` *` + structName + ") sql" + propName + "() string { //nolint:dupl false positive\n")
+			// Sql column name functions
+			SA(`func (` + receiverName + ` *` + structName + ") Sql" + propName + "() string { //nolint:dupl false positive\n")
 			SA("	return `" + prop.Name + "`\n")
 			SA("}\n\n")
 		}

@@ -231,7 +231,7 @@ func GenerateOrm(tables map[TableName]*TableProp, withGraphql ...bool) {
 		RQ("	return string(" + mPkgName + `.Table` + structName + ") // casting required to string from Tt.TableName\n")
 		RQ("}\n\n")
 
-		// sql table name
+		// Sql table name
 		RQ("// SqlTableName returns quoted table name\n")
 		RQ(`func (` + receiverName + ` *` + structName + ") SqlTableName() string { //nolint:dupl false positive\n")
 		RQ("	return " + S.BT(S.QQ(tableName)) + NL)
