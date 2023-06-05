@@ -84,6 +84,9 @@ type TableProp struct {
 	HiddenFields    []string
 	AutoIncrementId bool // "id" column will be used to generate sequence, can only be created at beginning
 	GenGraphqlType  bool
+
+	// hook
+	PreReformatMigrationHook func(*Adapter)
 }
 
 type Field struct { // https://godoc.org/gopkg.in/vmihailenco/msgpack.v2#pkg-examples
@@ -116,6 +119,9 @@ func (a *Adapter) UpsertTable(tableName TableName, prop *TableProp) bool {
 	}
 	if !a.CreateSpace(string(tableName), prop.Engine) {
 		return false
+	}
+	if prop.PreReformatMigrationHook != nil {
+		prop.PreReformatMigrationHook(a)
 	}
 	if !a.ReformatTable(string(tableName), prop.Fields) {
 		return false // failed to create table
