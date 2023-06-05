@@ -87,6 +87,11 @@ type TableProp struct {
 
 	// hook
 	PreReformatMigrationHook func(*Adapter)
+	PreUnique1MigrationHook  func(*Adapter)
+	PreUnique2MigrationHook  func(*Adapter)
+	PreUnique3MigrationHook  func(*Adapter)
+	PreUniquesMigrationHook  func(*Adapter)
+	PreSpatialMigrationHook  func(*Adapter)
 }
 
 type Field struct { // https://godoc.org/gopkg.in/vmihailenco/msgpack.v2#pkg-examples
@@ -146,6 +151,9 @@ func (a *Adapter) UpsertTable(tableName TableName, prop *TableProp) bool {
 			},
 		})
 	}
+	if prop.PreUnique3MigrationHook != nil {
+		prop.PreUnique3MigrationHook(a)
+	}
 	// only create unique if not "id"
 	if prop.Unique1 != `` && !(prop.AutoIncrementId && prop.Unique1 == IdCol) {
 		a.ExecBoxSpace(string(tableName)+`:create_index`, A.X{
@@ -158,6 +166,9 @@ func (a *Adapter) UpsertTable(tableName TableName, prop *TableProp) bool {
 			panic(`Unique1 and Unique3 must be unique`)
 		}
 	}
+	if prop.PreUnique2MigrationHook != nil {
+		prop.PreUnique2MigrationHook(a)
+	}
 	if prop.Unique2 != `` && !(prop.AutoIncrementId && prop.Unique2 == IdCol) {
 		a.ExecBoxSpace(string(tableName)+`:create_index`, A.X{
 			prop.Unique2, Index{Parts: []string{prop.Unique2}, IfNotExists: true, Unique: true},
@@ -166,16 +177,25 @@ func (a *Adapter) UpsertTable(tableName TableName, prop *TableProp) bool {
 			panic(`Unique2 and Unique3 must be unique`)
 		}
 	}
+	if prop.PreUnique3MigrationHook != nil {
+		prop.PreUnique3MigrationHook(a)
+	}
 	if prop.Unique3 != `` && !(prop.AutoIncrementId && prop.Unique3 == IdCol) {
 		a.ExecBoxSpace(string(tableName)+`:create_index`, A.X{
 			prop.Unique3, Index{Parts: []string{prop.Unique3}, IfNotExists: true, Unique: true},
 		})
+	}
+	if prop.PreUniquesMigrationHook != nil {
+		prop.PreUniquesMigrationHook(a)
 	}
 	// create multi-field unique index: [col1, col2] will named col1__col2
 	if len(prop.Uniques) > 1 {
 		a.ExecBoxSpace(string(tableName)+`:create_index`, A.X{
 			strings.Join(prop.Uniques, `__`), Index{Parts: prop.Uniques, IfNotExists: true, Unique: true},
 		})
+	}
+	if prop.PreSpatialMigrationHook != nil {
+		prop.PreSpatialMigrationHook(a)
 	}
 	// create spatial index (only works for memtx)
 	if prop.Spatial != `` {
