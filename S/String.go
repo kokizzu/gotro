@@ -593,6 +593,17 @@ func MergeMailContactEmails(each_name, str_emails string) []string {
 	return temp
 }
 
+// ValidateIdent return valid identifier (a-zA-Z0-9_)
+func ValidateIdent(str string) string {
+	res := strings.Map(func(r rune) rune {
+		if C.IsIdent(r) {
+			return r
+		}
+		return -1
+	}, str)
+	return res
+}
+
 // ValidateEmail return empty string if str is not a valid email
 func ValidateEmail(str string) string {
 	res := strings.Split(str, `@`)
