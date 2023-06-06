@@ -198,6 +198,7 @@ func GenerateOrm(tables map[TableName]*TableProp, withGraphql ...bool) {
 		WC(`type ` + structName + "Mutator struct {\n")
 		WC(`	` + rqPkgName + `.` + structName + NL)
 		WC("	mutations []A.X\n")
+		WC("	logs      []A.X\n")
 		WC("}\n\n")
 
 		// mutator struct constructor
@@ -237,6 +238,12 @@ func GenerateOrm(tables map[TableName]*TableProp, withGraphql ...bool) {
 		RQ("}\n\n")
 
 		// have mutation
+		WC("// Logs get array of logs [field, old, new]\n")
+		WC(`func (` + receiverName + ` *` + structName + "Mutator) Logs() []A.X { //nolint:dupl false positive\n")
+		WC(`	return ` + receiverName + ".logs\n")
+		WC("}\n\n")
+
+		// have mutation
 		WC("// HaveMutation check whether Set* methods ever called\n")
 		WC(`func (` + receiverName + ` *` + structName + "Mutator) HaveMutation() bool { //nolint:dupl false positive\n")
 		WC(`	return len(` + receiverName + ".mutations) > 0\n")
@@ -246,6 +253,7 @@ func GenerateOrm(tables map[TableName]*TableProp, withGraphql ...bool) {
 		WC("// ClearMutations clear all previously called Set* methods\n")
 		WC(`func (` + receiverName + ` *` + structName + "Mutator) ClearMutations() { //nolint:dupl false positive\n")
 		WC(`	` + receiverName + ".mutations = []A.X{}\n")
+		WC(`	` + receiverName + ".logs = []A.X{}\n")
 		WC("}\n\n")
 
 		// auto increment id
@@ -419,12 +427,14 @@ func GenerateOrm(tables map[TableName]*TableProp, withGraphql ...bool) {
 			if prop.Type != Array {
 				WC("	if val != " + receiverName + `.` + propName + " {\n")
 				WC("		" + receiverName + ".mutations = append(" + receiverName + ".mutations, A.X{`=`, " + I.ToStr(idx) + ", val})\n")
+				WC("		" + receiverName + ".logs = append(" + receiverName + ".logs, A.X{`" + propName + "`, " + receiverName + `.` + propName + ", val})\n")
 				WC("		" + receiverName + `.` + propName + " = val\n")
 				WC("		return true\n")
 				WC("	}\n")
 				WC("	return false\n")
 			} else { // always overwrite for array
 				WC("	" + receiverName + ".mutations = append(" + receiverName + ".mutations, A.X{`=`, " + I.ToStr(idx) + ", val})\n")
+				WC("	" + receiverName + ".logs = append(" + receiverName + ".logs, A.X{`" + propName + "`, " + receiverName + `.` + propName + ", val})\n")
 				WC("	" + receiverName + `.` + propName + " = val\n")
 				WC("	return true\n")
 			}
