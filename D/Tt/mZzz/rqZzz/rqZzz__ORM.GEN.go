@@ -187,5 +187,12 @@ func (z *Zzz) Total() int64 { //nolint:dupl false positive
 	return 0
 }
 
+// FieldTypeMap returns key value of field name and key
+var FieldTypeMap = map[string]string { //nolint:dupl false positive
+	`id`: `unsigned`,
+	`created_at`: `integer`,
+	`coords`: `array`,
+}
+
 // DO NOT EDIT, will be overwritten by github.com/kokizzu/D/Tt/tarantool_orm_generator.go
 

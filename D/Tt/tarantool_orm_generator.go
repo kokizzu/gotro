@@ -597,6 +597,14 @@ func GenerateOrm(tables map[TableName]*TableProp, withGraphql ...bool) {
 		//}
 		//WC("}\n\n")
 
+		// field type map
+		RQ("// FieldTypeMap returns key value of field name and key\n")
+		RQ("var FieldTypeMap = map[string]string { //nolint:dupl false positive\n")
+		for _, field := range props.Fields {
+			RQ("	" + S.BT(field.Name) + ": " + S.BT(string(field.Type)) + ",\n")
+		}
+		RQ("}\n\n")
+
 		// graphql type
 		if props.GenGraphqlType {
 			RQ(`var GraphqlType` + structName + " = graphql.NewObject(\n")
