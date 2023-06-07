@@ -92,6 +92,8 @@ type TableProp struct {
 	PreUnique3MigrationHook  func(*Adapter)
 	PreUniquesMigrationHook  func(*Adapter)
 	PreSpatialMigrationHook  func(*Adapter)
+
+	AutoCensorFields []string // fields to automatically censor
 }
 
 type Field struct { // https://godoc.org/gopkg.in/vmihailenco/msgpack.v2#pkg-examples

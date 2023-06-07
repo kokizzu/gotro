@@ -97,7 +97,7 @@ func (z *ZzzMutator) DoUpsert() bool { //nolint:dupl false positive
 func (z *ZzzMutator) SetId(val uint64) bool { //nolint:dupl false positive
 	if val != z.Id {
 		z.mutations = append(z.mutations, A.X{`=`, 0, val})
-		z.logs = append(z.logs, A.X{`Id`, z.Id, val})
+		z.logs = append(z.logs, A.X{`id`, z.Id, val})
 		z.Id = val
 		return true
 	}
@@ -108,7 +108,7 @@ func (z *ZzzMutator) SetId(val uint64) bool { //nolint:dupl false positive
 func (z *ZzzMutator) SetCreatedAt(val int64) bool { //nolint:dupl false positive
 	if val != z.CreatedAt {
 		z.mutations = append(z.mutations, A.X{`=`, 1, val})
-		z.logs = append(z.logs, A.X{`CreatedAt`, z.CreatedAt, val})
+		z.logs = append(z.logs, A.X{`created_at`, z.CreatedAt, val})
 		z.CreatedAt = val
 		return true
 	}
@@ -118,7 +118,7 @@ func (z *ZzzMutator) SetCreatedAt(val int64) bool { //nolint:dupl false positive
 // SetCoords create mutations, should not duplicate
 func (z *ZzzMutator) SetCoords(val []any) bool { //nolint:dupl false positive
 	z.mutations = append(z.mutations, A.X{`=`, 2, val})
-	z.logs = append(z.logs, A.X{`Coords`, z.Coords, val})
+	z.logs = append(z.logs, A.X{`coords`, z.Coords, val})
 	z.Coords = val
 	return true
 }

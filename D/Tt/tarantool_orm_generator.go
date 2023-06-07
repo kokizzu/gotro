@@ -33,6 +33,14 @@ var typeTranslator = map[DataType]string{
 	Boolean:  `bool`,
 	Array:    `[]any`,
 }
+var zeroValue = map[DataType]string{
+	Unsigned: `0`,
+	Number:   `0`,
+	String:   "``",
+	Integer:  `0`,
+	Boolean:  `false`,
+	Array:    `[]any{}`,
+}
 var typeConverter = map[DataType]string{
 	Unsigned: `X.ToU`,
 	Number:   `X.ToF`,
@@ -185,12 +193,16 @@ func GenerateOrm(tables map[TableName]*TableProp, withGraphql ...bool) {
 		structName := S.PascalCase(tableName)
 		maxLen := 1
 		propTypeByName := map[string]Field{}
+		censoredFields := map[string]bool{}
 		for _, prop := range props.Fields {
 			l := len(prop.Name) + 1 - strings.Count(prop.Name, `_`)
 			if maxLen < l {
 				maxLen = l
 			}
 			propTypeByName[prop.Name] = prop
+		}
+		for _, propName := range props.AutoCensorFields {
+			censoredFields[propName] = true
 		}
 
 		// mutator struct
@@ -427,18 +439,33 @@ func GenerateOrm(tables map[TableName]*TableProp, withGraphql ...bool) {
 			if prop.Type != Array {
 				WC("	if val != " + receiverName + `.` + propName + " {\n")
 				WC("		" + receiverName + ".mutations = append(" + receiverName + ".mutations, A.X{`=`, " + I.ToStr(idx) + ", val})\n")
-				WC("		" + receiverName + ".logs = append(" + receiverName + ".logs, A.X{`" + propName + "`, " + receiverName + `.` + propName + ", val})\n")
+				if !censoredFields[prop.Name] {
+					WC("		" + receiverName + ".logs = append(" + receiverName + ".logs, A.X{`" + prop.Name + "`, " + receiverName + `.` + propName + ", val})\n")
+				}
 				WC("		" + receiverName + `.` + propName + " = val\n")
 				WC("		return true\n")
 				WC("	}\n")
 				WC("	return false\n")
 			} else { // always overwrite for array
 				WC("	" + receiverName + ".mutations = append(" + receiverName + ".mutations, A.X{`=`, " + I.ToStr(idx) + ", val})\n")
-				WC("	" + receiverName + ".logs = append(" + receiverName + ".logs, A.X{`" + propName + "`, " + receiverName + `.` + propName + ", val})\n")
-				WC("	" + receiverName + `.` + propName + " = val\n")
+				WC("	" + receiverName + ".logs = append(" + receiverName + ".logs, A.X{`" + prop.Name + "`, " + receiverName + `.` + propName + ", val})\n")
+				if !censoredFields[prop.Name] {
+					WC("	" + receiverName + `.` + propName + " = val\n")
+				}
 				WC("	return true\n")
 			}
 			WC("}\n\n")
+		}
+
+		// CensorFields
+		if len(props.AutoCensorFields) > 0 {
+			RQ("// CensorFields remove sensitive fields for output\n")
+			RQ(`func (` + receiverName + ` *` + structName + ") CensorFields() { //nolint:dupl false positive\n")
+			for _, propName := range props.AutoCensorFields {
+				propType := propTypeByName[propName].Type
+				RQ("	" + receiverName + "." + S.PascalCase(propName) + " = " + zeroValue[propType] + "\n")
+			}
+			RQ("	}\n")
 		}
 
 		// to AX
