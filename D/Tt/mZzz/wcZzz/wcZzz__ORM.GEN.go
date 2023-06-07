@@ -69,6 +69,8 @@ func (z *ZzzMutator) DoDeletePermanentById() bool { //nolint:dupl false positive
 //		A.X{`=`, 0, z.Id},
 //		A.X{`=`, 1, z.CreatedAt},
 //		A.X{`=`, 2, z.Coords},
+//		A.X{`=`, 3, z.Name},
+//		A.X{`=`, 4, z.HeightMeter},
 //	})
 //	return !L.IsError(err, `Zzz.DoUpsert failed: `+z.SpaceName())
 // }
@@ -121,6 +123,28 @@ func (z *ZzzMutator) SetCoords(val []any) bool { //nolint:dupl false positive
 	z.logs = append(z.logs, A.X{`coords`, z.Coords, val})
 	z.Coords = val
 	return true
+}
+
+// SetName create mutations, should not duplicate
+func (z *ZzzMutator) SetName(val string) bool { //nolint:dupl false positive
+	if val != z.Name {
+		z.mutations = append(z.mutations, A.X{`=`, 3, val})
+		z.logs = append(z.logs, A.X{`name`, z.Name, val})
+		z.Name = val
+		return true
+	}
+	return false
+}
+
+// SetHeightMeter create mutations, should not duplicate
+func (z *ZzzMutator) SetHeightMeter(val float64) bool { //nolint:dupl false positive
+	if val != z.HeightMeter {
+		z.mutations = append(z.mutations, A.X{`=`, 4, val})
+		z.logs = append(z.logs, A.X{`heightMeter`, z.HeightMeter, val})
+		z.HeightMeter = val
+		return true
+	}
+	return false
 }
 
 // DO NOT EDIT, will be overwritten by github.com/kokizzu/D/Tt/tarantool_orm_generator.go

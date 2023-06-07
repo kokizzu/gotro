@@ -22,9 +22,11 @@ import (
 // Zzz DAO reader/query struct
 type Zzz struct {
 	Adapter *Tt.Adapter `json:"-" msg:"-" query:"-" form:"-"`
-	Id        uint64
-	CreatedAt int64
-	Coords    []any
+	Id          uint64
+	CreatedAt   int64
+	Coords      []any
+	Name        string
+	HeightMeter float64
 }
 
 // NewZzz create new ORM reader/query object
@@ -70,6 +72,8 @@ func (z *Zzz) SqlSelectAllFields() string { //nolint:dupl false positive
 	return ` "id"
 	, "created_at"
 	, "coords"
+	, "name"
+	, "heightMeter"
 	`
 }
 
@@ -78,6 +82,8 @@ func (z *Zzz) SqlSelectAllUncensoredFields() string { //nolint:dupl false positi
 	return ` "id"
 	, "created_at"
 	, "coords"
+	, "name"
+	, "heightMeter"
 	`
 }
 
@@ -87,6 +93,8 @@ func (z *Zzz) ToUpdateArray() A.X { //nolint:dupl false positive
 		A.X{`=`, 0, z.Id},
 		A.X{`=`, 1, z.CreatedAt},
 		A.X{`=`, 2, z.Coords},
+		A.X{`=`, 3, z.Name},
+		A.X{`=`, 4, z.HeightMeter},
 	}
 }
 
@@ -120,6 +128,26 @@ func (z *Zzz) SqlCoords() string { //nolint:dupl false positive
 	return `"coords"`
 }
 
+// IdxName return name of the index
+func (z *Zzz) IdxName() int { //nolint:dupl false positive
+	return 3
+}
+
+// SqlName return name of the column being indexed
+func (z *Zzz) SqlName() string { //nolint:dupl false positive
+	return `"name"`
+}
+
+// IdxHeightMeter return name of the index
+func (z *Zzz) IdxHeightMeter() int { //nolint:dupl false positive
+	return 4
+}
+
+// SqlHeightMeter return name of the column being indexed
+func (z *Zzz) SqlHeightMeter() string { //nolint:dupl false positive
+	return `"heightMeter"`
+}
+
 // ToArray receiver fields to slice
 func (z *Zzz) ToArray() A.X { //nolint:dupl false positive
 	var id any = nil
@@ -128,8 +156,10 @@ func (z *Zzz) ToArray() A.X { //nolint:dupl false positive
 	}
 	return A.X{
 		id,
-		z.CreatedAt, // 1
-		z.Coords,    // 2
+		z.CreatedAt,   // 1
+		z.Coords,      // 2
+		z.Name,        // 3
+		z.HeightMeter, // 4
 	}
 }
 
@@ -138,6 +168,8 @@ func (z *Zzz) FromArray(a A.X) *Zzz { //nolint:dupl false positive
 	z.Id = X.ToU(a[0])
 	z.CreatedAt = X.ToI(a[1])
 	z.Coords = X.ToArr(a[2])
+	z.Name = X.ToS(a[3])
+	z.HeightMeter = X.ToF(a[4])
 	return z
 }
 
@@ -146,6 +178,8 @@ func (z *Zzz) FromUncensoredArray(a A.X) *Zzz { //nolint:dupl false positive
 	z.Id = X.ToU(a[0])
 	z.CreatedAt = X.ToI(a[1])
 	z.Coords = X.ToArr(a[2])
+	z.Name = X.ToS(a[3])
+	z.HeightMeter = X.ToF(a[4])
 	return z
 }
 
@@ -187,11 +221,13 @@ func (z *Zzz) Total() int64 { //nolint:dupl false positive
 	return 0
 }
 
-// FieldTypeMap returns key value of field name and key
-var FieldTypeMap = map[string]string { //nolint:dupl false positive
+// ZzzFieldTypeMap returns key value of field name and key
+var ZzzFieldTypeMap = map[string]string { //nolint:dupl false positive
 	`id`: `unsigned`,
 	`created_at`: `integer`,
 	`coords`: `array`,
+	`name`: `string`,
+	`heightMeter`: `double`,
 }
 
 // DO NOT EDIT, will be overwritten by github.com/kokizzu/D/Tt/tarantool_orm_generator.go

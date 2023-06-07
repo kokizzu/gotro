@@ -27,34 +27,38 @@ func dq(str string) string {
 var typeTranslator = map[DataType]string{
 	//Uuid:     `string`,
 	Unsigned: `uint64`,
-	Number:   `float64`,
-	String:   `string`,
-	Integer:  `int64`,
-	Boolean:  `bool`,
-	Array:    `[]any`,
+	//Number:   `float64`,
+	String:  `string`,
+	Integer: `int64`,
+	Double:  `float64`,
+	Boolean: `bool`,
+	Array:   `[]any`,
 }
 var zeroValue = map[DataType]string{
 	Unsigned: `0`,
-	Number:   `0`,
-	String:   "``",
-	Integer:  `0`,
-	Boolean:  `false`,
-	Array:    `[]any{}`,
+	//Number:   `0`,
+	String:  "``",
+	Integer: `0`,
+	Double:  `0`,
+	Boolean: `false`,
+	Array:   `[]any{}`,
 }
 var typeConverter = map[DataType]string{
 	Unsigned: `X.ToU`,
-	Number:   `X.ToF`,
-	String:   `X.ToS`,
-	Integer:  `X.ToI`,
-	Boolean:  `X.ToBool`,
-	Array:    `X.ToArr`,
+	//Number:   `X.ToF`,
+	String:  `X.ToS`,
+	Integer: `X.ToI`,
+	Double:  `X.ToF`,
+	Boolean: `X.ToBool`,
+	Array:   `X.ToArr`,
 }
 var typeGraphql = map[DataType]string{
 	Unsigned: `Int`,
-	Number:   `Float`,
-	String:   `String`,
-	Integer:  `Int`,
-	Boolean:  `Boolean`,
+	//Number:   `Float`,
+	String:  `String`,
+	Double:  `Float`,
+	Integer: `Int`,
+	Boolean: `Boolean`,
 }
 
 func TypeGraphql(field Field) string {
@@ -598,8 +602,8 @@ func GenerateOrm(tables map[TableName]*TableProp, withGraphql ...bool) {
 		//WC("}\n\n")
 
 		// field type map
-		RQ("// FieldTypeMap returns key value of field name and key\n")
-		RQ("var FieldTypeMap = map[string]string { //nolint:dupl false positive\n")
+		RQ("// " + structName + "FieldTypeMap returns key value of field name and key\n")
+		RQ("var " + structName + "FieldTypeMap = map[string]string { //nolint:dupl false positive\n")
 		for _, field := range props.Fields {
 			RQ("	" + S.BT(field.Name) + ": " + S.BT(string(field.Type)) + ",\n")
 		}

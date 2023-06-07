@@ -3,10 +3,12 @@ package mZzz
 import "github.com/kokizzu/gotro/D/Tt"
 
 const (
-	TableZzz  Tt.TableName = `zzz`
-	Id                     = `id`
-	CreatedAt              = `created_at`
-	Coords                 = `coords`
+	TableZzz    Tt.TableName = `zzz`
+	Id                       = `id`
+	CreatedAt                = `created_at`
+	Coords                   = `coords`
+	Name                     = `name`
+	HeightMeter              = `heightMeter`
 )
 
 var TarantoolTables = map[Tt.TableName]*Tt.TableProp{
@@ -17,6 +19,8 @@ var TarantoolTables = map[Tt.TableName]*Tt.TableProp{
 			{Id, Tt.Unsigned},
 			{CreatedAt, Tt.Integer},
 			{Coords, Tt.Array},
+			{Name, Tt.String},
+			{HeightMeter, Tt.Double},
 		},
 		Engine:          Tt.Memtx,
 		AutoIncrementId: true,

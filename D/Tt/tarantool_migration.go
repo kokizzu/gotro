@@ -26,33 +26,33 @@ type TableName string
 type DataType string
 
 const (
-	Any      DataType = `any`
+	//Any      DataType = `any`
 	Unsigned DataType = `unsigned`
 	String   DataType = `string`
-	Number   DataType = `number`
-	Double   DataType = `double`
-	Integer  DataType = `integer`
-	Boolean  DataType = `boolean`
-	Decimal  DataType = `decimal`
-	Uuid     DataType = `string` // `uuid` // https://github.com/tarantool/go-tarantool/issues/90
-	Scalar   DataType = `scalar`
-	Array    DataType = `array`
-	Map      DataType = `map`
+	//Number   DataType = `number` // use double instead
+	Double  DataType = `double`
+	Integer DataType = `integer`
+	Boolean DataType = `boolean`
+	//Decimal  DataType = `decimal` // unsupported
+	//Uuid     DataType = `string`  // `uuid` // https://github.com/tarantool/go-tarantool/issues/90
+	//Scalar   DataType = `scalar`
+	Array DataType = `array`
+	//Map      DataType = `map`
 
-	ArrayFloat    DataType = `array`
-	ArrayUnsigned DataType = `array`
-	ArrayInteger  DataType = `array`
+	//ArrayFloat    DataType = `array`
+	//ArrayUnsigned DataType = `array`
+	//ArrayInteger  DataType = `array`
 )
 
 var EmptyValue = map[DataType]string{
 	Unsigned: `0`,
 	String:   `''`,
 	Integer:  `0`,
-	Number:   `0`,
-	Boolean:  `false`,
-	Decimal:  `0`,
-	Double:   `0`,
-	Array:    `nil`,
+	//Number:   `0`,
+	Boolean: `false`,
+	//Decimal:  `0`,
+	Double: `0`,
+	Array:  `nil`,
 }
 
 // misc
