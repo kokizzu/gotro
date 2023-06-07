@@ -193,7 +193,7 @@ func GenerateOrm(tables map[TableName]*TableProp, withGraphql ...bool) {
 		structName := S.PascalCase(tableName)
 		maxLen := 1
 		propTypeByName := map[string]Field{}
-		censoredFields := map[string]bool{}
+		censoredFieldsByName := map[string]bool{}
 		for _, prop := range props.Fields {
 			l := len(prop.Name) + 1 - strings.Count(prop.Name, `_`)
 			if maxLen < l {
@@ -202,7 +202,7 @@ func GenerateOrm(tables map[TableName]*TableProp, withGraphql ...bool) {
 			propTypeByName[prop.Name] = prop
 		}
 		for _, propName := range props.AutoCensorFields {
-			censoredFields[propName] = true
+			censoredFieldsByName[propName] = true
 		}
 
 		// mutator struct
@@ -402,6 +402,18 @@ func GenerateOrm(tables map[TableName]*TableProp, withGraphql ...bool) {
 		RQ(`	return ` + S.BT(sqlFields[1:]) + NL)
 		RQ("}\n\n")
 
+		// Sql select all fields, used when need to mutate or show only uncensored fields
+		RQ("// SqlSelectAllUncensoredFields generate Sql select fields\n")
+		RQ(`func (` + receiverName + ` *` + structName + ") SqlSelectAllUncensoredFields() string { //nolint:dupl false positive\n")
+		sqlUncenFields := ``
+		for _, prop := range props.Fields {
+			if !censoredFieldsByName[prop.Name] {
+				sqlUncenFields += `, ` + dq(prop.Name) + "\n\t"
+			}
+		}
+		RQ(`	return ` + S.BT(sqlFields[1:]) + NL)
+		RQ("}\n\n")
+
 		// to Update AX
 		RQ("// ToUpdateArray generate slice of update command\n")
 		RQ(`func (` + receiverName + ` *` + structName + ") ToUpdateArray() A.X { //nolint:dupl false positive\n")
@@ -439,7 +451,7 @@ func GenerateOrm(tables map[TableName]*TableProp, withGraphql ...bool) {
 			if prop.Type != Array {
 				WC("	if val != " + receiverName + `.` + propName + " {\n")
 				WC("		" + receiverName + ".mutations = append(" + receiverName + ".mutations, A.X{`=`, " + I.ToStr(idx) + ", val})\n")
-				if !censoredFields[prop.Name] {
+				if !censoredFieldsByName[prop.Name] {
 					WC("		" + receiverName + ".logs = append(" + receiverName + ".logs, A.X{`" + prop.Name + "`, " + receiverName + `.` + propName + ", val})\n")
 				}
 				WC("		" + receiverName + `.` + propName + " = val\n")
@@ -449,7 +461,7 @@ func GenerateOrm(tables map[TableName]*TableProp, withGraphql ...bool) {
 			} else { // always overwrite for array
 				WC("	" + receiverName + ".mutations = append(" + receiverName + ".mutations, A.X{`=`, " + I.ToStr(idx) + ", val})\n")
 				WC("	" + receiverName + ".logs = append(" + receiverName + ".logs, A.X{`" + prop.Name + "`, " + receiverName + `.` + propName + ", val})\n")
-				if !censoredFields[prop.Name] {
+				if !censoredFieldsByName[prop.Name] {
 					WC("	" + receiverName + `.` + propName + " = val\n")
 				}
 				WC("	return true\n")
@@ -495,6 +507,17 @@ func GenerateOrm(tables map[TableName]*TableProp, withGraphql ...bool) {
 		RQ(`func (` + receiverName + ` *` + structName + `) FromArray(a A.X) *` + structName + " { //nolint:dupl false positive\n")
 		for idx, prop := range props.Fields {
 			RQ("	" + receiverName + "." + S.PascalCase(prop.Name) + ` = ` + typeConverter[prop.Type] + "(a[" + X.ToS(idx) + "])\n")
+		}
+		RQ("	return " + receiverName + NL)
+		RQ("}\n\n")
+
+		// from AX but uncensored
+		RQ("// FromUncensoredArray convert slice to receiver fields\n")
+		RQ(`func (` + receiverName + ` *` + structName + `) FromUncensoredArray(a A.X) *` + structName + " { //nolint:dupl false positive\n")
+		for idx, prop := range props.Fields {
+			if !censoredFieldsByName[prop.Name] {
+				RQ("	" + receiverName + "." + S.PascalCase(prop.Name) + ` = ` + typeConverter[prop.Type] + "(a[" + X.ToS(idx) + "])\n")
+			}
 		}
 		RQ("	return " + receiverName + NL)
 		RQ("}\n\n")

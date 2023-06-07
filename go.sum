@@ -463,8 +463,8 @@ github.com/stretchr/testify v1.8.4 h1:CcVxjf3Q8PM0mHUKJCdn+eZZtm5yQwehR5yeSVQQcU
 github.com/stretchr/testify v1.8.4/go.mod h1:sz/lmYIOXD/1dqDmKjjqLyZ2RngseejIcXlSw2iwfAo=
 github.com/tarantool/go-openssl v0.0.8-0.20230307065445-720eeb389195 h1:/AN3eUPsTlvF6W+Ng/8ZjnSU6o7L0H4Wb9GMks6RkzU=
 github.com/tarantool/go-openssl v0.0.8-0.20230307065445-720eeb389195/go.mod h1:M7H4xYSbzqpW/ZRBMyH0eyqQBsnhAMfsYk5mv0yid7A=
-github.com/tarantool/go-tarantool v1.11.0 h1:iLw8kYDQNFA3c3VHhBJJajXKUJPaz0StY/CdrutDn6s=
-github.com/tarantool/go-tarantool v1.11.0/go.mod h1:QRiXv0jnxwgxHtr9ZmifSr/eRba76gTUBgp69pDMX1U=
+github.com/tarantool/go-tarantool v1.12.0 h1:JmTJDppt1hvSrI0iZKMocgWlBWMvEkhFGUZCgau9wS8=
+github.com/tarantool/go-tarantool v1.12.0/go.mod h1:QRiXv0jnxwgxHtr9ZmifSr/eRba76gTUBgp69pDMX1U=
 github.com/tarm/serial v0.0.0-20180830185346-98f6abe2eb07/go.mod h1:kDXzergiv9cbyO7IOYJZWg1U88JhDg3PB6klq9Hg2pA=
 github.com/tdewolff/minify v2.3.6+incompatible h1:2hw5/9ZvxhWLvBUnHE06gElGYz+Jv9R4Eys0XUzItYo=
 github.com/tdewolff/minify v2.3.6+incompatible/go.mod h1:9Ov578KJUmAWpS6NeZwRZyT56Uf6o3Mcz9CEsg8USYs=

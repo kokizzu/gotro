@@ -73,6 +73,14 @@ func (z *Zzz) SqlSelectAllFields() string { //nolint:dupl false positive
 	`
 }
 
+// SqlSelectAllUncensoredFields generate Sql select fields
+func (z *Zzz) SqlSelectAllUncensoredFields() string { //nolint:dupl false positive
+	return ` "id"
+	, "created_at"
+	, "coords"
+	`
+}
+
 // ToUpdateArray generate slice of update command
 func (z *Zzz) ToUpdateArray() A.X { //nolint:dupl false positive
 	return A.X{
@@ -127,6 +135,14 @@ func (z *Zzz) ToArray() A.X { //nolint:dupl false positive
 
 // FromArray convert slice to receiver fields
 func (z *Zzz) FromArray(a A.X) *Zzz { //nolint:dupl false positive
+	z.Id = X.ToU(a[0])
+	z.CreatedAt = X.ToI(a[1])
+	z.Coords = X.ToArr(a[2])
+	return z
+}
+
+// FromUncensoredArray convert slice to receiver fields
+func (z *Zzz) FromUncensoredArray(a A.X) *Zzz { //nolint:dupl false positive
 	z.Id = X.ToU(a[0])
 	z.CreatedAt = X.ToI(a[1])
 	z.Coords = X.ToArr(a[2])
