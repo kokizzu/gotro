@@ -70,7 +70,7 @@ func (z *Zzz) SpatialIndexCoords() string { //nolint:dupl false positive
 // SqlSelectAllFields generate Sql select fields
 func (z *Zzz) SqlSelectAllFields() string { //nolint:dupl false positive
 	return ` "id"
-	, "created_at"
+	, "createdAt"
 	, "coords"
 	, "name"
 	, "heightMeter"
@@ -80,7 +80,7 @@ func (z *Zzz) SqlSelectAllFields() string { //nolint:dupl false positive
 // SqlSelectAllUncensoredFields generate Sql select fields
 func (z *Zzz) SqlSelectAllUncensoredFields() string { //nolint:dupl false positive
 	return ` "id"
-	, "created_at"
+	, "createdAt"
 	, "coords"
 	, "name"
 	, "heightMeter"
@@ -115,7 +115,7 @@ func (z *Zzz) IdxCreatedAt() int { //nolint:dupl false positive
 
 // SqlCreatedAt return name of the column being indexed
 func (z *Zzz) SqlCreatedAt() string { //nolint:dupl false positive
-	return `"created_at"`
+	return `"createdAt"`
 }
 
 // IdxCoords return name of the index
@@ -222,12 +222,12 @@ func (z *Zzz) Total() int64 { //nolint:dupl false positive
 }
 
 // ZzzFieldTypeMap returns key value of field name and key
-var ZzzFieldTypeMap = map[string]string { //nolint:dupl false positive
-	`id`: `unsigned`,
-	`created_at`: `integer`,
-	`coords`: `array`,
-	`name`: `string`,
-	`heightMeter`: `double`,
+var ZzzFieldTypeMap = map[string]Tt.DataType { //nolint:dupl false positive
+	`id`:          Tt.Unsigned,
+	`createdAt`:   Tt.Integer,
+	`coords`:      Tt.Array,
+	`name`:        Tt.String,
+	`heightMeter`: Tt.Double,
 }
 
 // DO NOT EDIT, will be overwritten by github.com/kokizzu/D/Tt/tarantool_orm_generator.go

@@ -26,17 +26,19 @@ type TableName string
 type DataType string
 
 const (
-	//Any      DataType = `any`
 	Unsigned DataType = `unsigned`
 	String   DataType = `string`
+	Double   DataType = `double`
+	Integer  DataType = `integer`
+	Boolean  DataType = `boolean`
+	Array    DataType = `array`
+
+	//Any      DataType = `any`
 	//Number   DataType = `number` // use double instead
-	Double  DataType = `double`
-	Integer DataType = `integer`
-	Boolean DataType = `boolean`
 	//Decimal  DataType = `decimal` // unsupported
+	//DateTime DataType = `datetime` // unsupported
 	//Uuid     DataType = `string`  // `uuid` // https://github.com/tarantool/go-tarantool/issues/90
 	//Scalar   DataType = `scalar`
-	Array DataType = `array`
 	//Map      DataType = `map`
 
 	//ArrayFloat    DataType = `array`
@@ -44,15 +46,48 @@ const (
 	//ArrayInteger  DataType = `array`
 )
 
-var EmptyValue = map[DataType]string{
+var TypeToConst = map[DataType]string{
+	Unsigned: `Tt.Unsigned`,
+	String:   `Tt.String`,
+	Integer:  `Tt.Integer`,
+	Double:   `Tt.Double`,
+	Boolean:  `Tt.Boolean`,
+	Array:    `Tt.Array`,
+}
+
+var TypeToGoType = map[DataType]string{
+	//Uuid:     `string`,
+	Unsigned: `uint64`,
+	String:   `string`,
+	Integer:  `int64`,
+	Double:   `float64`,
+	Boolean:  `bool`,
+	Array:    `[]any`,
+}
+var TypeToGoEmptyValue = map[DataType]string{
+	Unsigned: `0`,
+	String:   "``",
+	Integer:  `0`,
+	Double:   `0`,
+	Boolean:  `false`,
+	Array:    `[]any{}`,
+}
+var TypeToConvertFunc = map[DataType]string{
+	Unsigned: `X.ToU`,
+	String:   `X.ToS`,
+	Integer:  `X.ToI`,
+	Double:   `X.ToF`,
+	Boolean:  `X.ToBool`,
+	Array:    `X.ToArr`,
+}
+
+var Type2TarantoolDefault = map[DataType]string{
 	Unsigned: `0`,
 	String:   `''`,
 	Integer:  `0`,
-	//Number:   `0`,
-	Boolean: `false`,
-	//Decimal:  `0`,
-	Double: `0`,
-	Array:  `nil`,
+	Boolean:  `false`,
+	Double:   `0`,
+	Array:    `nil`,
 }
 
 // misc
@@ -317,9 +352,9 @@ func (a *Adapter) ReformatTable(tableName string, fields []Field) bool {
 	if len(nullFields) > 0 {
 		updateCols := []string{}
 		for col, typ := range nullFields {
-			defaultvalue := EmptyValue[typ]
+			defaultvalue := Type2TarantoolDefault[typ]
 			if defaultvalue == `` {
-				panic(`please set EmptyValue for: ` + typ)
+				panic(`please set Type2TarantoolDefault for: ` + typ)
 			}
 			updateCols = append(updateCols, dq(col)+` = `+defaultvalue)
 		}

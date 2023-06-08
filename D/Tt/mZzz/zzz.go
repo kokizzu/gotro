@@ -5,7 +5,7 @@ import "github.com/kokizzu/gotro/D/Tt"
 const (
 	TableZzz    Tt.TableName = `zzz`
 	Id                       = `id`
-	CreatedAt                = `created_at`
+	CreatedAt                = `createdAt`
 	Coords                   = `coords`
 	Name                     = `name`
 	HeightMeter              = `heightMeter`

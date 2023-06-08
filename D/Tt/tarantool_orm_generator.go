@@ -24,34 +24,6 @@ func dq(str string) string {
 	return `"` + str + `"`
 }
 
-var typeTranslator = map[DataType]string{
-	//Uuid:     `string`,
-	Unsigned: `uint64`,
-	//Number:   `float64`,
-	String:  `string`,
-	Integer: `int64`,
-	Double:  `float64`,
-	Boolean: `bool`,
-	Array:   `[]any`,
-}
-var zeroValue = map[DataType]string{
-	Unsigned: `0`,
-	//Number:   `0`,
-	String:  "``",
-	Integer: `0`,
-	Double:  `0`,
-	Boolean: `false`,
-	Array:   `[]any{}`,
-}
-var typeConverter = map[DataType]string{
-	Unsigned: `X.ToU`,
-	//Number:   `X.ToF`,
-	String:  `X.ToS`,
-	Integer: `X.ToI`,
-	Double:  `X.ToF`,
-	Boolean: `X.ToBool`,
-	Array:   `X.ToArr`,
-}
 var typeGraphql = map[DataType]string{
 	Unsigned: `Int`,
 	//Number:   `Float`,
@@ -230,7 +202,7 @@ func GenerateOrm(tables map[TableName]*TableProp, withGraphql ...bool) {
 		RQ("	Adapter *" + connStruct + " " + S.BT("json:"+none+" msg:"+none+" query:"+none+" form:"+none) + NL)
 		for _, prop := range props.Fields {
 			camel := S.PascalCase(prop.Name)
-			RQ("	" + camel + strings.Repeat(` `, maxLen-len(camel)) + typeTranslator[prop.Type] + NL)
+			RQ("	" + camel + strings.Repeat(` `, maxLen-len(camel)) + TypeToGoType[prop.Type] + NL)
 		}
 		RQ("}\n\n")
 
@@ -450,7 +422,7 @@ func GenerateOrm(tables map[TableName]*TableProp, withGraphql ...bool) {
 
 			// mutator methods
 			WC("// Set" + propName + " create mutations, should not duplicate\n")
-			propType := typeTranslator[prop.Type]
+			propType := TypeToGoType[prop.Type]
 			WC(`func (` + receiverName + ` *` + structName + "Mutator) Set" + propName + "(val " + propType + ") bool { //nolint:dupl false positive\n")
 			if prop.Type != Array {
 				WC("	if val != " + receiverName + `.` + propName + " {\n")
@@ -479,7 +451,7 @@ func GenerateOrm(tables map[TableName]*TableProp, withGraphql ...bool) {
 			RQ(`func (` + receiverName + ` *` + structName + ") CensorFields() { //nolint:dupl false positive\n")
 			for _, propName := range props.AutoCensorFields {
 				propType := propTypeByName[propName].Type
-				RQ("	" + receiverName + "." + S.PascalCase(propName) + " = " + zeroValue[propType] + "\n")
+				RQ("	" + receiverName + "." + S.PascalCase(propName) + " = " + TypeToGoEmptyValue[propType] + "\n")
 			}
 			RQ("	}\n")
 		}
@@ -510,7 +482,7 @@ func GenerateOrm(tables map[TableName]*TableProp, withGraphql ...bool) {
 		RQ("// FromArray convert slice to receiver fields\n")
 		RQ(`func (` + receiverName + ` *` + structName + `) FromArray(a A.X) *` + structName + " { //nolint:dupl false positive\n")
 		for idx, prop := range props.Fields {
-			RQ("	" + receiverName + "." + S.PascalCase(prop.Name) + ` = ` + typeConverter[prop.Type] + "(a[" + X.ToS(idx) + "])\n")
+			RQ("	" + receiverName + "." + S.PascalCase(prop.Name) + ` = ` + TypeToConvertFunc[prop.Type] + "(a[" + X.ToS(idx) + "])\n")
 		}
 		RQ("	return " + receiverName + NL)
 		RQ("}\n\n")
@@ -520,7 +492,7 @@ func GenerateOrm(tables map[TableName]*TableProp, withGraphql ...bool) {
 		RQ(`func (` + receiverName + ` *` + structName + `) FromUncensoredArray(a A.X) *` + structName + " { //nolint:dupl false positive\n")
 		for idx, prop := range props.Fields {
 			if !censoredFieldsByName[prop.Name] {
-				RQ("	" + receiverName + "." + S.PascalCase(prop.Name) + ` = ` + typeConverter[prop.Type] + "(a[" + X.ToS(idx) + "])\n")
+				RQ("	" + receiverName + "." + S.PascalCase(prop.Name) + ` = ` + TypeToConvertFunc[prop.Type] + "(a[" + X.ToS(idx) + "])\n")
 			}
 		}
 		RQ("	return " + receiverName + NL)
@@ -603,9 +575,9 @@ func GenerateOrm(tables map[TableName]*TableProp, withGraphql ...bool) {
 
 		// field type map
 		RQ("// " + structName + "FieldTypeMap returns key value of field name and key\n")
-		RQ("var " + structName + "FieldTypeMap = map[string]string { //nolint:dupl false positive\n")
+		RQ("var " + structName + "FieldTypeMap = map[string]Tt.DataType { //nolint:dupl false positive\n")
 		for _, field := range props.Fields {
-			RQ("	" + S.BT(field.Name) + ": " + S.BT(string(field.Type)) + ",\n")
+			RQ("	" + S.BT(field.Name) + `:` + strings.Repeat(` `, maxLen-len(field.Name)) + TypeToConst[field.Type] + ",\n")
 		}
 		RQ("}\n\n")
 
@@ -688,7 +660,7 @@ func generateGraphqlQueryField(structName string, uniqueFieldName string, field 
 	RQ("		if !ok {\n")
 	RQ("			v, _ = p.Args[" + S.BT(uniqueFieldName) + "]\n")
 	RQ("		}\n")
-	RQ("		q." + uniqueFieldName + " = " + typeConverter[field.Type] + "(v)\n")
+	RQ("		q." + uniqueFieldName + " = " + TypeToConvertFunc[field.Type] + "(v)\n")
 	RQ("		if q.FindBy" + uniqueFieldName + "() {\n")
 	RQ("			return q, nil\n")
 	RQ("		}\n")

@@ -110,7 +110,7 @@ func (z *ZzzMutator) SetId(val uint64) bool { //nolint:dupl false positive
 func (z *ZzzMutator) SetCreatedAt(val int64) bool { //nolint:dupl false positive
 	if val != z.CreatedAt {
 		z.mutations = append(z.mutations, A.X{`=`, 1, val})
-		z.logs = append(z.logs, A.X{`created_at`, z.CreatedAt, val})
+		z.logs = append(z.logs, A.X{`createdAt`, z.CreatedAt, val})
 		z.CreatedAt = val
 		return true
 	}
