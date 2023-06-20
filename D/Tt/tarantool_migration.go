@@ -26,6 +26,8 @@ type TableName string
 type DataType string
 
 const (
+	// https://www.tarantool.io/en/doc/latest/concepts/data_model/value_store/#data-types
+
 	Unsigned DataType = `unsigned`
 	String   DataType = `string`
 	Double   DataType = `double`

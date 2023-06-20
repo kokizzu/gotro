@@ -14,10 +14,10 @@ require (
 	github.com/francoispqt/onelog v0.0.0-20190306043706-8c2bb31b10a4
 	github.com/goccy/go-json v0.10.2
 	github.com/goccy/go-yaml v1.9.5
-	github.com/gofiber/fiber/v2 v2.42.0
+	github.com/gofiber/fiber/v2 v2.47.0
 	github.com/hexops/autogold v1.3.0
 	github.com/hexops/valast v1.4.1
-	github.com/jackc/pgx/v5 v5.3.1
+	github.com/jackc/pgx/v5 v5.4.1
 	github.com/jasonlvhit/gocron v0.0.1
 	github.com/jessevdk/go-flags v1.5.0
 	github.com/jmoiron/sqlx v1.3.5
@@ -40,7 +40,7 @@ require (
 	github.com/op/go-logging v0.0.0-20160315200505-970db520ece7
 	github.com/orcaman/concurrent-map v1.0.0
 	github.com/ory/dockertest/v3 v3.10.0
-	github.com/redis/rueidis v1.0.7
+	github.com/redis/rueidis v1.0.9
 	github.com/rs/zerolog v1.26.1
 	github.com/segmentio/fasthash v1.0.3
 	github.com/shirou/gopsutil/v3 v3.22.4
@@ -48,7 +48,7 @@ require (
 	github.com/tarantool/go-tarantool v1.12.0
 	github.com/tdewolff/minify v2.3.6+incompatible
 	github.com/valyala/bytebufferpool v1.0.0
-	github.com/valyala/fasthttp v1.44.0
+	github.com/valyala/fasthttp v1.47.0
 	github.com/vburenin/nsync v0.0.0-20160822015540-9a75d1c80410
 	github.com/vmihailenco/msgpack/v5 v5.3.5
 	github.com/yosuke-furukawa/json5 v0.1.1
@@ -56,10 +56,10 @@ require (
 	github.com/zeebo/xxh3 v1.0.2
 	go.opentelemetry.io/otel v1.16.0
 	go.opentelemetry.io/otel/trace v1.16.0
-	golang.org/x/crypto v0.9.0
+	golang.org/x/crypto v0.10.0
 	golang.org/x/exp v0.0.0-20230522175609-2e198f4a06a1
 	golang.org/x/oauth2 v0.0.0-20220524215830-622c5d57e401
-	golang.org/x/text v0.9.0
+	golang.org/x/text v0.10.0
 	gopkg.in/natefinch/lumberjack.v2 v2.0.0
 	gopkg.in/resty.v1 v1.12.0
 )
@@ -100,7 +100,7 @@ require (
 	github.com/jackc/puddle/v2 v2.2.0 // indirect
 	github.com/jmespath/go-jmespath v0.4.0 // indirect
 	github.com/josharian/intern v1.0.0 // indirect
-	github.com/klauspost/compress v1.16.5 // indirect
+	github.com/klauspost/compress v1.16.6 // indirect
 	github.com/klauspost/cpuid/v2 v2.2.5 // indirect
 	github.com/kr/text v0.2.0 // indirect
 	github.com/lufia/plan9stats v0.0.0-20211012122336-39d0f177ccd0 // indirect
@@ -115,15 +115,15 @@ require (
 	github.com/opencontainers/image-spec v1.1.0-rc3 // indirect
 	github.com/opencontainers/runc v1.1.7 // indirect
 	github.com/paulmach/orb v0.9.2 // indirect
-	github.com/philhofer/fwd v1.1.1 // indirect
-	github.com/pierrec/lz4/v4 v4.1.17 // indirect
+	github.com/philhofer/fwd v1.1.2 // indirect
+	github.com/pierrec/lz4/v4 v4.1.18 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/power-devops/perfstat v0.0.0-20210106213030-5aafc221ea8c // indirect
-	github.com/rivo/uniseg v0.2.0 // indirect
+	github.com/rivo/uniseg v0.4.4 // indirect
 	github.com/rogpeppe/go-internal v1.10.0 // indirect
 	github.com/savsgio/dictpool v0.0.0-20221023140959-7bf2e61cea94 // indirect
-	github.com/savsgio/gotils v0.0.0-20220530130905-52f3993e8d6d // indirect
+	github.com/savsgio/gotils v0.0.0-20230208104028-c358bd845dee // indirect
 	github.com/segmentio/asm v1.2.0 // indirect
 	github.com/shopspring/decimal v1.3.1 // indirect
 	github.com/shurcooL/go-goon v0.0.0-20210110234559-7585751d9a17 // indirect
@@ -132,7 +132,7 @@ require (
 	github.com/tarantool/go-openssl v0.0.8-0.20230307065445-720eeb389195 // indirect
 	github.com/tdewolff/parse v2.3.4+incompatible // indirect
 	github.com/tdewolff/test v1.0.7 // indirect
-	github.com/tinylib/msgp v1.1.6 // indirect
+	github.com/tinylib/msgp v1.1.8 // indirect
 	github.com/tklauser/go-sysconf v0.3.10 // indirect
 	github.com/tklauser/numcpus v0.4.0 // indirect
 	github.com/valyala/tcplisten v1.0.0 // indirect
@@ -142,11 +142,11 @@ require (
 	github.com/xeipuuv/gojsonschema v1.2.0 // indirect
 	github.com/yusufpapurcu/wmi v1.2.2 // indirect
 	go.opentelemetry.io/otel/metric v1.16.0 // indirect
-	golang.org/x/mod v0.10.0 // indirect
-	golang.org/x/net v0.10.0 // indirect
-	golang.org/x/sync v0.2.0 // indirect
-	golang.org/x/sys v0.8.0 // indirect
-	golang.org/x/tools v0.9.3 // indirect
+	golang.org/x/mod v0.11.0 // indirect
+	golang.org/x/net v0.11.0 // indirect
+	golang.org/x/sync v0.3.0 // indirect
+	golang.org/x/sys v0.9.0 // indirect
+	golang.org/x/tools v0.10.0 // indirect
 	golang.org/x/xerrors v0.0.0-20200804184101-5ec99f83aff1 // indirect
 	google.golang.org/appengine v1.6.7 // indirect
 	google.golang.org/protobuf v1.30.0 // indirect
