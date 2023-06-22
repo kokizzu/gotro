@@ -330,7 +330,7 @@ func (t *TemplateChain) ParseTemplate(bs []byte) {
 	//L.Print(`end parsing`, t.Filename, len(t.Parts), len(t.Keys), info.Size())
 }
 
-const maxLen = 24
+const maxLen = 32
 
 func min(i int, i2 int) int {
 	if i < i2 {

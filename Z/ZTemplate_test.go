@@ -146,3 +146,10 @@ func BenchmarkRenderGoTemplate(b *testing.B) {
 		res.Reset()
 	}
 }
+
+func TestFalsePositive(t *testing.T) {
+	dummy2 := L.ReadFile(`dummy2.txt`)
+	dummy2expect := L.ReadFile(`dummy2.rendered`)
+	rendered := Z.FromString(dummy2).Str(M.SX{})
+	assert.Equal(t, dummy2expect, rendered)
+}
