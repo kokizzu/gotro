@@ -37,6 +37,33 @@ func expectExampleRendered(res string) {
 	}
 }
 
+func Test_Patterns(t *testing.T) {
+	patterns := []string{
+		`hi my name /*!name*/, my age /*!age*/`,
+		`hi my name /*! name*/, my age /*! age*/`,
+		`hi my name /*!name */, my age /*!age */`,
+		`hi my name /*! name */, my age /*! age */`,
+		`hi my name [/*name*/], my age [/*age*/]`,
+		`hi my name [/* name*/], my age [/* age*/]`,
+		`hi my name [/*name */], my age [/*age */]`,
+		`hi my name [/* name */], my age [/* age */]`,
+		`hi my name {/*name*/}, my age {/*age*/}`,
+		`hi my name {/* name*/}, my age {/* age*/}`,
+		`hi my name {/*name */}, my age {/*age */}`,
+		`hi my name {/* name */}, my age {/* age */}`,
+		`hi my name #{name}, my age #{age}`,
+		`hi my name #{ name}, my age #{ age}`,
+		`hi my name #{name }, my age #{age }`,
+		`hi my name #{ name }, my age #{ age }`,
+	}
+	for _, pattern := range patterns {
+		t.Run(pattern, func(t *testing.T) {
+			res := Z.FromString(pattern, true).Str(exampleMap)
+			expectExampleRendered(res)
+		})
+	}
+}
+
 func Test_Template(t *testing.T) {
 	const autoReload = true
 	const printDebug = true

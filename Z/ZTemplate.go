@@ -158,7 +158,7 @@ func (t *TemplateChain) ParseTemplate(bs []byte) {
 		if ch == '#' {
 			// start with #{
 			if ch1 := bs[p+1]; ch1 == '{' {
-				for z := p + 2; z < len(bs); z += 1 {
+				for z := p + 2; z < min(len(bs), p+2+maxLen); z += 1 {
 					// find the }
 					if ec := bs[z]; ec == '}' {
 						key = string(bs[p+2 : z])
@@ -175,7 +175,7 @@ func (t *TemplateChain) ParseTemplate(bs []byte) {
 			// }
 			if ch1 := bs[p+1]; ch1 == '*' {
 				if ch2 := bs[p+2]; ch2 == '!' {
-					for z := p + 3; z < len(bs)-1; z += 1 {
+					for z := p + 3; z < min(len(bs)-1, p+3+maxLen); z += 1 {
 						// find the `*/`
 						if ec := bs[z]; ec == '*' {
 							if ec1 := bs[z+1]; ec1 == '/' {
@@ -197,7 +197,7 @@ func (t *TemplateChain) ParseTemplate(bs []byte) {
 			if ch1 == '/' {
 				// start with `{/*`
 				if ch2 := bs[p+2]; ch2 == '*' {
-					for z := p + 3; z < len(bs)-2; z += 1 {
+					for z := p + 3; z < min(len(bs)-2, p+3+maxLen); z += 1 {
 						// find the `*/}`
 						if ec := bs[z]; ec == '*' {
 							if ec1 := bs[z+1]; ec1 == '/' {
@@ -225,7 +225,7 @@ func (t *TemplateChain) ParseTemplate(bs []byte) {
 				// start with `{ /*`
 				if ch2 := bs[p+2]; ch2 == '/' {
 					if ch3 := bs[p+3]; ch3 == '*' {
-						for z := p + 4; z < len(bs)-3; z += 1 {
+						for z := p + 4; z < min(len(bs)-3, p+4+maxLen); z += 1 {
 							// find the `*/ }`
 							if ec := bs[z]; ec == '*' {
 								if ec1 := bs[z+1]; ec1 == '/' {
@@ -257,7 +257,7 @@ func (t *TemplateChain) ParseTemplate(bs []byte) {
 			if ch1 == '/' {
 				// start with `[/*`
 				if ch2 := bs[p+2]; ch2 == '*' {
-					for z := p + 3; z < len(bs)-2; z += 1 {
+					for z := p + 3; z < min(len(bs)-2, p+3+maxLen); z += 1 {
 						// find the `*/]`
 						if ec := bs[z]; ec == '*' {
 							if ec1 := bs[z+1]; ec1 == '/' {
@@ -285,7 +285,7 @@ func (t *TemplateChain) ParseTemplate(bs []byte) {
 				// start with `[ /*`
 				if ch2 := bs[p+2]; ch2 == '/' {
 					if ch3 := bs[p+3]; ch3 == '*' {
-						for z := p + 4; z < len(bs)-3; z += 1 {
+						for z := p + 4; z < min(len(bs)-3, p+4+maxLen); z += 1 {
 							// find the `*/ ]`
 							if ec := bs[z]; ec == '*' {
 								if ec1 := bs[z+1]; ec1 == '/' {
@@ -328,6 +328,15 @@ func (t *TemplateChain) ParseTemplate(bs []byte) {
 		t.Parts = append(t.Parts, bs[start:])
 	}
 	//L.Print(`end parsing`, t.Filename, len(t.Parts), len(t.Keys), info.Size())
+}
+
+const maxLen = 24
+
+func min(i int, i2 int) int {
+	if i < i2 {
+		return i
+	}
+	return i2
 }
 
 // ParseFile parse a file and cache it
