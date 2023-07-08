@@ -14,11 +14,9 @@ import (
 )
 
 //go:generate gomodifytags -all -add-tags json,form,query,long,msg -transform camelcase --skip-unexported -w -file rqZzz__ORM.GEN.go
-//go:generate replacer -afterprefix 'Id" form' 'Id,string" form' type rqZzz__ORM.GEN.go
-//go:generate replacer -afterprefix 'json:"id"' 'json:"id,string"' type rqZzz__ORM.GEN.go
-//go:generate replacer -afterprefix 'By" form' 'By,string" form' type rqZzz__ORM.GEN.go
-// go:generate msgp -tests=false -file rqZzz__ORM.GEN.go -o rqZzz__MSG.GEN.go
-
+//go:generate replacer -afterprefix "Id\" form" "Id,string\" form" type rqZzz__ORM.GEN.go
+//go:generate replacer -afterprefix "json:\"id\"" "json:\"id,string\"" type rqZzz__ORM.GEN.go
+//go:generate replacer -afterprefix "By\" form" "By,string\" form" type rqZzz__ORM.GEN.go
 // Zzz DAO reader/query struct
 type Zzz struct {
 	Adapter *Tt.Adapter `json:"-" msg:"-" query:"-" form:"-"`

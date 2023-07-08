@@ -152,15 +152,15 @@ func GenerateOrm(tables map[TableName]*TableProp, withGraphql ...bool) {
 )` + "\n\n")
 
 	RQ(`//go:generate gomodifytags -all -add-tags json,form,query,long,msg -transform camelcase --skip-unexported -w -file ` + rqPkgName + "__ORM.GEN.go\n")
-	RQ(`//go:generate replacer -afterprefix 'Id" form' 'Id,string" form' type ` + rqPkgName + "__ORM.GEN.go\n")
-	RQ(`//go:generate replacer -afterprefix 'json:"id"' 'json:"id,string"' type ` + rqPkgName + "__ORM.GEN.go\n")
-	RQ(`//go:generate replacer -afterprefix 'By" form' 'By,string" form' type ` + rqPkgName + "__ORM.GEN.go\n")
-	RQ(`// go:generate msgp -tests=false -file ` + rqPkgName + `__ORM.GEN.go -o ` + rqPkgName + `__MSG.GEN.go` + "\n\n")
+	RQ(`//go:generate replacer -afterprefix "Id\" form" "Id,string\" form" type ` + rqPkgName + "__ORM.GEN.go\n")
+	RQ(`//go:generate replacer -afterprefix "json:\"id\"" "json:\"id,string\"" type ` + rqPkgName + "__ORM.GEN.go\n")
+	RQ(`//go:generate replacer -afterprefix "By\" form" "By,string\" form" type ` + rqPkgName + "__ORM.GEN.go\n")
+	//RQ(`//go:generate msgp -tests=false -file ` + rqPkgName + `__ORM.GEN.go -o ` + rqPkgName + `__MSG.GEN.go` + "\n\n")
 
 	WC(`//go:generate gomodifytags -all -add-tags json,form,query,long,msg -transform camelcase --skip-unexported -w -file ` + wcPkgName + "__ORM.GEN.go\n")
-	WC(`//go:generate replacer -afterprefix 'Id" form' 'Id,string" form' type ` + wcPkgName + "__ORM.GEN.go\n")
-	WC(`//go:generate replacer -afterprefix 'json:"id"' 'json:"id,string"' type ` + wcPkgName + "__ORM.GEN.go\n")
-	WC(`//go:generate replacer -afterprefix 'By" form' 'By,string" form' type ` + wcPkgName + "__ORM.GEN.go\n")
+	WC(`//go:generate replacer -afterprefix "Id\" form" "Id,string\" form" type ` + wcPkgName + "__ORM.GEN.go\n")
+	WC(`//go:generate replacer -afterprefix "json:\"id\"" "json:\"id,string\"" type ` + wcPkgName + "__ORM.GEN.go\n")
+	WC(`//go:generate replacer -afterprefix "By\" form" "By,string\" form" type ` + wcPkgName + "__ORM.GEN.go\n")
 	//WC(` //go:generate msgp -tests=false -file ` + wcPkgName + `__ORM.GEN.go -o ` + wcPkgName + `__MSG.GEN.go` + "\n\n")
 
 	// for each table generate in order

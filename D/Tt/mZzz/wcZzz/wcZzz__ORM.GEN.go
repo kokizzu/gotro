@@ -12,9 +12,9 @@ import (
 )
 
 //go:generate gomodifytags -all -add-tags json,form,query,long,msg -transform camelcase --skip-unexported -w -file wcZzz__ORM.GEN.go
-//go:generate replacer -afterprefix 'Id" form' 'Id,string" form' type wcZzz__ORM.GEN.go
-//go:generate replacer -afterprefix 'json:"id"' 'json:"id,string"' type wcZzz__ORM.GEN.go
-//go:generate replacer -afterprefix 'By" form' 'By,string" form' type wcZzz__ORM.GEN.go
+//go:generate replacer -afterprefix "Id\" form" "Id,string\" form" type wcZzz__ORM.GEN.go
+//go:generate replacer -afterprefix "json:\"id\"" "json:\"id,string\"" type wcZzz__ORM.GEN.go
+//go:generate replacer -afterprefix "By\" form" "By,string\" form" type wcZzz__ORM.GEN.go
 // ZzzMutator DAO writer/command struct
 type ZzzMutator struct {
 	rqZzz.Zzz
