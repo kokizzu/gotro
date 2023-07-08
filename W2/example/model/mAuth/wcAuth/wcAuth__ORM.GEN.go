@@ -3,19 +3,20 @@ package wcAuth
 // DO NOT EDIT, will be overwritten by github.com/kokizzu/D/Tt/tarantool_orm_generator.go
 
 import (
-	`github.com/kokizzu/gotro/W2/example/model/mAuth/rqAuth`
+	"github.com/kokizzu/gotro/W2/example/model/mAuth/rqAuth"
 
-	`github.com/kokizzu/gotro/A`
-	`github.com/kokizzu/gotro/D/Tt`
-	`github.com/kokizzu/gotro/L`
-	`github.com/kokizzu/gotro/X`
+	"github.com/kokizzu/gotro/A"
+	"github.com/kokizzu/gotro/D/Tt"
+	"github.com/kokizzu/gotro/L"
+	"github.com/kokizzu/gotro/X"
 )
 
+// SessionsMutator DAO writer/command struct
+//
 //go:generate gomodifytags -all -add-tags json,form,query,long,msg -transform camelcase --skip-unexported -w -file wcAuth__ORM.GEN.go
 //go:generate replacer -afterprefix 'Id" form' 'Id,string" form' type wcAuth__ORM.GEN.go
 //go:generate replacer -afterprefix 'json:"id"' 'json:"id,string"' type wcAuth__ORM.GEN.go
 //go:generate replacer -afterprefix 'By" form' 'By,string" form' type wcAuth__ORM.GEN.go
-// SessionsMutator DAO writer/command struct
 type SessionsMutator struct {
 	rqAuth.Sessions
 	mutations []A.X
@@ -400,4 +401,3 @@ func (u *UsersMutator) SetLastLoginAt(val int64) bool { //nolint:dupl false posi
 }
 
 // DO NOT EDIT, will be overwritten by github.com/kokizzu/D/Tt/tarantool_orm_generator.go
-

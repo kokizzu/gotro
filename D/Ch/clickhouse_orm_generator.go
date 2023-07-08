@@ -102,9 +102,9 @@ func GenerateOrm(tables map[TableName]*TableProp) {
 )` + "\n\n")
 
 	SA(`//go:generate gomodifytags -all -add-tags json,form,query,long,msg -transform camelcase --skip-unexported -w -file ` + saPkgName + "__ORM.GEN.go\n")
-	SA(`//go:generate replacer -afterprefix 'Id" form' 'Id,string" form' type ` + saPkgName + "__ORM.GEN.go\n")
-	SA(`//go:generate replacer -afterprefix 'json:"id"' 'json:"id,string"' type ` + saPkgName + "__ORM.GEN.go\n")
-	SA(`//go:generate replacer -afterprefix 'By" form' 'By,string" form' type ` + saPkgName + "__ORM.GEN.go\n")
+	SA(`//go:generate -afterprefix "Id\" form" "Id,string\" form" type ` + saPkgName + "__ORM.GEN.go\n")
+	SA(`//go:generate replacer -afterprefix "json:\"id\"" "json:\"id,string\"" type ` + saPkgName + "__ORM.GEN.go\n")
+	SA(`//go:generate replacer -afterprefix "By\" form" "By,string\" form" type ` + saPkgName + "__ORM.GEN.go\n")
 	SA(`// go:generate msgp -tests=false -file ` + saPkgName + `__ORM.GEN.go -o ` + saPkgName + `__MSG.GEN.go` + "\n\n")
 
 	// sort by table name to keep the order when regenerating structs
