@@ -89,7 +89,7 @@ var Type2TarantoolDefault = map[DataType]string{
 	Integer:  `0`,
 	Boolean:  `false`,
 	Double:   `0`,
-	Array:    `nil`,
+	Array:    `[]`,
 }
 
 // misc
