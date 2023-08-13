@@ -191,8 +191,14 @@ func GenerateOrm(tables map[TableName]*TableProp, withGraphql ...bool) {
 
 		// mutator struct constructor
 		WC("// New" + structName + "Mutator create new ORM writer/command object\n")
-		WC(`func New` + structName + `Mutator(adapter *` + connStruct + `) *` + structName + "Mutator {\n")
-		WC(`	return &` + structName + `Mutator{` + structName + `: ` + rqPkgName + `.` + structName + "{Adapter: adapter}}\n")
+		WC(`func New` + structName + `Mutator(adapter *` + connStruct + `) (res *` + structName + "Mutator) {\n")
+		WC(`	res = &` + structName + `Mutator{` + structName + `: ` + rqPkgName + `.` + structName + "{Adapter: adapter}}\n")
+		for _, prop := range props.Fields {
+			if prop.Type == Array {
+				WC(`	res.` + S.PascalCase(prop.Name) + ` = ` + TypeToGoType[prop.Type] + "{}\n")
+			}
+		}
+		WC("	return\n")
 		WC("}\n\n")
 
 		// reader struct

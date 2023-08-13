@@ -24,8 +24,10 @@ type ZzzMutator struct {
 }
 
 // NewZzzMutator create new ORM writer/command object
-func NewZzzMutator(adapter *Tt.Adapter) *ZzzMutator {
-	return &ZzzMutator{Zzz: rqZzz.Zzz{Adapter: adapter}}
+func NewZzzMutator(adapter *Tt.Adapter) (res *ZzzMutator) {
+	res = &ZzzMutator{Zzz: rqZzz.Zzz{Adapter: adapter}}
+	res.Coords = []any{}
+	return
 }
 
 // Logs get array of logs [field, old, new]
