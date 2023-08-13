@@ -148,28 +148,31 @@ func (z *ZzzMutator) SetHeightMeter(val float64) bool { //nolint:dupl false posi
 	return false
 }
 
-// SetAll set all from another source, only if another property is not empty
-func (z *ZzzMutator) SetAll(in rqZzz.Zzz, excludeMap M.SB) (changed bool) { //nolint:dupl false positive
-	if excludeMap == nil {
+// SetAll set all from another source, only if another property is not empty/nil/zero or in forceMap
+func (z *ZzzMutator) SetAll(in rqZzz.Zzz, excludeMap, forceMap M.SB) (changed bool) { //nolint:dupl false positive
+	if excludeMap == nil { // list of fields to exclude
 		excludeMap = M.SB{}
 	}
-	if excluded := excludeMap[`id`]; !excluded && z.Id != 0 {
+	if forceMap == nil { // list of fields to force overwrite
+		forceMap = M.SB{}
+	}
+	if !excludeMap[`id`] && (forceMap[`id`] || z.Id != 0) {
 		z.Id = in.Id
 		changed = true
 	}
-	if excluded := excludeMap[`createdAt`]; !excluded && z.CreatedAt != 0 {
+	if !excludeMap[`createdAt`] && (forceMap[`createdAt`] || z.CreatedAt != 0) {
 		z.CreatedAt = in.CreatedAt
 		changed = true
 	}
-	if excluded := excludeMap[`coords`]; !excluded && z.Coords != nil {
+	if !excludeMap[`coords`] && (forceMap[`coords`] || z.Coords != nil) {
 		z.Coords = in.Coords
 		changed = true
 	}
-	if excluded := excludeMap[`name`]; !excluded && z.Name != `` {
+	if !excludeMap[`name`] && (forceMap[`name`] || z.Name != ``) {
 		z.Name = in.Name
 		changed = true
 	}
-	if excluded := excludeMap[`heightMeter`]; !excluded && z.HeightMeter != 0 {
+	if !excludeMap[`heightMeter`] && (forceMap[`heightMeter`] || z.HeightMeter != 0) {
 		z.HeightMeter = in.HeightMeter
 		changed = true
 	}
