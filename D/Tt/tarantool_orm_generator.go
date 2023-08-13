@@ -453,7 +453,7 @@ func GenerateOrm(tables map[TableName]*TableProp, withGraphql ...bool) {
 
 		// SetAll
 		WC("// SetAll set all from another source, only if another property is not empty/nil/zero or in forceMap\n")
-		WC(`func (` + receiverName + ` *` + structName + "Mutator) SetAll(in " + rqPkgName + `.` + structName + ", excludeMap, forceMap M.SB) (changed bool) { //nolint:dupl false positive\n")
+		WC(`func (` + receiverName + ` *` + structName + "Mutator) SetAll(from " + rqPkgName + `.` + structName + ", excludeMap, forceMap M.SB) (changed bool) { //nolint:dupl false positive\n")
 		WC("	if excludeMap == nil { // list of fields to exclude\n")
 		WC("		excludeMap = M.SB{}\n")
 		WC("	}\n")
@@ -464,8 +464,8 @@ func GenerateOrm(tables map[TableName]*TableProp, withGraphql ...bool) {
 			propName := S.PascalCase(prop.Name)
 
 			// index functions
-			WC("	if !excludeMap[`" + prop.Name + "`] && (forceMap[`" + prop.Name + "`] || " + receiverName + `.` + propName + ` != ` + TypeToGoNilValue[prop.Type] + ") {\n")
-			WC(`		` + receiverName + `.` + propName + ` = in.` + propName + "\n")
+			WC("	if !excludeMap[`" + prop.Name + "`] && (forceMap[`" + prop.Name + "`] || from." + propName + ` != ` + TypeToGoNilValue[prop.Type] + ") {\n")
+			WC(`		` + receiverName + `.` + propName + ` = from.` + propName + "\n")
 			WC("		changed = true\n")
 			WC("	}\n")
 		}
