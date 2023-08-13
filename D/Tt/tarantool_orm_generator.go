@@ -145,7 +145,7 @@ func GenerateOrm(tables map[TableName]*TableProp, withGraphql ...bool) {
 	BOTH(qi(`github.com/kokizzu/gotro/A`))
 	BOTH(qi(this.PackageName)) // github.com/kokizzu/gotro/D/Tt
 	BOTH(qi(`github.com/kokizzu/gotro/L`))
-
+	WC(qi(`github.com/kokizzu/gotro/M`))
 	BOTH(qi(`github.com/kokizzu/gotro/X`))
 
 	BOTH(`
@@ -444,6 +444,24 @@ func GenerateOrm(tables map[TableName]*TableProp, withGraphql ...bool) {
 			}
 			WC("}\n\n")
 		}
+
+		// SetAll
+		WC("// SetAll set all from another source, only if another property is not empty\n")
+		WC(`func (` + receiverName + ` *` + structName + "Mutator) SetAll(in " + rqPkgName + `.` + structName + ", excludeMap M.SB) (changed bool) { //nolint:dupl false positive\n")
+		WC("	if excludeMap == nil {\n")
+		WC("		excludeMap = M.SB{}\n")
+		WC("	}\n")
+		for _, prop := range props.Fields {
+			propName := S.PascalCase(prop.Name)
+
+			// index functions
+			WC("	if excluded := excludeMap[`" + prop.Name + "`]; !excluded && " + receiverName + `.` + propName + ` != ` + TypeToGoNilValue[prop.Type] + " {\n")
+			WC(`		` + receiverName + `.` + propName + ` = in.` + propName + "\n")
+			WC("		changed = true\n")
+			WC("	}\n")
+		}
+		WC("	return\n")
+		WC("}\n\n")
 
 		// CensorFields
 		if len(props.AutoCensorFields) > 0 {

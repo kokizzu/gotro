@@ -3,7 +3,7 @@ module github.com/kokizzu/gotro
 go 1.20
 
 require (
-	github.com/ClickHouse/clickhouse-go/v2 v2.10.1
+	github.com/ClickHouse/clickhouse-go/v2 v2.13.0
 	github.com/OneOfOne/cmap v0.0.0-20170825200327-ccaef7657ab8
 	github.com/allegro/bigcache v1.2.1
 	github.com/amzn/ion-go v1.1.3
@@ -17,7 +17,7 @@ require (
 	github.com/gofiber/fiber/v2 v2.47.0
 	github.com/hexops/autogold v1.3.0
 	github.com/hexops/valast v1.4.1
-	github.com/jackc/pgx/v5 v5.4.1
+	github.com/jackc/pgx/v5 v5.4.3
 	github.com/jasonlvhit/gocron v0.0.1
 	github.com/jessevdk/go-flags v1.5.0
 	github.com/jmoiron/sqlx v1.3.5
@@ -40,12 +40,12 @@ require (
 	github.com/op/go-logging v0.0.0-20160315200505-970db520ece7
 	github.com/orcaman/concurrent-map v1.0.0
 	github.com/ory/dockertest/v3 v3.10.0
-	github.com/redis/rueidis v1.0.10
+	github.com/redis/rueidis v1.0.15
 	github.com/rs/zerolog v1.26.1
 	github.com/segmentio/fasthash v1.0.3
 	github.com/shirou/gopsutil/v3 v3.22.4
 	github.com/stretchr/testify v1.8.4
-	github.com/tarantool/go-tarantool v1.12.0
+	github.com/tarantool/go-tarantool v1.12.1
 	github.com/tdewolff/minify v2.3.6+incompatible
 	github.com/valyala/bytebufferpool v1.0.0
 	github.com/valyala/fasthttp v1.47.0
@@ -56,10 +56,10 @@ require (
 	github.com/zeebo/xxh3 v1.0.2
 	go.opentelemetry.io/otel v1.16.0
 	go.opentelemetry.io/otel/trace v1.16.0
-	golang.org/x/crypto v0.11.0
-	golang.org/x/exp v0.0.0-20230626212559-97b1e661b5df
+	golang.org/x/crypto v0.12.0
+	golang.org/x/exp v0.0.0-20230811145659-89c5cff77bcb
 	golang.org/x/oauth2 v0.0.0-20220524215830-622c5d57e401
-	golang.org/x/text v0.11.0
+	golang.org/x/text v0.12.0
 	gopkg.in/natefinch/lumberjack.v2 v2.0.0
 	gopkg.in/resty.v1 v1.12.0
 )
@@ -68,7 +68,7 @@ require (
 	cloud.google.com/go v0.67.0 // indirect
 	github.com/Azure/go-ansiterm v0.0.0-20230124172434-306776ec8161 // indirect
 	github.com/BurntSushi/toml v1.2.1 // indirect
-	github.com/ClickHouse/ch-go v0.57.0 // indirect
+	github.com/ClickHouse/ch-go v0.58.0 // indirect
 	github.com/Microsoft/go-winio v0.6.1 // indirect
 	github.com/Nvveen/Gotty v0.0.0-20120604004816-cd527374f1e5 // indirect
 	github.com/amzn/ion-hash-go v1.1.1 // indirect
@@ -76,8 +76,8 @@ require (
 	github.com/cenkalti/backoff/v4 v4.2.1 // indirect
 	github.com/containerd/continuity v0.4.1 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
-	github.com/docker/cli v24.0.4+incompatible // indirect
-	github.com/docker/docker v24.0.4+incompatible // indirect
+	github.com/docker/cli v24.0.5+incompatible // indirect
+	github.com/docker/docker v24.0.5+incompatible // indirect
 	github.com/docker/go-connections v0.4.0 // indirect
 	github.com/docker/go-units v0.5.0 // indirect
 	github.com/francoispqt/gojay v1.2.13 // indirect
@@ -97,7 +97,7 @@ require (
 	github.com/imdario/mergo v0.3.16 // indirect
 	github.com/jackc/pgpassfile v1.0.0 // indirect
 	github.com/jackc/pgservicefile v0.0.0-20221227161230-091c0ba34f0a // indirect
-	github.com/jackc/puddle/v2 v2.2.0 // indirect
+	github.com/jackc/puddle/v2 v2.2.1 // indirect
 	github.com/jmespath/go-jmespath v0.4.0 // indirect
 	github.com/josharian/intern v1.0.0 // indirect
 	github.com/klauspost/compress v1.16.7 // indirect
@@ -113,8 +113,8 @@ require (
 	github.com/nightlyone/lockfile v1.0.0 // indirect
 	github.com/opencontainers/go-digest v1.0.0 // indirect
 	github.com/opencontainers/image-spec v1.1.0-rc4 // indirect
-	github.com/opencontainers/runc v1.1.7 // indirect
-	github.com/paulmach/orb v0.9.2 // indirect
+	github.com/opencontainers/runc v1.1.9 // indirect
+	github.com/paulmach/orb v0.10.0 // indirect
 	github.com/philhofer/fwd v1.1.2 // indirect
 	github.com/pierrec/lz4/v4 v4.1.18 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
@@ -143,10 +143,10 @@ require (
 	github.com/yusufpapurcu/wmi v1.2.2 // indirect
 	go.opentelemetry.io/otel/metric v1.16.0 // indirect
 	golang.org/x/mod v0.12.0 // indirect
-	golang.org/x/net v0.12.0 // indirect
+	golang.org/x/net v0.14.0 // indirect
 	golang.org/x/sync v0.3.0 // indirect
-	golang.org/x/sys v0.10.0 // indirect
-	golang.org/x/tools v0.11.0 // indirect
+	golang.org/x/sys v0.11.0 // indirect
+	golang.org/x/tools v0.12.0 // indirect
 	golang.org/x/xerrors v0.0.0-20200804184101-5ec99f83aff1 // indirect
 	google.golang.org/appengine v1.6.7 // indirect
 	google.golang.org/protobuf v1.31.0 // indirect

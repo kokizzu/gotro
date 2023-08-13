@@ -8,6 +8,7 @@ import (
 	`github.com/kokizzu/gotro/A`
 	`github.com/kokizzu/gotro/D/Tt`
 	`github.com/kokizzu/gotro/L`
+	`github.com/kokizzu/gotro/M`
 	`github.com/kokizzu/gotro/X`
 )
 
@@ -145,6 +146,34 @@ func (z *ZzzMutator) SetHeightMeter(val float64) bool { //nolint:dupl false posi
 		return true
 	}
 	return false
+}
+
+// SetAll set all from another source, only if another property is not empty
+func (z *ZzzMutator) SetAll(in rqZzz.Zzz, excludeMap M.SB) (changed bool) { //nolint:dupl false positive
+	if excludeMap == nil {
+		excludeMap = M.SB{}
+	}
+	if excluded := excludeMap[`id`]; !excluded && z.Id != 0 {
+		z.Id = in.Id
+		changed = true
+	}
+	if excluded := excludeMap[`createdAt`]; !excluded && z.CreatedAt != 0 {
+		z.CreatedAt = in.CreatedAt
+		changed = true
+	}
+	if excluded := excludeMap[`coords`]; !excluded && z.Coords != nil {
+		z.Coords = in.Coords
+		changed = true
+	}
+	if excluded := excludeMap[`name`]; !excluded && z.Name != `` {
+		z.Name = in.Name
+		changed = true
+	}
+	if excluded := excludeMap[`heightMeter`]; !excluded && z.HeightMeter != 0 {
+		z.HeightMeter = in.HeightMeter
+		changed = true
+	}
+	return
 }
 
 // DO NOT EDIT, will be overwritten by github.com/kokizzu/D/Tt/tarantool_orm_generator.go

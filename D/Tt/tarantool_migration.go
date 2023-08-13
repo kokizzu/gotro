@@ -74,6 +74,14 @@ var TypeToGoEmptyValue = map[DataType]string{
 	Boolean:  `false`,
 	Array:    `[]any{}`,
 }
+var TypeToGoNilValue = map[DataType]string{
+	Unsigned: `0`,
+	String:   "``",
+	Integer:  `0`,
+	Double:   `0`,
+	Boolean:  `false`,
+	Array:    `nil`,
+}
 var TypeToConvertFunc = map[DataType]string{
 	Unsigned: `X.ToU`,
 	String:   `X.ToS`,
