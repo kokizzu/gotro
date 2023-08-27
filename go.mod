@@ -3,7 +3,7 @@ module github.com/kokizzu/gotro
 go 1.20
 
 require (
-	github.com/ClickHouse/clickhouse-go/v2 v2.13.0
+	github.com/ClickHouse/clickhouse-go/v2 v2.13.3
 	github.com/OneOfOne/cmap v0.0.0-20170825200327-ccaef7657ab8
 	github.com/allegro/bigcache v1.2.1
 	github.com/amzn/ion-go v1.1.3
@@ -40,7 +40,7 @@ require (
 	github.com/op/go-logging v0.0.0-20160315200505-970db520ece7
 	github.com/orcaman/concurrent-map v1.0.0
 	github.com/ory/dockertest/v3 v3.10.0
-	github.com/redis/rueidis v1.0.15
+	github.com/redis/rueidis v1.0.16
 	github.com/rs/zerolog v1.26.1
 	github.com/segmentio/fasthash v1.0.3
 	github.com/shirou/gopsutil/v3 v3.22.4
@@ -57,7 +57,7 @@ require (
 	go.opentelemetry.io/otel v1.16.0
 	go.opentelemetry.io/otel/trace v1.16.0
 	golang.org/x/crypto v0.12.0
-	golang.org/x/exp v0.0.0-20230811145659-89c5cff77bcb
+	golang.org/x/exp v0.0.0-20230817173708-d852ddb80c63
 	golang.org/x/oauth2 v0.0.0-20220524215830-622c5d57e401
 	golang.org/x/text v0.12.0
 	gopkg.in/natefinch/lumberjack.v2 v2.0.0
@@ -68,13 +68,13 @@ require (
 	cloud.google.com/go v0.67.0 // indirect
 	github.com/Azure/go-ansiterm v0.0.0-20230124172434-306776ec8161 // indirect
 	github.com/BurntSushi/toml v1.2.1 // indirect
-	github.com/ClickHouse/ch-go v0.58.0 // indirect
+	github.com/ClickHouse/ch-go v0.58.2 // indirect
 	github.com/Microsoft/go-winio v0.6.1 // indirect
 	github.com/Nvveen/Gotty v0.0.0-20120604004816-cd527374f1e5 // indirect
 	github.com/amzn/ion-hash-go v1.1.1 // indirect
 	github.com/andybalholm/brotli v1.0.5 // indirect
 	github.com/cenkalti/backoff/v4 v4.2.1 // indirect
-	github.com/containerd/continuity v0.4.1 // indirect
+	github.com/containerd/continuity v0.4.2 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/docker/cli v24.0.5+incompatible // indirect
 	github.com/docker/docker v24.0.5+incompatible // indirect
@@ -92,7 +92,7 @@ require (
 	github.com/golang/protobuf v1.5.3 // indirect
 	github.com/google/go-cmp v0.5.9 // indirect
 	github.com/google/shlex v0.0.0-20191202100458-e7afc7fbc510 // indirect
-	github.com/google/uuid v1.3.0 // indirect
+	github.com/google/uuid v1.3.1 // indirect
 	github.com/hexops/gotextdiff v1.0.3 // indirect
 	github.com/imdario/mergo v0.3.16 // indirect
 	github.com/jackc/pgpassfile v1.0.0 // indirect
@@ -146,7 +146,7 @@ require (
 	golang.org/x/net v0.14.0 // indirect
 	golang.org/x/sync v0.3.0 // indirect
 	golang.org/x/sys v0.11.0 // indirect
-	golang.org/x/tools v0.12.0 // indirect
+	golang.org/x/tools v0.12.1-0.20230815132531-74c255bcf846 // indirect
 	golang.org/x/xerrors v0.0.0-20200804184101-5ec99f83aff1 // indirect
 	google.golang.org/appengine v1.6.7 // indirect
 	google.golang.org/protobuf v1.31.0 // indirect

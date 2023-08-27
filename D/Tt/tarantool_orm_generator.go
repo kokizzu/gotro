@@ -371,6 +371,14 @@ func GenerateOrm(tables map[TableName]*TableProp, withGraphql ...bool) {
 		WC("// previous name: DoReplace\n")
 		WC(`func (` + receiverName + ` *` + structName + "Mutator) DoUpsert() bool { //nolint:dupl false positive\n")
 		WC("	_, err := " + receiverName + ".Adapter.Replace(" + receiverName + ".SpaceName(), " + receiverName + ".ToArray())\n")
+		if props.AutoIncrementId {
+			WC("	if err == nil {\n")
+			WC("		tup := row.Tuples()\n")
+			WC("		if len(tup) > 0 && len(tup[0]) > 0 && tup[0][0] != nil {\n")
+			WC("			" + receiverName + ".Id = X.ToU(tup[0][0])\n")
+			WC("		}\n")
+			WC("	}\n")
+		}
 		WC("	return !L.IsError(err, `" + structName + ".DoUpsert failed: `+" + receiverName + ".SpaceName())\n")
 		WC("}\n\n")
 

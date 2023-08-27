@@ -95,6 +95,12 @@ func (z *ZzzMutator) DoInsert() bool { //nolint:dupl false positive
 // previous name: DoReplace
 func (z *ZzzMutator) DoUpsert() bool { //nolint:dupl false positive
 	_, err := z.Adapter.Replace(z.SpaceName(), z.ToArray())
+	if err == nil {
+		tup := row.Tuples()
+		if len(tup) > 0 && len(tup[0]) > 0 && tup[0][0] != nil {
+			z.Id = X.ToU(tup[0][0])
+		}
+	}
 	return !L.IsError(err, `Zzz.DoUpsert failed: `+z.SpaceName())
 }
 
