@@ -94,7 +94,7 @@ func (z *ZzzMutator) DoInsert() bool { //nolint:dupl false positive
 // replace = upsert, only error when there's unique secondary key
 // previous name: DoReplace
 func (z *ZzzMutator) DoUpsert() bool { //nolint:dupl false positive
-	_, err := z.Adapter.Replace(z.SpaceName(), z.ToArray())
+	row, err := z.Adapter.Replace(z.SpaceName(), z.ToArray())
 	if err == nil {
 		tup := row.Tuples()
 		if len(tup) > 0 && len(tup[0]) > 0 && tup[0][0] != nil {

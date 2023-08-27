@@ -370,7 +370,7 @@ func GenerateOrm(tables map[TableName]*TableProp, withGraphql ...bool) {
 		WC("// replace = upsert, only error when there's unique secondary key\n")
 		WC("// previous name: DoReplace\n")
 		WC(`func (` + receiverName + ` *` + structName + "Mutator) DoUpsert() bool { //nolint:dupl false positive\n")
-		WC("	_, err := " + receiverName + ".Adapter.Replace(" + receiverName + ".SpaceName(), " + receiverName + ".ToArray())\n")
+		WC("	row, err := " + receiverName + ".Adapter.Replace(" + receiverName + ".SpaceName(), " + receiverName + ".ToArray())\n")
 		if props.AutoIncrementId {
 			WC("	if err == nil {\n")
 			WC("		tup := row.Tuples()\n")
