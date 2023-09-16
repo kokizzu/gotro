@@ -190,7 +190,7 @@ func GenerateOrm(tables map[TableName]*TableProp) {
 		SA("	res = make([]" + structName + ", 0, estimateRows)\n")
 		SA("	for rows.Next() {\n")
 		SA("		var row " + structName + "\n")
-		SA("		err = row.ScanRowAllColumns(rows)\n")
+		SA("		err = row.ScanRowAllCols(rows)\n")
 		SA("		if err != nil {\n")
 		SA("			return\n")
 		SA("		}\n")
