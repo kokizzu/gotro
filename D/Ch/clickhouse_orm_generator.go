@@ -35,8 +35,8 @@ var typeTranslator = map[DataType]string{
 	Float64:    `float64`,
 	String:     `string`,
 	Int64:      `int64`,
-	IPv4:       `string`,
-	IPv6:       `string`,
+	IPv4:       `net.IP`,
+	IPv6:       `net.IP`,
 	DateTime:   `time.Time`,
 	DateTime64: `time.Time`,
 	Int8:       `int8`,
@@ -78,6 +78,25 @@ func GenerateOrm(tables map[TableName]*TableProp) {
 		L.PanicIf(err, `failed apBuf.WriteString`)
 	}
 
+	// sort by table name to keep the order when regenerating structs
+	tableNames := make([]string, 0, len(tables))
+	for k := range tables {
+		tableNames = append(tableNames, string(k))
+	}
+	sort.Strings(tableNames)
+
+	// check have IP
+	haveIp := false
+	for _, tableName := range tableNames {
+		props := tables[TableName(tableName)]
+		for _, prop := range props.Fields {
+			if prop.Type == IPv4 || prop.Type == IPv6 {
+				haveIp = true
+				break
+			}
+		}
+	}
+
 	//SA(`// generated: ` + time.Now().String() + "\n")
 	SA(`package ` + saPkgName)
 	SA("\n\n")
@@ -87,6 +106,9 @@ func GenerateOrm(tables map[TableName]*TableProp) {
 
 	// import reader
 	SA(qi(`database/sql`))
+	if haveIp {
+		SA(qi(`net`))
+	}
 	SA(qi(`time`))
 	SA("\n")
 	SA(qi(ci.PackageName)) // /models/m*
@@ -107,13 +129,6 @@ func GenerateOrm(tables map[TableName]*TableProp) {
 	SA(`//go:generate replacer -afterprefix "json:\"id\"" "json:\"id,string\"" type ` + saPkgName + "__ORM.GEN.go\n")
 	SA(`//go:generate replacer -afterprefix "By\" form" "By,string\" form" type ` + saPkgName + "__ORM.GEN.go\n")
 	SA(`// go:generate msgp -tests=false -file ` + saPkgName + `__ORM.GEN.go -o ` + saPkgName + `__MSG.GEN.go` + "\n\n")
-
-	// sort by table name to keep the order when regenerating structs
-	tableNames := make([]string, 0, len(tables))
-	for k := range tables {
-		tableNames = append(tableNames, string(k))
-	}
-	sort.Strings(tableNames)
 
 	for _, tableName := range tableNames {
 		SA(`var ` + tableName + `Dummy = ` + S.PascalCase(tableName) + "{}\n")
@@ -167,7 +182,7 @@ func GenerateOrm(tables map[TableName]*TableProp) {
 
 		// table name
 		receiverName := strings.ToLower(string(structName[0]))
-		SA(`func (` + receiverName + ` ` + structName + ") TableName() Ch.TableName { //nolint:dupl false positive\n")
+		SA(`func (` + receiverName + ` *` + structName + ") TableName() Ch.TableName { //nolint:dupl false positive\n")
 		SA("	return " + mPkgName + `.Table` + structName + "\n")
 		SA("}\n\n")
 
@@ -188,6 +203,7 @@ func GenerateOrm(tables map[TableName]*TableProp) {
 		// ScanRowsAllColumns
 		SA(`func (` + receiverName + ` *` + structName + ") ScanRowsAllCols(rows *sql.Rows, estimateRows int) (res []" + structName + ", err error) { //nolint:dupl false positive\n")
 		SA("	res = make([]" + structName + ", 0, estimateRows)\n")
+		SA("	defer rows.Close()\n")
 		SA("	for rows.Next() {\n")
 		SA("		var row " + structName + "\n")
 		SA("		err = row.ScanRowAllCols(rows)\n")
