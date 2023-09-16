@@ -177,26 +177,27 @@ func GenerateOrm(tables map[TableName]*TableProp) {
 		SA("}\n\n")
 
 		// ScanRowAllColumns
-		SA(`func (` + receiverName + ` *` + structName + ") ScanRowAllColumns(rows *sql.Rows) (err error) { //nolint:dupl false positive\n")
+		SA(`func (` + receiverName + ` *` + structName + ") ScanRowAllCols(rows *sql.Rows) (err error) { //nolint:dupl false positive\n")
 		SA("	return rows.Scan(\n")
 		for _, prop := range props.Fields {
-			SA("	&" + receiverName + "." + S.PascalCase(prop.Name) + ",\n")
+			SA("		&" + receiverName + "." + S.PascalCase(prop.Name) + ",\n")
 		}
 		SA("	)\n")
 		SA("}\n\n")
 
 		// ScanRowsAllColumns
-		SA(`func (` + receiverName + ` *` + structName + ") ScanRowsAllColumns(rows *sql.Rows, estimateRows int) (res []`" + structName + "`, err error) { //nolint:dupl false positive\n")
-		SA("	res = make([]`" + structName + "`, 0, estimateRows)\n")
+		SA(`func (` + receiverName + ` *` + structName + ") ScanRowsAllCols(rows *sql.Rows, estimateRows int) (res []" + structName + ", err error) { //nolint:dupl false positive\n")
+		SA("	res = make([]" + structName + ", 0, estimateRows)\n")
 		SA("	for rows.Next() {\n")
 		SA("		var row " + structName + "\n")
 		SA("		err = row.ScanRowAllColumns(rows)\n")
-		SA("		if L.IsError(err, `row.ScanRowAllColumns failed: `+" + receiverName + ".SqlTableName()) {\n")
+		SA("		if err != nil {\n")
 		SA("			return\n")
 		SA("		}\n")
 		SA("		res = append(res, row)\n")
 		SA("	}\n")
 		SA("	return\n")
+		SA("}\n\n")
 
 		// insert, error if exists
 		SA("// insert, error if exists\n")
