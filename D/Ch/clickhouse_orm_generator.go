@@ -87,8 +87,9 @@ func GenerateOrm(tables map[TableName]*TableProp) {
 
 	// import reader
 	SA(qi(`database/sql`))
-	SA(qi(ci.PackageName)) // /models/m*
 	SA(qi(`time`))
+	SA("\n")
+	SA(qi(ci.PackageName)) // /models/m*
 	SA(connImport)
 	SA(buffImport)
 
@@ -158,7 +159,7 @@ func GenerateOrm(tables map[TableName]*TableProp) {
 
 		// field type map
 		SA("// " + structName + "FieldTypeMap returns key value of field name and key\n")
-		SA("var " + structName + "FieldTypeMap = map[string]Tt.DataType { //nolint:dupl false positive\n")
+		SA("var " + structName + "FieldTypeMap = map[string]Ch.DataType { //nolint:dupl false positive\n")
 		for _, field := range props.Fields {
 			SA("	" + S.BT(field.Name) + `:` + strings.Repeat(` `, maxLen-len(field.Name)) + TypeToConst[field.Type] + ",\n")
 		}
