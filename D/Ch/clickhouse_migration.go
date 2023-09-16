@@ -94,6 +94,25 @@ type Field struct {
 	Type DataType
 }
 
+var TypeToConst = map[DataType]string{
+	DateTime:    `Ch.DateTime`,
+	DateTime64:  `Ch.DateTime64`,
+	Decimal:     `Ch.Decimal`,
+	FixedString: `Ch.FixedString`,
+	Float32:     `Ch.Float32`,
+	Float64:     `Ch.Float64`,
+	IPv4:        `Ch.IPv4`,
+	IPv6:        `Ch.IPv6`,
+	Int16:       `Ch.Int16`,
+	Int32:       `Ch.Int32`,
+	Int64:       `Ch.Int64`,
+	Int8:        `Ch.Int8`,
+	String:      `Ch.String`,
+	UInt16:      `Ch.UInt16`,
+	UInt32:      `Ch.UInt32`,
+	UInt64:      `Ch.UInt64`,
+}
+
 func (a *Adapter) CreateTable(tableName TableName, props *TableProp) bool {
 	query := `
 CREATE TABLE IF NOT EXISTS ` + string(tableName) + ` (`

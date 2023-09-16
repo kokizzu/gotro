@@ -156,6 +156,14 @@ func GenerateOrm(tables map[TableName]*TableProp) {
 		SA(`	return &` + structName + "{Adapter: adapter}\n")
 		SA("}\n\n")
 
+		// field type map
+		SA("// " + structName + "FieldTypeMap returns key value of field name and key\n")
+		SA("var " + structName + "FieldTypeMap = map[string]Tt.DataType { //nolint:dupl false positive\n")
+		for _, field := range props.Fields {
+			SA("	" + S.BT(field.Name) + `:` + strings.Repeat(` `, maxLen-len(field.Name)) + TypeToConst[field.Type] + ",\n")
+		}
+		SA("}\n\n")
+
 		// table name
 		receiverName := strings.ToLower(string(structName[0]))
 		SA(`func (` + receiverName + ` ` + structName + ") TableName() Ch.TableName { //nolint:dupl false positive\n")
