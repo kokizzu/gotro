@@ -39,6 +39,7 @@ go get -u -v github.com/kpango/fastime@latest
 go get -u -v github.com/fatih/color@latest
 go get -u -v github.com/kr/pretty@latest
 go get -u -v github.com/op/go-logging@latest
+go get -u -v github.com/gofiber/fiber/v2@latest
 go mod tidy
 
 # testing if has error after update
