@@ -178,7 +178,7 @@ func (z *ZzzMutator) SetAll(from rqZzz.Zzz, excludeMap, forceMap M.SB) (changed 
 		changed = true
 	}
 	if !excludeMap[`name`] && (forceMap[`name`] || from.Name != ``) {
-		z.Name = from.Name
+		z.Name = S.Trim(from.Name)
 		changed = true
 	}
 	if !excludeMap[`heightMeter`] && (forceMap[`heightMeter`] || from.HeightMeter != 0) {

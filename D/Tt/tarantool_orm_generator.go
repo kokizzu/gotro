@@ -478,14 +478,14 @@ func GenerateOrm(tables map[TableName]*TableProp, withGraphql ...bool) {
 		WC("		forceMap = M.SB{}\n")
 		WC("	}\n")
 		for _, prop := range props.Fields {
-			propName := S.PascalCase(prop.Name)
+			pascalPropName := S.PascalCase(prop.Name)
 
 			// index functions
-			WC("	if !excludeMap[`" + prop.Name + "`] && (forceMap[`" + prop.Name + "`] || from." + propName + ` != ` + TypeToGoNilValue[prop.Type] + ") {\n")
-			if propByName[propName].Type == String {
-				WC(`		` + receiverName + `.` + propName + ` = S.Trim(from.` + propName + ")\n")
+			WC("	if !excludeMap[`" + prop.Name + "`] && (forceMap[`" + prop.Name + "`] || from." + pascalPropName + ` != ` + TypeToGoNilValue[prop.Type] + ") {\n")
+			if propByName[prop.Name].Type == String {
+				WC(`		` + receiverName + `.` + pascalPropName + ` = S.Trim(from.` + pascalPropName + ")\n")
 			} else {
-				WC(`		` + receiverName + `.` + propName + ` = from.` + propName + "\n")
+				WC(`		` + receiverName + `.` + pascalPropName + ` = from.` + pascalPropName + "\n")
 			}
 			WC("		changed = true\n")
 			WC("	}\n")
