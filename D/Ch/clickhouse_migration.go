@@ -5,7 +5,7 @@ import (
 	"github.com/kokizzu/gotro/L"
 )
 
-const DEBUG = true
+var DEBUG = true
 
 func Descr(args ...any) {
 	if DEBUG {
@@ -137,17 +137,17 @@ func (a *Adapter) UpsertTable(tableName TableName, props *TableProp) bool {
 	if props.DefaultCodec == `` {
 		props.DefaultCodec = CodecLz4hc
 	}
+	Descr(`CreateTable`, tableName)
 	if !a.CreateTable(tableName, props) {
 		return false
 	}
-	if !a.AlterMissingColumns(tableName, props) {
-		return false
-	}
-
-	return true
+	Descr(`AlterMissingColumns`, tableName)
+	return a.AlterMissingColumns(tableName, props)
 }
 
 func (a *Adapter) MigrateTables(tables map[TableName]*TableProp) {
+	Descr(`---MigrateTables-Start----------------------------------------------------`)
+	defer Descr(`---MigrateTables-End--------------------------------------------------------`)
 	for name, props := range tables {
 		//Descr(name, props)
 		a.UpsertTable(name, props)

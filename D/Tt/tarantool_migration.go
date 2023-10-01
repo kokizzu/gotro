@@ -10,7 +10,7 @@ import (
 	"github.com/kokizzu/gotro/X"
 )
 
-const DEBUG = false
+var DEBUG = false
 
 var ErrMiscaonfiguration = errors.New(`misconfiguration`)
 
@@ -162,19 +162,20 @@ type Index struct {
 type MSX map[string]any
 
 func (a *Adapter) UpsertTable(tableName TableName, prop *TableProp) bool {
-	if DEBUG {
-		L.Print(`---UpsertTable-Start-` + tableName + `----------------------------------------------------`)
-		defer L.Print(`---UpsertTable-End-` + tableName + `-------------------------------------------------------`)
-	}
+	Descr(`---UpsertTable-Start-` + tableName + `----------------------------------------------------`)
+	defer Descr(`---UpsertTable-End-` + tableName + `-------------------------------------------------------`)
 	if prop.Engine == `` {
 		prop.Engine = Vinyl
 	}
+	Descr(`CreateSpace ` + tableName)
 	if !a.CreateSpace(string(tableName), prop.Engine) {
 		return false
 	}
 	if prop.PreReformatMigrationHook != nil {
+		Descr(`PreReformatMigrationHook`)
 		prop.PreReformatMigrationHook(a)
 	}
+	Descr(`ReformatTable ` + tableName)
 	if !a.ReformatTable(string(tableName), prop.Fields) {
 		return false // failed to create table
 	}
@@ -186,9 +187,11 @@ func (a *Adapter) UpsertTable(tableName TableName, prop *TableProp) bool {
 		}
 
 		seqName := string(tableName) + `_` + IdCol
+		Descr(`box.schema.sequence.create ` + seqName)
 		a.ExecTarantoolVerbose(`box.schema.sequence.create`, A.X{
 			seqName,
 		})
+		Descr(string(tableName) + `:create_index ` + seqName)
 		a.ExecBoxSpace(string(tableName)+`:create_index`, A.X{
 			IdCol, Index{
 				Sequence:    seqName,
@@ -199,10 +202,12 @@ func (a *Adapter) UpsertTable(tableName TableName, prop *TableProp) bool {
 		})
 	}
 	if prop.PreUnique3MigrationHook != nil {
+		Descr(`PreUnique3MigrationHook`)
 		prop.PreUnique3MigrationHook(a)
 	}
 	// only create unique if not "id"
 	if prop.Unique1 != `` && !(prop.AutoIncrementId && prop.Unique1 == IdCol) {
+		Descr(string(tableName) + `:create_index ` + prop.Unique1)
 		a.ExecBoxSpace(string(tableName)+`:create_index`, A.X{
 			prop.Unique1, Index{Parts: []string{prop.Unique1}, IfNotExists: true, Unique: true},
 		})
@@ -217,6 +222,7 @@ func (a *Adapter) UpsertTable(tableName TableName, prop *TableProp) bool {
 		prop.PreUnique2MigrationHook(a)
 	}
 	if prop.Unique2 != `` && !(prop.AutoIncrementId && prop.Unique2 == IdCol) {
+		Descr(string(tableName) + `:create_index ` + prop.Unique2)
 		a.ExecBoxSpace(string(tableName)+`:create_index`, A.X{
 			prop.Unique2, Index{Parts: []string{prop.Unique2}, IfNotExists: true, Unique: true},
 		})
@@ -225,33 +231,40 @@ func (a *Adapter) UpsertTable(tableName TableName, prop *TableProp) bool {
 		}
 	}
 	if prop.PreUnique3MigrationHook != nil {
+		Descr(`PreUnique3MigrationHook`)
 		prop.PreUnique3MigrationHook(a)
 	}
 	if prop.Unique3 != `` && !(prop.AutoIncrementId && prop.Unique3 == IdCol) {
+		Descr(string(tableName) + `:create_index ` + prop.Unique3)
 		a.ExecBoxSpace(string(tableName)+`:create_index`, A.X{
 			prop.Unique3, Index{Parts: []string{prop.Unique3}, IfNotExists: true, Unique: true},
 		})
 	}
 	if prop.PreUniquesMigrationHook != nil {
+		Descr(`PreUniquesMigrationHook`)
 		prop.PreUniquesMigrationHook(a)
 	}
 	// create multi-field unique index: [col1, col2] will named col1__col2
 	if len(prop.Uniques) > 1 {
+		Descr(string(tableName) + `:create_index ` + strings.Join(prop.Uniques, `__`))
 		a.ExecBoxSpace(string(tableName)+`:create_index`, A.X{
 			strings.Join(prop.Uniques, `__`), Index{Parts: prop.Uniques, IfNotExists: true, Unique: true},
 		})
 	}
 	if prop.PreSpatialMigrationHook != nil {
+		Descr(`PreSpatialMigrationHook`)
 		prop.PreSpatialMigrationHook(a)
 	}
 	// create spatial index (only works for memtx)
 	if prop.Spatial != `` {
+		Descr(string(tableName) + `:create_index ` + prop.Spatial)
 		a.ExecBoxSpace(string(tableName)+`:create_index`, A.X{
 			prop.Spatial, Index{Parts: []string{prop.Spatial}, IfNotExists: true, Type: `RTREE`},
 		})
 	}
 	// create other indexes
 	for _, index := range prop.Indexes {
+		Descr(string(tableName) + `:create_index ` + index)
 		//a.ExecBoxSpace(tableName+`.index.`+index+`:drop`, AX{index}) // TODO: remove this when index fixed
 		a.ExecBoxSpace(string(tableName)+`:create_index`, A.X{
 			index, Index{Parts: []string{index}, IfNotExists: true},
