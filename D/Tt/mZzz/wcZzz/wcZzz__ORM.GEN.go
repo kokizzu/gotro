@@ -9,6 +9,7 @@ import (
 	`github.com/kokizzu/gotro/D/Tt`
 	`github.com/kokizzu/gotro/L`
 	`github.com/kokizzu/gotro/M`
+	`github.com/kokizzu/gotro/S`
 	`github.com/kokizzu/gotro/X`
 )
 

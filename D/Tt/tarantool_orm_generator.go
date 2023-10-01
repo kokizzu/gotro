@@ -122,12 +122,18 @@ func GenerateOrm(tables map[TableName]*TableProp, withGraphql ...bool) {
 	BOTH("\n\n")
 	BOTH(warning)
 
+	haveString := false
 	useGraphql := len(withGraphql) > 0
 	// sort by table name to keep the order when regenerating structs
 	tableNames := make([]string, 0, len(tables))
 	for k, v := range tables {
 		tableNames = append(tableNames, string(k))
 		useGraphql = useGraphql || v.GenGraphqlType // if one of them use graphql, import anyway
+		for _, prop := range v.Fields {
+			if prop.Type == String {
+				haveString = true
+			}
+		}
 	}
 	sort.Strings(tableNames)
 
@@ -146,6 +152,9 @@ func GenerateOrm(tables map[TableName]*TableProp, withGraphql ...bool) {
 	BOTH(qi(this.PackageName)) // github.com/kokizzu/gotro/D/Tt
 	BOTH(qi(`github.com/kokizzu/gotro/L`))
 	WC(qi(`github.com/kokizzu/gotro/M`))
+	if haveString {
+		WC(qi(`github.com/kokizzu/gotro/S`))
+	}
 	BOTH(qi(`github.com/kokizzu/gotro/X`))
 
 	BOTH(`
@@ -168,14 +177,14 @@ func GenerateOrm(tables map[TableName]*TableProp, withGraphql ...bool) {
 		props := tables[TableName(tableName)]
 		structName := S.PascalCase(tableName)
 		maxLen := 1
-		propTypeByName := map[string]Field{}
+		propByName := map[string]Field{}
 		censoredFieldsByName := map[string]bool{}
 		for _, prop := range props.Fields {
 			l := len(prop.Name) + 1 - strings.Count(prop.Name, `_`)
 			if maxLen < l {
 				maxLen = l
 			}
-			propTypeByName[prop.Name] = prop
+			propByName[prop.Name] = prop
 		}
 		for _, propName := range props.AutoCensorFields {
 			censoredFieldsByName[propName] = true
@@ -262,7 +271,7 @@ func GenerateOrm(tables map[TableName]*TableProp, withGraphql ...bool) {
 			generateMutationByUniqueIndexumns(uniquePropCamel, structProp, receiverName, structName, RQ, WC)
 
 			if props.GenGraphqlType {
-				generateGraphqlQueryField(structName, uniquePropCamel, propTypeByName[IdCol], RQ)
+				generateGraphqlQueryField(structName, uniquePropCamel, propByName[IdCol], RQ)
 			}
 		}
 
@@ -299,7 +308,7 @@ func GenerateOrm(tables map[TableName]*TableProp, withGraphql ...bool) {
 			generateMutationByUniqueIndexumns(uniquePropCamel, structProp, receiverName, structName, RQ, WC)
 
 			if props.GenGraphqlType {
-				generateGraphqlQueryField(structName, uniquePropCamel, propTypeByName[props.Unique1], RQ)
+				generateGraphqlQueryField(structName, uniquePropCamel, propByName[props.Unique1], RQ)
 			}
 		}
 
@@ -473,7 +482,11 @@ func GenerateOrm(tables map[TableName]*TableProp, withGraphql ...bool) {
 
 			// index functions
 			WC("	if !excludeMap[`" + prop.Name + "`] && (forceMap[`" + prop.Name + "`] || from." + propName + ` != ` + TypeToGoNilValue[prop.Type] + ") {\n")
-			WC(`		` + receiverName + `.` + propName + ` = from.` + propName + "\n")
+			if propByName[propName].Type == String {
+				WC(`		` + receiverName + `.` + propName + ` = S.Trim(from.` + propName + ")\n")
+			} else {
+				WC(`		` + receiverName + `.` + propName + ` = from.` + propName + "\n")
+			}
 			WC("		changed = true\n")
 			WC("	}\n")
 		}
@@ -485,7 +498,7 @@ func GenerateOrm(tables map[TableName]*TableProp, withGraphql ...bool) {
 			RQ("// CensorFields remove sensitive fields for output\n")
 			RQ(`func (` + receiverName + ` *` + structName + ") CensorFields() { //nolint:dupl false positive\n")
 			for _, propName := range props.AutoCensorFields {
-				propType := propTypeByName[propName].Type
+				propType := propByName[propName].Type
 				RQ("	" + receiverName + "." + S.PascalCase(propName) + " = " + TypeToGoEmptyValue[propType] + "\n")
 			}
 			RQ("	}\n")
