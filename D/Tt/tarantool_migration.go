@@ -4,6 +4,8 @@ import (
 	"errors"
 	"strings"
 
+	"github.com/alitto/pond"
+
 	"github.com/kokizzu/gotro/A"
 	"github.com/kokizzu/gotro/L"
 	"github.com/kokizzu/gotro/S"
@@ -11,6 +13,9 @@ import (
 )
 
 var DEBUG = false
+var MIGRATION_THREAD = 8
+var MIGRATION_QUEUE = 1000
+var MIGRATION_REC_PER_BATCH = uint64(20_000)
 
 var ErrMiscaonfiguration = errors.New(`misconfiguration`)
 
@@ -355,6 +360,7 @@ func (a *Adapter) ReformatTable(tableName string, fields []Field) bool {
 	// table already exists
 	var newFields []NullableField
 	nullFields := map[string]DataType{}
+	haveIdField := false
 	for idx, newField := range fields { // diff and create nullable field
 		origField := table.FieldsById[uint32(idx)]
 		if origField != nil && origField.Type == string(newField.Type) {
@@ -362,6 +368,9 @@ func (a *Adapter) ReformatTable(tableName string, fields []Field) bool {
 		} else {
 			newFields = append(newFields, NullableField{Name: newField.Name, Type: newField.Type, IsNullable: true})
 			nullFields[newField.Name] = newField.Type
+		}
+		if newField.Name == IdCol {
+			haveIdField = true
 		}
 	}
 	res := a.ExecBoxSpaceVerbose(tableName+`:format`, A.X{
@@ -381,7 +390,31 @@ func (a *Adapter) ReformatTable(tableName string, fields []Field) bool {
 			}
 			updateCols = append(updateCols, dq(col)+` = `+defaultvalue)
 		}
-		a.ExecSql(`UPDATE ` + dq(tableName) + ` SET ` + A.StrJoin(updateCols, `, `))
+		updateQuery := `UPDATE ` + dq(tableName) + ` SET ` + A.StrJoin(updateCols, `, `)
+		if !haveIdField {
+			a.ExecSql(updateQuery) // update whole thing since there's no id field
+		} else {
+			var count uint64
+			a.QuerySql(`SELECT COUNT(*) FROM `+dq(tableName), func(row []any) {
+				count = X.ToU(row[0])
+			})
+			pool := pond.New(MIGRATION_THREAD, MIGRATION_QUEUE)
+			for i := uint64(0); i <= count; i += MIGRATION_REC_PER_BATCH {
+				i := i // for go <1.21
+				pool.Submit(func() {
+					if i+MIGRATION_REC_PER_BATCH >= count { // remaining
+						a.ExecSql(updateQuery + ` WHERE "id" >= ` + X.ToS(i))
+					} else {
+						a.ExecSql(updateQuery + ` WHERE "id" >= ` + X.ToS(i) + ` AND "id" < ` + X.ToS(i+MIGRATION_REC_PER_BATCH))
+					}
+					Descr(`Overwrite nulls ` + tableName + ` ` + X.ToS(i) + ` to ` + X.ToS(i+MIGRATION_REC_PER_BATCH) + ` of ` + X.ToS(count))
+				})
+			}
+			pool.StopAndWait()
+			a.ExecSql(updateQuery + ` WHERE "id" >= ` + X.ToS(count)) // update once more just in case
+			L.Print(`if next step is is with error 'Tuple field N (xxx) required by space format is missing', run this query: ` + updateQuery + ` WHERE "id" >= ` + X.ToS(count))
+			// can be caused by insert happened during migration
+		}
 	}
 
 	return a.ExecBoxSpace(tableName+`:format`, A.X{

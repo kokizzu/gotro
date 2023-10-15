@@ -4,20 +4,24 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"sync/atomic"
 	"testing"
+	"time"
 
+	"github.com/alitto/pond"
 	"github.com/ory/dockertest/v3"
 	"github.com/stretchr/testify/assert"
 	"github.com/tarantool/go-tarantool"
 
 	"github.com/kokizzu/gotro/L"
+	"github.com/kokizzu/gotro/X"
 )
 
 var globalPool *dockertest.Pool
 
 func prepareDb(onReady func(db *tarantool.Connection) int) {
 	const dockerRepo = `tarantool/tarantool`
-	const dockerVer = `2.7.2`
+	const imageVer = `2.11.1`
 	const ttPort = `3301/tcp`
 	const dbConnStr = `127.0.0.1:%s`
 	const dbUser = `guest`
@@ -30,7 +34,14 @@ func prepareDb(onReady func(db *tarantool.Connection) int) {
 			return
 		}
 	}
-	resource, err := globalPool.Run(dockerRepo, dockerVer, []string{})
+	resource, err := globalPool.Run(dockerRepo, imageVer, []string{
+		`TT_READAHEAD=1632000`,       // 10x
+		`TT_VINYL_MEMORY=1717986918`, // 16x
+		`TT_VINYL_CACHE=536870912`,   // 2x
+		`TT_NET_MSG_MAX=76800`,       // 100x
+		`TT_MEMTX_MEMORY=900000000`,  // ~3x
+		`TT_VINYL_PAGE_SIZE=8192`,    // 1x
+	})
 	if err != nil {
 		log.Printf("Could not start resource: %s\n", err)
 		return
@@ -147,5 +158,73 @@ func TestMigration(t *testing.T) {
 			AutoIncrementId: true,
 		})
 		assert.True(t, ok)
+	})
+}
+
+func TestMigrationBig(t *testing.T) {
+	a := Adapter{dbConn, reconnect}
+	const tableName = `test2`
+	const insertCount = 4_000_000 / 10 // increase TT_MEMTX_MEMORY if needed
+	const threadCount = 32
+	oldTable := &TableProp{
+		Fields: []Field{
+			{`id`, Unsigned},
+			{`name`, String},
+			{`age`, Integer},
+			{`a`, Unsigned},
+			{`b`, Integer},
+			{`c`, String},
+			{`d`, Boolean},
+			{`e`, Double},
+			{`f`, Array},
+		},
+		AutoIncrementId: true,
+		Unique1:         `age`, // just for example
+		Engine:          Memtx,
+	}
+	t.Run(`create test table`, func(t *testing.T) {
+		a.MigrateTables(map[TableName]*TableProp{
+			tableName: oldTable,
+		})
+
+		t.Run(`insert rows`, func(t *testing.T) {
+			DEBUG = false
+			pool := pond.New(threadCount, insertCount)
+			inserted := uint64(0)
+			const printEvery = 100_000
+			for i := 0; i < insertCount; i++ {
+				pool.Submit(func() {
+					age := atomic.AddUint64(&inserted, 1)
+					row, err := a.Insert(tableName, []any{nil, `name`, age, 1, 2, `c`, true, 1.2, []any{}})
+					if !L.IsError(err, `insert failed`) {
+						if age%printEvery == 0 {
+							tup := row.Tuples()
+							if len(tup) > 0 && len(tup[0]) > 0 && tup[0][0] != nil {
+								lastId := X.ToU(tup[0][0])
+								fmt.Println(`lastId`, lastId)
+							}
+						}
+					}
+				})
+			}
+			pool.StopAndWait()
+			DEBUG = true
+
+			t.Run(`alter table add 6 more columns`, func(t *testing.T) {
+				defer L.TimeTrack(time.Now(), `alter table completed`)
+				newTable := oldTable // mutate oldTable
+				newTable.Fields = append(newTable.Fields, []Field{
+					{`g`, Unsigned},
+					{`h`, Integer},
+					{`i`, String},
+					{`j`, Boolean},
+					{`k`, Double},
+					{`l`, Array},
+				}...)
+				a.MigrateTables(map[TableName]*TableProp{
+					tableName: newTable,
+				})
+			})
+		})
 	})
 }
