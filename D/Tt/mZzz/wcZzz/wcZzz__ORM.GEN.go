@@ -69,40 +69,43 @@ func (z *ZzzMutator) DoDeletePermanentById() bool { //nolint:dupl false positive
 }
 
 // func (z *ZzzMutator) DoUpsert() bool { //nolint:dupl false positive
-//	_, err := z.Adapter.Upsert(z.SpaceName(), z.ToArray(), A.X{
+//	arr := z.ToArray()
+//	_, err := z.Adapter.Upsert(z.SpaceName(), arr, A.X{
 //		A.X{`=`, 0, z.Id},
 //		A.X{`=`, 1, z.CreatedAt},
 //		A.X{`=`, 2, z.Coords},
 //		A.X{`=`, 3, z.Name},
 //		A.X{`=`, 4, z.HeightMeter},
 //	})
-//	return !L.IsError(err, `Zzz.DoUpsert failed: `+z.SpaceName())
+//	return !L.IsError(err, `Zzz.DoUpsert failed: `+z.SpaceName()+ `\n%#v`, arr)
 // }
 
 // DoInsert insert, error if already exists
 func (z *ZzzMutator) DoInsert() bool { //nolint:dupl false positive
-	row, err := z.Adapter.Insert(z.SpaceName(), z.ToArray())
+	arr := z.ToArray()
+	row, err := z.Adapter.Insert(z.SpaceName(), arr)
 	if err == nil {
 		tup := row.Tuples()
 		if len(tup) > 0 && len(tup[0]) > 0 && tup[0][0] != nil {
 			z.Id = X.ToU(tup[0][0])
 		}
 	}
-	return !L.IsError(err, `Zzz.DoInsert failed: `+z.SpaceName())
+	return !L.IsError(err, `Zzz.DoInsert failed: `+z.SpaceName() + `\n%#v`, arr)
 }
 
 // DoUpsert upsert, insert or overwrite, will error only when there's unique secondary key being violated
 // replace = upsert, only error when there's unique secondary key
 // previous name: DoReplace
 func (z *ZzzMutator) DoUpsert() bool { //nolint:dupl false positive
-	row, err := z.Adapter.Replace(z.SpaceName(), z.ToArray())
+	arr := z.ToArray()
+	row, err := z.Adapter.Replace(z.SpaceName(), arr)
 	if err == nil {
 		tup := row.Tuples()
 		if len(tup) > 0 && len(tup[0]) > 0 && tup[0][0] != nil {
 			z.Id = X.ToU(tup[0][0])
 		}
 	}
-	return !L.IsError(err, `Zzz.DoUpsert failed: `+z.SpaceName())
+	return !L.IsError(err, `Zzz.DoUpsert failed: `+z.SpaceName()+ `\n%#v`, arr)
 }
 
 // SetId create mutations, should not duplicate

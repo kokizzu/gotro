@@ -277,12 +277,13 @@ func GenerateOrm(tables map[TableName]*TableProp, withGraphql ...bool) {
 
 		// upsert template, to be copied when need increment some field
 		WC(`// func (` + receiverName + ` *` + structName + "Mutator) DoUpsert() bool { //nolint:dupl false positive\n")
-		WC("//	_, err := " + receiverName + ".Adapter.Upsert(" + receiverName + ".SpaceName(), " + receiverName + ".ToArray(), A.X{\n")
+		WC("//	arr := " + receiverName + ".ToArray()\n")
+		WC("//	_, err := " + receiverName + ".Adapter.Upsert(" + receiverName + ".SpaceName(), arr, A.X{\n")
 		for idx, prop := range props.Fields {
 			WC("//		A.X{`=`, " + X.ToS(idx) + ", " + receiverName + "." + S.PascalCase(prop.Name) + "},\n")
 		}
 		WC("//	})\n")
-		WC("//	return !L.IsError(err, `" + structName + ".DoUpsert failed: `+" + receiverName + ".SpaceName())\n")
+		WC("//	return !L.IsError(err, `" + structName + ".DoUpsert failed: `+" + receiverName + ".SpaceName()+ `\\n%#v`, arr)\n")
 		WC("// }\n\n")
 
 		// spatial index
@@ -362,7 +363,8 @@ func GenerateOrm(tables map[TableName]*TableProp, withGraphql ...bool) {
 		WC("// DoInsert insert, error if already exists\n")
 		WC(`func (` + receiverName + ` *` + structName + "Mutator) DoInsert() bool { //nolint:dupl false positive\n")
 		ret1 := S.IfElse(props.AutoIncrementId, `row`, `_`)
-		WC("	" + ret1 + ", err := " + receiverName + ".Adapter.Insert(" + receiverName + ".SpaceName(), " + receiverName + ".ToArray())\n")
+		WC("	arr := " + receiverName + ".ToArray()\n")
+		WC("	" + ret1 + ", err := " + receiverName + ".Adapter.Insert(" + receiverName + ".SpaceName(), arr)\n")
 		if props.AutoIncrementId {
 			WC("	if err == nil {\n")
 			WC("		tup := row.Tuples()\n")
@@ -371,7 +373,7 @@ func GenerateOrm(tables map[TableName]*TableProp, withGraphql ...bool) {
 			WC("		}\n")
 			WC("	}\n")
 		}
-		WC("	return !L.IsError(err, `" + structName + ".DoInsert failed: `+" + receiverName + ".SpaceName())\n")
+		WC("	return !L.IsError(err, `" + structName + ".DoInsert failed: `+" + receiverName + ".SpaceName() + `\\n%#v`, arr)\n")
 		WC("}\n\n")
 
 		// replace = upsert, only error when there's unique secondary key
@@ -379,7 +381,8 @@ func GenerateOrm(tables map[TableName]*TableProp, withGraphql ...bool) {
 		WC("// replace = upsert, only error when there's unique secondary key\n")
 		WC("// previous name: DoReplace\n")
 		WC(`func (` + receiverName + ` *` + structName + "Mutator) DoUpsert() bool { //nolint:dupl false positive\n")
-		WC("	" + ret1 + ", err := " + receiverName + ".Adapter.Replace(" + receiverName + ".SpaceName(), " + receiverName + ".ToArray())\n")
+		WC("	arr := " + receiverName + ".ToArray()\n")
+		WC("	" + ret1 + ", err := " + receiverName + ".Adapter.Replace(" + receiverName + ".SpaceName(), arr)\n")
 		if props.AutoIncrementId {
 			WC("	if err == nil {\n")
 			WC("		tup := row.Tuples()\n")
@@ -388,7 +391,7 @@ func GenerateOrm(tables map[TableName]*TableProp, withGraphql ...bool) {
 			WC("		}\n")
 			WC("	}\n")
 		}
-		WC("	return !L.IsError(err, `" + structName + ".DoUpsert failed: `+" + receiverName + ".SpaceName())\n")
+		WC("	return !L.IsError(err, `" + structName + ".DoUpsert failed: `+" + receiverName + ".SpaceName()+ `\\n%#v`, arr)\n")
 		WC("}\n\n")
 
 		// Sql select all fields, used when need to mutate or show every fields
