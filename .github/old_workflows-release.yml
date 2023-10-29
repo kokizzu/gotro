@@ -23,10 +23,10 @@
 #      - uses: actions/checkout@v2
 #      - name: Run tests and build binary
 #        run: |
-#          cd W2/example && go test ./... && go build
+#          cd W2/internal/example && go test ./... && go build
 #      - name: create release
 #        # https://github.com/softprops/action-gh-release
 #        uses: softprops/action-gh-release@v1
 #        with:
 #          github_token: ${{ secrets.GITHUB_TOKEN }}
-#          files: W2/example/example.exe
+#          files: W2/internal/example/example.exe

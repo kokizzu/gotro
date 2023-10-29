@@ -23,7 +23,7 @@ so for example v1.213.1549 means it was released at `2021-02-13 15:49`
   - [S](/S) - String
   - [T](/T) - Time (and Date)
   - [W](/W) - Web (the old "web framework") usable since 2017-03-08 **DEPRECATED**
-  - [W2](/W2) - Web (the new codegen-based "web-framework") **STATUS**: usable since 2021-08-30, see [W2/example](/W2/example)
+  - [W2](/W2) - Web (the new codegen-based "web-framework") **STATUS**: usable since 2021-08-30, see [W2/internal/example](/W2/internal/example)
   - [X](/X) - Anything (aka `any`)
   - [Z](/Z) - Z-Template Engine, that has syntax similar to ruby string interpolation `#{foo}` or any other that javascript friendly `{/* foo */}`, `[/* bar */]`, `/*! bar */`
 - Comment and examples on each type and function, so it can be viewed using godoc, something like: `godoc github.com/kokizzu/gotro/A`
@@ -92,8 +92,8 @@ For newer framework `W2` can achieve `20K` rps on Ryzen3 3100 without session lo
   - [YugaByteDB](//www.yugabyte.com) <-- high-write (postgresql/redis/cassandra-compatible)
 - Also benchmark search engines (insert, force reindex duration, search substring first/last word foreach dataset, delete first 100 records by id)
 - Add CDC example from TiDB to RedPanda to Materialize.io
-- Pipe all request and respose W2/example to Clickhouse, need to censor all the session key using S.XXH3
-- Create metrics logger on W2/example that push to redpanda then materialize.io
+- Pipe all request and respose W2/internal/example to Clickhouse, need to censor all the session key using S.XXH3
+- Create metrics logger on W2/internal/example that push to redpanda then materialize.io
 - Add ephemeral and/or persisted queuing/pub-sub service we're gonna use ([NATS](//nats.io) -- at most once delivery, [RedPanda](//redpanda.com) -- at least once delivery), see [hugedbbench](//github.com/kokizzu/hugedbbench/)
 - Add [ExampleXxx function](//blog.golang.org/examples), getting started and more documentation 
 - Try other alternate graceful restart (zero downtime deployment): [grace](//github.com/facebookgo/grace) or [endless](//github.com/fvbock/endless) instead of just [overseer](https://github.com/jpillora/overseer)

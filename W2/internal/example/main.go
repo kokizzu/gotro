@@ -7,8 +7,8 @@ import (
 
 	"github.com/kokizzu/gotro/B"
 	"github.com/kokizzu/gotro/L"
-	"github.com/kokizzu/gotro/W2/example/conf"
-	"github.com/kokizzu/gotro/W2/example/model"
+	"github.com/kokizzu/gotro/W2/internal/example/conf"
+	"github.com/kokizzu/gotro/W2/internal/example/model"
 
 	"github.com/joho/godotenv"
 	//"github.com/lightstep/otel-launcher-go/launcher"

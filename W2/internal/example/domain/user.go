@@ -5,9 +5,9 @@ import (
 	"github.com/vburenin/nsync"
 
 	"github.com/kokizzu/gotro/S"
-	"github.com/kokizzu/gotro/W2/example/conf"
-	"github.com/kokizzu/gotro/W2/example/model/mAuth/rqAuth"
-	"github.com/kokizzu/gotro/W2/example/model/mAuth/wcAuth"
+	"github.com/kokizzu/gotro/W2/internal/example/conf"
+	"github.com/kokizzu/gotro/W2/internal/example/model/mAuth/rqAuth"
+	"github.com/kokizzu/gotro/W2/internal/example/model/mAuth/wcAuth"
 	"github.com/kokizzu/gotro/X"
 )
 

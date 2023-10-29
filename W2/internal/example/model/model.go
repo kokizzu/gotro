@@ -4,9 +4,9 @@ import (
 	"github.com/kokizzu/gotro/D/Ch"
 	"github.com/kokizzu/gotro/D/Tt"
 	"github.com/kokizzu/gotro/L"
-	"github.com/kokizzu/gotro/W2/example/conf"
-	"github.com/kokizzu/gotro/W2/example/model/mAuth"
-	"github.com/kokizzu/gotro/W2/example/model/mAuth/wcAuth"
+	"github.com/kokizzu/gotro/W2/internal/example/conf"
+	"github.com/kokizzu/gotro/W2/internal/example/model/mAuth"
+	"github.com/kokizzu/gotro/W2/internal/example/model/mAuth/wcAuth"
 )
 
 type Migrator struct {

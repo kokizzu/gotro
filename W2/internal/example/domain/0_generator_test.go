@@ -2,7 +2,7 @@ package domain_test
 
 import (
 	"github.com/kokizzu/gotro/W2"
-	"github.com/kokizzu/gotro/W2/example/conf"
+	"github.com/kokizzu/gotro/W2/internal/example/conf"
 
 	"testing"
 )

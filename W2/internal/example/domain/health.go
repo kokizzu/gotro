@@ -11,8 +11,8 @@ import (
 	"github.com/shirou/gopsutil/v3/mem"
 
 	"github.com/kokizzu/gotro/L"
-	"github.com/kokizzu/gotro/W2/example/model/mAuth/rqAuth"
-	"github.com/kokizzu/gotro/W2/example/model/mAuth/wcAuth"
+	"github.com/kokizzu/gotro/W2/internal/example/model/mAuth/rqAuth"
+	"github.com/kokizzu/gotro/W2/internal/example/model/mAuth/wcAuth"
 )
 
 //go:generate gomodifytags -all -add-tags json,form,query,long,msg -transform camelcase --skip-unexported -w -file health.go

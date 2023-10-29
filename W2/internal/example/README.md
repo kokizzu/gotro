@@ -5,7 +5,7 @@ How to use this template?
 - install Go 1.16+ and clone this repo with `--depth 1` flag
 - copy this `example` directory to another folder (rename to `projectName`)
 - `go mod init projectName`
-- replace all word `github.com/kokizzu/gotro/W2/example` and `example` with `projectName`
+- replace all word `github.com/kokizzu/gotro/W2/internal/example` and `example` with `projectName`
 
 How to develop?
 - modify or create new `model/m*/*_tables.go`, then run `make gen-orm` (will generate ORM), you may only add column/field at the end of model.

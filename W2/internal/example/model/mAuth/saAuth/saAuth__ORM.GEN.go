@@ -3,16 +3,16 @@ package saAuth
 // DO NOT EDIT, will be overwritten by github.com/kokizzu/Ch/clickhouse_orm_generator.go
 
 import (
-	`database/sql`
-	`github.com/kokizzu/gotro/W2/example/model/mAuth`
-	`time`
+	"database/sql"
+	"github.com/kokizzu/gotro/W2/internal/example/model/mAuth"
+	"time"
 
-	_ `github.com/ClickHouse/clickhouse-go/v2`
-	chBuffer `github.com/kokizzu/ch-timed-buffer`
+	_ "github.com/ClickHouse/clickhouse-go/v2"
+	chBuffer "github.com/kokizzu/ch-timed-buffer"
 
-	`github.com/kokizzu/gotro/A`
-	`github.com/kokizzu/gotro/D/Ch`
-	`github.com/kokizzu/gotro/L`
+	"github.com/kokizzu/gotro/A"
+	"github.com/kokizzu/gotro/D/Ch"
+	"github.com/kokizzu/gotro/L"
 )
 
 //go:generate gomodifytags -all -add-tags json,form,query,long,msg -transform camelcase --skip-unexported -w -file saAuth__ORM.GEN.go
@@ -30,8 +30,9 @@ var Preparators = map[Ch.TableName]chBuffer.Preparator{
 		return stmt
 	},
 }
+
 type UserLogs struct {
-	Adapter *Ch.Adapter `json:"-" msg:"-" query:"-" form:"-"`
+	Adapter   *Ch.Adapter `json:"-" msg:"-" query:"-" form:"-"`
 	CreatedAt time.Time
 	RequestId uint64
 	ActorId   uint64
@@ -79,13 +80,13 @@ func (u *UserLogs) SqlAllFields() string { //nolint:dupl false positive
 
 func (u UserLogs) SqlInsertParam() []any { //nolint:dupl false positive
 	return []any{
-		u.CreatedAt, // 0 
-		u.RequestId, // 1 
-		u.ActorId, // 2 
-		u.Error, // 3 
-		u.IpAddr4, // 4 
-		u.IpAddr6, // 5 
-		u.UserAgent, // 6 
+		u.CreatedAt, // 0
+		u.RequestId, // 1
+		u.ActorId,   // 2
+		u.Error,     // 3
+		u.IpAddr4,   // 4
+		u.IpAddr6,   // 5
+		u.UserAgent, // 6
 	}
 }
 
@@ -158,4 +159,3 @@ func (u *UserLogs) ToArray() A.X { //nolint:dupl false positive
 }
 
 // DO NOT EDIT, will be overwritten by github.com/kokizzu/Ch/clickhouse_orm_generator.go
-

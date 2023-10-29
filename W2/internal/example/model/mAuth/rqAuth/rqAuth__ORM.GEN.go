@@ -3,14 +3,14 @@ package rqAuth
 // DO NOT EDIT, will be overwritten by github.com/kokizzu/D/Tt/tarantool_orm_generator.go
 
 import (
-	`github.com/kokizzu/gotro/W2/example/model/mAuth`
+	"github.com/kokizzu/gotro/W2/internal/example/model/mAuth"
 
-	`github.com/tarantool/go-tarantool`
+	"github.com/tarantool/go-tarantool"
 
-	`github.com/kokizzu/gotro/A`
-	`github.com/kokizzu/gotro/D/Tt`
-	`github.com/kokizzu/gotro/L`
-	`github.com/kokizzu/gotro/X`
+	"github.com/kokizzu/gotro/A"
+	"github.com/kokizzu/gotro/D/Tt"
+	"github.com/kokizzu/gotro/L"
+	"github.com/kokizzu/gotro/X"
 )
 
 //go:generate gomodifytags -all -add-tags json,form,query,long,msg -transform camelcase --skip-unexported -w -file rqAuth__ORM.GEN.go
@@ -21,7 +21,7 @@ import (
 
 // Sessions DAO reader/query struct
 type Sessions struct {
-	Adapter *Tt.Adapter `json:"-" msg:"-" query:"-" form:"-"`
+	Adapter      *Tt.Adapter `json:"-" msg:"-" query:"-" form:"-"`
 	SessionToken string
 	UserId       uint64
 	ExpiredAt    int64
@@ -156,7 +156,7 @@ func (s *Sessions) FindArrOffsetLimit(offset, limit uint32, idx string) ([]A.X, 
 
 // Total count number of rows
 func (s *Sessions) Total() int64 { //nolint:dupl false positive
-	rows := s.Adapter.CallBoxSpace(s.SpaceName() + `:count`, A.X{})
+	rows := s.Adapter.CallBoxSpace(s.SpaceName()+`:count`, A.X{})
 	if len(rows) > 0 && len(rows[0]) > 0 {
 		return X.ToI(rows[0][0])
 	}
@@ -167,7 +167,7 @@ func (s *Sessions) Total() int64 { //nolint:dupl false positive
 
 // Users DAO reader/query struct
 type Users struct {
-	Adapter *Tt.Adapter `json:"-" msg:"-" query:"-" form:"-"`
+	Adapter            *Tt.Adapter `json:"-" msg:"-" query:"-" form:"-"`
 	Id                 uint64
 	Email              string
 	Password           string
@@ -549,7 +549,7 @@ func (u *Users) FindArrOffsetLimit(offset, limit uint32, idx string) ([]A.X, Tt.
 
 // Total count number of rows
 func (u *Users) Total() int64 { //nolint:dupl false positive
-	rows := u.Adapter.CallBoxSpace(u.SpaceName() + `:count`, A.X{})
+	rows := u.Adapter.CallBoxSpace(u.SpaceName()+`:count`, A.X{})
 	if len(rows) > 0 && len(rows[0]) > 0 {
 		return X.ToI(rows[0][0])
 	}
@@ -557,4 +557,3 @@ func (u *Users) Total() int64 { //nolint:dupl false positive
 }
 
 // DO NOT EDIT, will be overwritten by github.com/kokizzu/D/Tt/tarantool_orm_generator.go
-

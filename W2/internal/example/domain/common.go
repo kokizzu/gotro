@@ -14,7 +14,7 @@ import (
 	"github.com/kpango/fastime"
 
 	"github.com/kokizzu/gotro/L"
-	"github.com/kokizzu/gotro/W2/example/conf"
+	"github.com/kokizzu/gotro/W2/internal/example/conf"
 )
 
 //go:generate gomodifytags -all -add-tags json,form,query,long,msg -transform camelcase --skip-unexported -w -file common.go

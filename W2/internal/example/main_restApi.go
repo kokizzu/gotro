@@ -14,9 +14,9 @@ import (
 	"github.com/kokizzu/gotro/L"
 	"github.com/kokizzu/gotro/M"
 	"github.com/kokizzu/gotro/S"
-	"github.com/kokizzu/gotro/W2/example/conf"
-	"github.com/kokizzu/gotro/W2/example/domain"
-	"github.com/kokizzu/gotro/W2/example/svelte"
+	"github.com/kokizzu/gotro/W2/internal/example/conf"
+	"github.com/kokizzu/gotro/W2/internal/example/domain"
+	"github.com/kokizzu/gotro/W2/internal/example/svelte"
 )
 
 const profilingEnabled = true // visit http://localhost:9090/debug/pprof
