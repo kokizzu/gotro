@@ -79,6 +79,10 @@ Not yet completed
 
 Note: You must purchase a game at least $5 for get WebApiKey
 
+## Apple
+
+https://docs.authgear.com/how-to-guide/how-to-setup-sso-integrations/apple
+
 # How to test
 
 1. start the apiserver (`make apiserver`), then hit one of these url to retrieve the login link
