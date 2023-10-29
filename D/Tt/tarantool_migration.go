@@ -446,3 +446,29 @@ func (a *Adapter) MigrateTables(tables map[TableName]*TableProp) {
 		a.UpsertTable(name, props)
 	}
 }
+
+func CheckTarantoolTables(tConn *Adapter, tables map[TableName]*TableProp) {
+	for tableName := range tables {
+		tableName := string(tableName)
+		res, err := tConn.Call(`box.space.`+tableName+`:format`, []any{})
+		L.PanicIf(err, `please run TABLE migration on %v for tarantool`, tableName)
+		rows := res.Tuples()
+		if len(rows) != 1 {
+			L.Panic(`please run FIELDS migration on %v for tarantool`, tableName)
+		}
+		columnNameTypes := map[string]string{}
+		for _, row := range rows[0] {
+			m, ok := row.(map[any]any)
+			if !ok {
+				L.Panic(`please run FIELD migration on %v for tarantool: %v`, tableName, row)
+			}
+			columnNameTypes[X.ToS(m[`name`])] = X.ToS(m[`type`])
+		}
+		for _, field := range tables[TableName(tableName)].Fields {
+			existingType := columnNameTypes[field.Name]
+			if existingType != string(field.Type) {
+				L.Panic(`please run FIELD_TYPE %v migration on %v for tarantool: %v <> %v`, field.Name, tableName, existingType, field.Type)
+			}
+		}
+	}
+}

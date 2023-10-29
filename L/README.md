@@ -114,6 +114,13 @@ func LogTrack(start time.Time, name string) float64
 ```
 LogTrack return elapsed time in ms, show 3nd level, returns in ms
 
+#### func  Panic
+
+```go
+func Panic(msg string, args ...any)
+```
+PanicIf print error message and exit program
+
 #### func  PanicIf
 
 ```go

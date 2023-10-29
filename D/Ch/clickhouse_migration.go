@@ -3,6 +3,7 @@ package Ch
 import (
 	"github.com/kokizzu/gotro/A"
 	"github.com/kokizzu/gotro/L"
+	"github.com/kokizzu/gotro/S"
 )
 
 var DEBUG = true
@@ -200,4 +201,30 @@ ORDER BY "position"`
 	}
 
 	return !hasError
+}
+
+func CheckClickhouseTables(cConn *Adapter, tables map[TableName]*TableProp) {
+	for tableName, props := range tables {
+		tableName := string(tableName)
+		resp, err := cConn.Query(`SELECT column_name, data_type FROM INFORMATION_SCHEMA.COLUMNS WHERE table_name = ` + S.Z(tableName))
+		L.PanicIf(err, `please run TABLE migration on %v for clickhouse`, tableName)
+		defer resp.Close()
+
+		// fetch all columns
+		columnNameTypes := map[string]string{}
+		for resp.Next() {
+			var columnName, dataType string
+			err := resp.Scan(&columnName, &dataType)
+			L.PanicIf(err, `please run COLUMN migration on %v for clickhouse: %v`, tableName)
+			columnNameTypes[columnName] = dataType
+		}
+
+		// check data type match
+		for _, field := range props.Fields {
+			existingType := columnNameTypes[field.Name]
+			if existingType != string(field.Type) {
+				L.Panic(`please run COLUMN_TYPE %v migration on %v for clickhouse: %v <> %v`, field.Name, tableName, existingType, field.Type)
+			}
+		}
+	}
 }

@@ -254,6 +254,19 @@ func PanicIf(err error, msg string, args ...any) {
 	panic(fmt.Errorf(err.Error()+WebBR+fmt.Sprintf("%# v"+WebBR+"    StackTrace: %s", res, stt)+WebBR+strf+strf2+WebBR+msg, args...))
 }
 
+// PanicIf print error message and exit program
+func Panic(msg string, args ...any) {
+	pc, file, line, _ := runtime.Caller(1)
+	strf := file[len(FILE_PATH):] + `:` + I.ToStr(line) + `: `
+	str := color.MagentaString(strf)
+	strf2 := ` ` + runtime.FuncForPC(pc).Name() + `: `
+	str += color.YellowString(strf2)
+	LOG.Criticalf(str+msg, args...)
+	stt := StackTrace(3)
+	LOG.Criticalf("StackTrace: %s", stt)
+	panic(fmt.Errorf(WebBR+fmt.Sprintf(WebBR+"    StackTrace: %s", stt)+WebBR+strf+strf2+WebBR+msg, args...))
+}
+
 // TimeTrack return elapsed time in ms, show 1st level, returns in ms
 func TimeTrack(start time.Time, name string) float64 {
 	_, file, line, _ := runtime.Caller(1)
