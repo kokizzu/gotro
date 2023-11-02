@@ -125,3 +125,17 @@ func TestMsgpAsFloatArr(t *testing.T) {
 	assert.True(t, ok)
 	assert.Equal(t, fmt.Sprint(arr0), fmt.Sprint(arr1))
 }
+
+func TestDelLeft(t *testing.T) {
+	assert.Equal(t, DelLeft(`test123`, 3), `t123`)
+	assert.Equal(t, DelLeft(`test123`, 10), ``)
+	assert.Equal(t, DelLeft(`test123`, 0), `test123`)
+	assert.Equal(t, DelLeft(`test123`, -1), `test123`)
+}
+
+func TestDelRight(t *testing.T) {
+	assert.Equal(t, DelRight(`test123`, 3), `test`)
+	assert.Equal(t, DelRight(`test123`, 10), ``)
+	assert.Equal(t, DelRight(`test123`, 0), `test123`)
+	assert.Equal(t, DelRight(`test123`, -1), `test123`)
+}

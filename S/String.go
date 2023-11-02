@@ -719,6 +719,28 @@ func Right(str string, n int) string {
 	return str[(len(str) - n):]
 }
 
+// DelLeft return remainder after N first characters removed, return empty if N more than len, not unicode-safe
+func DelLeft(str string, n int) string {
+	if len(str) < n {
+		return ``
+	}
+	if n <= 0 {
+		return str
+	}
+	return str[n:]
+}
+
+// DelRight return remainder after N last characters deleted, return empty if N more than len, not unicode-safe
+func DelRight(str string, n int) string {
+	if len(str) < n {
+		return ``
+	}
+	if n <= 0 {
+		return str
+	}
+	return str[:len(str)-n]
+}
+
 // Mid substring at set left right n characters
 func Mid(str string, left int, length int) string {
 	if len(str) < left {
