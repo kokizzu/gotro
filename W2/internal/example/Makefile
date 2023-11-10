@@ -106,13 +106,6 @@ docker-clean-networks:
 	docker network prune
 
 ###########
-### backup
-
-backup-ch:
-	#https://github.com/AlexAkulov/clickhouse-backup/releases/download/v1.0.0/clickhouse-backup_1.0.0_amd64.deb
-	 
-
-###########
 ### builder
 
 release:
