@@ -1,0 +1,8 @@
+.idea
+tmp
+*.upx
+.env.override
+.DS_Store
+tmpdb
+svelte/node_modules
+*.fiber.gz

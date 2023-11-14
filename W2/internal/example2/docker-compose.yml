@@ -1,0 +1,42 @@
+version: '3'
+
+services:
+  tarantool1:
+    image: tarantool/tarantool:2.11.1
+    # x.x.0 = alpha, x.x.1 = beta, x.x.2+ = stable, latest not always stable
+    environment:
+      TARANTOOL_USER_NAME: "example2T"
+      TARANTOOL_USER_PASSWORD: "example2PT"
+      TT_READAHEAD: '1632000' # 10x
+      TT_VINYL_MEMORY: '268435456' # 20x
+      TT_VINYL_CACHE: '2684354560' # 20x
+      TT_NET_MSG_MAX: '76800' # 100x
+      TT_MEMTX_MEMORY: '268435456' # 1x
+      TT_VINYL_PAGE_SIZE: '8192' # 1x
+    volumes:
+      - ./tmpdb/var_lib_tarantool:/var/lib/tarantool
+    ports:
+      - "3302:3301"
+
+  clickhouse1:
+    image: clickhouse/clickhouse-server:23.9.1.1854
+    # previously: 23.4.2.11
+    ports:
+      - "8124:8123"
+      - "9001:9000"
+    environment:
+      CLICKHOUSE_USER: "example2C"
+      CLICKHOUSE_PASSWORD: "example2PC"
+      CLICHOUSE_DB: "example2DB"
+    ulimits:
+      nofile:
+        soft: 262144
+        hard: 262144
+    volumes:
+      - ./tmpdb/var_lib_clickhouse:/var/lib/clickhouse
+
+  mailhog1:
+    image: mailhog/mailhog
+    ports:
+      - "1026:1025"
+      - "8026:8025"

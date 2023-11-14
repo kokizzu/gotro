@@ -1,0 +1,37 @@
+{
+	"name": "svelte-mpa-app",
+	"version": "0.0.0",
+	"scripts": {
+		"start": "npm run dev",
+		"watch": "npm run build -- --watch",
+		"dev": "node build.js --watch --serve",
+		"build": "node build.js",
+		"build:prod": "node build.js --minify",
+		"serve": "node build.js --serve"
+	},
+	"dependencies": {
+		"axios": "^1.4.0",
+		"chart.js": "^4.3.2",
+		"file-selector": "^0.2.4",
+		"svelte-icons-pack": "^2.1.0"
+	},
+	"devDependencies": {
+		"chokidar": "^3.5.3",
+		"esbuild": "0.16.17",
+		"esbuild-svelte": "^0.8.0",
+		"five-server": "^0.1.9",
+		"lodash": "^4.17.21",
+		"node-notifier": "^10.0.1",
+		"parse5": "^7.1.2",
+		"prettier": "^2.8.8",
+		"svelte": "^4.2.2",
+		"svelte-preprocess": "^5.0.4",
+		"typescript": "^5.2.2"
+	},
+	"prettier": {
+		"singleQuote": true,
+		"trailingComma": "es5",
+		"printWidth": 120,
+		"arrowParens": "avoid"
+	}
+}
