@@ -1,8 +1,0 @@
-DOMAINNAME_CHANGEME 
-
-# recommended value:
-# HOMESITEPATH_CHANGEME = SERVICEUSER_CHANGEME/example 
-
-root * /home/HOMESITEPATH_CHANGEME/svelte/dist
-file_server
-reverse_proxy /api/* 127.0.0.1:9090

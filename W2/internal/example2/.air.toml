@@ -1,0 +1,7 @@
+root = "."
+
+[build]
+include_ext = ['go', 'html']
+exclude_regex = ['_test.go']
+exclude_dir = ['backup', 'tmpdb', 'tmp', 'deploy', 'static', 'svelte/node_modules', 'svelte/assets']
+delay = 500 # delay before recompile so won't conflict with npm run watch that updates lots of files
