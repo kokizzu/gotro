@@ -9,9 +9,9 @@ import (
 
 	"github.com/kokizzu/gotro/D/Ch"
 	"github.com/kokizzu/gotro/D/Tt"
-	"github.com/kokizzu/gotro/W2/internal/example/conf"
-	"github.com/kokizzu/gotro/W2/internal/example/model/mAuth/rqAuth"
-	"github.com/kokizzu/gotro/W2/internal/example/model/mAuth/saAuth"
+	"github.com/kokizzu/gotro/W2/internal/example1/conf"
+	"github.com/kokizzu/gotro/W2/internal/example1/model/mAuth/rqAuth"
+	"github.com/kokizzu/gotro/W2/internal/example1/model/mAuth/saAuth"
 
 	chBuffer "github.com/kokizzu/ch-timed-buffer"
 	"github.com/kpango/fastime"

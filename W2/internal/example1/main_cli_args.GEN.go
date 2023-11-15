@@ -6,8 +6,8 @@ import (
 	"context"
 	"os"
 
-	"github.com/kokizzu/gotro/W2/internal/example/conf"
-	"github.com/kokizzu/gotro/W2/internal/example/domain"
+	"github.com/kokizzu/gotro/W2/internal/example1/conf"
+	"github.com/kokizzu/gotro/W2/internal/example1/domain"
 )
 
 func cliArgsRunner(args []string) {

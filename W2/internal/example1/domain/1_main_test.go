@@ -15,9 +15,9 @@ import (
 
 	"github.com/kokizzu/gotro/L"
 	"github.com/kokizzu/gotro/S"
-	"github.com/kokizzu/gotro/W2/internal/example/conf"
-	"github.com/kokizzu/gotro/W2/internal/example/model"
-	"github.com/kokizzu/gotro/W2/internal/example/model/mAuth/wcAuth"
+	"github.com/kokizzu/gotro/W2/internal/example1/conf"
+	"github.com/kokizzu/gotro/W2/internal/example1/model"
+	"github.com/kokizzu/gotro/W2/internal/example1/model/mAuth/wcAuth"
 )
 
 type DockerComposeConf struct { // https://zhwt.github.io/yaml-to-go/

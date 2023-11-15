@@ -24,7 +24,7 @@ echo '> Compiling:'
 SSH_USER=SSHUSER_CHANGEME
 SERVER=SERVERHOST_CHANGEME
 SSH_PORT=22
-PROJECT=example
+PROJECT=example1
 WEB_USER=SERVICEUSER_CHANGEME
 WEB_GROUP=SERVICEGROUP_CHANGEME
 HOME_DIR=/home/${SERVICEUSER_CHANGEME}/site
@@ -53,7 +53,7 @@ if [ "$fail" == '1' ]; then
 fi
 
 EXECUTABLES=''
-REMOTE_CMD='sudo systemctl restart example_rest; ' # 'killall -9 ${PROJECT}.exe'
+REMOTE_CMD='sudo systemctl restart example1_rest; ' # 'killall -9 ${PROJECT}.exe'
 
 PIDS=''
 

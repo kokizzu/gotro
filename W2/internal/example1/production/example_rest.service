@@ -13,8 +13,8 @@ Group=SERVICEGROUP_CHANGEME
 WorkingDirectory=/home/HOMESITEPATH_CHANGEME
 
 ExecStartPre=/bin/sleep 2
-ExecStart=/home/HOMESITEPATH_CHANGEME/start_example_rest.sh
-ExecStop=/usr/bin/killall example.exe
+ExecStart=/home/HOMESITEPATH_CHANGEME/start_example1_rest.sh
+ExecStop=/usr/bin/killall example1.exe
 
 LimitNOFILE=2097152
 LimitNPROC=65536

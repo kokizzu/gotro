@@ -3,7 +3,7 @@ package wcAuth
 // DO NOT EDIT, will be overwritten by github.com/kokizzu/D/Tt/tarantool_orm_generator.go
 
 import (
-	"github.com/kokizzu/gotro/W2/internal/example/model/mAuth/rqAuth"
+	"github.com/kokizzu/gotro/W2/internal/example1/model/mAuth/rqAuth"
 
 	"github.com/kokizzu/gotro/A"
 	"github.com/kokizzu/gotro/D/Tt"

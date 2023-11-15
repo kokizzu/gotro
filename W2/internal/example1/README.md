@@ -3,9 +3,9 @@
 
 How to use this template?
 - install Go 1.16+ and clone this repo with `--depth 1` flag
-- copy this `example` directory to another folder (rename to `projectName`)
+- copy this `example1` directory to another folder (rename to `projectName`)
 - `go mod init projectName`
-- replace all word `github.com/kokizzu/gotro/W2/internal/example` and `example` with `projectName`
+- replace all word `github.com/kokizzu/gotro/W2/internal/example1` and `example1` with `projectName`
 
 How to develop?
 - modify or create new `model/m*/*_tables.go`, then run `make gen-orm` (will generate ORM), you may only add column/field at the end of model.
@@ -21,7 +21,7 @@ How to release?
 
 How to do multi server?
 
-- replace [id64](//github.com/kokizzu/lexid) with string, for example [lexid](//github.com/kokizzu/lexid) or standard `uuid`
+- replace [id64](//github.com/kokizzu/lexid) with string, for example1 [lexid](//github.com/kokizzu/lexid) or standard `uuid`
 - add an environment variable for SERVER_ID, and init it as `lexid.ServerId`
 - before running deployment script, make sure to append environment variable SERVER_ID that are must unique per server
 
@@ -129,10 +129,10 @@ x.DoInsert() or x.DoUpsert() // calling DoUpdateBy*() will do nothing, since mut
 - Add SEO pre-render: [Rendora](//github.com/rendora/rendora)
 - Add search-engine: [TypeSense](//typesense.org/) or [MeiliSearch](//www.meilisearch.com) for single node
 - Add more persisted cache option: [IceFireDB](https://github.com/gitsrc/IceFireDB) or [Aerospike](//aerospike.com/)
-- Add external [storage upload](//kokizzu.blogspot.com/2021/12/storage-service-with-cdn.html) example (minio? wasabi?)
+- Add external [storage upload](//kokizzu.blogspot.com/2021/12/storage-service-with-cdn.html) example1 (minio? wasabi?)
 - Replace LightStep with [SigNoz](//github.com/SigNoz/signoz), [tutorial](//dev.to/signoz/monitor-your-golang-application-with-opentelemetry-and-signoz-3fli), [NewRelic](//github.com/newrelic/go-agent) and/or [datav](//github.com/datav-io/datav) or just dump it to Clickhouse directly and MQ like [RedPanda](//vectorized.io) as fallback
 - Add Analytics: [Jitsu](//jitsu.com/) or [Materialize](//materialize.com)
-- Add example deployment script with [LXC/LXD share](//bobcares.com/blog/how-to-setup-high-density-vps-hosting-using-lxc-linux-containers-and-lxd/) for single server multi-tenant or [Docker Compose](//docs.docker.com/compose/) or [Docker Swarm](//docs.docker.com/engine/swarm/)
+- Add example1 deployment script with [LXC/LXD share](//bobcares.com/blog/how-to-setup-high-density-vps-hosting-using-lxc-linux-containers-and-lxd/) for single server multi-tenant or [Docker Compose](//docs.docker.com/compose/) or [Docker Swarm](//docs.docker.com/engine/swarm/)
 - Add [NBIO](//github.com/lesismal/nbio) codegen for websocket presentation/transport layer
 
 ## File Upload Example

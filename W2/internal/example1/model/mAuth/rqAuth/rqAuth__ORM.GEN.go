@@ -3,7 +3,7 @@ package rqAuth
 // DO NOT EDIT, will be overwritten by github.com/kokizzu/D/Tt/tarantool_orm_generator.go
 
 import (
-	"github.com/kokizzu/gotro/W2/internal/example/model/mAuth"
+	"github.com/kokizzu/gotro/W2/internal/example1/model/mAuth"
 
 	"github.com/tarantool/go-tarantool"
 

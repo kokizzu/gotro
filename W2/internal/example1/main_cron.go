@@ -3,7 +3,7 @@ package main
 import (
 	"github.com/jasonlvhit/gocron"
 
-	"github.com/kokizzu/gotro/W2/internal/example/domain"
+	"github.com/kokizzu/gotro/W2/internal/example1/domain"
 )
 
 func runCron(d *domain.Domain) {

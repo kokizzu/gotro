@@ -46,7 +46,7 @@ func InitLogger() *zerolog.Logger {
 		zlog.Logger = zlog.Output(ConsoleWriter).With().Timestamp().Stack().Caller().Logger()
 	} else {
 		zlog.Logger = zerolog.New(&lumberjack.Logger{
-			Filename: `example.log`,
+			Filename: `example1.log`,
 			MaxSize:  128, // MB
 		}).With().Timestamp().Stack().Logger()
 	}

@@ -49,7 +49,7 @@ note:
 7. Scroll Down at most bottom fill website url `http://localhost:9090/` > Save
 8. Click Settings > Advanced > Scroll down and fill share redirect url with `http://localhost:9090/api/UserOauth` and `http://127.0.0.1:9090/api/UserOauth` > Save
 9. Click Dashboard > Most Bottom > My Product > Click Settings or click Login Facebook dropdown, settings
-10. Fill Valid OAuth Redirect URIs `https://yourdomain/api/UserOauth` example `https://local.benalu.dev/api/UserOauth`
+10. Fill Valid OAuth Redirect URIs `https://yourdomain/api/UserOauth` example1 `https://local.benalu.dev/api/UserOauth`
 11. At Settings > Basic > Copy APP ID and APP SECRET to `.env`
 
 ## Twitter
