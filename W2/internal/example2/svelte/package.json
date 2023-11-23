@@ -10,7 +10,7 @@
 		"serve": "node build.js --serve"
 	},
 	"dependencies": {
-		"axios": "^1.4.0",
+		"axios": "^1.6.0",
 		"chart.js": "^4.3.2",
 		"file-selector": "^0.2.4",
 		"svelte-icons-pack": "^2.1.0"
