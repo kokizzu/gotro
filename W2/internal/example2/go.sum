@@ -204,6 +204,9 @@ github.com/kokizzu/gotro v1.3511.301 h1:kyvJXFDHJe7PIuF4ubEezoyLyNW5+n3IqREU3UfZ
 github.com/kokizzu/gotro v1.3511.301/go.mod h1:4AMyWw/PGQmBq0H4J486s2gyXoy5MhOoUr0X3MqZRsk=
 github.com/kokizzu/id64 v1.2829.1452 h1:d+hbN+0YOX51AUYCU6pIVuLnsKhL1TNDBwBfHKevdX8=
 github.com/kokizzu/id64 v1.2829.1452/go.mod h1:ssdJfBhCjVs02lh6QutYOO8ZH+PWe5MDPh2gehPRgqU=
+github.com/kokizzu/json5b v0.1.1 h1:0F9mNwTvOuDNH243hoPqvf+dxa5QsKnZzU20uNsh3ZI=
+github.com/kokizzu/json5b v0.1.1/go.mod h1:sw49aWDqNdRJ6DYUtIQiaA3xyj2IL9tjeNYmX2ixwcU=
+github.com/kokizzu/json5b v0.1.2/go.mod h1:qjKP3jDQknu5BUPndsDLI39MCcoF4aEugLAv7hDiTRk=
 github.com/kokizzu/lexid v1.2423.1347 h1:EJl5H+WX9/FC5/lDOjwylTvh7k2IKxaYeV+F6idbLMo=
 github.com/kokizzu/lexid v1.2423.1347/go.mod h1:icv86ga26QLKCDCZcS6iyYhfJCwSPd7HrlF25xNjiEE=
 github.com/kokizzu/rand v0.0.0-20221021123447-6043c55a8bad h1:qWvljqz38n8hxJ3h3vXc571jWNQWEqwN4gwmu2anT3Y=
@@ -337,8 +340,6 @@ github.com/xeipuuv/gojsonreference v0.0.0-20180127040603-bd5ef7bd5415 h1:EzJWgHo
 github.com/xeipuuv/gojsonreference v0.0.0-20180127040603-bd5ef7bd5415/go.mod h1:GwrjFmJcFw6At/Gs6z4yjiIwzuJ1/+UwLxMQDVQXShQ=
 github.com/xeipuuv/gojsonschema v1.2.0 h1:LhYJRs+L4fBtjZUfuSZIKGeVu0QRy8e5Xi7D17UxZ74=
 github.com/xeipuuv/gojsonschema v1.2.0/go.mod h1:anYRn/JVcOK2ZgGU+IjEV4nwlhoK5sQluxsYJ78Id3Y=
-github.com/yosuke-furukawa/json5 v0.1.1 h1:0F9mNwTvOuDNH243hoPqvf+dxa5QsKnZzU20uNsh3ZI=
-github.com/yosuke-furukawa/json5 v0.1.1/go.mod h1:sw49aWDqNdRJ6DYUtIQiaA3xyj2IL9tjeNYmX2ixwcU=
 github.com/youmark/pkcs8 v0.0.0-20181117223130-1be2e3e5546d/go.mod h1:rHwXgn7JulP+udvsHwJoVG1YGAP6VLg4y9I5dyZdqmA=
 github.com/yuin/goldmark v1.1.25/go.mod h1:3hX8gzYuyVAZsxl0MRgGTJEmQBFcNTphYh9decYSb74=
 github.com/yuin/goldmark v1.1.27/go.mod h1:3hX8gzYuyVAZsxl0MRgGTJEmQBFcNTphYh9decYSb74=

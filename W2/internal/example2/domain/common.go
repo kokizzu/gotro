@@ -3,6 +3,7 @@ package domain
 import (
 	"bytes"
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"io"
@@ -13,7 +14,6 @@ import (
 
 	"github.com/davecgh/go-spew/spew"
 	"github.com/gabriel-vasile/mimetype"
-	"github.com/goccy/go-json"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/utils"
 	"github.com/kokizzu/gotro/A"
@@ -21,10 +21,10 @@ import (
 	"github.com/kokizzu/gotro/M"
 	"github.com/kokizzu/gotro/S"
 	"github.com/kokizzu/gotro/X"
+	"github.com/kokizzu/json5b/encoding/json5b"
 	"github.com/kokizzu/lexid"
 	"github.com/kpango/fastime"
 	"github.com/rs/zerolog/log"
-	"github.com/yosuke-furukawa/json5/encoding/json5"
 
 	"example2/conf"
 )
@@ -218,7 +218,7 @@ func (l *RequestCommon) ToCli(file *os.File, out any, rc ResponseCommon) {
 	switch l.OutputFormat {
 	case `json`, fiber.MIMEApplicationJSON:
 		byt, err = json.MarshalIndent(out, ``, `  `)
-		if L.IsError(err, `json5.MarshalIndent: %#v`, out) {
+		if L.IsError(err, `json.MarshalIndent: %#v`, out) {
 			return
 		}
 		_, err = file.Write(byt)
@@ -226,7 +226,7 @@ func (l *RequestCommon) ToCli(file *os.File, out any, rc ResponseCommon) {
 			return
 		}
 	default: // empty format also goes here
-		byt, err = json5.MarshalIndent(out, ``, `  `)
+		byt, err = json5b.MarshalIndent(out, ``, `  `)
 	}
 	if L.IsError(err, `marshal: %#v`, out) {
 		return
@@ -249,8 +249,12 @@ func (l *RequestCommon) ToCli(file *os.File, out any, rc ResponseCommon) {
 }
 
 func (l *RequestCommon) FromCli(action string, payload []byte, in any) bool {
-	err := json5.Unmarshal(payload, &in)
-	if L.IsError(err, `json5.Unmarshal`) {
+	err := json5b.Unmarshal(payload, &in)
+	if L.IsError(err, `json5b.Unmarshal`) {
+		return false
+	}
+	err = json.Unmarshal(payload, &in)
+	if L.IsError(err, `json.Unmarshal`) {
 		return false
 	}
 	l.RequestId = lexid.ID()

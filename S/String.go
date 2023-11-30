@@ -3,18 +3,18 @@ package S
 // String support package
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"strconv"
 	"strings"
 	"unicode"
 
-	"github.com/goccy/go-json"
 	"github.com/kokizzu/rand"
 	"github.com/vmihailenco/msgpack/v5"
 	"golang.org/x/text/cases"
 	"golang.org/x/text/language"
 
-	"github.com/yosuke-furukawa/json5/encoding/json5"
+	"github.com/kokizzu/json5b/encoding/json5b"
 
 	"github.com/kokizzu/gotro/C"
 	"github.com/kokizzu/gotro/I"
@@ -387,7 +387,7 @@ func JsonToStrArr(str string) (res []string) {
 	if len(str) == 0 {
 		return
 	}
-	err := json5.Unmarshal([]byte(str), &res)
+	err := json5b.Unmarshal([]byte(str), &res)
 	L.IsError(err, str)
 	return
 }
@@ -414,7 +414,7 @@ func JsonToIntArr(str string) (res []int64) {
 	if len(str) == 0 {
 		return
 	}
-	err := json5.Unmarshal([]byte(str), &res)
+	err := json5b.Unmarshal([]byte(str), &res)
 	L.IsError(err, str)
 	return
 }

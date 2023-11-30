@@ -1,6 +1,8 @@
 module github.com/kokizzu/gotro
 
-go 1.20
+go 1.21
+
+toolchain go1.21.4
 
 require (
 	github.com/ClickHouse/clickhouse-go/v2 v2.15.0
@@ -28,6 +30,7 @@ require (
 	github.com/kokizzu/ch-timed-buffer v1.2025.1416
 	github.com/kokizzu/goproc v1.1403.2143
 	github.com/kokizzu/id64 v1.2829.1452
+	github.com/kokizzu/json5b v0.1.2
 	github.com/kokizzu/lexid v1.2423.1347
 	github.com/kokizzu/overseer v1.1.8
 	github.com/kokizzu/rand v0.0.0-20221021123447-6043c55a8bad
@@ -52,13 +55,12 @@ require (
 	github.com/valyala/fasthttp v1.51.0
 	github.com/vburenin/nsync v0.0.0-20160822015540-9a75d1c80410
 	github.com/vmihailenco/msgpack/v5 v5.4.1
-	github.com/yosuke-furukawa/json5 v0.1.1
 	github.com/zeebo/assert v1.3.0
 	github.com/zeebo/xxh3 v1.0.2
 	go.opentelemetry.io/otel v1.21.0
 	go.opentelemetry.io/otel/trace v1.21.0
-	golang.org/x/crypto v0.15.0
-	golang.org/x/exp v0.0.0-20231110203233-9a3e6036ecaa
+	golang.org/x/crypto v0.16.0
+	golang.org/x/exp v0.0.0-20231127185646-65229373498e
 	golang.org/x/oauth2 v0.0.0-20220524215830-622c5d57e401
 	golang.org/x/text v0.14.0
 	gopkg.in/natefinch/lumberjack.v2 v2.0.0
@@ -69,7 +71,7 @@ require (
 	cloud.google.com/go v0.67.0 // indirect
 	github.com/Azure/go-ansiterm v0.0.0-20230124172434-306776ec8161 // indirect
 	github.com/BurntSushi/toml v1.2.1 // indirect
-	github.com/ClickHouse/ch-go v0.58.2 // indirect
+	github.com/ClickHouse/ch-go v0.60.0 // indirect
 	github.com/Microsoft/go-winio v0.6.1 // indirect
 	github.com/Nvveen/Gotty v0.0.0-20120604004816-cd527374f1e5 // indirect
 	github.com/amzn/ion-hash-go v1.1.1 // indirect
@@ -128,7 +130,7 @@ require (
 	github.com/shurcooL/go-goon v0.0.0-20210110234559-7585751d9a17 // indirect
 	github.com/sirupsen/logrus v1.9.3 // indirect
 	github.com/spacemonkeygo/spacelog v0.0.0-20180420211403-2296661a0572 // indirect
-	github.com/tarantool/go-openssl v0.0.8-0.20230307065445-720eeb389195 // indirect
+	github.com/tarantool/go-openssl v0.0.8-0.20231004103608-336ca939d2ca // indirect
 	github.com/tdewolff/parse v2.3.4+incompatible // indirect
 	github.com/tdewolff/test v1.0.7 // indirect
 	github.com/tklauser/go-sysconf v0.3.12 // indirect
@@ -141,10 +143,10 @@ require (
 	github.com/yusufpapurcu/wmi v1.2.3 // indirect
 	go.opentelemetry.io/otel/metric v1.21.0 // indirect
 	golang.org/x/mod v0.14.0 // indirect
-	golang.org/x/net v0.18.0 // indirect
+	golang.org/x/net v0.19.0 // indirect
 	golang.org/x/sync v0.5.0 // indirect
-	golang.org/x/sys v0.14.0 // indirect
-	golang.org/x/tools v0.15.0 // indirect
+	golang.org/x/sys v0.15.0 // indirect
+	golang.org/x/tools v0.16.0 // indirect
 	golang.org/x/xerrors v0.0.0-20200804184101-5ec99f83aff1 // indirect
 	google.golang.org/appengine v1.6.8 // indirect
 	google.golang.org/protobuf v1.31.0 // indirect

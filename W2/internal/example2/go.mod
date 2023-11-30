@@ -21,7 +21,7 @@ require (
 	github.com/tarantool/go-tarantool v1.12.1
 	github.com/vburenin/nsync v0.0.0-20160822015540-9a75d1c80410
 	github.com/wneessen/go-mail v0.4.0
-	github.com/yosuke-furukawa/json5 v0.1.1
+	github.com/kokizzu/json5b v0.1.2
 	github.com/zeebo/xxh3 v1.0.2
 	golang.org/x/exp v0.0.0-20231110203233-9a3e6036ecaa
 	golang.org/x/oauth2 v0.0.0-20220524215830-622c5d57e401
