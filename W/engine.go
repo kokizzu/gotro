@@ -18,6 +18,9 @@ import (
 	"github.com/tdewolff/minify"
 	"github.com/tdewolff/minify/css"
 	"github.com/tdewolff/minify/js"
+	limiter "github.com/ulule/limiter/v3"
+	mfasthttp "github.com/ulule/limiter/v3/drivers/middleware/fasthttp"
+	"github.com/ulule/limiter/v3/drivers/store/memory"
 	"github.com/valyala/fasthttp"
 )
 
@@ -173,11 +176,27 @@ func (engine *Engine) MinifyAssets() {
 
 // start the server
 func (engine *Engine) StartServer(addressPort string) {
+	// periods:
+	// * "S": second
+	// * "M": minute
+	// * "H": hour
+	// * "D": day
+	//
+	// * 300 reqs/minute: "300-M"
+	rate, errLimiter := limiter.NewRateFromFormatted("300-M")
+	L.IsError(errLimiter, `Failed to add rate limiter `)
+	limitStore := memory.NewStore()
+	instance := limiter.New(
+		limitStore,
+		rate,
+		limiter.WithTrustForwardHeader(true),
+	)
+	middleware := mfasthttp.NewMiddleware(instance)
 	engine.MinifyAssets()
 	L.LOG.Notice(engine.Name + ` ` + S.IfElse(engine.DebugMode, `[DEVELOPMENT]`, `[PRODUCTION]`) + ` server with ` + I.ToStr(len(Routes)) + ` route(s) on ` + addressPort +
 		"\n  Ajax Error Log: " + engine.LogPath +
 		"\n  Work Directory: " + engine.BaseDir)
-	err := fasthttp.ListenAndServe(addressPort, engine.Router.Handler)
+	err := fasthttp.ListenAndServe(addressPort, middleware.Handle(engine.Router.Handler))
 	L.IsError(err, `Failed to listen on `+addressPort)
 	engine.Logger.Close()
 }

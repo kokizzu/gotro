@@ -51,6 +51,7 @@ require (
 	github.com/stretchr/testify v1.8.4
 	github.com/tarantool/go-tarantool v1.12.1
 	github.com/tdewolff/minify v2.3.6+incompatible
+	github.com/ulule/limiter/v3 v3.11.2
 	github.com/valyala/bytebufferpool v1.0.0
 	github.com/valyala/fasthttp v1.51.0
 	github.com/vburenin/nsync v0.0.0-20160822015540-9a75d1c80410
