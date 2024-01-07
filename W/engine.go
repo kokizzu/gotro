@@ -184,7 +184,11 @@ func (engine *Engine) StartServer(addressPort string) {
 	//
 	// * 300 reqs/minute: "300-M"
 	rate, errLimiter := limiter.NewRateFromFormatted("300-M")
-	L.IsError(errLimiter, `Failed to add rate limiter `)
+	var isErrLimiter bool
+	if errLimiter != nil {
+		L.IsError(errLimiter, `Failed to add rate limiter`)
+		isErrLimiter = true
+	}
 	limitStore := memory.NewStore()
 	instance := limiter.New(
 		limitStore,
@@ -196,7 +200,14 @@ func (engine *Engine) StartServer(addressPort string) {
 	L.LOG.Notice(engine.Name + ` ` + S.IfElse(engine.DebugMode, `[DEVELOPMENT]`, `[PRODUCTION]`) + ` server with ` + I.ToStr(len(Routes)) + ` route(s) on ` + addressPort +
 		"\n  Ajax Error Log: " + engine.LogPath +
 		"\n  Work Directory: " + engine.BaseDir)
-	err := fasthttp.ListenAndServe(addressPort, middleware.Handle(engine.Router.Handler))
+
+	var err error
+	if isErrLimiter {
+		// not using rate limiter
+		err = fasthttp.ListenAndServe(addressPort, engine.Router.Handler)
+	} else {
+		err = fasthttp.ListenAndServe(addressPort, middleware.Handle(engine.Router.Handler))
+	}
 	L.IsError(err, `Failed to listen on `+addressPort)
 	engine.Logger.Close()
 }
