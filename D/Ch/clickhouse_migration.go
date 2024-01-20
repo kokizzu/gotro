@@ -83,9 +83,10 @@ const (
 )
 
 type TableProp struct {
-	Fields []Field
-	Engine string
-	Orders []string
+	Fields     []Field
+	Engine     string
+	Partitions []string
+	Orders     []string
 
 	DefaultCodec string
 }
@@ -125,6 +126,10 @@ CREATE TABLE IF NOT EXISTS ` + string(tableName) + ` (`
 	}
 	query += `
 ) ENGINE = ` + props.Engine + `()`
+	if len(props.Partitions) > 0 {
+		query += `
+PARTITION BY (` + A.StrJoin(props.Partitions, `, `) + `)`
+	}
 	query += `
 ORDER BY (` + A.StrJoin(props.Orders, `, `) + `)`
 	_, err := a.Exec(query)
