@@ -136,4 +136,30 @@ func TestMigration(t *testing.T) {
 		})
 		assert.True(t, ok)
 	})
+	t.Run(`create materialized view must ok`, func(t *testing.T) {
+		const mvName = `test_mv`
+		const mvSourceTable = `mv_source_table`
+		ok := a.UpsertTable(mvSourceTable, &TableProp{
+			Fields: []Field{
+				{`id`, UInt32},
+				{`created_at`, DateTime},
+				{`name`, String},
+			},
+			Engine:     ReplacingMergeTree,
+			Partitions: []string{`id`},
+			Orders:     []string{`id`, `created_at`},
+		})
+		assert.True(t, ok)
+		ok = a.CreateMaterializedViews(mvName, &MVProp{
+			SourceTable: mvSourceTable,
+			SourceColumns: []string{
+				`toDate(toHour(created_at)) AS created_at_hour`,
+				`*`,
+			},
+			Engine:     ReplacingMergeTree,
+			Partitions: []string{`id`},
+			Orders:     []string{`id`, `created_at_hour`},
+		})
+		assert.True(t, ok)
+	})
 }

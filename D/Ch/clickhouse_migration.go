@@ -54,6 +54,7 @@ const Memory = `Memory`
 const Buffer = `Buffer`
 
 type TableName string
+type MaterializedViewName string
 
 /*
 SELECT DISTINCT alias_to
@@ -83,9 +84,10 @@ const (
 )
 
 type TableProp struct {
-	Fields []Field
-	Engine string
-	Orders []string
+	Fields     []Field
+	Engine     string
+	Partitions []string
+	Orders     []string
 
 	DefaultCodec string
 }
@@ -93,6 +95,14 @@ type TableProp struct {
 type Field struct {
 	Name string
 	Type DataType
+}
+
+type MVProp struct {
+	SourceTable   string
+	SourceColumns []string
+	Engine        string
+	Partitions    []string
+	Orders        []string
 }
 
 var TypeToConst = map[DataType]string{
@@ -125,6 +135,10 @@ CREATE TABLE IF NOT EXISTS ` + string(tableName) + ` (`
 	}
 	query += `
 ) ENGINE = ` + props.Engine + `()`
+	if len(props.Partitions) > 0 {
+		query += `
+PARTITION BY (` + A.StrJoin(props.Partitions, `, `) + `)`
+	}
 	query += `
 ORDER BY (` + A.StrJoin(props.Orders, `, `) + `)`
 	_, err := a.Exec(query)
@@ -227,4 +241,29 @@ func CheckClickhouseTables(cConn *Adapter, tables map[TableName]*TableProp) {
 			}
 		}
 	}
+}
+
+func (a *Adapter) CreateMaterializedViews(mvName MaterializedViewName, props *MVProp) bool {
+	query := `
+CREATE MATERIALIZED VIEW IF NOT EXISTS ` + string(mvName)
+	query += `
+ENGINE = ` + props.Engine + `()`
+	if len(props.Partitions) > 0 {
+		query += `
+PARTITION BY (` + A.StrJoin(props.Partitions, `, `) + `)`
+	}
+	query += `
+ORDER BY (` + A.StrJoin(props.Orders, `, `) + `)`
+	query += `
+AS SELECT `
+	for idx, column := range props.SourceColumns {
+		query += column
+		if idx < len(props.SourceColumns)-1 {
+			query += `, `
+		}
+	}
+	query += `
+FROM ` + props.SourceTable
+	_, err := a.Exec(query)
+	return !L.IsError(err, `Exec: `+query)
 }
