@@ -17,7 +17,7 @@ require (
 	github.com/francoispqt/onelog v0.0.0-20190306043706-8c2bb31b10a4
 	github.com/goccy/go-json v0.10.2
 	github.com/goccy/go-yaml v1.9.5
-	github.com/gofiber/fiber/v2 v2.52.0
+	github.com/gofiber/fiber/v2 v2.52.1
 	github.com/hexops/autogold v1.3.0
 	github.com/hexops/valast v1.4.1
 	github.com/jackc/pgx/v5 v5.5.3
