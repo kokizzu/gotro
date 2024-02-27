@@ -49,6 +49,15 @@ type Engine struct {
 	CreatedAt time.Time
 	// assets <script and <link as string
 	Assets string
+	// "S": second,
+	// "M": minute,
+	// "H": hour,
+	// "D": day
+	//
+	// 300 reqs/minute: "300-M"
+	//
+	// See example https://github.com/ulule/limiter
+	RateLimitFormat string
 }
 
 func (engine *Engine) Log(message string) {
@@ -176,14 +185,11 @@ func (engine *Engine) MinifyAssets() {
 
 // start the server
 func (engine *Engine) StartServer(addressPort string) {
-	// periods:
-	// * "S": second
-	// * "M": minute
-	// * "H": hour
-	// * "D": day
-	//
-	// * 300 reqs/minute: "300-M"
-	rate, errLimiter := limiter.NewRateFromFormatted("300-M")
+	rateLimitFormat := `300-M` // 300 reqs/minute
+	if engine.RateLimitFormat != `` {
+		rateLimitFormat = engine.RateLimitFormat
+	}
+	rate, errLimiter := limiter.NewRateFromFormatted(rateLimitFormat)
 	var isErrLimiter bool
 	if errLimiter != nil {
 		L.IsError(errLimiter, `Failed to add rate limiter`)
