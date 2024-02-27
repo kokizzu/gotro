@@ -443,7 +443,7 @@ func (c *codegen) GenerateApiRoutesFile() {
 import (
 	"github.com/gofiber/fiber/v2"
 
-	"benakun/domain"
+	"example2/domain"
 )
 
 func ApiRoutes(fw *fiber.App, d *domain.Domain) {
@@ -616,7 +616,7 @@ func (c *codegen) GenerateCmdRunFile() {
 import (
 	"os"
 
-	"benakun/domain"
+	"example2/domain"
 )
 
 ` + generatedComment + `
@@ -774,7 +774,7 @@ func (c *codegen) GenerateSwaggerFile() {
 				"type": "apiKey",
 				"in": "cookie",
 				"name": "auth",
-				"description": "Authentication for Benakun"
+				"description": "Authentication for example2"
 			}
 		}
 	}
