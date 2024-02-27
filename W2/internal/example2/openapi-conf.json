@@ -1,0 +1,23 @@
+{
+  "openapi": "3.0.3",
+	"info": {
+		"title": "Example2",
+		"description": "API Spec for Example2",
+		"termsOfService": "https://example2.com/term-of-service",
+		"contact": {
+			"name": "API Support",
+			"email": "support@example2.com"
+		},
+		"license": {
+			"name": "MIT License",
+			"url": "https://en.wikipedia.org/wiki/MIT_License"
+		},
+		"version": "1.0.0"
+	},
+	"servers": [
+		{
+			"url": "https://example2.com",
+			"description": "Example2 Server"
+		}
+	]
+}
