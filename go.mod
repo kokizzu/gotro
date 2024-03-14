@@ -20,7 +20,7 @@ require (
 	github.com/gofiber/fiber/v2 v2.52.1
 	github.com/hexops/autogold v1.3.0
 	github.com/hexops/valast v1.4.1
-	github.com/jackc/pgx/v5 v5.5.3
+	github.com/jackc/pgx/v5 v5.5.4
 	github.com/jasonlvhit/gocron v0.0.1
 	github.com/jessevdk/go-flags v1.5.0
 	github.com/jmoiron/sqlx v1.3.5
