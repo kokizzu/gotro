@@ -180,7 +180,7 @@ func GenerateOrm(tables map[TableName]*TableProp, withGraphql ...bool) {
 		propByName := map[string]Field{}
 		censoredFieldsByName := map[string]bool{}
 		for _, prop := range props.Fields {
-			l := len(prop.Name) + 1 - strings.Count(prop.Name, `_`)
+			l := len(prop.Name) + 1
 			if maxLen < l {
 				maxLen = l
 			}

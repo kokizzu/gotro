@@ -152,7 +152,7 @@ func GenerateOrm(tables map[TableName]*TableProp) {
 		structName := S.PascalCase(tableName)
 		maxLen := 1
 		for _, prop := range props.Fields {
-			l := len(prop.Name) + 1 - strings.Count(prop.Name, `_`)
+			l := len(prop.Name) + 1
 			if maxLen < l {
 				maxLen = l
 			}
