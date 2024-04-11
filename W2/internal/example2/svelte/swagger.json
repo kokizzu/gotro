@@ -1,0 +1,1376 @@
+{
+  "info": {
+    "contact": {
+      "email": "support@example2.com",
+      "name": "API Support"
+    },
+    "description": "API Spec for Example2",
+    "license": {
+      "name": "MIT License",
+      "url": "https://en.wikipedia.org/wiki/MIT_License"
+    },
+    "termsOfService": "https://example2.com/term-of-service",
+    "title": "Example2",
+    "version": "1.0.0"
+  },
+  "openapi": "3.0.3",
+  "servers": [
+    {
+      "description": "Example2 Server",
+      "url": "https://example2.com"
+    }
+  ],
+	"paths": {
+		"/guest/autoLogin": {
+			"post": {
+				"security": [{
+					"CookieAuth": []
+				}],
+				"tags": ["API"],
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "object",
+								"properties": {
+						"uid": {
+								"type": "string"
+						},
+						"token": {
+								"type": "string"
+						},
+						"path": {
+								"type": "string"
+						}
+								}
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "GuestAutoLogin",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"user": {
+										"type": "object",
+										"properties": {
+												"id": {
+														"type": "number"
+												},
+												"email": {
+														"type": "string"
+												},
+												"password": {
+														"type": "string"
+												},
+												"createdAt": {
+														"type": "number"
+												},
+												"createdBy": {
+														"type": "number"
+												},
+												"updatedAt": {
+														"type": "number"
+												},
+												"updatedBy": {
+														"type": "number"
+												},
+												"deletedAt": {
+														"type": "number"
+												},
+												"passwordSetAt": {
+														"type": "number"
+												},
+												"secretCode": {
+														"type": "string"
+												},
+												"secretCodeAt": {
+														"type": "number"
+												},
+												"verificationSentAt": {
+														"type": "number"
+												},
+												"verifiedAt": {
+														"type": "number"
+												},
+												"lastLoginAt": {
+														"type": "number"
+												},
+												"fullName": {
+														"type": "string"
+												},
+												"tenantCode": {
+														"type": "string"
+												},
+												"role": {
+														"type": "string"
+												}
+												}
+										},
+										"segments": {
+										"type": "object",
+										"properties": {
+												}
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/guest/debug": {
+			"post": {
+				"security": [{
+					"CookieAuth": []
+				}],
+				"tags": ["API"],
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "object",
+								"properties": {
+								}
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "GuestDebug",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"request": {
+										"type": "object",
+										"properties": {
+												}
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/guest/externalAuth": {
+			"post": {
+				"security": [{
+					"CookieAuth": []
+				}],
+				"tags": ["API"],
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "object",
+								"properties": {
+						"provider": {
+								"type": "string"
+						},
+						"redirect": {
+							"type": "boolean"
+						}
+								}
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "GuestExternalAuth",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"link": {
+												"type": "string"
+										},
+										"clientID": {
+												"type": "string"
+										},
+										"redirectUrl": {
+												"type": "string"
+										},
+										"scopes": {
+												"type": "array",
+													"items": {
+														"type": "string"
+													}
+												},
+										"csrfState": {
+												"type": "string"
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/guest/forgotPassword": {
+			"post": {
+				"security": [{
+					"CookieAuth": []
+				}],
+				"tags": ["API"],
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "object",
+								"properties": {
+						"email": {
+								"type": "string"
+						}
+								}
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "GuestForgotPassword",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"ok": {
+											"type": "boolean"
+										},
+										"resetPassUrl": {
+												"type": "string"
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/guest/login": {
+			"post": {
+				"security": [{
+					"CookieAuth": []
+				}],
+				"tags": ["API"],
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "object",
+								"properties": {
+						"email": {
+								"type": "string"
+						},
+						"password": {
+								"type": "string"
+						}
+								}
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "GuestLogin",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"user": {
+										"type": "object",
+										"properties": {
+												"id": {
+														"type": "number"
+												},
+												"email": {
+														"type": "string"
+												},
+												"password": {
+														"type": "string"
+												},
+												"createdAt": {
+														"type": "number"
+												},
+												"createdBy": {
+														"type": "number"
+												},
+												"updatedAt": {
+														"type": "number"
+												},
+												"updatedBy": {
+														"type": "number"
+												},
+												"deletedAt": {
+														"type": "number"
+												},
+												"passwordSetAt": {
+														"type": "number"
+												},
+												"secretCode": {
+														"type": "string"
+												},
+												"secretCodeAt": {
+														"type": "number"
+												},
+												"verificationSentAt": {
+														"type": "number"
+												},
+												"verifiedAt": {
+														"type": "number"
+												},
+												"lastLoginAt": {
+														"type": "number"
+												},
+												"fullName": {
+														"type": "string"
+												},
+												"tenantCode": {
+														"type": "string"
+												},
+												"role": {
+														"type": "string"
+												}
+												}
+										},
+										"segments": {
+										"type": "object",
+										"properties": {
+												}
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/guest/oauthCallback": {
+			"post": {
+				"security": [{
+					"CookieAuth": []
+				}],
+				"tags": ["API"],
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "object",
+								"properties": {
+						"state": {
+								"type": "string"
+						},
+						"code": {
+								"type": "string"
+						},
+						"accessToken": {
+								"type": "string"
+						}
+								}
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "GuestOauthCallback",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"oauthUser": {
+										"type": "object",
+										"properties": {
+												}
+										},
+										"email": {
+												"type": "string"
+										},
+										"currentUser": {
+										"type": "object",
+										"properties": {
+												"id": {
+														"type": "number"
+												},
+												"email": {
+														"type": "string"
+												},
+												"password": {
+														"type": "string"
+												},
+												"createdAt": {
+														"type": "number"
+												},
+												"createdBy": {
+														"type": "number"
+												},
+												"updatedAt": {
+														"type": "number"
+												},
+												"updatedBy": {
+														"type": "number"
+												},
+												"deletedAt": {
+														"type": "number"
+												},
+												"passwordSetAt": {
+														"type": "number"
+												},
+												"secretCode": {
+														"type": "string"
+												},
+												"secretCodeAt": {
+														"type": "number"
+												},
+												"verificationSentAt": {
+														"type": "number"
+												},
+												"verifiedAt": {
+														"type": "number"
+												},
+												"lastLoginAt": {
+														"type": "number"
+												},
+												"fullName": {
+														"type": "string"
+												},
+												"tenantCode": {
+														"type": "string"
+												},
+												"role": {
+														"type": "string"
+												}
+												}
+										},
+										"provider": {
+												"type": "string"
+										},
+										"segments": {
+										"type": "object",
+										"properties": {
+												}
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/guest/register": {
+			"post": {
+				"security": [{
+					"CookieAuth": []
+				}],
+				"tags": ["API"],
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "object",
+								"properties": {
+						"email": {
+								"type": "string"
+						},
+						"password": {
+								"type": "string"
+						}
+								}
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "GuestRegister",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"user": {
+										"type": "object",
+										"properties": {
+												"id": {
+														"type": "number"
+												},
+												"email": {
+														"type": "string"
+												},
+												"password": {
+														"type": "string"
+												},
+												"createdAt": {
+														"type": "number"
+												},
+												"createdBy": {
+														"type": "number"
+												},
+												"updatedAt": {
+														"type": "number"
+												},
+												"updatedBy": {
+														"type": "number"
+												},
+												"deletedAt": {
+														"type": "number"
+												},
+												"passwordSetAt": {
+														"type": "number"
+												},
+												"secretCode": {
+														"type": "string"
+												},
+												"secretCodeAt": {
+														"type": "number"
+												},
+												"verificationSentAt": {
+														"type": "number"
+												},
+												"verifiedAt": {
+														"type": "number"
+												},
+												"lastLoginAt": {
+														"type": "number"
+												},
+												"fullName": {
+														"type": "string"
+												},
+												"tenantCode": {
+														"type": "string"
+												},
+												"role": {
+														"type": "string"
+												}
+												}
+										},
+										"verifyEmailUrl": {
+												"type": "string"
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/guest/resendVerificationEmail": {
+			"post": {
+				"security": [{
+					"CookieAuth": []
+				}],
+				"tags": ["API"],
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "object",
+								"properties": {
+						"email": {
+								"type": "string"
+						}
+								}
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "GuestResendVerificationEmail",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"ok": {
+											"type": "boolean"
+										},
+										"verifyEmailUrl": {
+												"type": "string"
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/guest/resetPassword": {
+			"post": {
+				"security": [{
+					"CookieAuth": []
+				}],
+				"tags": ["API"],
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "object",
+								"properties": {
+						"secretCode": {
+								"type": "string"
+						},
+						"hash": {
+								"type": "string"
+						},
+						"password": {
+								"type": "string"
+						}
+								}
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "GuestResetPassword",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"ok": {
+											"type": "boolean"
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/guest/verifyEmail": {
+			"post": {
+				"security": [{
+					"CookieAuth": []
+				}],
+				"tags": ["API"],
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "object",
+								"properties": {
+						"secretCode": {
+								"type": "string"
+						},
+						"hash": {
+								"type": "string"
+						}
+								}
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "GuestVerifyEmail",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"ok": {
+											"type": "boolean"
+										},
+										"email": {
+												"type": "string"
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/superAdmin/dashboard": {
+			"post": {
+				"security": [{
+					"CookieAuth": []
+				}],
+				"tags": ["API"],
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "object",
+								"properties": {
+								}
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "SuperAdminDashboard",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/superAdmin/userManagement": {
+			"post": {
+				"security": [{
+					"CookieAuth": []
+				}],
+				"tags": ["API"],
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "object",
+								"properties": {
+						"cmd": {
+								"type": "string"
+						},
+						"user": {
+						"type": "object",
+						"properties": {
+								"id": {
+										"type": "number"
+								},
+								"email": {
+										"type": "string"
+								},
+								"password": {
+										"type": "string"
+								},
+								"createdAt": {
+										"type": "number"
+								},
+								"createdBy": {
+										"type": "number"
+								},
+								"updatedAt": {
+										"type": "number"
+								},
+								"updatedBy": {
+										"type": "number"
+								},
+								"deletedAt": {
+										"type": "number"
+								},
+								"passwordSetAt": {
+										"type": "number"
+								},
+								"secretCode": {
+										"type": "string"
+								},
+								"secretCodeAt": {
+										"type": "number"
+								},
+								"verificationSentAt": {
+										"type": "number"
+								},
+								"verifiedAt": {
+										"type": "number"
+								},
+								"lastLoginAt": {
+										"type": "number"
+								},
+								"fullName": {
+										"type": "string"
+								},
+								"tenantCode": {
+										"type": "string"
+								},
+								"role": {
+										"type": "string"
+								}
+								}
+						},
+						"withMeta": {
+							"type": "boolean"
+						},
+						"pager": {
+						"type": "object",
+						"properties": {
+								"page": {
+										"type": "number"
+								},
+								"perPage": {
+										"type": "number"
+								},
+								"filters": {
+								"type": "object",
+								"properties": {
+										}
+								},
+								"order": {
+										"type": "array",
+											"items": {
+												"type": "string"
+											}
+										}
+								}
+						}
+								}
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "SuperAdminUserManagement",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"pager": {
+										"type": "object",
+										"properties": {
+												"page": {
+														"type": "number"
+												},
+												"perPage": {
+														"type": "number"
+												},
+												"pages": {
+														"type": "number"
+												},
+												"total": {
+														"type": "number"
+												},
+												"filters": {
+												"type": "object",
+												"properties": {
+														}
+												},
+												"order": {
+														"type": "array",
+															"items": {
+																"type": "string"
+															}
+														}
+												}
+										},
+										"meta": {
+										"type": "object",
+										"properties": {
+												"fields": {
+												"type": "object",
+												"properties": {
+														}
+												},
+												"mutex": {
+												"type": "object",
+												"properties": {
+														}
+												},
+												"cachedSelect": {
+														"type": "string"
+												}
+												}
+										},
+										"user": {
+										"type": "object",
+										"properties": {
+												"id": {
+														"type": "number"
+												},
+												"email": {
+														"type": "string"
+												},
+												"password": {
+														"type": "string"
+												},
+												"createdAt": {
+														"type": "number"
+												},
+												"createdBy": {
+														"type": "number"
+												},
+												"updatedAt": {
+														"type": "number"
+												},
+												"updatedBy": {
+														"type": "number"
+												},
+												"deletedAt": {
+														"type": "number"
+												},
+												"passwordSetAt": {
+														"type": "number"
+												},
+												"secretCode": {
+														"type": "string"
+												},
+												"secretCodeAt": {
+														"type": "number"
+												},
+												"verificationSentAt": {
+														"type": "number"
+												},
+												"verifiedAt": {
+														"type": "number"
+												},
+												"lastLoginAt": {
+														"type": "number"
+												},
+												"fullName": {
+														"type": "string"
+												},
+												"tenantCode": {
+														"type": "string"
+												},
+												"role": {
+														"type": "string"
+												}
+												}
+										},
+										"users": {
+										"type": "object",
+										"properties": {
+												}
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/user/autoLoginLink": {
+			"post": {
+				"security": [{
+					"CookieAuth": []
+				}],
+				"tags": ["API"],
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "object",
+								"properties": {
+						"path": {
+								"type": "string"
+						}
+								}
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "UserAutoLoginLink",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"link": {
+												"type": "string"
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/user/changePassword": {
+			"post": {
+				"security": [{
+					"CookieAuth": []
+				}],
+				"tags": ["API"],
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "object",
+								"properties": {
+						"oldPass": {
+								"type": "string"
+						},
+						"newPass": {
+								"type": "string"
+						}
+								}
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "UserChangePassword",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"ok": {
+											"type": "boolean"
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/user/logout": {
+			"post": {
+				"security": [{
+					"CookieAuth": []
+				}],
+				"tags": ["API"],
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "object",
+								"properties": {
+								}
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "UserLogout",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"logoutAt": {
+												"type": "number"
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/user/profile": {
+			"post": {
+				"security": [{
+					"CookieAuth": []
+				}],
+				"tags": ["API"],
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "object",
+								"properties": {
+								}
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "UserProfile",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"user": {
+										"type": "object",
+										"properties": {
+												"id": {
+														"type": "number"
+												},
+												"email": {
+														"type": "string"
+												},
+												"password": {
+														"type": "string"
+												},
+												"createdAt": {
+														"type": "number"
+												},
+												"createdBy": {
+														"type": "number"
+												},
+												"updatedAt": {
+														"type": "number"
+												},
+												"updatedBy": {
+														"type": "number"
+												},
+												"deletedAt": {
+														"type": "number"
+												},
+												"passwordSetAt": {
+														"type": "number"
+												},
+												"secretCode": {
+														"type": "string"
+												},
+												"secretCodeAt": {
+														"type": "number"
+												},
+												"verificationSentAt": {
+														"type": "number"
+												},
+												"verifiedAt": {
+														"type": "number"
+												},
+												"lastLoginAt": {
+														"type": "number"
+												},
+												"fullName": {
+														"type": "string"
+												},
+												"tenantCode": {
+														"type": "string"
+												},
+												"role": {
+														"type": "string"
+												}
+												}
+										},
+										"segments": {
+										"type": "object",
+										"properties": {
+												}
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/user/sessionKill": {
+			"post": {
+				"security": [{
+					"CookieAuth": []
+				}],
+				"tags": ["API"],
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "object",
+								"properties": {
+						"sessionTokenHash": {
+								"type": "string"
+						}
+								}
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "UserSessionKill",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"logoutAt": {
+												"type": "number"
+										},
+										"sessionTerminated": {
+												"type": "number"
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/user/sessionsActive": {
+			"post": {
+				"security": [{
+					"CookieAuth": []
+				}],
+				"tags": ["API"],
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "object",
+								"properties": {
+								}
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "UserSessionsActive",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"sessionsActive": {
+										"type": "object",
+										"properties": {
+												}
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/user/updateProfile": {
+			"post": {
+				"security": [{
+					"CookieAuth": []
+				}],
+				"tags": ["API"],
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "object",
+								"properties": {
+						"userName": {
+								"type": "string"
+						},
+						"fullName": {
+								"type": "string"
+						},
+						"email": {
+								"type": "string"
+						},
+						"country": {
+								"type": "string"
+						},
+						"language": {
+								"type": "string"
+						}
+								}
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "UserUpdateProfile",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"user": {
+										"type": "object",
+										"properties": {
+												"id": {
+														"type": "number"
+												},
+												"email": {
+														"type": "string"
+												},
+												"password": {
+														"type": "string"
+												},
+												"createdAt": {
+														"type": "number"
+												},
+												"createdBy": {
+														"type": "number"
+												},
+												"updatedAt": {
+														"type": "number"
+												},
+												"updatedBy": {
+														"type": "number"
+												},
+												"deletedAt": {
+														"type": "number"
+												},
+												"passwordSetAt": {
+														"type": "number"
+												},
+												"secretCode": {
+														"type": "string"
+												},
+												"secretCodeAt": {
+														"type": "number"
+												},
+												"verificationSentAt": {
+														"type": "number"
+												},
+												"verifiedAt": {
+														"type": "number"
+												},
+												"lastLoginAt": {
+														"type": "number"
+												},
+												"fullName": {
+														"type": "string"
+												},
+												"tenantCode": {
+														"type": "string"
+												},
+												"role": {
+														"type": "string"
+												}
+												}
+										},
+										"segments": {
+										"type": "object",
+										"properties": {
+												}
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	},
+	"components": {
+		"securitySchemes": {
+			"CookieAuth": {
+				"type": "apiKey",
+				"in": "cookie",
+				"name": "auth",
+				"description": "Authentication for example2"
+			}
+		}
+	}
+}
