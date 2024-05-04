@@ -2,8 +2,6 @@ module github.com/kokizzu/gotro
 
 go 1.21
 
-toolchain go1.21.4
-
 require (
 	github.com/ClickHouse/clickhouse-go/v2 v2.23.2
 	github.com/OneOfOne/cmap v0.0.0-20170825200327-ccaef7657ab8
