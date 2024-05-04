@@ -5,7 +5,7 @@ package rqZzz
 import (
 	`github.com/kokizzu/gotro/D/Tt/mZzz`
 
-	`github.com/tarantool/go-tarantool`
+	`github.com/tarantool/go-tarantool/v2`
 
 	`github.com/kokizzu/gotro/A`
 	`github.com/kokizzu/gotro/D/Tt`
@@ -48,14 +48,22 @@ func (z *Zzz) UniqueIndexId() string { //nolint:dupl false positive
 
 // FindById Find one by Id
 func (z *Zzz) FindById() bool { //nolint:dupl false positive
-	res, err := z.Adapter.Select(z.SpaceName(), z.UniqueIndexId(), 0, 1, tarantool.IterEq, A.X{z.Id})
+	res, err := z.Adapter.Connection.Do(
+		tarantool.NewSelectRequest(z.SpaceName()).
+		Index(z.UniqueIndexId()).
+		Offset(0).
+		Limit(1).
+		Iterator(tarantool.IterEq).
+		Key(A.X{z.Id}),
+	).Get()
 	if L.IsError(err, `Zzz.FindById failed: `+z.SpaceName()) {
 		return false
 	}
-	rows := res.Tuples()
-	if len(rows) == 1 {
-		z.FromArray(rows[0])
-		return true
+	if len(res) == 1 {
+		if row, ok := res[0].([]any); ok {
+			z.FromArray(row)
+			return true
+		}
 	}
 	return false
 }
@@ -86,14 +94,13 @@ func (z *Zzz) SqlSelectAllUncensoredFields() string { //nolint:dupl false positi
 }
 
 // ToUpdateArray generate slice of update command
-func (z *Zzz) ToUpdateArray() A.X { //nolint:dupl false positive
-	return A.X{
-		A.X{`=`, 0, z.Id},
-		A.X{`=`, 1, z.CreatedAt},
-		A.X{`=`, 2, z.Coords},
-		A.X{`=`, 3, z.Name},
-		A.X{`=`, 4, z.HeightMeter},
-	}
+func (z *Zzz) ToUpdateArray() *tarantool.Operations { //nolint:dupl false positive
+	return tarantool.NewOperations().
+		Assign(0, z.Id).
+		Assign(1, z.CreatedAt).
+		Assign(2, z.Coords).
+		Assign(3, z.Name).
+		Assign(4, z.HeightMeter)
 }
 
 // IdxId return name of the index
@@ -184,13 +191,23 @@ func (z *Zzz) FromUncensoredArray(a A.X) *Zzz { //nolint:dupl false positive
 // FindOffsetLimit returns slice of struct, order by idx, eg. .UniqueIndex*()
 func (z *Zzz) FindOffsetLimit(offset, limit uint32, idx string) []Zzz { //nolint:dupl false positive
 	var rows []Zzz
-	res, err := z.Adapter.Select(z.SpaceName(), idx, offset, limit, tarantool.IterAll, A.X{})
+	res, err := z.Adapter.Connection.Do(
+		tarantool.NewSelectRequest(z.SpaceName()).
+		Index(idx).
+		Offset(offset).
+		Limit(limit).
+		Iterator(tarantool.IterAll).
+		Key(A.X{}),
+	).Get()
 	if L.IsError(err, `Zzz.FindOffsetLimit failed: `+z.SpaceName()) {
 		return rows
 	}
-	for _, row := range res.Tuples() {
+	for _, row := range res {
 		item := Zzz{}
-		rows = append(rows, *item.FromArray(row))
+		row, ok := row.([]any)
+		if ok {
+			rows = append(rows, *item.FromArray(row))
+		}
 	}
 	return rows
 }
@@ -198,16 +215,29 @@ func (z *Zzz) FindOffsetLimit(offset, limit uint32, idx string) []Zzz { //nolint
 // FindArrOffsetLimit returns as slice of slice order by idx eg. .UniqueIndex*()
 func (z *Zzz) FindArrOffsetLimit(offset, limit uint32, idx string) ([]A.X, Tt.QueryMeta) { //nolint:dupl false positive
 	var rows []A.X
-	res, err := z.Adapter.Select(z.SpaceName(), idx, offset, limit, tarantool.IterAll, A.X{})
+	resp, err := z.Adapter.Connection.Do(
+		tarantool.NewSelectRequest(z.SpaceName()).
+		Index(idx).
+		Offset(offset).
+		Limit(limit).
+		Iterator(tarantool.IterAll).
+		Key(A.X{}),
+	).GetResponse()
 	if L.IsError(err, `Zzz.FindOffsetLimit failed: `+z.SpaceName()) {
-		return rows, Tt.QueryMetaFrom(res, err)
+		return rows, Tt.QueryMetaFrom(resp, err)
 	}
-	tuples := res.Tuples()
-	rows = make([]A.X, len(tuples))
-	for z, row := range tuples {
-		rows[z] = row
+	res, err := resp.Decode()
+	if L.IsError(err, `Zzz.FindOffsetLimit failed: `+z.SpaceName()) {
+		return rows, Tt.QueryMetaFrom(resp, err)
 	}
-	return rows, Tt.QueryMetaFrom(res, nil)
+	rows = make([]A.X, len(res))
+	for _, row := range res {
+		row, ok := row.([]any)
+		if ok {
+			rows = append(rows, row)
+		}
+	}
+	return rows, Tt.QueryMetaFrom(resp, nil)
 }
 
 // Total count number of rows

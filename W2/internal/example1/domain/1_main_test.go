@@ -13,11 +13,11 @@ import (
 	"github.com/kpango/fastime"
 	"github.com/ory/dockertest/v3"
 
+	"example1/conf"
+	"example1/model"
+	"example1/model/mAuth/wcAuth"
 	"github.com/kokizzu/gotro/L"
 	"github.com/kokizzu/gotro/S"
-	"github.com/kokizzu/gotro/W2/internal/example1/conf"
-	"github.com/kokizzu/gotro/W2/internal/example1/model"
-	"github.com/kokizzu/gotro/W2/internal/example1/model/mAuth/wcAuth"
 )
 
 type DockerComposeConf struct { // https://zhwt.github.io/yaml-to-go/

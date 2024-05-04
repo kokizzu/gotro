@@ -1,13 +1,14 @@
 package conf
 
 import (
+	"context"
 	"database/sql"
 	"fmt"
+	"time"
 
 	_ "github.com/ClickHouse/clickhouse-go/v2"
-	"github.com/tarantool/go-tarantool"
-
 	"github.com/kokizzu/gotro/L"
+	"github.com/tarantool/go-tarantool/v2"
 )
 
 func ConnectTarantool() *tarantool.Connection {
@@ -15,9 +16,12 @@ func ConnectTarantool() *tarantool.Connection {
 		TARANTOOL_HOST,
 		TARANTOOL_PORT,
 	)
-	taran, err := tarantool.Connect(hostPort, tarantool.Opts{
-		User: TARANTOOL_USER,
-		Pass: TARANTOOL_PASS,
+	taran, err := tarantool.Connect(context.Background(), tarantool.NetDialer{
+		Address:  hostPort,
+		User:     TARANTOOL_USER,
+		Password: TARANTOOL_PASS,
+	}, tarantool.Opts{
+		Timeout: 8 * time.Second,
 	})
 	L.PanicIf(err, `tarantool.Connect `+hostPort)
 	return taran

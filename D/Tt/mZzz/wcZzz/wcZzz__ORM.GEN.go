@@ -5,6 +5,8 @@ package wcZzz
 import (
 	`github.com/kokizzu/gotro/D/Tt/mZzz/rqZzz`
 
+	`github.com/tarantool/go-tarantool/v2`
+
 	`github.com/kokizzu/gotro/A`
 	`github.com/kokizzu/gotro/D/Tt`
 	`github.com/kokizzu/gotro/L`
@@ -20,13 +22,14 @@ import (
 // ZzzMutator DAO writer/command struct
 type ZzzMutator struct {
 	rqZzz.Zzz
-	mutations []A.X
-	logs      []A.X
+	mutations *tarantool.Operations
+	logs	  []A.X
 }
 
 // NewZzzMutator create new ORM writer/command object
 func NewZzzMutator(adapter *Tt.Adapter) (res *ZzzMutator) {
 	res = &ZzzMutator{Zzz: rqZzz.Zzz{Adapter: adapter}}
+	res.mutations = tarantool.NewOperations()
 	res.Coords = []any{}
 	return
 }
@@ -38,18 +41,22 @@ func (z *ZzzMutator) Logs() []A.X { //nolint:dupl false positive
 
 // HaveMutation check whether Set* methods ever called
 func (z *ZzzMutator) HaveMutation() bool { //nolint:dupl false positive
-	return len(z.mutations) > 0
+	return len(z.logs) > 0
 }
 
 // ClearMutations clear all previously called Set* methods
 func (z *ZzzMutator) ClearMutations() { //nolint:dupl false positive
-	z.mutations = []A.X{}
+	z.mutations = tarantool.NewOperations()
 	z.logs = []A.X{}
 }
 
 // DoOverwriteById update all columns, error if not exists, not using mutations/Set*
 func (z *ZzzMutator) DoOverwriteById() bool { //nolint:dupl false positive
-	_, err := z.Adapter.Update(z.SpaceName(), z.UniqueIndexId(), A.X{z.Id}, z.ToUpdateArray())
+	_, err := z.Adapter.Connection.Do(tarantool.NewUpdateRequest(z.SpaceName()).
+		Index(z.UniqueIndexId()).
+		Key(A.X{z.Id}).
+		Operations(z.ToUpdateArray()),
+	).Get()
 	return !L.IsError(err, `Zzz.DoOverwriteById failed: `+z.SpaceName())
 }
 
@@ -58,13 +65,22 @@ func (z *ZzzMutator) DoUpdateById() bool { //nolint:dupl false positive
 	if !z.HaveMutation() {
 		return true
 	}
-	_, err := z.Adapter.Update(z.SpaceName(), z.UniqueIndexId(), A.X{z.Id}, z.mutations)
+	_, err := z.Adapter.Connection.Do(
+		tarantool.NewUpdateRequest(z.SpaceName()).
+		Index(z.UniqueIndexId()).
+		Key(A.X{z.Id}).
+		Operations(z.mutations),
+	).Get()
 	return !L.IsError(err, `Zzz.DoUpdateById failed: `+z.SpaceName())
 }
 
 // DoDeletePermanentById permanent delete
 func (z *ZzzMutator) DoDeletePermanentById() bool { //nolint:dupl false positive
-	_, err := z.Adapter.Delete(z.SpaceName(), z.UniqueIndexId(), A.X{z.Id})
+	_, err := z.Adapter.Connection.Do(
+		tarantool.NewDeleteRequest(z.SpaceName()).
+		Index(z.UniqueIndexId()).
+		Key(A.X{z.Id}),
+	).Get()
 	return !L.IsError(err, `Zzz.DoDeletePermanentById failed: `+z.SpaceName())
 }
 
@@ -83,11 +99,15 @@ func (z *ZzzMutator) DoDeletePermanentById() bool { //nolint:dupl false positive
 // DoInsert insert, error if already exists
 func (z *ZzzMutator) DoInsert() bool { //nolint:dupl false positive
 	arr := z.ToArray()
-	row, err := z.Adapter.Insert(z.SpaceName(), arr)
+	row, err := z.Adapter.Connection.Do(
+		tarantool.NewInsertRequest(z.SpaceName()).
+		Tuple(arr),
+	).Get()
 	if err == nil {
-		tup := row.Tuples()
-		if len(tup) > 0 && len(tup[0]) > 0 && tup[0][0] != nil {
-			z.Id = X.ToU(tup[0][0])
+		if len(row) > 0 {
+			if cells, ok := row[0].([]any); ok && len(cells) > 0 {
+				z.Id = X.ToU(cells[0])
+			}
 		}
 	}
 	return !L.IsError(err, `Zzz.DoInsert failed: `+z.SpaceName() + `\n%#v`, arr)
@@ -98,11 +118,15 @@ func (z *ZzzMutator) DoInsert() bool { //nolint:dupl false positive
 // previous name: DoReplace
 func (z *ZzzMutator) DoUpsert() bool { //nolint:dupl false positive
 	arr := z.ToArray()
-	row, err := z.Adapter.Replace(z.SpaceName(), arr)
+	row, err := z.Adapter.Connection.Do(
+		tarantool.NewReplaceRequest(z.SpaceName()).
+		Tuple(arr),
+	).Get()
 	if err == nil {
-		tup := row.Tuples()
-		if len(tup) > 0 && len(tup[0]) > 0 && tup[0][0] != nil {
-			z.Id = X.ToU(tup[0][0])
+		if len(row) > 0 {
+			if cells, ok := row[0].([]any); ok && len(cells) > 0 {
+				z.Id = X.ToU(cells[0])
+			}
 		}
 	}
 	return !L.IsError(err, `Zzz.DoUpsert failed: `+z.SpaceName()+ `\n%#v`, arr)
@@ -111,7 +135,7 @@ func (z *ZzzMutator) DoUpsert() bool { //nolint:dupl false positive
 // SetId create mutations, should not duplicate
 func (z *ZzzMutator) SetId(val uint64) bool { //nolint:dupl false positive
 	if val != z.Id {
-		z.mutations = append(z.mutations, A.X{`=`, 0, val})
+		z.mutations.Assign(0, val)
 		z.logs = append(z.logs, A.X{`id`, z.Id, val})
 		z.Id = val
 		return true
@@ -122,7 +146,7 @@ func (z *ZzzMutator) SetId(val uint64) bool { //nolint:dupl false positive
 // SetCreatedAt create mutations, should not duplicate
 func (z *ZzzMutator) SetCreatedAt(val int64) bool { //nolint:dupl false positive
 	if val != z.CreatedAt {
-		z.mutations = append(z.mutations, A.X{`=`, 1, val})
+		z.mutations.Assign(1, val)
 		z.logs = append(z.logs, A.X{`createdAt`, z.CreatedAt, val})
 		z.CreatedAt = val
 		return true
@@ -132,7 +156,7 @@ func (z *ZzzMutator) SetCreatedAt(val int64) bool { //nolint:dupl false positive
 
 // SetCoords create mutations, should not duplicate
 func (z *ZzzMutator) SetCoords(val []any) bool { //nolint:dupl false positive
-	z.mutations = append(z.mutations, A.X{`=`, 2, val})
+	z.mutations.Assign(2, val)
 	z.logs = append(z.logs, A.X{`coords`, z.Coords, val})
 	z.Coords = val
 	return true
@@ -141,7 +165,7 @@ func (z *ZzzMutator) SetCoords(val []any) bool { //nolint:dupl false positive
 // SetName create mutations, should not duplicate
 func (z *ZzzMutator) SetName(val string) bool { //nolint:dupl false positive
 	if val != z.Name {
-		z.mutations = append(z.mutations, A.X{`=`, 3, val})
+		z.mutations.Assign(3, val)
 		z.logs = append(z.logs, A.X{`name`, z.Name, val})
 		z.Name = val
 		return true
@@ -152,7 +176,7 @@ func (z *ZzzMutator) SetName(val string) bool { //nolint:dupl false positive
 // SetHeightMeter create mutations, should not duplicate
 func (z *ZzzMutator) SetHeightMeter(val float64) bool { //nolint:dupl false positive
 	if val != z.HeightMeter {
-		z.mutations = append(z.mutations, A.X{`=`, 4, val})
+		z.mutations.Assign(4, val)
 		z.logs = append(z.logs, A.X{`heightMeter`, z.HeightMeter, val})
 		z.HeightMeter = val
 		return true

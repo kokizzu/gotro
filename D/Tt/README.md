@@ -18,7 +18,7 @@ go install github.com/kokizzu/replacer@latest
 ## How to create a connection
 
 ```go
-import "github.com/tarantool/go-tarantool"
+import "github.com/tarantool/go-tarantool/v2"
 import "github.com/kokizzu/gotro/L"
 
 func ConnectTarantool() *tarantool.Connection {

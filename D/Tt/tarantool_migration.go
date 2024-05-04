@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/alitto/pond"
+	"github.com/tarantool/go-tarantool/v2"
 
 	"github.com/kokizzu/gotro/A"
 	"github.com/kokizzu/gotro/L"
@@ -44,7 +45,7 @@ const (
 	//Number   DataType = `number` // use double instead
 	//Decimal  DataType = `decimal` // unsupported
 	//DateTime DataType = `datetime` // unsupported
-	//Uuid     DataType = `string`  // `uuid` // https://github.com/tarantool/go-tarantool/issues/90
+	//Uuid     DataType = `string`  // `uuid` // https://github.com/tarantool/go-tarantool/v2/issues/90
 	//Scalar   DataType = `scalar`
 	//Map      DataType = `map`
 
@@ -276,7 +277,7 @@ func (a *Adapter) UpsertTable(tableName TableName, prop *TableProp) bool {
 		})
 	}
 	// need refresh index after migrate
-	// https://github.com/tarantool/go-tarantool/pull/259#pullrequestreview-1242058107
+	// https://github.com/tarantool/go-tarantool/v2/pull/259#pullrequestreview-1242058107
 	a.Connection = a.Reconnect()
 	return true
 }
@@ -289,7 +290,7 @@ func (a *Adapter) ExecTarantool(funcName string, params A.X) bool {
 func (a *Adapter) ExecTarantoolVerbose(funcName string, params A.X) string {
 	Descr(funcName)
 	Descr(params)
-	res, err := a.Call(funcName, params)
+	res, err := a.Connection.Do(tarantool.NewCallRequest(funcName).Args(params)).Get()
 	if err != nil {
 		if len(params) > 0 {
 			errStr := err.Error()
@@ -304,7 +305,7 @@ func (a *Adapter) ExecTarantoolVerbose(funcName string, params A.X) string {
 			return err.Error()
 		}
 	}
-	Descr(res.Tuples())
+	Descr(res)
 	return ``
 }
 
@@ -316,26 +317,31 @@ func (a *Adapter) ExecBoxSpace(funcName string, params A.X) bool {
 func (a *Adapter) ExecBoxSpaceVerbose(funcName string, params A.X) string {
 	Descr(funcName)
 	Descr(params)
-	res, err := a.Call(BoxSpacePrefix+funcName, params)
+	res, err := a.Connection.Do(tarantool.NewCallRequest(BoxSpacePrefix + funcName).Args(params)).Get()
 	if L.IsError(err, `ExecBoxSpace failed: `+funcName) {
 		L.Describe(params)
 		return err.Error()
 	}
-	Descr(res.Tuples())
+	Descr(res)
 	return ``
 }
 
-// ignore return value
+// CallBoxSpace ignore return value
 func (a *Adapter) CallBoxSpace(funcName string, params A.X) (rows [][]any) {
 	Descr(funcName)
 	Descr(params)
-	res, err := a.Call(BoxSpacePrefix+funcName, params)
+	res, err := a.Connection.Do(tarantool.NewCallRequest(BoxSpacePrefix + funcName).Args(params)).Get()
 	Descr(res)
 	if L.IsError(err, `ExecBoxSpace failed: `+funcName) {
 		L.Describe(params)
 		return
 	}
-	rows = res.Tuples()
+	rows = make([][]any, 0)
+	for _, row := range res {
+		if row, ok := row.([]any); ok {
+			rows = append(rows, row)
+		}
+	}
 	return
 }
 
@@ -350,7 +356,10 @@ func (a *Adapter) TruncateTable(tableName string) bool {
 func (a *Adapter) ReformatTable(tableName string, fields []Field) bool {
 	// check old schema
 	a.Connection = a.Reconnect() // need reconnect after creating space or a.Schema.Spaces will be empty
-	schema := a.Schema
+	schema, err := tarantool.GetSchema(a.Connection)
+	if L.IsError(err, `GetSchema failed`) {
+		return false
+	}
 	table := schema.Spaces[tableName]
 	if len(table.Fields) == 0 { // new table, create anyway
 		return a.ExecBoxSpace(tableName+`:format`, A.X{
@@ -363,7 +372,7 @@ func (a *Adapter) ReformatTable(tableName string, fields []Field) bool {
 	haveIdField := false
 	for idx, newField := range fields { // diff and create nullable field
 		origField := table.FieldsById[uint32(idx)]
-		if origField != nil && origField.Type == string(newField.Type) {
+		if origField.Type == string(newField.Type) {
 			newFields = append(newFields, NullableField{Name: newField.Name, Type: newField.Type})
 		} else {
 			newFields = append(newFields, NullableField{Name: newField.Name, Type: newField.Type, IsNullable: true})
@@ -450,19 +459,22 @@ func (a *Adapter) MigrateTables(tables map[TableName]*TableProp) {
 func CheckTarantoolTables(tConn *Adapter, tables map[TableName]*TableProp) {
 	for tableName := range tables {
 		tableName := string(tableName)
-		res, err := tConn.Call(`box.space.`+tableName+`:format`, []any{})
+		res, err := tConn.Connection.Do(tarantool.NewCallRequest(`box.space.` + tableName + `:format`).Args([]any{})).Get()
 		L.PanicIf(err, `please run TABLE migration on %v for tarantool`, tableName)
-		rows := res.Tuples()
-		if len(rows) != 1 {
+		if len(res) != 1 {
 			L.Panic(`please run FIELDS migration on %v for tarantool`, tableName)
 		}
 		columnNameTypes := map[string]string{}
-		for _, row := range rows[0] {
-			m, ok := row.(map[any]any)
-			if !ok {
-				L.Panic(`please run FIELD migration on %v for tarantool: %v`, tableName, row)
+		if len(res) > 0 {
+			if rows, ok := res[0].([]any); ok {
+				for _, row := range rows {
+					m, ok := row.(map[any]any)
+					if !ok {
+						L.Panic(`please run FIELD migration on %v for tarantool: %v`, tableName, row)
+					}
+					columnNameTypes[X.ToS(m[`name`])] = X.ToS(m[`type`])
+				}
 			}
-			columnNameTypes[X.ToS(m[`name`])] = X.ToS(m[`type`])
 		}
 		for _, field := range tables[TableName(tableName)].Fields {
 			existingType := columnNameTypes[field.Name]

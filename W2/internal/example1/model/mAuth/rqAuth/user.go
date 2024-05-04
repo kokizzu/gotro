@@ -3,8 +3,8 @@ package rqAuth
 import (
 	"golang.org/x/crypto/bcrypt"
 
+	"example1/conf"
 	"github.com/kokizzu/gotro/L"
-	"github.com/kokizzu/gotro/W2/internal/example1/conf"
 	"github.com/kokizzu/gotro/X"
 )
 

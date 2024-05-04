@@ -5,6 +5,8 @@ package wcAuth
 import (
 	"example2/model/mAuth/rqAuth"
 
+	"github.com/tarantool/go-tarantool/v2"
+
 	"github.com/kokizzu/gotro/A"
 	"github.com/kokizzu/gotro/D/Tt"
 	"github.com/kokizzu/gotro/L"
@@ -21,13 +23,14 @@ import (
 //go:generate replacer -afterprefix "By\" form" "By,string\" form" type wcAuth__ORM.GEN.go
 type SessionsMutator struct {
 	rqAuth.Sessions
-	mutations []A.X
+	mutations *tarantool.Operations
 	logs      []A.X
 }
 
 // NewSessionsMutator create new ORM writer/command object
 func NewSessionsMutator(adapter *Tt.Adapter) (res *SessionsMutator) {
 	res = &SessionsMutator{Sessions: rqAuth.Sessions{Adapter: adapter}}
+	res.mutations = tarantool.NewOperations()
 	return
 }
 
@@ -38,12 +41,12 @@ func (s *SessionsMutator) Logs() []A.X { //nolint:dupl false positive
 
 // HaveMutation check whether Set* methods ever called
 func (s *SessionsMutator) HaveMutation() bool { //nolint:dupl false positive
-	return len(s.mutations) > 0
+	return len(s.logs) > 0
 }
 
 // ClearMutations clear all previously called Set* methods
 func (s *SessionsMutator) ClearMutations() { //nolint:dupl false positive
-	s.mutations = []A.X{}
+	s.mutations = tarantool.NewOperations()
 	s.logs = []A.X{}
 }
 
@@ -63,7 +66,11 @@ func (s *SessionsMutator) ClearMutations() { //nolint:dupl false positive
 
 // DoOverwriteBySessionToken update all columns, error if not exists, not using mutations/Set*
 func (s *SessionsMutator) DoOverwriteBySessionToken() bool { //nolint:dupl false positive
-	_, err := s.Adapter.Update(s.SpaceName(), s.UniqueIndexSessionToken(), A.X{s.SessionToken}, s.ToUpdateArray())
+	_, err := s.Adapter.Connection.Do(tarantool.NewUpdateRequest(s.SpaceName()).
+		Index(s.UniqueIndexSessionToken()).
+		Key(A.X{s.SessionToken}).
+		Operations(s.ToUpdateArray()),
+	).Get()
 	return !L.IsError(err, `Sessions.DoOverwriteBySessionToken failed: `+s.SpaceName())
 }
 
@@ -72,20 +79,32 @@ func (s *SessionsMutator) DoUpdateBySessionToken() bool { //nolint:dupl false po
 	if !s.HaveMutation() {
 		return true
 	}
-	_, err := s.Adapter.Update(s.SpaceName(), s.UniqueIndexSessionToken(), A.X{s.SessionToken}, s.mutations)
+	_, err := s.Adapter.Connection.Do(
+		tarantool.NewUpdateRequest(s.SpaceName()).
+			Index(s.UniqueIndexSessionToken()).
+			Key(A.X{s.SessionToken}).
+			Operations(s.mutations),
+	).Get()
 	return !L.IsError(err, `Sessions.DoUpdateBySessionToken failed: `+s.SpaceName())
 }
 
 // DoDeletePermanentBySessionToken permanent delete
 func (s *SessionsMutator) DoDeletePermanentBySessionToken() bool { //nolint:dupl false positive
-	_, err := s.Adapter.Delete(s.SpaceName(), s.UniqueIndexSessionToken(), A.X{s.SessionToken})
+	_, err := s.Adapter.Connection.Do(
+		tarantool.NewDeleteRequest(s.SpaceName()).
+			Index(s.UniqueIndexSessionToken()).
+			Key(A.X{s.SessionToken}),
+	).Get()
 	return !L.IsError(err, `Sessions.DoDeletePermanentBySessionToken failed: `+s.SpaceName())
 }
 
 // DoInsert insert, error if already exists
 func (s *SessionsMutator) DoInsert() bool { //nolint:dupl false positive
 	arr := s.ToArray()
-	_, err := s.Adapter.Insert(s.SpaceName(), arr)
+	_, err := s.Adapter.Connection.Do(
+		tarantool.NewInsertRequest(s.SpaceName()).
+			Tuple(arr),
+	).Get()
 	return !L.IsError(err, `Sessions.DoInsert failed: `+s.SpaceName()+`\n%#v`, arr)
 }
 
@@ -94,14 +113,17 @@ func (s *SessionsMutator) DoInsert() bool { //nolint:dupl false positive
 // previous name: DoReplace
 func (s *SessionsMutator) DoUpsert() bool { //nolint:dupl false positive
 	arr := s.ToArray()
-	_, err := s.Adapter.Replace(s.SpaceName(), arr)
+	_, err := s.Adapter.Connection.Do(
+		tarantool.NewReplaceRequest(s.SpaceName()).
+			Tuple(arr),
+	).Get()
 	return !L.IsError(err, `Sessions.DoUpsert failed: `+s.SpaceName()+`\n%#v`, arr)
 }
 
 // SetSessionToken create mutations, should not duplicate
 func (s *SessionsMutator) SetSessionToken(val string) bool { //nolint:dupl false positive
 	if val != s.SessionToken {
-		s.mutations = append(s.mutations, A.X{`=`, 0, val})
+		s.mutations.Assign(0, val)
 		s.logs = append(s.logs, A.X{`sessionToken`, s.SessionToken, val})
 		s.SessionToken = val
 		return true
@@ -112,7 +134,7 @@ func (s *SessionsMutator) SetSessionToken(val string) bool { //nolint:dupl false
 // SetUserId create mutations, should not duplicate
 func (s *SessionsMutator) SetUserId(val uint64) bool { //nolint:dupl false positive
 	if val != s.UserId {
-		s.mutations = append(s.mutations, A.X{`=`, 1, val})
+		s.mutations.Assign(1, val)
 		s.logs = append(s.logs, A.X{`userId`, s.UserId, val})
 		s.UserId = val
 		return true
@@ -123,7 +145,7 @@ func (s *SessionsMutator) SetUserId(val uint64) bool { //nolint:dupl false posit
 // SetExpiredAt create mutations, should not duplicate
 func (s *SessionsMutator) SetExpiredAt(val int64) bool { //nolint:dupl false positive
 	if val != s.ExpiredAt {
-		s.mutations = append(s.mutations, A.X{`=`, 2, val})
+		s.mutations.Assign(2, val)
 		s.logs = append(s.logs, A.X{`expiredAt`, s.ExpiredAt, val})
 		s.ExpiredAt = val
 		return true
@@ -134,7 +156,7 @@ func (s *SessionsMutator) SetExpiredAt(val int64) bool { //nolint:dupl false pos
 // SetDevice create mutations, should not duplicate
 func (s *SessionsMutator) SetDevice(val string) bool { //nolint:dupl false positive
 	if val != s.Device {
-		s.mutations = append(s.mutations, A.X{`=`, 3, val})
+		s.mutations.Assign(3, val)
 		s.logs = append(s.logs, A.X{`device`, s.Device, val})
 		s.Device = val
 		return true
@@ -145,7 +167,7 @@ func (s *SessionsMutator) SetDevice(val string) bool { //nolint:dupl false posit
 // SetLoginAt create mutations, should not duplicate
 func (s *SessionsMutator) SetLoginAt(val int64) bool { //nolint:dupl false positive
 	if val != s.LoginAt {
-		s.mutations = append(s.mutations, A.X{`=`, 4, val})
+		s.mutations.Assign(4, val)
 		s.logs = append(s.logs, A.X{`loginAt`, s.LoginAt, val})
 		s.LoginAt = val
 		return true
@@ -156,7 +178,7 @@ func (s *SessionsMutator) SetLoginAt(val int64) bool { //nolint:dupl false posit
 // SetLoginIPs create mutations, should not duplicate
 func (s *SessionsMutator) SetLoginIPs(val string) bool { //nolint:dupl false positive
 	if val != s.LoginIPs {
-		s.mutations = append(s.mutations, A.X{`=`, 5, val})
+		s.mutations.Assign(5, val)
 		s.logs = append(s.logs, A.X{`loginIPs`, s.LoginIPs, val})
 		s.LoginIPs = val
 		return true
@@ -167,7 +189,7 @@ func (s *SessionsMutator) SetLoginIPs(val string) bool { //nolint:dupl false pos
 // SetTenantCode create mutations, should not duplicate
 func (s *SessionsMutator) SetTenantCode(val string) bool { //nolint:dupl false positive
 	if val != s.TenantCode {
-		s.mutations = append(s.mutations, A.X{`=`, 6, val})
+		s.mutations.Assign(6, val)
 		s.logs = append(s.logs, A.X{`tenantCode`, s.TenantCode, val})
 		s.TenantCode = val
 		return true
@@ -219,13 +241,14 @@ func (s *SessionsMutator) SetAll(from rqAuth.Sessions, excludeMap, forceMap M.SB
 // TenantsMutator DAO writer/command struct
 type TenantsMutator struct {
 	rqAuth.Tenants
-	mutations []A.X
+	mutations *tarantool.Operations
 	logs      []A.X
 }
 
 // NewTenantsMutator create new ORM writer/command object
 func NewTenantsMutator(adapter *Tt.Adapter) (res *TenantsMutator) {
 	res = &TenantsMutator{Tenants: rqAuth.Tenants{Adapter: adapter}}
+	res.mutations = tarantool.NewOperations()
 	return
 }
 
@@ -236,18 +259,22 @@ func (t *TenantsMutator) Logs() []A.X { //nolint:dupl false positive
 
 // HaveMutation check whether Set* methods ever called
 func (t *TenantsMutator) HaveMutation() bool { //nolint:dupl false positive
-	return len(t.mutations) > 0
+	return len(t.logs) > 0
 }
 
 // ClearMutations clear all previously called Set* methods
 func (t *TenantsMutator) ClearMutations() { //nolint:dupl false positive
-	t.mutations = []A.X{}
+	t.mutations = tarantool.NewOperations()
 	t.logs = []A.X{}
 }
 
 // DoOverwriteById update all columns, error if not exists, not using mutations/Set*
 func (t *TenantsMutator) DoOverwriteById() bool { //nolint:dupl false positive
-	_, err := t.Adapter.Update(t.SpaceName(), t.UniqueIndexId(), A.X{t.Id}, t.ToUpdateArray())
+	_, err := t.Adapter.Connection.Do(tarantool.NewUpdateRequest(t.SpaceName()).
+		Index(t.UniqueIndexId()).
+		Key(A.X{t.Id}).
+		Operations(t.ToUpdateArray()),
+	).Get()
 	return !L.IsError(err, `Tenants.DoOverwriteById failed: `+t.SpaceName())
 }
 
@@ -256,13 +283,22 @@ func (t *TenantsMutator) DoUpdateById() bool { //nolint:dupl false positive
 	if !t.HaveMutation() {
 		return true
 	}
-	_, err := t.Adapter.Update(t.SpaceName(), t.UniqueIndexId(), A.X{t.Id}, t.mutations)
+	_, err := t.Adapter.Connection.Do(
+		tarantool.NewUpdateRequest(t.SpaceName()).
+			Index(t.UniqueIndexId()).
+			Key(A.X{t.Id}).
+			Operations(t.mutations),
+	).Get()
 	return !L.IsError(err, `Tenants.DoUpdateById failed: `+t.SpaceName())
 }
 
 // DoDeletePermanentById permanent delete
 func (t *TenantsMutator) DoDeletePermanentById() bool { //nolint:dupl false positive
-	_, err := t.Adapter.Delete(t.SpaceName(), t.UniqueIndexId(), A.X{t.Id})
+	_, err := t.Adapter.Connection.Do(
+		tarantool.NewDeleteRequest(t.SpaceName()).
+			Index(t.UniqueIndexId()).
+			Key(A.X{t.Id}),
+	).Get()
 	return !L.IsError(err, `Tenants.DoDeletePermanentById failed: `+t.SpaceName())
 }
 
@@ -282,7 +318,11 @@ func (t *TenantsMutator) DoDeletePermanentById() bool { //nolint:dupl false posi
 
 // DoOverwriteByTenantCode update all columns, error if not exists, not using mutations/Set*
 func (t *TenantsMutator) DoOverwriteByTenantCode() bool { //nolint:dupl false positive
-	_, err := t.Adapter.Update(t.SpaceName(), t.UniqueIndexTenantCode(), A.X{t.TenantCode}, t.ToUpdateArray())
+	_, err := t.Adapter.Connection.Do(tarantool.NewUpdateRequest(t.SpaceName()).
+		Index(t.UniqueIndexTenantCode()).
+		Key(A.X{t.TenantCode}).
+		Operations(t.ToUpdateArray()),
+	).Get()
 	return !L.IsError(err, `Tenants.DoOverwriteByTenantCode failed: `+t.SpaceName())
 }
 
@@ -291,24 +331,37 @@ func (t *TenantsMutator) DoUpdateByTenantCode() bool { //nolint:dupl false posit
 	if !t.HaveMutation() {
 		return true
 	}
-	_, err := t.Adapter.Update(t.SpaceName(), t.UniqueIndexTenantCode(), A.X{t.TenantCode}, t.mutations)
+	_, err := t.Adapter.Connection.Do(
+		tarantool.NewUpdateRequest(t.SpaceName()).
+			Index(t.UniqueIndexTenantCode()).
+			Key(A.X{t.TenantCode}).
+			Operations(t.mutations),
+	).Get()
 	return !L.IsError(err, `Tenants.DoUpdateByTenantCode failed: `+t.SpaceName())
 }
 
 // DoDeletePermanentByTenantCode permanent delete
 func (t *TenantsMutator) DoDeletePermanentByTenantCode() bool { //nolint:dupl false positive
-	_, err := t.Adapter.Delete(t.SpaceName(), t.UniqueIndexTenantCode(), A.X{t.TenantCode})
+	_, err := t.Adapter.Connection.Do(
+		tarantool.NewDeleteRequest(t.SpaceName()).
+			Index(t.UniqueIndexTenantCode()).
+			Key(A.X{t.TenantCode}),
+	).Get()
 	return !L.IsError(err, `Tenants.DoDeletePermanentByTenantCode failed: `+t.SpaceName())
 }
 
 // DoInsert insert, error if already exists
 func (t *TenantsMutator) DoInsert() bool { //nolint:dupl false positive
 	arr := t.ToArray()
-	row, err := t.Adapter.Insert(t.SpaceName(), arr)
+	row, err := t.Adapter.Connection.Do(
+		tarantool.NewInsertRequest(t.SpaceName()).
+			Tuple(arr),
+	).Get()
 	if err == nil {
-		tup := row.Tuples()
-		if len(tup) > 0 && len(tup[0]) > 0 && tup[0][0] != nil {
-			t.Id = X.ToU(tup[0][0])
+		if len(row) > 0 {
+			if cells, ok := row[0].([]any); ok && len(cells) > 0 {
+				t.Id = X.ToU(cells[0])
+			}
 		}
 	}
 	return !L.IsError(err, `Tenants.DoInsert failed: `+t.SpaceName()+`\n%#v`, arr)
@@ -319,11 +372,15 @@ func (t *TenantsMutator) DoInsert() bool { //nolint:dupl false positive
 // previous name: DoReplace
 func (t *TenantsMutator) DoUpsert() bool { //nolint:dupl false positive
 	arr := t.ToArray()
-	row, err := t.Adapter.Replace(t.SpaceName(), arr)
+	row, err := t.Adapter.Connection.Do(
+		tarantool.NewReplaceRequest(t.SpaceName()).
+			Tuple(arr),
+	).Get()
 	if err == nil {
-		tup := row.Tuples()
-		if len(tup) > 0 && len(tup[0]) > 0 && tup[0][0] != nil {
-			t.Id = X.ToU(tup[0][0])
+		if len(row) > 0 {
+			if cells, ok := row[0].([]any); ok && len(cells) > 0 {
+				t.Id = X.ToU(cells[0])
+			}
 		}
 	}
 	return !L.IsError(err, `Tenants.DoUpsert failed: `+t.SpaceName()+`\n%#v`, arr)
@@ -332,7 +389,7 @@ func (t *TenantsMutator) DoUpsert() bool { //nolint:dupl false positive
 // SetId create mutations, should not duplicate
 func (t *TenantsMutator) SetId(val uint64) bool { //nolint:dupl false positive
 	if val != t.Id {
-		t.mutations = append(t.mutations, A.X{`=`, 0, val})
+		t.mutations.Assign(0, val)
 		t.logs = append(t.logs, A.X{`id`, t.Id, val})
 		t.Id = val
 		return true
@@ -343,7 +400,7 @@ func (t *TenantsMutator) SetId(val uint64) bool { //nolint:dupl false positive
 // SetTenantCode create mutations, should not duplicate
 func (t *TenantsMutator) SetTenantCode(val string) bool { //nolint:dupl false positive
 	if val != t.TenantCode {
-		t.mutations = append(t.mutations, A.X{`=`, 1, val})
+		t.mutations.Assign(1, val)
 		t.logs = append(t.logs, A.X{`tenantCode`, t.TenantCode, val})
 		t.TenantCode = val
 		return true
@@ -354,7 +411,7 @@ func (t *TenantsMutator) SetTenantCode(val string) bool { //nolint:dupl false po
 // SetCreatedAt create mutations, should not duplicate
 func (t *TenantsMutator) SetCreatedAt(val int64) bool { //nolint:dupl false positive
 	if val != t.CreatedAt {
-		t.mutations = append(t.mutations, A.X{`=`, 2, val})
+		t.mutations.Assign(2, val)
 		t.logs = append(t.logs, A.X{`createdAt`, t.CreatedAt, val})
 		t.CreatedAt = val
 		return true
@@ -365,7 +422,7 @@ func (t *TenantsMutator) SetCreatedAt(val int64) bool { //nolint:dupl false posi
 // SetCreatedBy create mutations, should not duplicate
 func (t *TenantsMutator) SetCreatedBy(val uint64) bool { //nolint:dupl false positive
 	if val != t.CreatedBy {
-		t.mutations = append(t.mutations, A.X{`=`, 3, val})
+		t.mutations.Assign(3, val)
 		t.logs = append(t.logs, A.X{`createdBy`, t.CreatedBy, val})
 		t.CreatedBy = val
 		return true
@@ -376,7 +433,7 @@ func (t *TenantsMutator) SetCreatedBy(val uint64) bool { //nolint:dupl false pos
 // SetUpdatedAt create mutations, should not duplicate
 func (t *TenantsMutator) SetUpdatedAt(val int64) bool { //nolint:dupl false positive
 	if val != t.UpdatedAt {
-		t.mutations = append(t.mutations, A.X{`=`, 4, val})
+		t.mutations.Assign(4, val)
 		t.logs = append(t.logs, A.X{`updatedAt`, t.UpdatedAt, val})
 		t.UpdatedAt = val
 		return true
@@ -387,7 +444,7 @@ func (t *TenantsMutator) SetUpdatedAt(val int64) bool { //nolint:dupl false posi
 // SetUpdatedBy create mutations, should not duplicate
 func (t *TenantsMutator) SetUpdatedBy(val uint64) bool { //nolint:dupl false positive
 	if val != t.UpdatedBy {
-		t.mutations = append(t.mutations, A.X{`=`, 5, val})
+		t.mutations.Assign(5, val)
 		t.logs = append(t.logs, A.X{`updatedBy`, t.UpdatedBy, val})
 		t.UpdatedBy = val
 		return true
@@ -398,7 +455,7 @@ func (t *TenantsMutator) SetUpdatedBy(val uint64) bool { //nolint:dupl false pos
 // SetDeletedAt create mutations, should not duplicate
 func (t *TenantsMutator) SetDeletedAt(val int64) bool { //nolint:dupl false positive
 	if val != t.DeletedAt {
-		t.mutations = append(t.mutations, A.X{`=`, 6, val})
+		t.mutations.Assign(6, val)
 		t.logs = append(t.logs, A.X{`deletedAt`, t.DeletedAt, val})
 		t.DeletedAt = val
 		return true
@@ -450,13 +507,14 @@ func (t *TenantsMutator) SetAll(from rqAuth.Tenants, excludeMap, forceMap M.SB) 
 // UsersMutator DAO writer/command struct
 type UsersMutator struct {
 	rqAuth.Users
-	mutations []A.X
+	mutations *tarantool.Operations
 	logs      []A.X
 }
 
 // NewUsersMutator create new ORM writer/command object
 func NewUsersMutator(adapter *Tt.Adapter) (res *UsersMutator) {
 	res = &UsersMutator{Users: rqAuth.Users{Adapter: adapter}}
+	res.mutations = tarantool.NewOperations()
 	return
 }
 
@@ -467,18 +525,22 @@ func (u *UsersMutator) Logs() []A.X { //nolint:dupl false positive
 
 // HaveMutation check whether Set* methods ever called
 func (u *UsersMutator) HaveMutation() bool { //nolint:dupl false positive
-	return len(u.mutations) > 0
+	return len(u.logs) > 0
 }
 
 // ClearMutations clear all previously called Set* methods
 func (u *UsersMutator) ClearMutations() { //nolint:dupl false positive
-	u.mutations = []A.X{}
+	u.mutations = tarantool.NewOperations()
 	u.logs = []A.X{}
 }
 
 // DoOverwriteById update all columns, error if not exists, not using mutations/Set*
 func (u *UsersMutator) DoOverwriteById() bool { //nolint:dupl false positive
-	_, err := u.Adapter.Update(u.SpaceName(), u.UniqueIndexId(), A.X{u.Id}, u.ToUpdateArray())
+	_, err := u.Adapter.Connection.Do(tarantool.NewUpdateRequest(u.SpaceName()).
+		Index(u.UniqueIndexId()).
+		Key(A.X{u.Id}).
+		Operations(u.ToUpdateArray()),
+	).Get()
 	return !L.IsError(err, `Users.DoOverwriteById failed: `+u.SpaceName())
 }
 
@@ -487,13 +549,22 @@ func (u *UsersMutator) DoUpdateById() bool { //nolint:dupl false positive
 	if !u.HaveMutation() {
 		return true
 	}
-	_, err := u.Adapter.Update(u.SpaceName(), u.UniqueIndexId(), A.X{u.Id}, u.mutations)
+	_, err := u.Adapter.Connection.Do(
+		tarantool.NewUpdateRequest(u.SpaceName()).
+			Index(u.UniqueIndexId()).
+			Key(A.X{u.Id}).
+			Operations(u.mutations),
+	).Get()
 	return !L.IsError(err, `Users.DoUpdateById failed: `+u.SpaceName())
 }
 
 // DoDeletePermanentById permanent delete
 func (u *UsersMutator) DoDeletePermanentById() bool { //nolint:dupl false positive
-	_, err := u.Adapter.Delete(u.SpaceName(), u.UniqueIndexId(), A.X{u.Id})
+	_, err := u.Adapter.Connection.Do(
+		tarantool.NewDeleteRequest(u.SpaceName()).
+			Index(u.UniqueIndexId()).
+			Key(A.X{u.Id}),
+	).Get()
 	return !L.IsError(err, `Users.DoDeletePermanentById failed: `+u.SpaceName())
 }
 
@@ -523,7 +594,11 @@ func (u *UsersMutator) DoDeletePermanentById() bool { //nolint:dupl false positi
 
 // DoOverwriteByEmail update all columns, error if not exists, not using mutations/Set*
 func (u *UsersMutator) DoOverwriteByEmail() bool { //nolint:dupl false positive
-	_, err := u.Adapter.Update(u.SpaceName(), u.UniqueIndexEmail(), A.X{u.Email}, u.ToUpdateArray())
+	_, err := u.Adapter.Connection.Do(tarantool.NewUpdateRequest(u.SpaceName()).
+		Index(u.UniqueIndexEmail()).
+		Key(A.X{u.Email}).
+		Operations(u.ToUpdateArray()),
+	).Get()
 	return !L.IsError(err, `Users.DoOverwriteByEmail failed: `+u.SpaceName())
 }
 
@@ -532,24 +607,37 @@ func (u *UsersMutator) DoUpdateByEmail() bool { //nolint:dupl false positive
 	if !u.HaveMutation() {
 		return true
 	}
-	_, err := u.Adapter.Update(u.SpaceName(), u.UniqueIndexEmail(), A.X{u.Email}, u.mutations)
+	_, err := u.Adapter.Connection.Do(
+		tarantool.NewUpdateRequest(u.SpaceName()).
+			Index(u.UniqueIndexEmail()).
+			Key(A.X{u.Email}).
+			Operations(u.mutations),
+	).Get()
 	return !L.IsError(err, `Users.DoUpdateByEmail failed: `+u.SpaceName())
 }
 
 // DoDeletePermanentByEmail permanent delete
 func (u *UsersMutator) DoDeletePermanentByEmail() bool { //nolint:dupl false positive
-	_, err := u.Adapter.Delete(u.SpaceName(), u.UniqueIndexEmail(), A.X{u.Email})
+	_, err := u.Adapter.Connection.Do(
+		tarantool.NewDeleteRequest(u.SpaceName()).
+			Index(u.UniqueIndexEmail()).
+			Key(A.X{u.Email}),
+	).Get()
 	return !L.IsError(err, `Users.DoDeletePermanentByEmail failed: `+u.SpaceName())
 }
 
 // DoInsert insert, error if already exists
 func (u *UsersMutator) DoInsert() bool { //nolint:dupl false positive
 	arr := u.ToArray()
-	row, err := u.Adapter.Insert(u.SpaceName(), arr)
+	row, err := u.Adapter.Connection.Do(
+		tarantool.NewInsertRequest(u.SpaceName()).
+			Tuple(arr),
+	).Get()
 	if err == nil {
-		tup := row.Tuples()
-		if len(tup) > 0 && len(tup[0]) > 0 && tup[0][0] != nil {
-			u.Id = X.ToU(tup[0][0])
+		if len(row) > 0 {
+			if cells, ok := row[0].([]any); ok && len(cells) > 0 {
+				u.Id = X.ToU(cells[0])
+			}
 		}
 	}
 	return !L.IsError(err, `Users.DoInsert failed: `+u.SpaceName()+`\n%#v`, arr)
@@ -560,11 +648,15 @@ func (u *UsersMutator) DoInsert() bool { //nolint:dupl false positive
 // previous name: DoReplace
 func (u *UsersMutator) DoUpsert() bool { //nolint:dupl false positive
 	arr := u.ToArray()
-	row, err := u.Adapter.Replace(u.SpaceName(), arr)
+	row, err := u.Adapter.Connection.Do(
+		tarantool.NewReplaceRequest(u.SpaceName()).
+			Tuple(arr),
+	).Get()
 	if err == nil {
-		tup := row.Tuples()
-		if len(tup) > 0 && len(tup[0]) > 0 && tup[0][0] != nil {
-			u.Id = X.ToU(tup[0][0])
+		if len(row) > 0 {
+			if cells, ok := row[0].([]any); ok && len(cells) > 0 {
+				u.Id = X.ToU(cells[0])
+			}
 		}
 	}
 	return !L.IsError(err, `Users.DoUpsert failed: `+u.SpaceName()+`\n%#v`, arr)
@@ -573,7 +665,7 @@ func (u *UsersMutator) DoUpsert() bool { //nolint:dupl false positive
 // SetId create mutations, should not duplicate
 func (u *UsersMutator) SetId(val uint64) bool { //nolint:dupl false positive
 	if val != u.Id {
-		u.mutations = append(u.mutations, A.X{`=`, 0, val})
+		u.mutations.Assign(0, val)
 		u.logs = append(u.logs, A.X{`id`, u.Id, val})
 		u.Id = val
 		return true
@@ -584,7 +676,7 @@ func (u *UsersMutator) SetId(val uint64) bool { //nolint:dupl false positive
 // SetEmail create mutations, should not duplicate
 func (u *UsersMutator) SetEmail(val string) bool { //nolint:dupl false positive
 	if val != u.Email {
-		u.mutations = append(u.mutations, A.X{`=`, 1, val})
+		u.mutations.Assign(1, val)
 		u.logs = append(u.logs, A.X{`email`, u.Email, val})
 		u.Email = val
 		return true
@@ -595,7 +687,7 @@ func (u *UsersMutator) SetEmail(val string) bool { //nolint:dupl false positive
 // SetPassword create mutations, should not duplicate
 func (u *UsersMutator) SetPassword(val string) bool { //nolint:dupl false positive
 	if val != u.Password {
-		u.mutations = append(u.mutations, A.X{`=`, 2, val})
+		u.mutations.Assign(2, val)
 		u.Password = val
 		return true
 	}
@@ -605,7 +697,7 @@ func (u *UsersMutator) SetPassword(val string) bool { //nolint:dupl false positi
 // SetCreatedAt create mutations, should not duplicate
 func (u *UsersMutator) SetCreatedAt(val int64) bool { //nolint:dupl false positive
 	if val != u.CreatedAt {
-		u.mutations = append(u.mutations, A.X{`=`, 3, val})
+		u.mutations.Assign(3, val)
 		u.logs = append(u.logs, A.X{`createdAt`, u.CreatedAt, val})
 		u.CreatedAt = val
 		return true
@@ -616,7 +708,7 @@ func (u *UsersMutator) SetCreatedAt(val int64) bool { //nolint:dupl false positi
 // SetCreatedBy create mutations, should not duplicate
 func (u *UsersMutator) SetCreatedBy(val uint64) bool { //nolint:dupl false positive
 	if val != u.CreatedBy {
-		u.mutations = append(u.mutations, A.X{`=`, 4, val})
+		u.mutations.Assign(4, val)
 		u.logs = append(u.logs, A.X{`createdBy`, u.CreatedBy, val})
 		u.CreatedBy = val
 		return true
@@ -627,7 +719,7 @@ func (u *UsersMutator) SetCreatedBy(val uint64) bool { //nolint:dupl false posit
 // SetUpdatedAt create mutations, should not duplicate
 func (u *UsersMutator) SetUpdatedAt(val int64) bool { //nolint:dupl false positive
 	if val != u.UpdatedAt {
-		u.mutations = append(u.mutations, A.X{`=`, 5, val})
+		u.mutations.Assign(5, val)
 		u.logs = append(u.logs, A.X{`updatedAt`, u.UpdatedAt, val})
 		u.UpdatedAt = val
 		return true
@@ -638,7 +730,7 @@ func (u *UsersMutator) SetUpdatedAt(val int64) bool { //nolint:dupl false positi
 // SetUpdatedBy create mutations, should not duplicate
 func (u *UsersMutator) SetUpdatedBy(val uint64) bool { //nolint:dupl false positive
 	if val != u.UpdatedBy {
-		u.mutations = append(u.mutations, A.X{`=`, 6, val})
+		u.mutations.Assign(6, val)
 		u.logs = append(u.logs, A.X{`updatedBy`, u.UpdatedBy, val})
 		u.UpdatedBy = val
 		return true
@@ -649,7 +741,7 @@ func (u *UsersMutator) SetUpdatedBy(val uint64) bool { //nolint:dupl false posit
 // SetDeletedAt create mutations, should not duplicate
 func (u *UsersMutator) SetDeletedAt(val int64) bool { //nolint:dupl false positive
 	if val != u.DeletedAt {
-		u.mutations = append(u.mutations, A.X{`=`, 7, val})
+		u.mutations.Assign(7, val)
 		u.logs = append(u.logs, A.X{`deletedAt`, u.DeletedAt, val})
 		u.DeletedAt = val
 		return true
@@ -660,7 +752,7 @@ func (u *UsersMutator) SetDeletedAt(val int64) bool { //nolint:dupl false positi
 // SetPasswordSetAt create mutations, should not duplicate
 func (u *UsersMutator) SetPasswordSetAt(val int64) bool { //nolint:dupl false positive
 	if val != u.PasswordSetAt {
-		u.mutations = append(u.mutations, A.X{`=`, 8, val})
+		u.mutations.Assign(8, val)
 		u.logs = append(u.logs, A.X{`passwordSetAt`, u.PasswordSetAt, val})
 		u.PasswordSetAt = val
 		return true
@@ -671,7 +763,7 @@ func (u *UsersMutator) SetPasswordSetAt(val int64) bool { //nolint:dupl false po
 // SetSecretCode create mutations, should not duplicate
 func (u *UsersMutator) SetSecretCode(val string) bool { //nolint:dupl false positive
 	if val != u.SecretCode {
-		u.mutations = append(u.mutations, A.X{`=`, 9, val})
+		u.mutations.Assign(9, val)
 		u.SecretCode = val
 		return true
 	}
@@ -681,7 +773,7 @@ func (u *UsersMutator) SetSecretCode(val string) bool { //nolint:dupl false posi
 // SetSecretCodeAt create mutations, should not duplicate
 func (u *UsersMutator) SetSecretCodeAt(val int64) bool { //nolint:dupl false positive
 	if val != u.SecretCodeAt {
-		u.mutations = append(u.mutations, A.X{`=`, 10, val})
+		u.mutations.Assign(10, val)
 		u.SecretCodeAt = val
 		return true
 	}
@@ -691,7 +783,7 @@ func (u *UsersMutator) SetSecretCodeAt(val int64) bool { //nolint:dupl false pos
 // SetVerificationSentAt create mutations, should not duplicate
 func (u *UsersMutator) SetVerificationSentAt(val int64) bool { //nolint:dupl false positive
 	if val != u.VerificationSentAt {
-		u.mutations = append(u.mutations, A.X{`=`, 11, val})
+		u.mutations.Assign(11, val)
 		u.logs = append(u.logs, A.X{`verificationSentAt`, u.VerificationSentAt, val})
 		u.VerificationSentAt = val
 		return true
@@ -702,7 +794,7 @@ func (u *UsersMutator) SetVerificationSentAt(val int64) bool { //nolint:dupl fal
 // SetVerifiedAt create mutations, should not duplicate
 func (u *UsersMutator) SetVerifiedAt(val int64) bool { //nolint:dupl false positive
 	if val != u.VerifiedAt {
-		u.mutations = append(u.mutations, A.X{`=`, 12, val})
+		u.mutations.Assign(12, val)
 		u.logs = append(u.logs, A.X{`verifiedAt`, u.VerifiedAt, val})
 		u.VerifiedAt = val
 		return true
@@ -713,7 +805,7 @@ func (u *UsersMutator) SetVerifiedAt(val int64) bool { //nolint:dupl false posit
 // SetLastLoginAt create mutations, should not duplicate
 func (u *UsersMutator) SetLastLoginAt(val int64) bool { //nolint:dupl false positive
 	if val != u.LastLoginAt {
-		u.mutations = append(u.mutations, A.X{`=`, 13, val})
+		u.mutations.Assign(13, val)
 		u.logs = append(u.logs, A.X{`lastLoginAt`, u.LastLoginAt, val})
 		u.LastLoginAt = val
 		return true
@@ -724,7 +816,7 @@ func (u *UsersMutator) SetLastLoginAt(val int64) bool { //nolint:dupl false posi
 // SetFullName create mutations, should not duplicate
 func (u *UsersMutator) SetFullName(val string) bool { //nolint:dupl false positive
 	if val != u.FullName {
-		u.mutations = append(u.mutations, A.X{`=`, 14, val})
+		u.mutations.Assign(14, val)
 		u.logs = append(u.logs, A.X{`fullName`, u.FullName, val})
 		u.FullName = val
 		return true
@@ -735,7 +827,7 @@ func (u *UsersMutator) SetFullName(val string) bool { //nolint:dupl false positi
 // SetTenantCode create mutations, should not duplicate
 func (u *UsersMutator) SetTenantCode(val string) bool { //nolint:dupl false positive
 	if val != u.TenantCode {
-		u.mutations = append(u.mutations, A.X{`=`, 15, val})
+		u.mutations.Assign(15, val)
 		u.logs = append(u.logs, A.X{`tenantCode`, u.TenantCode, val})
 		u.TenantCode = val
 		return true
@@ -746,7 +838,7 @@ func (u *UsersMutator) SetTenantCode(val string) bool { //nolint:dupl false posi
 // SetRole create mutations, should not duplicate
 func (u *UsersMutator) SetRole(val string) bool { //nolint:dupl false positive
 	if val != u.Role {
-		u.mutations = append(u.mutations, A.X{`=`, 16, val})
+		u.mutations.Assign(16, val)
 		u.logs = append(u.logs, A.X{`role`, u.Role, val})
 		u.Role = val
 		return true

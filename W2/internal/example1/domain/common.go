@@ -13,8 +13,8 @@ import (
 	"github.com/kokizzu/id64"
 	"github.com/kpango/fastime"
 
+	"example1/conf"
 	"github.com/kokizzu/gotro/L"
-	"github.com/kokizzu/gotro/W2/internal/example1/conf"
 )
 
 //go:generate gomodifytags -all -add-tags json,form,query,long,msg -transform camelcase --skip-unexported -w -file common.go

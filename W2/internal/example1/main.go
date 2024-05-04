@@ -5,10 +5,10 @@ import (
 
 	"github.com/rs/zerolog"
 
+	"example1/conf"
+	"example1/model"
 	"github.com/kokizzu/gotro/B"
 	"github.com/kokizzu/gotro/L"
-	"github.com/kokizzu/gotro/W2/internal/example1/conf"
-	"github.com/kokizzu/gotro/W2/internal/example1/model"
 
 	"github.com/joho/godotenv"
 	//"github.com/lightstep/otel-launcher-go/launcher"

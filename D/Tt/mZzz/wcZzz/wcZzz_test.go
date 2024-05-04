@@ -1,26 +1,28 @@
 package wcZzz
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"os"
 	"testing"
-
-	"github.com/kpango/fastime"
-	"github.com/ory/dockertest/v3"
-	"github.com/stretchr/testify/assert"
-	"github.com/tarantool/go-tarantool"
+	"time"
 
 	"github.com/kokizzu/gotro/D/Tt"
 	"github.com/kokizzu/gotro/D/Tt/mZzz"
 	"github.com/kokizzu/gotro/L"
+	"github.com/kokizzu/gotro/S"
+	"github.com/kpango/fastime"
+	"github.com/ory/dockertest/v3"
+	"github.com/stretchr/testify/assert"
+	"github.com/tarantool/go-tarantool/v2"
 )
 
 var globalPool *dockertest.Pool
 
 func prepareDb(onReady func(db *tarantool.Connection) int) {
 	const dockerRepo = `tarantool/tarantool`
-	const dockerVer = `2.7.2`
+	const dockerVer = `3.1`
 	const ttPort = `3301/tcp`
 	const dbConnStr = `127.0.0.1:%s`
 	const dbUser = `guest`
@@ -43,18 +45,23 @@ func prepareDb(onReady func(db *tarantool.Connection) int) {
 		var err error
 		connStr := fmt.Sprintf(dbConnStr, resource.GetPort(ttPort))
 		reconnect = func() *tarantool.Connection {
-			db, err = tarantool.Connect(connStr, tarantool.Opts{
-				User: dbUser,
-				Pass: dbPass,
+			db, err = tarantool.Connect(context.Background(), tarantool.NetDialer{
+				Address:  connStr,
+				User:     dbUser,
+				Password: dbPass,
+			}, tarantool.Opts{
+				Timeout: 8 * time.Second,
 			})
-			L.IsError(err, `tarantool.Connect: `+connStr)
+			if err != nil && !S.Contains(err.Error(), `failed to read greeting: EOF`) {
+				L.IsError(err, `tarantool.Connect`)
+			}
 			return db
 		}
 		reconnect()
 		if err != nil {
 			return err
 		}
-		_, err = db.Ping()
+		_, err = db.Do(tarantool.NewPingRequest()).Get()
 		return err
 	}); err != nil {
 		log.Printf("Could not connect to docker: %s\n", err)

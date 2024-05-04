@@ -9,9 +9,10 @@ import (
 	"github.com/kpango/fastime"
 	"github.com/stretchr/testify/assert"
 
+	"example1/model/mAuth/wcAuth"
+
 	"github.com/kokizzu/gotro/L"
 	"github.com/kokizzu/gotro/S"
-	"github.com/kokizzu/gotro/W2/internal/example1/model/mAuth/wcAuth"
 )
 
 const testDomain = `@localhost`

@@ -10,13 +10,13 @@ import (
 	"github.com/kokizzu/lexid"
 	"gopkg.in/resty.v1"
 
+	"example1/conf"
+	"example1/model/mAuth/rqAuth"
+	"example1/model/mAuth/wcAuth"
 	"github.com/kokizzu/gotro/A"
 	"github.com/kokizzu/gotro/L"
 	"github.com/kokizzu/gotro/M"
 	"github.com/kokizzu/gotro/S"
-	"github.com/kokizzu/gotro/W2/internal/example1/conf"
-	"github.com/kokizzu/gotro/W2/internal/example1/model/mAuth/rqAuth"
-	"github.com/kokizzu/gotro/W2/internal/example1/model/mAuth/wcAuth"
 	"github.com/kokizzu/gotro/X"
 )
 

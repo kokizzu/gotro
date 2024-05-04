@@ -4,12 +4,12 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/valyala/bytebufferpool"
 
+	"example1/conf"
+	"example1/domain"
 	"github.com/kokizzu/gotro/A"
 	"github.com/kokizzu/gotro/L"
 	"github.com/kokizzu/gotro/M"
 	"github.com/kokizzu/gotro/S"
-	"github.com/kokizzu/gotro/W2/internal/example1/conf"
-	"github.com/kokizzu/gotro/W2/internal/example1/domain"
 	"github.com/kokizzu/gotro/Z"
 )
 

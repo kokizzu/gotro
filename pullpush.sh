@@ -28,7 +28,7 @@ go get -u -v github.com/ory/dockertest/v3@latest
 go get -u -v github.com/kokizzu/id64@latest
 go get -u -v github.com/kokizzu/lexid@latest
 go get -u -v github.com/ClickHouse/clickhouse-go/v2@latest
-go get -u -v github.com/tarantool/go-tarantool@latest
+go get -u -v github.com/tarantool/go-tarantool/v2@latest
 go get -u -v github.com/jackc/pgx/v5@latest
 go get -u -v github.com/mitchellh/mapstructure@latest
 go get -u -v github.com/vmihailenco/msgpack/v5@latest

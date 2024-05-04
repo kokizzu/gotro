@@ -3,9 +3,9 @@ package rqAuth
 // DO NOT EDIT, will be overwritten by github.com/kokizzu/D/Tt/tarantool_orm_generator.go
 
 import (
-	"github.com/kokizzu/gotro/W2/internal/example1/model/mAuth"
+	"example1/model/mAuth"
 
-	"github.com/tarantool/go-tarantool"
+	"github.com/tarantool/go-tarantool/v2"
 
 	"github.com/kokizzu/gotro/A"
 	"github.com/kokizzu/gotro/D/Tt"
@@ -13,18 +13,17 @@ import (
 	"github.com/kokizzu/gotro/X"
 )
 
-//go:generate gomodifytags -all -add-tags json,form,query,long,msg -transform camelcase --skip-unexported -w -file rqAuth__ORM.GEN.go
-//go:generate replacer -afterprefix 'Id" form' 'Id,string" form' type rqAuth__ORM.GEN.go
-//go:generate replacer -afterprefix 'json:"id"' 'json:"id,string"' type rqAuth__ORM.GEN.go
-//go:generate replacer -afterprefix 'By" form' 'By,string" form' type rqAuth__ORM.GEN.go
-// go:generate msgp -tests=false -file rqAuth__ORM.GEN.go -o rqAuth__MSG.GEN.go
-
 // Sessions DAO reader/query struct
+//
+//go:generate gomodifytags -all -add-tags json,form,query,long,msg -transform camelcase --skip-unexported -w -file rqAuth__ORM.GEN.go
+//go:generate replacer -afterprefix "Id\" form" "Id,string\" form" type rqAuth__ORM.GEN.go
+//go:generate replacer -afterprefix "json:\"id\"" "json:\"id,string\"" type rqAuth__ORM.GEN.go
+//go:generate replacer -afterprefix "By\" form" "By,string\" form" type rqAuth__ORM.GEN.go
 type Sessions struct {
-	Adapter      *Tt.Adapter `json:"-" msg:"-" query:"-" form:"-"`
-	SessionToken string
-	UserId       uint64
-	ExpiredAt    int64
+	Adapter      *Tt.Adapter `json:"-" msg:"-" query:"-" form:"-" long:"adapter"`
+	SessionToken string      `json:"sessionToken" form:"sessionToken" query:"sessionToken" long:"sessionToken" msg:"sessionToken"`
+	UserId       uint64      `json:"userId,string" form:"userId" query:"userId" long:"userId" msg:"userId"`
+	ExpiredAt    int64       `json:"expiredAt" form:"expiredAt" query:"expiredAt" long:"expiredAt" msg:"expiredAt"`
 }
 
 // NewSessions create new ORM reader/query object
@@ -49,14 +48,22 @@ func (s *Sessions) UniqueIndexSessionToken() string { //nolint:dupl false positi
 
 // FindBySessionToken Find one by SessionToken
 func (s *Sessions) FindBySessionToken() bool { //nolint:dupl false positive
-	res, err := s.Adapter.Select(s.SpaceName(), s.UniqueIndexSessionToken(), 0, 1, tarantool.IterEq, A.X{s.SessionToken})
+	res, err := s.Adapter.Connection.Do(
+		tarantool.NewSelectRequest(s.SpaceName()).
+			Index(s.UniqueIndexSessionToken()).
+			Offset(0).
+			Limit(1).
+			Iterator(tarantool.IterEq).
+			Key(A.X{s.SessionToken}),
+	).Get()
 	if L.IsError(err, `Sessions.FindBySessionToken failed: `+s.SpaceName()) {
 		return false
 	}
-	rows := res.Tuples()
-	if len(rows) == 1 {
-		s.FromArray(rows[0])
-		return true
+	if len(res) == 1 {
+		if row, ok := res[0].([]any); ok {
+			s.FromArray(row)
+			return true
+		}
 	}
 	return false
 }
@@ -69,13 +76,20 @@ func (s *Sessions) SqlSelectAllFields() string { //nolint:dupl false positive
 	`
 }
 
+// SqlSelectAllUncensoredFields generate Sql select fields
+func (s *Sessions) SqlSelectAllUncensoredFields() string { //nolint:dupl false positive
+	return ` "sessionToken"
+	, "userId"
+	, "expiredAt"
+	`
+}
+
 // ToUpdateArray generate slice of update command
-func (s *Sessions) ToUpdateArray() A.X { //nolint:dupl false positive
-	return A.X{
-		A.X{`=`, 0, s.SessionToken},
-		A.X{`=`, 1, s.UserId},
-		A.X{`=`, 2, s.ExpiredAt},
-	}
+func (s *Sessions) ToUpdateArray() *tarantool.Operations { //nolint:dupl false positive
+	return tarantool.NewOperations().
+		Assign(0, s.SessionToken).
+		Assign(1, s.UserId).
+		Assign(2, s.ExpiredAt)
 }
 
 // IdxSessionToken return name of the index
@@ -125,16 +139,34 @@ func (s *Sessions) FromArray(a A.X) *Sessions { //nolint:dupl false positive
 	return s
 }
 
+// FromUncensoredArray convert slice to receiver fields
+func (s *Sessions) FromUncensoredArray(a A.X) *Sessions { //nolint:dupl false positive
+	s.SessionToken = X.ToS(a[0])
+	s.UserId = X.ToU(a[1])
+	s.ExpiredAt = X.ToI(a[2])
+	return s
+}
+
 // FindOffsetLimit returns slice of struct, order by idx, eg. .UniqueIndex*()
 func (s *Sessions) FindOffsetLimit(offset, limit uint32, idx string) []Sessions { //nolint:dupl false positive
 	var rows []Sessions
-	res, err := s.Adapter.Select(s.SpaceName(), idx, offset, limit, tarantool.IterAll, A.X{})
+	res, err := s.Adapter.Connection.Do(
+		tarantool.NewSelectRequest(s.SpaceName()).
+			Index(idx).
+			Offset(offset).
+			Limit(limit).
+			Iterator(tarantool.IterAll).
+			Key(A.X{}),
+	).Get()
 	if L.IsError(err, `Sessions.FindOffsetLimit failed: `+s.SpaceName()) {
 		return rows
 	}
-	for _, row := range res.Tuples() {
+	for _, row := range res {
 		item := Sessions{}
-		rows = append(rows, *item.FromArray(row))
+		row, ok := row.([]any)
+		if ok {
+			rows = append(rows, *item.FromArray(row))
+		}
 	}
 	return rows
 }
@@ -142,16 +174,29 @@ func (s *Sessions) FindOffsetLimit(offset, limit uint32, idx string) []Sessions 
 // FindArrOffsetLimit returns as slice of slice order by idx eg. .UniqueIndex*()
 func (s *Sessions) FindArrOffsetLimit(offset, limit uint32, idx string) ([]A.X, Tt.QueryMeta) { //nolint:dupl false positive
 	var rows []A.X
-	res, err := s.Adapter.Select(s.SpaceName(), idx, offset, limit, tarantool.IterAll, A.X{})
+	resp, err := s.Adapter.Connection.Do(
+		tarantool.NewSelectRequest(s.SpaceName()).
+			Index(idx).
+			Offset(offset).
+			Limit(limit).
+			Iterator(tarantool.IterAll).
+			Key(A.X{}),
+	).GetResponse()
 	if L.IsError(err, `Sessions.FindOffsetLimit failed: `+s.SpaceName()) {
-		return rows, Tt.QueryMetaFrom(res, err)
+		return rows, Tt.QueryMetaFrom(resp, err)
 	}
-	tuples := res.Tuples()
-	rows = make([]A.X, len(tuples))
-	for z, row := range tuples {
-		rows[z] = row
+	res, err := resp.Decode()
+	if L.IsError(err, `Sessions.FindOffsetLimit failed: `+s.SpaceName()) {
+		return rows, Tt.QueryMetaFrom(resp, err)
 	}
-	return rows, Tt.QueryMetaFrom(res, nil)
+	rows = make([]A.X, len(res))
+	for _, row := range res {
+		row, ok := row.([]any)
+		if ok {
+			rows = append(rows, row)
+		}
+	}
+	return rows, Tt.QueryMetaFrom(resp, nil)
 }
 
 // Total count number of rows
@@ -163,29 +208,36 @@ func (s *Sessions) Total() int64 { //nolint:dupl false positive
 	return 0
 }
 
+// SessionsFieldTypeMap returns key value of field name and key
+var SessionsFieldTypeMap = map[string]Tt.DataType{ //nolint:dupl false positive
+	`sessionToken`: Tt.String,
+	`userId`:       Tt.Unsigned,
+	`expiredAt`:    Tt.Integer,
+}
+
 // DO NOT EDIT, will be overwritten by github.com/kokizzu/D/Tt/tarantool_orm_generator.go
 
 // Users DAO reader/query struct
 type Users struct {
-	Adapter            *Tt.Adapter `json:"-" msg:"-" query:"-" form:"-"`
-	Id                 uint64
-	Email              string
-	Password           string
-	CreatedAt          int64
-	CreatedBy          uint64
-	UpdatedAt          int64
-	UpdatedBy          uint64
-	DeletedAt          int64
-	DeletedBy          uint64
-	IsDeleted          bool
-	RestoredAt         int64
-	RestoredBy         uint64
-	PasswordSetAt      int64
-	SecretCode         string
-	SecretCodeAt       int64
-	VerificationSentAt int64
-	VerifiedAt         int64
-	LastLoginAt        int64
+	Adapter            *Tt.Adapter `json:"-" msg:"-" query:"-" form:"-" long:"adapter"`
+	Id                 uint64      `json:"id,string" form:"id" query:"id" long:"id" msg:"id"`
+	Email              string      `json:"email" form:"email" query:"email" long:"email" msg:"email"`
+	Password           string      `json:"password" form:"password" query:"password" long:"password" msg:"password"`
+	CreatedAt          int64       `json:"createdAt" form:"createdAt" query:"createdAt" long:"createdAt" msg:"createdAt"`
+	CreatedBy          uint64      `json:"createdBy,string" form:"createdBy" query:"createdBy" long:"createdBy" msg:"createdBy"`
+	UpdatedAt          int64       `json:"updatedAt" form:"updatedAt" query:"updatedAt" long:"updatedAt" msg:"updatedAt"`
+	UpdatedBy          uint64      `json:"updatedBy,string" form:"updatedBy" query:"updatedBy" long:"updatedBy" msg:"updatedBy"`
+	DeletedAt          int64       `json:"deletedAt" form:"deletedAt" query:"deletedAt" long:"deletedAt" msg:"deletedAt"`
+	DeletedBy          uint64      `json:"deletedBy,string" form:"deletedBy" query:"deletedBy" long:"deletedBy" msg:"deletedBy"`
+	IsDeleted          bool        `json:"isDeleted" form:"isDeleted" query:"isDeleted" long:"isDeleted" msg:"isDeleted"`
+	RestoredAt         int64       `json:"restoredAt" form:"restoredAt" query:"restoredAt" long:"restoredAt" msg:"restoredAt"`
+	RestoredBy         uint64      `json:"restoredBy,string" form:"restoredBy" query:"restoredBy" long:"restoredBy" msg:"restoredBy"`
+	PasswordSetAt      int64       `json:"passwordSetAt" form:"passwordSetAt" query:"passwordSetAt" long:"passwordSetAt" msg:"passwordSetAt"`
+	SecretCode         string      `json:"secretCode" form:"secretCode" query:"secretCode" long:"secretCode" msg:"secretCode"`
+	SecretCodeAt       int64       `json:"secretCodeAt" form:"secretCodeAt" query:"secretCodeAt" long:"secretCodeAt" msg:"secretCodeAt"`
+	VerificationSentAt int64       `json:"verificationSentAt" form:"verificationSentAt" query:"verificationSentAt" long:"verificationSentAt" msg:"verificationSentAt"`
+	VerifiedAt         int64       `json:"verifiedAt" form:"verifiedAt" query:"verifiedAt" long:"verifiedAt" msg:"verifiedAt"`
+	LastLoginAt        int64       `json:"lastLoginAt" form:"lastLoginAt" query:"lastLoginAt" long:"lastLoginAt" msg:"lastLoginAt"`
 }
 
 // NewUsers create new ORM reader/query object
@@ -209,14 +261,22 @@ func (u *Users) UniqueIndexId() string { //nolint:dupl false positive
 
 // FindById Find one by Id
 func (u *Users) FindById() bool { //nolint:dupl false positive
-	res, err := u.Adapter.Select(u.SpaceName(), u.UniqueIndexId(), 0, 1, tarantool.IterEq, A.X{u.Id})
+	res, err := u.Adapter.Connection.Do(
+		tarantool.NewSelectRequest(u.SpaceName()).
+			Index(u.UniqueIndexId()).
+			Offset(0).
+			Limit(1).
+			Iterator(tarantool.IterEq).
+			Key(A.X{u.Id}),
+	).Get()
 	if L.IsError(err, `Users.FindById failed: `+u.SpaceName()) {
 		return false
 	}
-	rows := res.Tuples()
-	if len(rows) == 1 {
-		u.FromArray(rows[0])
-		return true
+	if len(res) == 1 {
+		if row, ok := res[0].([]any); ok {
+			u.FromArray(row)
+			return true
+		}
 	}
 	return false
 }
@@ -228,14 +288,22 @@ func (u *Users) UniqueIndexEmail() string { //nolint:dupl false positive
 
 // FindByEmail Find one by Email
 func (u *Users) FindByEmail() bool { //nolint:dupl false positive
-	res, err := u.Adapter.Select(u.SpaceName(), u.UniqueIndexEmail(), 0, 1, tarantool.IterEq, A.X{u.Email})
+	res, err := u.Adapter.Connection.Do(
+		tarantool.NewSelectRequest(u.SpaceName()).
+			Index(u.UniqueIndexEmail()).
+			Offset(0).
+			Limit(1).
+			Iterator(tarantool.IterEq).
+			Key(A.X{u.Email}),
+	).Get()
 	if L.IsError(err, `Users.FindByEmail failed: `+u.SpaceName()) {
 		return false
 	}
-	rows := res.Tuples()
-	if len(rows) == 1 {
-		u.FromArray(rows[0])
-		return true
+	if len(res) == 1 {
+		if row, ok := res[0].([]any); ok {
+			u.FromArray(row)
+			return true
+		}
 	}
 	return false
 }
@@ -263,28 +331,50 @@ func (u *Users) SqlSelectAllFields() string { //nolint:dupl false positive
 	`
 }
 
+// SqlSelectAllUncensoredFields generate Sql select fields
+func (u *Users) SqlSelectAllUncensoredFields() string { //nolint:dupl false positive
+	return ` "id"
+	, "email"
+	, "password"
+	, "createdAt"
+	, "createdBy"
+	, "updatedAt"
+	, "updatedBy"
+	, "deletedAt"
+	, "deletedBy"
+	, "isDeleted"
+	, "restoredAt"
+	, "restoredBy"
+	, "passwordSetAt"
+	, "secretCode"
+	, "secretCodeAt"
+	, "verificationSentAt"
+	, "verifiedAt"
+	, "lastLoginAt"
+	`
+}
+
 // ToUpdateArray generate slice of update command
-func (u *Users) ToUpdateArray() A.X { //nolint:dupl false positive
-	return A.X{
-		A.X{`=`, 0, u.Id},
-		A.X{`=`, 1, u.Email},
-		A.X{`=`, 2, u.Password},
-		A.X{`=`, 3, u.CreatedAt},
-		A.X{`=`, 4, u.CreatedBy},
-		A.X{`=`, 5, u.UpdatedAt},
-		A.X{`=`, 6, u.UpdatedBy},
-		A.X{`=`, 7, u.DeletedAt},
-		A.X{`=`, 8, u.DeletedBy},
-		A.X{`=`, 9, u.IsDeleted},
-		A.X{`=`, 10, u.RestoredAt},
-		A.X{`=`, 11, u.RestoredBy},
-		A.X{`=`, 12, u.PasswordSetAt},
-		A.X{`=`, 13, u.SecretCode},
-		A.X{`=`, 14, u.SecretCodeAt},
-		A.X{`=`, 15, u.VerificationSentAt},
-		A.X{`=`, 16, u.VerifiedAt},
-		A.X{`=`, 17, u.LastLoginAt},
-	}
+func (u *Users) ToUpdateArray() *tarantool.Operations { //nolint:dupl false positive
+	return tarantool.NewOperations().
+		Assign(0, u.Id).
+		Assign(1, u.Email).
+		Assign(2, u.Password).
+		Assign(3, u.CreatedAt).
+		Assign(4, u.CreatedBy).
+		Assign(5, u.UpdatedAt).
+		Assign(6, u.UpdatedBy).
+		Assign(7, u.DeletedAt).
+		Assign(8, u.DeletedBy).
+		Assign(9, u.IsDeleted).
+		Assign(10, u.RestoredAt).
+		Assign(11, u.RestoredBy).
+		Assign(12, u.PasswordSetAt).
+		Assign(13, u.SecretCode).
+		Assign(14, u.SecretCodeAt).
+		Assign(15, u.VerificationSentAt).
+		Assign(16, u.VerifiedAt).
+		Assign(17, u.LastLoginAt)
 }
 
 // IdxId return name of the index
@@ -518,16 +608,49 @@ func (u *Users) FromArray(a A.X) *Users { //nolint:dupl false positive
 	return u
 }
 
+// FromUncensoredArray convert slice to receiver fields
+func (u *Users) FromUncensoredArray(a A.X) *Users { //nolint:dupl false positive
+	u.Id = X.ToU(a[0])
+	u.Email = X.ToS(a[1])
+	u.Password = X.ToS(a[2])
+	u.CreatedAt = X.ToI(a[3])
+	u.CreatedBy = X.ToU(a[4])
+	u.UpdatedAt = X.ToI(a[5])
+	u.UpdatedBy = X.ToU(a[6])
+	u.DeletedAt = X.ToI(a[7])
+	u.DeletedBy = X.ToU(a[8])
+	u.IsDeleted = X.ToBool(a[9])
+	u.RestoredAt = X.ToI(a[10])
+	u.RestoredBy = X.ToU(a[11])
+	u.PasswordSetAt = X.ToI(a[12])
+	u.SecretCode = X.ToS(a[13])
+	u.SecretCodeAt = X.ToI(a[14])
+	u.VerificationSentAt = X.ToI(a[15])
+	u.VerifiedAt = X.ToI(a[16])
+	u.LastLoginAt = X.ToI(a[17])
+	return u
+}
+
 // FindOffsetLimit returns slice of struct, order by idx, eg. .UniqueIndex*()
 func (u *Users) FindOffsetLimit(offset, limit uint32, idx string) []Users { //nolint:dupl false positive
 	var rows []Users
-	res, err := u.Adapter.Select(u.SpaceName(), idx, offset, limit, tarantool.IterAll, A.X{})
+	res, err := u.Adapter.Connection.Do(
+		tarantool.NewSelectRequest(u.SpaceName()).
+			Index(idx).
+			Offset(offset).
+			Limit(limit).
+			Iterator(tarantool.IterAll).
+			Key(A.X{}),
+	).Get()
 	if L.IsError(err, `Users.FindOffsetLimit failed: `+u.SpaceName()) {
 		return rows
 	}
-	for _, row := range res.Tuples() {
+	for _, row := range res {
 		item := Users{}
-		rows = append(rows, *item.FromArray(row))
+		row, ok := row.([]any)
+		if ok {
+			rows = append(rows, *item.FromArray(row))
+		}
 	}
 	return rows
 }
@@ -535,16 +658,29 @@ func (u *Users) FindOffsetLimit(offset, limit uint32, idx string) []Users { //no
 // FindArrOffsetLimit returns as slice of slice order by idx eg. .UniqueIndex*()
 func (u *Users) FindArrOffsetLimit(offset, limit uint32, idx string) ([]A.X, Tt.QueryMeta) { //nolint:dupl false positive
 	var rows []A.X
-	res, err := u.Adapter.Select(u.SpaceName(), idx, offset, limit, tarantool.IterAll, A.X{})
+	resp, err := u.Adapter.Connection.Do(
+		tarantool.NewSelectRequest(u.SpaceName()).
+			Index(idx).
+			Offset(offset).
+			Limit(limit).
+			Iterator(tarantool.IterAll).
+			Key(A.X{}),
+	).GetResponse()
 	if L.IsError(err, `Users.FindOffsetLimit failed: `+u.SpaceName()) {
-		return rows, Tt.QueryMetaFrom(res, err)
+		return rows, Tt.QueryMetaFrom(resp, err)
 	}
-	tuples := res.Tuples()
-	rows = make([]A.X, len(tuples))
-	for z, row := range tuples {
-		rows[z] = row
+	res, err := resp.Decode()
+	if L.IsError(err, `Users.FindOffsetLimit failed: `+u.SpaceName()) {
+		return rows, Tt.QueryMetaFrom(resp, err)
 	}
-	return rows, Tt.QueryMetaFrom(res, nil)
+	rows = make([]A.X, len(res))
+	for _, row := range res {
+		row, ok := row.([]any)
+		if ok {
+			rows = append(rows, row)
+		}
+	}
+	return rows, Tt.QueryMetaFrom(resp, nil)
 }
 
 // Total count number of rows
@@ -554,6 +690,28 @@ func (u *Users) Total() int64 { //nolint:dupl false positive
 		return X.ToI(rows[0][0])
 	}
 	return 0
+}
+
+// UsersFieldTypeMap returns key value of field name and key
+var UsersFieldTypeMap = map[string]Tt.DataType{ //nolint:dupl false positive
+	`id`:                 Tt.Unsigned,
+	`email`:              Tt.String,
+	`password`:           Tt.String,
+	`createdAt`:          Tt.Integer,
+	`createdBy`:          Tt.Unsigned,
+	`updatedAt`:          Tt.Integer,
+	`updatedBy`:          Tt.Unsigned,
+	`deletedAt`:          Tt.Integer,
+	`deletedBy`:          Tt.Unsigned,
+	`isDeleted`:          Tt.Boolean,
+	`restoredAt`:         Tt.Integer,
+	`restoredBy`:         Tt.Unsigned,
+	`passwordSetAt`:      Tt.Integer,
+	`secretCode`:         Tt.String,
+	`secretCodeAt`:       Tt.Integer,
+	`verificationSentAt`: Tt.Integer,
+	`verifiedAt`:         Tt.Integer,
+	`lastLoginAt`:        Tt.Integer,
 }
 
 // DO NOT EDIT, will be overwritten by github.com/kokizzu/D/Tt/tarantool_orm_generator.go

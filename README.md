@@ -37,7 +37,7 @@ Usable 3rd party database adapter:
   - Pg = [PostgreSQL](/D/Pg) (OLTP, using JSONB)
   - Ql = [QLDB](/D/Ql) (please use better database -_-)
   - Rc = [BigCache](/D/Rc)
-  - Rd = [Redis](/D/Rd)
+  - Rd = [Redis](/D/Rd) works also for KvRocks, KeyDB, etc
   - Tt = [Tarantool](/D/Tt) (OLTP and cache, have migration tool) -- recommended
   
 Other than above, you must use officially provided database adapter from respective vendors. For docker compose example. you can see [local-docker-db](//github.com/alexmacarthur/local-docker-db)

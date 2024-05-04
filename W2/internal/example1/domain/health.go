@@ -10,9 +10,9 @@ import (
 	"github.com/shirou/gopsutil/v3/disk"
 	"github.com/shirou/gopsutil/v3/mem"
 
+	"example1/model/mAuth/rqAuth"
+	"example1/model/mAuth/wcAuth"
 	"github.com/kokizzu/gotro/L"
-	"github.com/kokizzu/gotro/W2/internal/example1/model/mAuth/rqAuth"
-	"github.com/kokizzu/gotro/W2/internal/example1/model/mAuth/wcAuth"
 )
 
 //go:generate gomodifytags -all -add-tags json,form,query,long,msg -transform camelcase --skip-unexported -w -file health.go

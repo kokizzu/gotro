@@ -4,10 +4,10 @@ import (
 	"github.com/kokizzu/id64"
 	"github.com/vburenin/nsync"
 
+	"example1/conf"
+	"example1/model/mAuth/rqAuth"
+	"example1/model/mAuth/wcAuth"
 	"github.com/kokizzu/gotro/S"
-	"github.com/kokizzu/gotro/W2/internal/example1/conf"
-	"github.com/kokizzu/gotro/W2/internal/example1/model/mAuth/rqAuth"
-	"github.com/kokizzu/gotro/W2/internal/example1/model/mAuth/wcAuth"
 	"github.com/kokizzu/gotro/X"
 )
 

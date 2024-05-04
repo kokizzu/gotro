@@ -4,8 +4,10 @@ package saAuth
 
 import (
 	"database/sql"
-	"github.com/kokizzu/gotro/W2/internal/example1/model/mAuth"
+	"net"
 	"time"
+
+	"example1/model/mAuth"
 
 	_ "github.com/ClickHouse/clickhouse-go/v2"
 	chBuffer "github.com/kokizzu/ch-timed-buffer"
@@ -16,9 +18,9 @@ import (
 )
 
 //go:generate gomodifytags -all -add-tags json,form,query,long,msg -transform camelcase --skip-unexported -w -file saAuth__ORM.GEN.go
-//go:generate replacer -afterprefix 'Id" form' 'Id,string" form' type saAuth__ORM.GEN.go
-//go:generate replacer -afterprefix 'json:"id"' 'json:"id,string"' type saAuth__ORM.GEN.go
-//go:generate replacer -afterprefix 'By" form' 'By,string" form' type saAuth__ORM.GEN.go
+//go:generate replacer -afterprefix "Id\" form" "Id,string\" form" type saAuth__ORM.GEN.go
+//go:generate replacer -afterprefix "json:\"id\"" "json:\"id,string\"" type saAuth__ORM.GEN.go
+//go:generate replacer -afterprefix "By\" form" "By,string\" form" type saAuth__ORM.GEN.go
 // go:generate msgp -tests=false -file saAuth__ORM.GEN.go -o saAuth__MSG.GEN.go
 
 var userLogsDummy = UserLogs{}
@@ -32,26 +34,63 @@ var Preparators = map[Ch.TableName]chBuffer.Preparator{
 }
 
 type UserLogs struct {
-	Adapter   *Ch.Adapter `json:"-" msg:"-" query:"-" form:"-"`
-	CreatedAt time.Time
-	RequestId uint64
-	ActorId   uint64
-	Error     string
-	IpAddr4   string
-	IpAddr6   string
-	UserAgent string
+	Adapter   *Ch.Adapter `json:"-" msg:"-" query:"-" form:"-" long:"adapter"`
+	CreatedAt time.Time   `json:"createdAt" form:"createdAt" query:"createdAt" long:"createdAt" msg:"createdAt"`
+	RequestId uint64      `json:"requestId,string" form:"requestId" query:"requestId" long:"requestId" msg:"requestId"`
+	ActorId   uint64      `json:"actorId,string" form:"actorId" query:"actorId" long:"actorId" msg:"actorId"`
+	Error     string      `json:"error" form:"error" query:"error" long:"error" msg:"error"`
+	IpAddr4   net.IP      `json:"ipAddr4" form:"ipAddr4" query:"ipAddr4" long:"ipAddr4" msg:"ipAddr4"`
+	IpAddr6   net.IP      `json:"ipAddr6" form:"ipAddr6" query:"ipAddr6" long:"ipAddr6" msg:"ipAddr6"`
+	UserAgent string      `json:"userAgent" form:"userAgent" query:"userAgent" long:"userAgent" msg:"userAgent"`
 }
 
 func NewUserLogs(adapter *Ch.Adapter) *UserLogs {
 	return &UserLogs{Adapter: adapter}
 }
 
-func (u UserLogs) TableName() Ch.TableName { //nolint:dupl false positive
+// UserLogsFieldTypeMap returns key value of field name and key
+var UserLogsFieldTypeMap = map[string]Ch.DataType{ //nolint:dupl false positive
+	`createdAt`: Ch.DateTime,
+	`requestId`: Ch.UInt64,
+	`actorId`:   Ch.UInt64,
+	`error`:     Ch.String,
+	`ipAddr4`:   Ch.IPv4,
+	`ipAddr6`:   Ch.IPv6,
+	`userAgent`: Ch.String,
+}
+
+func (u *UserLogs) TableName() Ch.TableName { //nolint:dupl false positive
 	return mAuth.TableUserLogs
 }
 
 func (u *UserLogs) SqlTableName() string { //nolint:dupl false positive
 	return `"userLogs"`
+}
+
+func (u *UserLogs) ScanRowAllCols(rows *sql.Rows) (err error) { //nolint:dupl false positive
+	return rows.Scan(
+		&u.CreatedAt,
+		&u.RequestId,
+		&u.ActorId,
+		&u.Error,
+		&u.IpAddr4,
+		&u.IpAddr6,
+		&u.UserAgent,
+	)
+}
+
+func (u *UserLogs) ScanRowsAllCols(rows *sql.Rows, estimateRows int) (res []UserLogs, err error) { //nolint:dupl false positive
+	res = make([]UserLogs, 0, estimateRows)
+	defer rows.Close()
+	for rows.Next() {
+		var row UserLogs
+		err = row.ScanRowAllCols(rows)
+		if err != nil {
+			return
+		}
+		res = append(res, row)
+	}
+	return
 }
 
 // insert, error if exists

@@ -1,10 +1,12 @@
 package Tt
 
 import (
-	"github.com/ory/dockertest/v3"
-	"github.com/tarantool/go-tarantool"
+	"context"
+	"time"
 
 	"github.com/kokizzu/gotro/D"
+	"github.com/ory/dockertest/v3"
+	"github.com/tarantool/go-tarantool/v2"
 )
 
 type TtDockerTest struct {
@@ -43,9 +45,12 @@ func (in *TtDockerTest) SetDefaults(img string) {
 func (in *TtDockerTest) ConnectCheck(res *dockertest.Resource) (taran *tarantool.Connection, err error) {
 	in.Port = res.GetPort("3301/tcp")
 	hostPort := in.pool.HostPort(in.Port)
-	taran, err = tarantool.Connect(hostPort, tarantool.Opts{
-		User: in.User,
-		Pass: in.Password,
+	taran, err = tarantool.Connect(context.Background(), tarantool.NetDialer{
+		Address:  hostPort,
+		User:     in.User,
+		Password: in.Password,
+	}, tarantool.Opts{
+		Timeout: 8 * time.Second,
 	})
 	return
 }

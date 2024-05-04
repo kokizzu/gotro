@@ -16,7 +16,6 @@ import (
 	"github.com/kokizzu/lexid"
 	"github.com/kpango/fastime"
 	"github.com/ory/dockertest/v3"
-	"github.com/tarantool/go-tarantool"
 	"golang.org/x/sync/errgroup"
 
 	"example2/conf"

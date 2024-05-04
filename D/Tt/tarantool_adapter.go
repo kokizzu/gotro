@@ -1,11 +1,12 @@
 package Tt
 
 import (
+	"context"
 	"fmt"
-
-	"github.com/tarantool/go-tarantool"
+	"time"
 
 	"github.com/kokizzu/gotro/L"
+	"github.com/tarantool/go-tarantool/v2"
 )
 
 type Adapter struct {
@@ -30,9 +31,12 @@ func Connect1(host, port, user, pass string) *tarantool.Connection {
 		host,
 		port,
 	)
-	taran, err := tarantool.Connect(hostPort, tarantool.Opts{
-		User: user,
-		Pass: pass,
+	taran, err := tarantool.Connect(context.Background(), tarantool.NetDialer{
+		Address:  hostPort,
+		User:     user,
+		Password: pass,
+	}, tarantool.Opts{
+		Timeout: 8 * time.Second,
 	})
 	L.PanicIf(err, `tarantool.Connect `+hostPort)
 	return taran

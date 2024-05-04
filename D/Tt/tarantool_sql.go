@@ -4,11 +4,10 @@ import (
 	"log"
 	"time"
 
-	"github.com/tarantool/go-tarantool"
-
 	"github.com/kokizzu/gotro/A"
 	"github.com/kokizzu/gotro/L"
 	"github.com/kokizzu/gotro/X"
+	"github.com/tarantool/go-tarantool/v2"
 )
 
 /*
@@ -27,7 +26,7 @@ func (a *Adapter) ExecSql(query string, parameters ...MSX) map[any]any {
 		params = append(params, v)
 	}
 	//L.Describe(params)
-	res, err := a.Call(`box.execute`, params)
+	res, err := a.Connection.Do(tarantool.NewCallRequest("box.execute").Args(params)).Get()
 	if L.IsError(err, `ExecSql box.execute failed: `+query) {
 		log.Println(`ERROR ExecSql !!! ` + err.Error())
 		//L.DescribeSql(query, parameters)
@@ -35,9 +34,8 @@ func (a *Adapter) ExecSql(query string, parameters ...MSX) map[any]any {
 		//tracer.PanicOnDev(err)
 		return map[any]any{`error`: err.Error()}
 	}
-	tup := res.Tuples()
-	if len(tup) > 0 {
-		if len(tup[0]) > 0 {
+	if len(res) > 0 {
+		if tup, ok := res[0].([][]any); ok {
 			if tup[0][0] != nil {
 				kv, ok := tup[0][0].(map[any]any)
 				// row_count for UPDATE
@@ -49,8 +47,8 @@ func (a *Adapter) ExecSql(query string, parameters ...MSX) map[any]any {
 		}
 	}
 	// possible error
-	if len(tup) > 1 {
-		if len(tup[1]) > 0 {
+	if len(res) > 1 {
+		if tup, ok := res[1].([][]any); ok {
 			if tup[1][0] != nil {
 				errStr := X.ToS(tup[1][0])
 				log.Println(`ERROR ExecSql syntax: ` + errStr)
@@ -89,16 +87,38 @@ type QueryMeta struct {
 	Code    uint32
 }
 
-func QueryMetaFrom(res *tarantool.Response, err error) QueryMeta {
+func QueryMetaFrom(res tarantool.Response, err error) QueryMeta {
 	if res == nil {
+		if err != nil {
+			return QueryMeta{
+				Err: err.Error(),
+			}
+		}
+		return QueryMeta{}
+	}
+	exRes, ok := res.(*tarantool.ExecuteResponse)
+	if !ok {
+		if err != nil {
+			return QueryMeta{
+				Err: err.Error(),
+			}
+		}
 		return QueryMeta{
-			Err: err.Error(),
+			Err: `not ExecuteResponse`,
 		}
 	}
+	var errStr string
+	if err != nil {
+		errStr = err.Error()
+	}
+	columns, _ := exRes.MetaData()
+	sqlInfo, err := exRes.SQLInfo()
+	if err != nil && errStr == `` {
+		errStr = err.Error()
+	}
 	return QueryMeta{
-		Columns: res.MetaData,
-		SqlInfo: res.SQLInfo,
-		Err:     res.Error,
-		Code:    res.Code,
+		Columns: columns,
+		SqlInfo: sqlInfo,
+		Err:     errStr,
 	}
 }

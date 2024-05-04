@@ -5,8 +5,8 @@ import (
 
 	"github.com/kpango/fastime"
 
-	"github.com/kokizzu/gotro/W2/internal/example1/conf"
-	"github.com/kokizzu/gotro/W2/internal/example1/model/mAuth/wcAuth"
+	"example1/conf"
+	"example1/model/mAuth/wcAuth"
 )
 
 func (d *Domain) expireSession(sessionToken string) bool {

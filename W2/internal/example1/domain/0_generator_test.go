@@ -1,8 +1,8 @@
 package domain_test
 
 import (
+	"example1/conf"
 	"github.com/kokizzu/gotro/W2"
-	"github.com/kokizzu/gotro/W2/internal/example1/conf"
 
 	"testing"
 )

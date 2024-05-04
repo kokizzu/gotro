@@ -44,14 +44,12 @@ func TypeGraphql(field Field) string {
 }
 
 const connStruct = `Tt.Adapter`
-const connImport = "\n\n\t`github.com/tarantool/go-tarantool`"
+const connImport = "\n\n\t`github.com/tarantool/go-tarantool/v2`"
 const iterEq = `tarantool.IterEq`
 const iterAll = `tarantool.IterAll`
 const iterNeighbor = `tarantool.IterNeighbor`
 
 var _ = iterNeighbor
-
-//const iterAll = `tarantool.IterAll`
 
 const NL = "\n"
 
@@ -141,8 +139,8 @@ func GenerateOrm(tables map[TableName]*TableProp, withGraphql ...bool) {
 	BOTH(`import (`)
 
 	RQ(qi(ci.PackageName))
-	RQ(connImport)
 	WC(qi(ci.PackageName + `/` + rqPkgName))
+	BOTH(connImport)
 
 	BOTH(NL)
 	if useGraphql {
@@ -194,14 +192,15 @@ func GenerateOrm(tables map[TableName]*TableProp, withGraphql ...bool) {
 		WC("// " + structName + "Mutator DAO writer/command struct\n")
 		WC(`type ` + structName + "Mutator struct {\n")
 		WC(`	` + rqPkgName + `.` + structName + NL)
-		WC("	mutations []A.X\n")
-		WC("	logs      []A.X\n")
+		WC("	mutations *tarantool.Operations\n")
+		WC("	logs	  []A.X\n")
 		WC("}\n\n")
 
 		// mutator struct constructor
 		WC("// New" + structName + "Mutator create new ORM writer/command object\n")
 		WC(`func New` + structName + `Mutator(adapter *` + connStruct + `) (res *` + structName + "Mutator) {\n")
 		WC(`	res = &` + structName + `Mutator{` + structName + `: ` + rqPkgName + `.` + structName + "{Adapter: adapter}}\n")
+		WC("	res.mutations = tarantool.NewOperations()\n")
 		for _, prop := range props.Fields {
 			if prop.Type == Array {
 				WC(`	res.` + S.PascalCase(prop.Name) + ` = ` + TypeToGoType[prop.Type] + "{}\n")
@@ -249,13 +248,13 @@ func GenerateOrm(tables map[TableName]*TableProp, withGraphql ...bool) {
 		// have mutation
 		WC("// HaveMutation check whether Set* methods ever called\n")
 		WC(`func (` + receiverName + ` *` + structName + "Mutator) HaveMutation() bool { //nolint:dupl false positive\n")
-		WC(`	return len(` + receiverName + ".mutations) > 0\n")
+		WC(`	return len(` + receiverName + ".logs) > 0\n")
 		WC("}\n\n")
 
 		// clear mutation
 		WC("// ClearMutations clear all previously called Set* methods\n")
 		WC(`func (` + receiverName + ` *` + structName + "Mutator) ClearMutations() { //nolint:dupl false positive\n")
-		WC(`	` + receiverName + ".mutations = []A.X{}\n")
+		WC(`	` + receiverName + ".mutations = tarantool.NewOperations()\n")
 		WC(`	` + receiverName + ".logs = []A.X{}\n")
 		WC("}\n\n")
 
@@ -364,12 +363,16 @@ func GenerateOrm(tables map[TableName]*TableProp, withGraphql ...bool) {
 		WC(`func (` + receiverName + ` *` + structName + "Mutator) DoInsert() bool { //nolint:dupl false positive\n")
 		ret1 := S.IfElse(props.AutoIncrementId, `row`, `_`)
 		WC("	arr := " + receiverName + ".ToArray()\n")
-		WC("	" + ret1 + ", err := " + receiverName + ".Adapter.Insert(" + receiverName + ".SpaceName(), arr)\n")
+		WC("	" + ret1 + ", err := " + receiverName + ".Adapter.Connection.Do(\n")
+		WC("		tarantool.NewInsertRequest(" + receiverName + ".SpaceName()).\n")
+		WC("		Tuple(arr),\n")
+		WC("	).Get()\n")
 		if props.AutoIncrementId {
 			WC("	if err == nil {\n")
-			WC("		tup := row.Tuples()\n")
-			WC("		if len(tup) > 0 && len(tup[0]) > 0 && tup[0][0] != nil {\n")
-			WC("			" + receiverName + ".Id = X.ToU(tup[0][0])\n")
+			WC("		if len(row) > 0 {\n")
+			WC("			if cells, ok := row[0].([]any); ok && len(cells) > 0 {\n")
+			WC("				" + receiverName + ".Id = X.ToU(cells[0])\n")
+			WC("			}\n")
 			WC("		}\n")
 			WC("	}\n")
 		}
@@ -382,12 +385,16 @@ func GenerateOrm(tables map[TableName]*TableProp, withGraphql ...bool) {
 		WC("// previous name: DoReplace\n")
 		WC(`func (` + receiverName + ` *` + structName + "Mutator) DoUpsert() bool { //nolint:dupl false positive\n")
 		WC("	arr := " + receiverName + ".ToArray()\n")
-		WC("	" + ret1 + ", err := " + receiverName + ".Adapter.Replace(" + receiverName + ".SpaceName(), arr)\n")
+		WC("	" + ret1 + ", err := " + receiverName + ".Adapter.Connection.Do(\n")
+		WC("		tarantool.NewReplaceRequest(" + receiverName + ".SpaceName()).\n")
+		WC("		Tuple(arr),\n")
+		WC("	).Get()\n")
 		if props.AutoIncrementId {
 			WC("	if err == nil {\n")
-			WC("		tup := row.Tuples()\n")
-			WC("		if len(tup) > 0 && len(tup[0]) > 0 && tup[0][0] != nil {\n")
-			WC("			" + receiverName + ".Id = X.ToU(tup[0][0])\n")
+			WC("		if len(row) > 0 {\n")
+			WC("			if cells, ok := row[0].([]any); ok && len(cells) > 0 {\n")
+			WC("				" + receiverName + ".Id = X.ToU(cells[0])\n")
+			WC("			}\n")
 			WC("		}\n")
 			WC("	}\n")
 		}
@@ -418,12 +425,13 @@ func GenerateOrm(tables map[TableName]*TableProp, withGraphql ...bool) {
 
 		// to Update AX
 		RQ("// ToUpdateArray generate slice of update command\n")
-		RQ(`func (` + receiverName + ` *` + structName + ") ToUpdateArray() A.X { //nolint:dupl false positive\n")
-		RQ("	return A.X{\n")
+		RQ(`func (` + receiverName + ` *` + structName + ") ToUpdateArray() *tarantool.Operations { //nolint:dupl false positive\n")
+		RQ("	return tarantool.NewOperations().\n")
+		last := len(props.Fields) - 1
 		for idx, prop := range props.Fields {
-			RQ("		A.X{`=`, " + X.ToS(idx) + ", " + receiverName + "." + S.PascalCase(prop.Name) + "},\n")
+			RQ("		Assign(" + I.ToStr(idx) + ", " + receiverName + "." + S.PascalCase(prop.Name) + ")" +
+				S.If(idx != last, ".") + "\n")
 		}
-		RQ("	}\n")
 		RQ("}\n\n")
 
 		for idx, prop := range props.Fields {
@@ -452,7 +460,7 @@ func GenerateOrm(tables map[TableName]*TableProp, withGraphql ...bool) {
 			WC(`func (` + receiverName + ` *` + structName + "Mutator) Set" + propName + "(val " + propType + ") bool { //nolint:dupl false positive\n")
 			if prop.Type != Array {
 				WC("	if val != " + receiverName + `.` + propName + " {\n")
-				WC("		" + receiverName + ".mutations = append(" + receiverName + ".mutations, A.X{`=`, " + I.ToStr(idx) + ", val})\n")
+				WC("		" + receiverName + ".mutations.Assign(" + I.ToStr(idx) + ", val)\n")
 				if !censoredFieldsByName[prop.Name] {
 					WC("		" + receiverName + ".logs = append(" + receiverName + ".logs, A.X{`" + prop.Name + "`, " + receiverName + `.` + propName + ", val})\n")
 				}
@@ -461,7 +469,7 @@ func GenerateOrm(tables map[TableName]*TableProp, withGraphql ...bool) {
 				WC("	}\n")
 				WC("	return false\n")
 			} else { // always overwrite for array
-				WC("	" + receiverName + ".mutations = append(" + receiverName + ".mutations, A.X{`=`, " + I.ToStr(idx) + ", val})\n")
+				WC("	" + receiverName + ".mutations.Assign(" + I.ToStr(idx) + ", val)\n")
 				WC("	" + receiverName + ".logs = append(" + receiverName + ".logs, A.X{`" + prop.Name + "`, " + receiverName + `.` + propName + ", val})\n")
 				if !censoredFieldsByName[prop.Name] {
 					WC("	" + receiverName + `.` + propName + " = val\n")
@@ -553,13 +561,23 @@ func GenerateOrm(tables map[TableName]*TableProp, withGraphql ...bool) {
 		RQ("// FindOffsetLimit returns slice of struct, order by idx, eg. .UniqueIndex*()\n")
 		RQ(`func (` + receiverName + ` *` + structName + ") FindOffsetLimit(offset, limit uint32, idx string) []" + structName + " { //nolint:dupl false positive\n")
 		RQ("	var rows []" + structName + NL)
-		RQ("	res, err := " + receiverName + ".Adapter.Select(" + receiverName + ".SpaceName(), idx, offset, limit, " + iterAll + ", A.X{})\n")
+		RQ("	res, err := " + receiverName + ".Adapter.Connection.Do(\n")
+		RQ("		tarantool.NewSelectRequest(" + receiverName + ".SpaceName()).\n")
+		RQ("		Index(idx).\n")
+		RQ("		Offset(offset).\n")
+		RQ("		Limit(limit).\n")
+		RQ("		Iterator(" + iterAll + ").\n")
+		RQ("		Key(A.X{}),\n")
+		RQ("	).Get()\n")
 		RQ("	if L.IsError(err, `" + structName + ".FindOffsetLimit failed: `+" + receiverName + ".SpaceName()) {\n")
 		RQ("		return rows\n")
 		RQ("	}\n")
-		RQ("	for _, row := range res.Tuples() {\n")
+		RQ("	for _, row := range res {\n")
 		RQ("		item := " + structName + "{}\n")
-		RQ("		rows = append(rows, *item.FromArray(row))\n")
+		RQ("		row, ok := row.([]any)\n")
+		RQ("		if ok {\n")
+		RQ("			rows = append(rows, *item.FromArray(row))\n")
+		RQ("		}\n")
 		RQ("	}\n")
 		RQ("	return rows\n")
 		RQ("}\n\n")
@@ -568,16 +586,29 @@ func GenerateOrm(tables map[TableName]*TableProp, withGraphql ...bool) {
 		RQ("// FindArrOffsetLimit returns as slice of slice order by idx eg. .UniqueIndex*()\n")
 		RQ(`func (` + receiverName + ` *` + structName + ") FindArrOffsetLimit(offset, limit uint32, idx string) ([]A.X, Tt.QueryMeta) { //nolint:dupl false positive\n")
 		RQ("	var rows []A.X" + NL)
-		RQ("	res, err := " + receiverName + ".Adapter.Select(" + receiverName + ".SpaceName(), idx, offset, limit, " + iterAll + ", A.X{})\n")
+		RQ("	resp, err := " + receiverName + ".Adapter.Connection.Do(\n")
+		RQ("		tarantool.NewSelectRequest(" + receiverName + ".SpaceName()).\n")
+		RQ("		Index(idx).\n")
+		RQ("		Offset(offset).\n")
+		RQ("		Limit(limit).\n")
+		RQ("		Iterator(" + iterAll + ").\n")
+		RQ("		Key(A.X{}),\n")
+		RQ("	).GetResponse()\n")
 		RQ("	if L.IsError(err, `" + structName + ".FindOffsetLimit failed: `+" + receiverName + ".SpaceName()) {\n")
-		RQ("		return rows, Tt.QueryMetaFrom(res, err)\n")
+		RQ("		return rows, Tt.QueryMetaFrom(resp, err)\n")
 		RQ("	}\n")
-		RQ("	tuples := res.Tuples()\n")
-		RQ("	rows = make([]A.X, len(tuples))\n")
-		RQ("	for z, row := range tuples {\n")
-		RQ("		rows[z] = row\n")
+		RQ("	res, err := resp.Decode()\n")
+		RQ("	if L.IsError(err, `" + structName + ".FindOffsetLimit failed: `+" + receiverName + ".SpaceName()) {\n")
+		RQ("		return rows, Tt.QueryMetaFrom(resp, err)\n")
 		RQ("	}\n")
-		RQ("	return rows, Tt.QueryMetaFrom(res, nil)\n")
+		RQ("	rows = make([]A.X, len(res))\n")
+		RQ("	for _, row := range res {\n")
+		RQ("		row, ok := row.([]any)\n")
+		RQ("		if ok {\n")
+		RQ("			rows = append(rows, row)\n")
+		RQ("		}\n")
+		RQ("	}\n")
+		RQ("	return rows, Tt.QueryMetaFrom(resp, nil)\n")
 		RQ("}\n\n")
 
 		// total records
@@ -733,14 +764,22 @@ func generateMutationByUniqueIndexumns(uniqueCamel, structProp, receiverName, st
 
 	RQ("// FindBy" + uniqueCamel + " Find one by " + uniqueCamel + "\n")
 	RQ(`func (` + receiverName + ` *` + structName + `) FindBy` + uniqueCamel + "() bool { //nolint:dupl false positive\n")
-	RQ("	res, err := " + receiverName + ".Adapter.Select(" + receiverName + ".SpaceName(), " + receiverName + `.UniqueIndex` + uniqueCamel + `(), 0, 1, ` + iterEq + ", A.X{" + structProp + "})\n")
+	RQ("	res, err := " + receiverName + ".Adapter.Connection.Do(\n")
+	RQ("		tarantool.NewSelectRequest(" + receiverName + ".SpaceName()).\n")
+	RQ("		Index(" + receiverName + ".UniqueIndex" + uniqueCamel + "()).\n")
+	RQ("		Offset(0).\n")
+	RQ("		Limit(1).\n")
+	RQ("		Iterator(" + iterEq + ").\n")
+	RQ("		Key(A.X{" + structProp + "}),\n")
+	RQ("	).Get()\n")
 	RQ("	if L.IsError(err, `" + structName + `.FindBy` + uniqueCamel + " failed: `+" + receiverName + ".SpaceName()) {\n")
 	RQ("		return false\n")
 	RQ("	}\n")
-	RQ("	rows := res.Tuples()\n")
-	RQ("	if len(rows) == 1 {\n")
-	RQ("		" + receiverName + ".FromArray(rows[0])\n")
-	RQ("		return true\n")
+	RQ("	if len(res) == 1 {\n")
+	RQ("		if row, ok := res[0].([]any); ok {\n")
+	RQ("			" + receiverName + ".FromArray(row)\n")
+	RQ("			return true\n")
+	RQ("		}\n")
 	RQ("	}\n")
 	RQ("	return false\n")
 	RQ("}\n\n")
@@ -748,7 +787,11 @@ func generateMutationByUniqueIndexumns(uniqueCamel, structProp, receiverName, st
 	// Overwrite all columns, error if not exists
 	WC("// DoOverwriteBy" + uniqueCamel + " update all columns, error if not exists, not using mutations/Set*\n")
 	WC(`func (` + receiverName + ` *` + structName + `Mutator) DoOverwriteBy` + uniqueCamel + "() bool { //nolint:dupl false positive\n")
-	WC("	_, err := " + receiverName + `.Adapter.Update(` + receiverName + ".SpaceName(), " + receiverName + `.UniqueIndex` + uniqueCamel + "(), A.X{" + structProp + "}, " + receiverName + ".ToUpdateArray())\n")
+	WC("	_, err := " + receiverName + ".Adapter.Connection.Do(tarantool.NewUpdateRequest(" + receiverName + ".SpaceName()).\n")
+	WC("		Index(" + receiverName + ".UniqueIndex" + uniqueCamel + "()).\n")
+	WC("		Key(A.X{" + structProp + "}).\n")
+	WC("		Operations(" + receiverName + ".ToUpdateArray()),\n")
+	WC("	).Get()\n")
 	WC("	return !L.IsError(err, `" + structName + `.DoOverwriteBy` + uniqueCamel + " failed: `+" + receiverName + ".SpaceName())\n")
 	WC("}\n\n")
 
@@ -758,14 +801,23 @@ func generateMutationByUniqueIndexumns(uniqueCamel, structProp, receiverName, st
 	WC(`	if !` + receiverName + ".HaveMutation() {\n")
 	WC("		return true\n")
 	WC("	}\n")
-	WC("	_, err := " + receiverName + `.Adapter.Update(` + receiverName + ".SpaceName(), " + receiverName + `.UniqueIndex` + uniqueCamel + "(), A.X{" + structProp + "}, " + receiverName + ".mutations)\n")
+	WC("	_, err := " + receiverName + ".Adapter.Connection.Do(\n")
+	WC("		tarantool.NewUpdateRequest(" + receiverName + ".SpaceName()).\n")
+	WC("		Index(" + receiverName + ".UniqueIndex" + uniqueCamel + "()).\n")
+	WC("		Key(A.X{" + structProp + "}).\n")
+	WC("		Operations(" + receiverName + ".mutations),\n")
+	WC("	).Get()\n")
 	WC("	return !L.IsError(err, `" + structName + `.DoUpdateBy` + uniqueCamel + " failed: `+" + receiverName + ".SpaceName())\n")
 	WC("}\n\n")
 
 	// permanent delete
 	WC("// DoDeletePermanentBy" + uniqueCamel + " permanent delete\n")
 	WC(`func (` + receiverName + ` *` + structName + `Mutator) DoDeletePermanentBy` + uniqueCamel + "() bool { //nolint:dupl false positive\n")
-	WC("	_, err := " + receiverName + ".Adapter.Delete(" + receiverName + ".SpaceName(), " + receiverName + `.UniqueIndex` + uniqueCamel + `(), A.X{` + structProp + "})\n")
+	WC("	_, err := " + receiverName + ".Adapter.Connection.Do(\n")
+	WC("		tarantool.NewDeleteRequest(" + receiverName + ".SpaceName()).\n")
+	WC("		Index(" + receiverName + ".UniqueIndex" + uniqueCamel + "()).\n")
+	WC("		Key(A.X{" + structProp + "}),\n")
+	WC("	).Get()\n")
 	WC("	return !L.IsError(err, `" + structName + `.DoDeletePermanentBy` + uniqueCamel + " failed: `+" + receiverName + ".SpaceName())\n")
 	WC("}\n\n")
 

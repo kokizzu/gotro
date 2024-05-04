@@ -1,6 +1,7 @@
 package Tt
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"os"
@@ -9,12 +10,12 @@ import (
 	"time"
 
 	"github.com/alitto/pond"
+	"github.com/kokizzu/gotro/L"
+	"github.com/kokizzu/gotro/S"
+	"github.com/kokizzu/gotro/X"
 	"github.com/ory/dockertest/v3"
 	"github.com/stretchr/testify/assert"
-	"github.com/tarantool/go-tarantool"
-
-	"github.com/kokizzu/gotro/L"
-	"github.com/kokizzu/gotro/X"
+	"github.com/tarantool/go-tarantool/v2"
 )
 
 var globalPool *dockertest.Pool
@@ -51,18 +52,23 @@ func prepareDb(onReady func(db *tarantool.Connection) int) {
 		var err error
 		connStr := fmt.Sprintf(dbConnStr, resource.GetPort(ttPort))
 		reconnect = func() *tarantool.Connection {
-			db, err = tarantool.Connect(connStr, tarantool.Opts{
-				User: dbUser,
-				Pass: dbPass,
+			db, err = tarantool.Connect(context.Background(), tarantool.NetDialer{
+				Address:  connStr,
+				User:     dbUser,
+				Password: dbPass,
+			}, tarantool.Opts{
+				Timeout: 8 * time.Second,
 			})
-			L.IsError(err, `tarantool.Connect: `+connStr)
+			if err != nil && !S.Contains(err.Error(), `failed to read greeting: EOF`) {
+				L.IsError(err, `tarantool.Connect`)
+			}
 			return db
 		}
 		reconnect()
 		if err != nil {
 			return err
 		}
-		_, err = db.Ping()
+		_, err = db.Do(tarantool.NewPingRequest()).Get()
 		return err
 	}); err != nil {
 		log.Printf("Could not connect to docker: %s\n", err)
@@ -89,75 +95,119 @@ func TestMain(m *testing.M) {
 }
 
 func TestMigration(t *testing.T) {
-	a := Adapter{dbConn, reconnect}
+	a := &Adapter{dbConn, reconnect}
 	const tableName = `test1`
+	dummyTable := &TableProp{
+		Fields: []Field{
+			{`id`, Unsigned},
+			{`name`, String},
+		},
+		Unique1: `id`,
+		Engine:  Vinyl,
+	}
+	t.Run(`check tables must panic because doesnt exists yet`, func(t *testing.T) {
+		defer func() {
+			if r := recover(); r != nil {
+				assert.Contains(t, fmt.Sprint(r), "Procedure 'box.space.test1:format' is not defined")
+			}
+		}()
+		CheckTarantoolTables(a, map[TableName]*TableProp{
+			tableName: dummyTable,
+		})
+	})
 	t.Run(`create test table`, func(t *testing.T) {
-		ok := a.UpsertTable(tableName, &TableProp{
-			Fields: []Field{
-				{`id`, Unsigned},
-				{`name`, String},
-			},
-			Unique1: `id`,
-			Engine:  Vinyl,
-		})
+		ok := a.UpsertTable(tableName, dummyTable)
 		assert.True(t, ok)
-	})
-	t.Run(`add column test table`, func(t *testing.T) {
-		ok := a.UpsertTable(tableName, &TableProp{
-			Fields: []Field{
-				{`id`, Unsigned},
-				{`name`, String},
-				{`age`, Integer},
-			},
-			Unique1: `id`,
-			Engine:  Vinyl,
+
+		t.Run(`check tables must not panic because it matches`, func(t *testing.T) {
+			defer func() {
+				if r := recover(); r != nil {
+					t.Fail()
+				}
+			}()
+			CheckTarantoolTables(a, map[TableName]*TableProp{
+				tableName: dummyTable,
+			})
 		})
-		assert.True(t, ok)
-	})
-	t.Run(`add 2 columns test table`, func(t *testing.T) {
-		ok := a.UpsertTable(tableName, &TableProp{
-			Fields: []Field{
-				{`id`, Unsigned},
-				{`name`, String},
-				{`age`, Integer},
-				{`a`, Unsigned},
-				{`b`, Integer},
-			},
-			Unique1: `id`,
-			Engine:  Vinyl,
+
+		t.Run(`check tables must panic if columns changed`, func(t *testing.T) {
+			defer func() {
+				if r := recover(); r != nil {
+					assert.Contains(t, fmt.Sprint(r), `please run FIELD_TYPE name migration on test1 for tarantool: string <> integer`)
+				}
+			}()
+			CheckTarantoolTables(a, map[TableName]*TableProp{
+				tableName: {
+					Fields: []Field{
+						{`id`, Unsigned},
+						{`name`, Integer},
+					},
+					Unique1: `id`,
+					Engine:  Vinyl,
+				},
+			})
 		})
-		assert.True(t, ok)
-	})
-	t.Run(`auto increment`, func(t *testing.T) {
-		ok := a.UpsertTable(tableName, &TableProp{
-			Fields: []Field{
-				{`id`, Unsigned},
-				{`name`, String},
-				{`age`, Integer},
-				{`a`, Unsigned},
-				{`b`, Integer},
-			},
-			Unique1:         `id`,
-			Engine:          Vinyl,
-			AutoIncrementId: true,
+
+		t.Run(`add column test table`, func(t *testing.T) {
+			ok := a.UpsertTable(tableName, &TableProp{
+				Fields: []Field{
+					{`id`, Unsigned},
+					{`name`, String},
+					{`age`, Integer},
+				},
+				Unique1: `id`,
+				Engine:  Vinyl,
+			})
+			assert.True(t, ok)
+
+			t.Run(`add 2 columns test table`, func(t *testing.T) {
+				ok := a.UpsertTable(tableName, &TableProp{
+					Fields: []Field{
+						{`id`, Unsigned},
+						{`name`, String},
+						{`age`, Integer},
+						{`a`, Unsigned},
+						{`b`, Integer},
+					},
+					Unique1: `id`,
+					Engine:  Vinyl,
+				})
+				assert.True(t, ok)
+
+				t.Run(`auto increment`, func(t *testing.T) {
+					ok := a.UpsertTable(tableName, &TableProp{
+						Fields: []Field{
+							{`id`, Unsigned},
+							{`name`, String},
+							{`age`, Integer},
+							{`a`, Unsigned},
+							{`b`, Integer},
+						},
+						Unique1:         `id`,
+						Engine:          Vinyl,
+						AutoIncrementId: true,
+					})
+					assert.True(t, ok)
+
+					t.Run(`auto increment again`, func(t *testing.T) {
+						ok := a.UpsertTable(tableName, &TableProp{
+							Fields: []Field{
+								{`id`, Unsigned},
+								{`name`, String},
+								{`age`, Integer},
+								{`a`, Unsigned},
+								{`b`, Integer},
+							},
+							Unique1:         `id`,
+							Engine:          Vinyl,
+							Uniques:         []string{`a`, `b`},
+							AutoIncrementId: true,
+						})
+						assert.True(t, ok)
+					})
+				})
+			})
 		})
-		assert.True(t, ok)
-	})
-	t.Run(`auto increment again`, func(t *testing.T) {
-		ok := a.UpsertTable(tableName, &TableProp{
-			Fields: []Field{
-				{`id`, Unsigned},
-				{`name`, String},
-				{`age`, Integer},
-				{`a`, Unsigned},
-				{`b`, Integer},
-			},
-			Unique1:         `id`,
-			Engine:          Vinyl,
-			Uniques:         []string{`a`, `b`},
-			AutoIncrementId: true,
-		})
-		assert.True(t, ok)
 	})
 }
 
@@ -195,13 +245,14 @@ func TestMigrationBig(t *testing.T) {
 			for i := 0; i < insertCount; i++ {
 				pool.Submit(func() {
 					age := atomic.AddUint64(&inserted, 1)
-					row, err := a.Insert(tableName, []any{nil, `name`, age, 1, 2, `c`, true, 1.2, []any{}})
+					row, err := a.Connection.Do(tarantool.NewInsertRequest(tableName).Tuple([]any{nil, `name`, age, 1, 2, `c`, true, 1.2, []any{}})).Get()
 					if !L.IsError(err, `insert failed`) {
 						if age%printEvery == 0 {
-							tup := row.Tuples()
-							if len(tup) > 0 && len(tup[0]) > 0 && tup[0][0] != nil {
-								lastId := X.ToU(tup[0][0])
-								fmt.Println(`lastId`, lastId)
+							if len(row) > 0 {
+								if tup, ok := row[0].([]any); ok {
+									lastId := X.ToU(tup[0])
+									fmt.Println(`lastId`, lastId)
+								}
 							}
 						}
 					}

@@ -16,7 +16,7 @@ import (
 	"github.com/kokizzu/gotro/S"
 )
 
-const PROJECT_NAME = `github.com/kokizzu/gotro/W2/internal/example1` // must be the same as go.mod
+const PROJECT_NAME = `example1` // must be the same as go.mod
 const API_PREFIX = `/api`
 const MEDIA_SUBDIR = `media/`
 const MAIL_VIEWS_DIR = `/views`

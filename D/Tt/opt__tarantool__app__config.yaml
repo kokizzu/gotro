@@ -1,0 +1,17 @@
+credentials:
+  users:
+    user1:
+      roles: [ super ]
+      password: 'password1'
+      # https://www.tarantool.io/en/doc/latest/concepts/configuration/configuration_credentials/
+
+iproto:
+  listen:
+    - uri: 0.0.0.0:3301
+
+groups:
+  group-001:
+    replicasets:
+      replicaset-001:
+        instances:
+          instance-001: { }
