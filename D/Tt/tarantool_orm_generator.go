@@ -120,7 +120,7 @@ func GenerateOrm(tables map[TableName]*TableProp, withGraphql ...bool) {
 	BOTH("\n\n")
 	BOTH(warning)
 
-	haveString := false
+	haveString, haveAutoIncrementId := false, false
 	useGraphql := len(withGraphql) > 0
 	// sort by table name to keep the order when regenerating structs
 	tableNames := make([]string, 0, len(tables))
@@ -131,6 +131,9 @@ func GenerateOrm(tables map[TableName]*TableProp, withGraphql ...bool) {
 			if prop.Type == String {
 				haveString = true
 			}
+		}
+		if v.AutoIncrementId {
+			haveAutoIncrementId = true
 		}
 	}
 	sort.Strings(tableNames)
@@ -153,7 +156,9 @@ func GenerateOrm(tables map[TableName]*TableProp, withGraphql ...bool) {
 	if haveString {
 		WC(qi(`github.com/kokizzu/gotro/S`))
 	}
-	BOTH(qi(`github.com/kokizzu/gotro/X`))
+	if haveAutoIncrementId {
+		BOTH(qi(`github.com/kokizzu/gotro/X`))
+	}
 
 	BOTH(`
 )` + "\n\n")

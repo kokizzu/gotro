@@ -18,20 +18,10 @@ go install github.com/kokizzu/replacer@latest
 ## How to create a connection
 
 ```go
-import "github.com/tarantool/go-tarantool/v2"
 import "github.com/kokizzu/gotro/L"
 
 func ConnectTarantool() *tarantool.Connection {
-	hostPort := fmt.Sprintf(`%s:%s`,
-		TARANTOOL_HOST,
-		TARANTOOL_PORT,
-	)
-	taran, err := tarantool.Connect(hostPort, tarantool.Opts{
-		User: TARANTOOL_USER,
-		Pass: TARANTOOL_PASS,
-	})
-	L.PanicIf(err, `tarantool.Connect `+hostPort)
-	return taran
+	return Tt.Connect1(`host`, `3301`, `user`, `pass`)
 }
 
 // then use it like this:

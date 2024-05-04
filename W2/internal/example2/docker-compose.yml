@@ -7,10 +7,10 @@ services:
     environment:
       TARANTOOL_USER_NAME: "example2T"
       TARANTOOL_USER_PASSWORD: "example2PT"
-      TT_READAHEAD: '1632000' # 10x
+      TT_IPROTO_READAHEAD: '1632000' # 10x
       TT_VINYL_MEMORY: '268435456' # 20x
       TT_VINYL_CACHE: '2684354560' # 20x
-      TT_NET_MSG_MAX: '76800' # 100x
+      TT_IPROTO_NET_MSG_MAX: '76800' # 100x
       TT_MEMTX_MEMORY: '268435456' # 1x
       TT_VINYL_PAGE_SIZE: '8192' # 1x
     volumes:

@@ -1,4 +1,3 @@
-version: '3.2'
 
 services:
   tarantool1:
@@ -7,12 +6,13 @@ services:
     environment:
       TT_APP_NAME: app
       TT_INSTANCE_NAME: instance-001
-    #  #TT_READAHEAD: '1632000' # 10x
+    #  #TT_IPROTO_READAHEAD: '1632000' # 10x
     #  #TT_VINYL_MEMORY: '2684354560' # 20x
     #  #TT_VINYL_CACHE: '2684354560' # 20x
-    #  #TT_NET_MSG_MAX: '76800' # 100x
+    #  #TT_IPROTO_NET_MSG_MAX: '76800' # 100x
     #  #TT_MEMTX_MEMORY: '268435456' # 1x
     #  #TT_VINYL_PAGE_SIZE: '8192' # 1x
+    ## tarantool --help-env-list | grep -i readahead\\\|net_msg
     volumes:
       - ./opt__tarantool__app__config.yaml:/opt/tarantool/app/config.yaml
     #  - ./tarantool1:/var/lib/tarantool
