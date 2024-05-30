@@ -52,11 +52,11 @@ func (z *ZzzMutator) ClearMutations() { //nolint:dupl false positive
 
 // DoOverwriteById update all columns, error if not exists, not using mutations/Set*
 func (z *ZzzMutator) DoOverwriteById() bool { //nolint:dupl false positive
-	_, err := z.Adapter.Connection.Do(tarantool.NewUpdateRequest(z.SpaceName()).
+	_, err := z.Adapter.RetryDo(tarantool.NewUpdateRequest(z.SpaceName()).
 		Index(z.UniqueIndexId()).
-		Key(A.X{z.Id}).
+		Key(tarantool.UintKey{I:uint(z.Id)}).
 		Operations(z.ToUpdateArray()),
-	).Get()
+	)
 	return !L.IsError(err, `Zzz.DoOverwriteById failed: `+z.SpaceName())
 }
 
@@ -65,44 +65,66 @@ func (z *ZzzMutator) DoUpdateById() bool { //nolint:dupl false positive
 	if !z.HaveMutation() {
 		return true
 	}
-	_, err := z.Adapter.Connection.Do(
+	_, err := z.Adapter.RetryDo(
 		tarantool.NewUpdateRequest(z.SpaceName()).
 		Index(z.UniqueIndexId()).
-		Key(A.X{z.Id}).
+		Key(tarantool.UintKey{I:uint(z.Id)}).
 		Operations(z.mutations),
-	).Get()
+	)
 	return !L.IsError(err, `Zzz.DoUpdateById failed: `+z.SpaceName())
 }
 
 // DoDeletePermanentById permanent delete
 func (z *ZzzMutator) DoDeletePermanentById() bool { //nolint:dupl false positive
-	_, err := z.Adapter.Connection.Do(
+	_, err := z.Adapter.RetryDo(
 		tarantool.NewDeleteRequest(z.SpaceName()).
 		Index(z.UniqueIndexId()).
-		Key(A.X{z.Id}),
-	).Get()
+		Key(tarantool.UintKey{I:uint(z.Id)}),
+	)
 	return !L.IsError(err, `Zzz.DoDeletePermanentById failed: `+z.SpaceName())
 }
 
-// func (z *ZzzMutator) DoUpsert() bool { //nolint:dupl false positive
-//	arr := z.ToArray()
-//	_, err := z.Adapter.Upsert(z.SpaceName(), arr, A.X{
-//		A.X{`=`, 0, z.Id},
-//		A.X{`=`, 1, z.CreatedAt},
-//		A.X{`=`, 2, z.Coords},
-//		A.X{`=`, 3, z.Name},
-//		A.X{`=`, 4, z.HeightMeter},
-//	})
-//	return !L.IsError(err, `Zzz.DoUpsert failed: `+z.SpaceName()+ `\n%#v`, arr)
-// }
+// DoOverwriteByName update all columns, error if not exists, not using mutations/Set*
+func (z *ZzzMutator) DoOverwriteByName() bool { //nolint:dupl false positive
+	_, err := z.Adapter.RetryDo(tarantool.NewUpdateRequest(z.SpaceName()).
+		Index(z.UniqueIndexName()).
+		Key(tarantool.StringKey{S:z.Name}).
+		Operations(z.ToUpdateArray()),
+	)
+	return !L.IsError(err, `Zzz.DoOverwriteByName failed: `+z.SpaceName())
+}
+
+// DoUpdateByName update only mutated fields, error if not exists, use Find* and Set* methods instead of direct assignment
+func (z *ZzzMutator) DoUpdateByName() bool { //nolint:dupl false positive
+	if !z.HaveMutation() {
+		return true
+	}
+	_, err := z.Adapter.RetryDo(
+		tarantool.NewUpdateRequest(z.SpaceName()).
+		Index(z.UniqueIndexName()).
+		Key(tarantool.StringKey{S:z.Name}).
+		Operations(z.mutations),
+	)
+	return !L.IsError(err, `Zzz.DoUpdateByName failed: `+z.SpaceName())
+}
+
+// DoDeletePermanentByName permanent delete
+func (z *ZzzMutator) DoDeletePermanentByName() bool { //nolint:dupl false positive
+	_, err := z.Adapter.RetryDo(
+		tarantool.NewDeleteRequest(z.SpaceName()).
+		Index(z.UniqueIndexName()).
+		Key(tarantool.StringKey{S:z.Name}),
+	)
+	return !L.IsError(err, `Zzz.DoDeletePermanentByName failed: `+z.SpaceName())
+}
 
 // DoInsert insert, error if already exists
 func (z *ZzzMutator) DoInsert() bool { //nolint:dupl false positive
 	arr := z.ToArray()
-	row, err := z.Adapter.Connection.Do(
+	row, err := z.Adapter.RetryDo(
 		tarantool.NewInsertRequest(z.SpaceName()).
 		Tuple(arr),
-	).Get()
+	)
 	if err == nil {
 		if len(row) > 0 {
 			if cells, ok := row[0].([]any); ok && len(cells) > 0 {
@@ -114,22 +136,13 @@ func (z *ZzzMutator) DoInsert() bool { //nolint:dupl false positive
 }
 
 // DoUpsert upsert, insert or overwrite, will error only when there's unique secondary key being violated
-// replace = upsert, only error when there's unique secondary key
+// tarantool's replace/upsert can only match by primary key
 // previous name: DoReplace
-func (z *ZzzMutator) DoUpsert() bool { //nolint:dupl false positive
-	arr := z.ToArray()
-	row, err := z.Adapter.Connection.Do(
-		tarantool.NewReplaceRequest(z.SpaceName()).
-		Tuple(arr),
-	).Get()
-	if err == nil {
-		if len(row) > 0 {
-			if cells, ok := row[0].([]any); ok && len(cells) > 0 {
-				z.Id = X.ToU(cells[0])
-			}
-		}
+func (z *ZzzMutator) DoUpsertById() bool { //nolint:dupl false positive
+	if z.Id > 0 {
+		return z.DoUpdateById()
 	}
-	return !L.IsError(err, `Zzz.DoUpsert failed: `+z.SpaceName()+ `\n%#v`, arr)
+	return z.DoInsert()
 }
 
 // SetId create mutations, should not duplicate

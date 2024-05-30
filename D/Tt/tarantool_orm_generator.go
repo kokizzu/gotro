@@ -272,23 +272,13 @@ func GenerateOrm(tables map[TableName]*TableProp, withGraphql ...bool) {
 			RQ("	return " + S.BT(IdCol) + NL)
 			RQ("}\n\n")
 
-			generateMutationByUniqueIndexumns(uniquePropCamel, structProp, receiverName, structName, RQ, WC)
+			keyFunc := Field{Type: Unsigned}.KeyRenderer()
+			generateMutationByUniqueIndex(uniquePropCamel, structProp, receiverName, structName, keyFunc, RQ, WC)
 
 			if props.GenGraphqlType {
 				generateGraphqlQueryField(structName, uniquePropCamel, propByName[IdCol], RQ)
 			}
 		}
-
-		// upsert template, to be copied when need increment some field
-		WC(`// func (` + receiverName + ` *` + structName + "Mutator) DoUpsert() bool { //nolint:dupl false positive\n")
-		WC("//	arr := " + receiverName + ".ToArray()\n")
-		WC("//	_, err := " + receiverName + ".Adapter.Upsert(" + receiverName + ".SpaceName(), arr, A.X{\n")
-		for idx, prop := range props.Fields {
-			WC("//		A.X{`=`, " + X.ToS(idx) + ", " + receiverName + "." + S.PascalCase(prop.Name) + "},\n")
-		}
-		WC("//	})\n")
-		WC("//	return !L.IsError(err, `" + structName + ".DoUpsert failed: `+" + receiverName + ".SpaceName()+ `\\n%#v`, arr)\n")
-		WC("// }\n\n")
 
 		// spatial index
 		if props.Spatial != `` {
@@ -310,7 +300,8 @@ func GenerateOrm(tables map[TableName]*TableProp, withGraphql ...bool) {
 			RQ("	return " + S.BT(props.Unique1) + NL)
 			RQ("}\n\n")
 
-			generateMutationByUniqueIndexumns(uniquePropCamel, structProp, receiverName, structName, RQ, WC)
+			keyType := propByName[props.Unique1].KeyRenderer()
+			generateMutationByUniqueIndex(uniquePropCamel, structProp, receiverName, structName, keyType, RQ, WC)
 
 			if props.GenGraphqlType {
 				generateGraphqlQueryField(structName, uniquePropCamel, propByName[props.Unique1], RQ)
@@ -327,7 +318,8 @@ func GenerateOrm(tables map[TableName]*TableProp, withGraphql ...bool) {
 			RQ("	return " + S.BT(props.Unique2) + NL)
 			RQ("}\n\n")
 
-			generateMutationByUniqueIndexumns(uniquePropCamel, structProp, receiverName, structName, RQ, WC)
+			keyType := propByName[props.Unique2].KeyRenderer()
+			generateMutationByUniqueIndex(uniquePropCamel, structProp, receiverName, structName, keyType, RQ, WC)
 		}
 
 		// unique index3
@@ -340,7 +332,8 @@ func GenerateOrm(tables map[TableName]*TableProp, withGraphql ...bool) {
 			RQ("	return " + S.BT(props.Unique3) + NL)
 			RQ("}\n\n")
 
-			generateMutationByUniqueIndexumns(uniquePropCamel, structProp, receiverName, structName, RQ, WC)
+			keyType := propByName[props.Unique3].KeyRenderer()
+			generateMutationByUniqueIndex(uniquePropCamel, structProp, receiverName, structName, keyType, RQ, WC)
 		}
 
 		// unique indexes
@@ -360,7 +353,8 @@ func GenerateOrm(tables map[TableName]*TableProp, withGraphql ...bool) {
 			RQ("	return " + S.BT(strings.Join(props.Uniques, `__`)) + NL)
 			RQ("}\n\n")
 
-			generateMutationByUniqueIndexumns(uniquePropCamel, structProps, receiverName, structName, RQ, WC)
+			keyFunc := func(structProp string) string { return "TodoWhatToUseForMultipleKey:" + structProp }
+			generateMutationByUniqueIndex(uniquePropCamel, structProps, receiverName, structName, keyFunc, RQ, WC)
 		}
 
 		// insert, error if exists
@@ -368,10 +362,10 @@ func GenerateOrm(tables map[TableName]*TableProp, withGraphql ...bool) {
 		WC(`func (` + receiverName + ` *` + structName + "Mutator) DoInsert() bool { //nolint:dupl false positive\n")
 		ret1 := S.IfElse(props.AutoIncrementId, `row`, `_`)
 		WC("	arr := " + receiverName + ".ToArray()\n")
-		WC("	" + ret1 + ", err := " + receiverName + ".Adapter.Connection.Do(\n")
+		WC("	" + ret1 + ", err := " + receiverName + ".Adapter.RetryDo(\n")
 		WC("		tarantool.NewInsertRequest(" + receiverName + ".SpaceName()).\n")
 		WC("		Tuple(arr),\n")
-		WC("	).Get()\n")
+		WC("	)\n")
 		if props.AutoIncrementId {
 			WC("	if err == nil {\n")
 			WC("		if len(row) > 0 {\n")
@@ -385,26 +379,18 @@ func GenerateOrm(tables map[TableName]*TableProp, withGraphql ...bool) {
 		WC("}\n\n")
 
 		// replace = upsert, only error when there's unique secondary key
-		WC("// DoUpsert upsert, insert or overwrite, will error only when there's unique secondary key being violated\n")
-		WC("// replace = upsert, only error when there's unique secondary key\n")
-		WC("// previous name: DoReplace\n")
-		WC(`func (` + receiverName + ` *` + structName + "Mutator) DoUpsert() bool { //nolint:dupl false positive\n")
-		WC("	arr := " + receiverName + ".ToArray()\n")
-		WC("	" + ret1 + ", err := " + receiverName + ".Adapter.Connection.Do(\n")
-		WC("		tarantool.NewReplaceRequest(" + receiverName + ".SpaceName()).\n")
-		WC("		Tuple(arr),\n")
-		WC("	).Get()\n")
+		// https://github.com/tarantool/tarantool/issues/5732
 		if props.AutoIncrementId {
-			WC("	if err == nil {\n")
-			WC("		if len(row) > 0 {\n")
-			WC("			if cells, ok := row[0].([]any); ok && len(cells) > 0 {\n")
-			WC("				" + receiverName + ".Id = X.ToU(cells[0])\n")
-			WC("			}\n")
-			WC("		}\n")
+			WC("// DoUpsert upsert, insert or overwrite, will error only when there's unique secondary key being violated\n")
+			WC("// tarantool's replace/upsert can only match by primary key\n")
+			WC("// previous name: DoReplace\n")
+			WC(`func (` + receiverName + ` *` + structName + "Mutator) DoUpsertById() bool { //nolint:dupl false positive\n")
+			WC("	if " + receiverName + ".Id > 0 {\n")
+			WC("		return " + receiverName + ".DoUpdateById()\n")
 			WC("	}\n")
+			WC("	return " + receiverName + ".DoInsert()\n")
+			WC("}\n\n")
 		}
-		WC("	return !L.IsError(err, `" + structName + ".DoUpsert failed: `+" + receiverName + ".SpaceName()+ `\\n%#v`, arr)\n")
-		WC("}\n\n")
 
 		// Sql select all fields, used when need to mutate or show every fields
 		RQ("// SqlSelectAllFields generate Sql select fields\n")
@@ -566,14 +552,13 @@ func GenerateOrm(tables map[TableName]*TableProp, withGraphql ...bool) {
 		RQ("// FindOffsetLimit returns slice of struct, order by idx, eg. .UniqueIndex*()\n")
 		RQ(`func (` + receiverName + ` *` + structName + ") FindOffsetLimit(offset, limit uint32, idx string) []" + structName + " { //nolint:dupl false positive\n")
 		RQ("	var rows []" + structName + NL)
-		RQ("	res, err := " + receiverName + ".Adapter.Connection.Do(\n")
+		RQ("	res, err := " + receiverName + ".Adapter.RetryDo(\n")
 		RQ("		tarantool.NewSelectRequest(" + receiverName + ".SpaceName()).\n")
 		RQ("		Index(idx).\n")
 		RQ("		Offset(offset).\n")
 		RQ("		Limit(limit).\n")
-		RQ("		Iterator(" + iterAll + ").\n")
-		RQ("		Key(A.X{}),\n")
-		RQ("	).Get()\n")
+		RQ("		Iterator(" + iterAll + "),\n")
+		RQ("	)\n")
 		RQ("	if L.IsError(err, `" + structName + ".FindOffsetLimit failed: `+" + receiverName + ".SpaceName()) {\n")
 		RQ("		return rows\n")
 		RQ("	}\n")
@@ -591,14 +576,13 @@ func GenerateOrm(tables map[TableName]*TableProp, withGraphql ...bool) {
 		RQ("// FindArrOffsetLimit returns as slice of slice order by idx eg. .UniqueIndex*()\n")
 		RQ(`func (` + receiverName + ` *` + structName + ") FindArrOffsetLimit(offset, limit uint32, idx string) ([]A.X, Tt.QueryMeta) { //nolint:dupl false positive\n")
 		RQ("	var rows []A.X" + NL)
-		RQ("	resp, err := " + receiverName + ".Adapter.Connection.Do(\n")
+		RQ("	resp, err := " + receiverName + ".Adapter.RetryDoResp(\n")
 		RQ("		tarantool.NewSelectRequest(" + receiverName + ".SpaceName()).\n")
 		RQ("		Index(idx).\n")
 		RQ("		Offset(offset).\n")
 		RQ("		Limit(limit).\n")
-		RQ("		Iterator(" + iterAll + ").\n")
-		RQ("		Key(A.X{}),\n")
-		RQ("	).GetResponse()\n")
+		RQ("		Iterator(" + iterAll + "),\n")
+		RQ("	)\n")
 		RQ("	if L.IsError(err, `" + structName + ".FindOffsetLimit failed: `+" + receiverName + ".SpaceName()) {\n")
 		RQ("		return rows, Tt.QueryMetaFrom(resp, err)\n")
 		RQ("	}\n")
@@ -758,7 +742,7 @@ func generateGraphqlQueryField(structName string, uniqueFieldName string, field 
 
 }
 
-func generateMutationByUniqueIndexumns(uniqueCamel, structProp, receiverName, structName string, RQ, WC func(str string)) {
+func generateMutationByUniqueIndex(uniqueCamel, structProp, receiverName, structName string, keyFunc func(string) string, RQ, WC func(str string)) {
 
 	//// primary fields
 	//RQ(`func (` + receiverName + ` *` + structName + ") PrimaryIndex() A.X { //nolint:dupl false positive\n")
@@ -769,14 +753,13 @@ func generateMutationByUniqueIndexumns(uniqueCamel, structProp, receiverName, st
 
 	RQ("// FindBy" + uniqueCamel + " Find one by " + uniqueCamel + "\n")
 	RQ(`func (` + receiverName + ` *` + structName + `) FindBy` + uniqueCamel + "() bool { //nolint:dupl false positive\n")
-	RQ("	res, err := " + receiverName + ".Adapter.Connection.Do(\n")
+	RQ("	res, err := " + receiverName + ".Adapter.RetryDo(\n")
 	RQ("		tarantool.NewSelectRequest(" + receiverName + ".SpaceName()).\n")
 	RQ("		Index(" + receiverName + ".UniqueIndex" + uniqueCamel + "()).\n")
-	RQ("		Offset(0).\n")
 	RQ("		Limit(1).\n")
 	RQ("		Iterator(" + iterEq + ").\n")
-	RQ("		Key(A.X{" + structProp + "}),\n")
-	RQ("	).Get()\n")
+	RQ("		Key(" + keyFunc(structProp) + "),\n")
+	RQ("	)\n")
 	RQ("	if L.IsError(err, `" + structName + `.FindBy` + uniqueCamel + " failed: `+" + receiverName + ".SpaceName()) {\n")
 	RQ("		return false\n")
 	RQ("	}\n")
@@ -792,11 +775,11 @@ func generateMutationByUniqueIndexumns(uniqueCamel, structProp, receiverName, st
 	// Overwrite all columns, error if not exists
 	WC("// DoOverwriteBy" + uniqueCamel + " update all columns, error if not exists, not using mutations/Set*\n")
 	WC(`func (` + receiverName + ` *` + structName + `Mutator) DoOverwriteBy` + uniqueCamel + "() bool { //nolint:dupl false positive\n")
-	WC("	_, err := " + receiverName + ".Adapter.Connection.Do(tarantool.NewUpdateRequest(" + receiverName + ".SpaceName()).\n")
+	WC("	_, err := " + receiverName + ".Adapter.RetryDo(tarantool.NewUpdateRequest(" + receiverName + ".SpaceName()).\n")
 	WC("		Index(" + receiverName + ".UniqueIndex" + uniqueCamel + "()).\n")
-	WC("		Key(A.X{" + structProp + "}).\n")
+	WC("		Key(" + keyFunc(structProp) + ").\n")
 	WC("		Operations(" + receiverName + ".ToUpdateArray()),\n")
-	WC("	).Get()\n")
+	WC("	)\n")
 	WC("	return !L.IsError(err, `" + structName + `.DoOverwriteBy` + uniqueCamel + " failed: `+" + receiverName + ".SpaceName())\n")
 	WC("}\n\n")
 
@@ -806,23 +789,23 @@ func generateMutationByUniqueIndexumns(uniqueCamel, structProp, receiverName, st
 	WC(`	if !` + receiverName + ".HaveMutation() {\n")
 	WC("		return true\n")
 	WC("	}\n")
-	WC("	_, err := " + receiverName + ".Adapter.Connection.Do(\n")
+	WC("	_, err := " + receiverName + ".Adapter.RetryDo(\n")
 	WC("		tarantool.NewUpdateRequest(" + receiverName + ".SpaceName()).\n")
 	WC("		Index(" + receiverName + ".UniqueIndex" + uniqueCamel + "()).\n")
-	WC("		Key(A.X{" + structProp + "}).\n")
+	WC("		Key(" + keyFunc(structProp) + ").\n")
 	WC("		Operations(" + receiverName + ".mutations),\n")
-	WC("	).Get()\n")
+	WC("	)\n")
 	WC("	return !L.IsError(err, `" + structName + `.DoUpdateBy` + uniqueCamel + " failed: `+" + receiverName + ".SpaceName())\n")
 	WC("}\n\n")
 
 	// permanent delete
 	WC("// DoDeletePermanentBy" + uniqueCamel + " permanent delete\n")
 	WC(`func (` + receiverName + ` *` + structName + `Mutator) DoDeletePermanentBy` + uniqueCamel + "() bool { //nolint:dupl false positive\n")
-	WC("	_, err := " + receiverName + ".Adapter.Connection.Do(\n")
+	WC("	_, err := " + receiverName + ".Adapter.RetryDo(\n")
 	WC("		tarantool.NewDeleteRequest(" + receiverName + ".SpaceName()).\n")
 	WC("		Index(" + receiverName + ".UniqueIndex" + uniqueCamel + "()).\n")
-	WC("		Key(A.X{" + structProp + "}),\n")
-	WC("	).Get()\n")
+	WC("		Key(" + keyFunc(structProp) + "),\n")
+	WC("	)\n")
 	WC("	return !L.IsError(err, `" + structName + `.DoDeletePermanentBy` + uniqueCamel + " failed: `+" + receiverName + ".SpaceName())\n")
 	WC("}\n\n")
 

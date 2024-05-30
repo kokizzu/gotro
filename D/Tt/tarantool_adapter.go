@@ -2,6 +2,7 @@ package Tt
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"time"
 
@@ -12,6 +13,50 @@ import (
 type Adapter struct {
 	*tarantool.Connection
 	Reconnect func() *tarantool.Connection
+}
+
+func (a *Adapter) RetryDo(op tarantool.Request, times ...int) ([]any, error) {
+	count := 3
+	if len(times) == 1 {
+		count = times[0]
+	}
+	for {
+		res, err := a.Connection.Do(op).Get()
+		if err != nil {
+			var e tarantool.ClientError
+			if errors.As(err, &e) && e.Code == 16385 { // using closed connection (0x4001)
+				a.Connection = a.Reconnect()
+				count--
+				if count == 0 {
+					return res, err
+				}
+				continue
+			}
+		}
+		return res, err
+	}
+}
+
+func (a *Adapter) RetryDoResp(op tarantool.Request, times ...int) (tarantool.Response, error) {
+	count := 3
+	if len(times) == 1 {
+		count = times[0]
+	}
+	for {
+		future, err := a.Connection.Do(op).GetResponse()
+		if err != nil {
+			var e tarantool.ClientError
+			if errors.As(err, &e) && e.Code == 16385 { // using closed connection (0x4001)
+				a.Connection = a.Reconnect()
+				count--
+				if count == 0 {
+					return future, err
+				}
+				continue
+			}
+		}
+		return future, err
+	}
 }
 
 // NewAdapter create new tarantool adapter

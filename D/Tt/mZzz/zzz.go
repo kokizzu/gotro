@@ -24,6 +24,7 @@ var TarantoolTables = map[Tt.TableName]*Tt.TableProp{
 		},
 		Engine:          Tt.Memtx,
 		AutoIncrementId: true,
+		Unique1:         Name,
 		Spatial:         Coords, // spatial index only works for memtx
 	},
 }

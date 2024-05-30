@@ -48,14 +48,13 @@ func (z *Zzz) UniqueIndexId() string { //nolint:dupl false positive
 
 // FindById Find one by Id
 func (z *Zzz) FindById() bool { //nolint:dupl false positive
-	res, err := z.Adapter.Connection.Do(
+	res, err := z.Adapter.RetryDo(
 		tarantool.NewSelectRequest(z.SpaceName()).
 		Index(z.UniqueIndexId()).
-		Offset(0).
 		Limit(1).
 		Iterator(tarantool.IterEq).
-		Key(A.X{z.Id}),
-	).Get()
+		Key(tarantool.UintKey{I:uint(z.Id)}),
+	)
 	if L.IsError(err, `Zzz.FindById failed: `+z.SpaceName()) {
 		return false
 	}
@@ -71,6 +70,32 @@ func (z *Zzz) FindById() bool { //nolint:dupl false positive
 // SpatialIndexCoords return spatial index name
 func (z *Zzz) SpatialIndexCoords() string { //nolint:dupl false positive
 	return `coords`
+}
+
+// UniqueIndexName return unique index name
+func (z *Zzz) UniqueIndexName() string { //nolint:dupl false positive
+	return `name`
+}
+
+// FindByName Find one by Name
+func (z *Zzz) FindByName() bool { //nolint:dupl false positive
+	res, err := z.Adapter.RetryDo(
+		tarantool.NewSelectRequest(z.SpaceName()).
+		Index(z.UniqueIndexName()).
+		Limit(1).
+		Iterator(tarantool.IterEq).
+		Key(tarantool.StringKey{S:z.Name}),
+	)
+	if L.IsError(err, `Zzz.FindByName failed: `+z.SpaceName()) {
+		return false
+	}
+	if len(res) == 1 {
+		if row, ok := res[0].([]any); ok {
+			z.FromArray(row)
+			return true
+		}
+	}
+	return false
 }
 
 // SqlSelectAllFields generate Sql select fields
@@ -191,14 +216,13 @@ func (z *Zzz) FromUncensoredArray(a A.X) *Zzz { //nolint:dupl false positive
 // FindOffsetLimit returns slice of struct, order by idx, eg. .UniqueIndex*()
 func (z *Zzz) FindOffsetLimit(offset, limit uint32, idx string) []Zzz { //nolint:dupl false positive
 	var rows []Zzz
-	res, err := z.Adapter.Connection.Do(
+	res, err := z.Adapter.RetryDo(
 		tarantool.NewSelectRequest(z.SpaceName()).
 		Index(idx).
 		Offset(offset).
 		Limit(limit).
-		Iterator(tarantool.IterAll).
-		Key(A.X{}),
-	).Get()
+		Iterator(tarantool.IterAll),
+	)
 	if L.IsError(err, `Zzz.FindOffsetLimit failed: `+z.SpaceName()) {
 		return rows
 	}
@@ -215,14 +239,13 @@ func (z *Zzz) FindOffsetLimit(offset, limit uint32, idx string) []Zzz { //nolint
 // FindArrOffsetLimit returns as slice of slice order by idx eg. .UniqueIndex*()
 func (z *Zzz) FindArrOffsetLimit(offset, limit uint32, idx string) ([]A.X, Tt.QueryMeta) { //nolint:dupl false positive
 	var rows []A.X
-	resp, err := z.Adapter.Connection.Do(
+	resp, err := z.Adapter.RetryDoResp(
 		tarantool.NewSelectRequest(z.SpaceName()).
 		Index(idx).
 		Offset(offset).
 		Limit(limit).
-		Iterator(tarantool.IterAll).
-		Key(A.X{}),
-	).GetResponse()
+		Iterator(tarantool.IterAll),
+	)
 	if L.IsError(err, `Zzz.FindOffsetLimit failed: `+z.SpaceName()) {
 		return rows, Tt.QueryMetaFrom(resp, err)
 	}

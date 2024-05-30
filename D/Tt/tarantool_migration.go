@@ -151,6 +151,27 @@ type Field struct { // https://godoc.org/gopkg.in/vmihailenco/msgpack.v2#pkg-exa
 	Name string   `msgpack:"name"`
 	Type DataType `msgpack:"type"`
 }
+
+func (f Field) KeyRenderer() func(string) string {
+	switch f.Type {
+	case Unsigned:
+		return func(structProp string) string {
+			return "tarantool.UintKey{I:uint(" + structProp + `)}`
+		}
+	case Integer:
+		return func(structProp string) string {
+			return "tarantool.IntKey{I:int(" + structProp + `)}`
+		}
+	case String:
+		return func(structProp string) string {
+			return "tarantool.StringKey{S:" + structProp + `}`
+		}
+	}
+	return func(structProp string) string {
+		return `DataTypeNotPossibleToBeAKey:` + string(f.Type) + `:` + structProp
+	}
+}
+
 type NullableField struct {
 	Name       string   `msgpack:"name"`
 	Type       DataType `msgpack:"type"`
