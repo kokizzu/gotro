@@ -219,7 +219,7 @@ func GenerateOrm(tables map[TableName]*TableProp) {
 		SA("// insert, error if exists\n")
 		SA(`func (` + receiverName + ` *` + structName + ") SqlInsert() string { //nolint:dupl false positive\n")
 		qMark := S.Repeat(`,?`, len(props.Fields))[1:]
-		SA("	return `INSERT INTO ` + " + receiverName + ".SqlTableName() + `(` + " + receiverName + ".SqlAllFields() + `) VALUES (" + qMark + ")`\n")
+		SA("	return `INSERT INTO ` + " + receiverName + ".SqlTableName() + ` (` + " + receiverName + ".SqlAllFields() + `) VALUES (" + qMark + ")`\n")
 		SA("}\n\n")
 
 		// total records
