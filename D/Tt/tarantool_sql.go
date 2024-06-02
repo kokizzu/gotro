@@ -59,6 +59,12 @@ func (a *Adapter) ExecSql(query string, parameters ...MSX) map[any]any {
 				return map[any]any{`error`: tup[1][0]}
 			}
 		}
+		// go-tarantool v2 use this kind of error
+		if boxErr, ok := res[1].(*tarantool.BoxError); ok && boxErr != nil {
+			L.Describe(query)
+			L.Print(boxErr)
+			return map[any]any{`error`: boxErr.Error()}
+		}
 	}
 	return map[any]any{}
 }

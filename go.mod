@@ -41,7 +41,7 @@ require (
 	github.com/zeebo/assert v1.3.0
 	github.com/zeebo/xxh3 v1.0.2
 	golang.org/x/crypto v0.23.0
-	golang.org/x/exp v0.0.0-20240530194437-404ba88c7ed0
+	golang.org/x/exp v0.0.0-20240531132922-fd00a4e0eefc
 	golang.org/x/text v0.15.0
 )
 
