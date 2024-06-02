@@ -35,6 +35,11 @@ func (a *Adapter) ExecSql(query string, parameters ...MSX) map[any]any {
 		return map[any]any{`error`: err.Error()}
 	}
 	if len(res) > 0 {
+		// go-tarantool/v2 use this:
+		if tup, ok := res[0].(map[any]any); ok {
+			// tup have metadata and rows for query
+			return tup
+		}
 		if tup, ok := res[0].([][]any); ok {
 			if tup[0][0] != nil {
 				kv, ok := tup[0][0].(map[any]any)
