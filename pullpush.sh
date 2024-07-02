@@ -24,6 +24,8 @@ echo "codes formatted.."
 go build loader.go || ( echo 'has error, exiting..' ; kill 0 )
 echo "codes tested.."
 
+(cd W2/internal/example1 ; go get -u -v github.com/gofiber/fiber/v2@latest ; go mod tidy)
+(cd W2/internal/example2 ; go get -u -v github.com/gofiber/fiber/v2@latest ; go mod tidy)
 go get -u -v github.com/ory/dockertest/v3@latest
 go get -u -v github.com/kokizzu/id64@latest
 go get -u -v github.com/kokizzu/lexid@latest
