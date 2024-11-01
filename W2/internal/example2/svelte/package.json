@@ -24,7 +24,7 @@
 		"node-notifier": "^10.0.1",
 		"parse5": "^7.1.2",
 		"prettier": "^2.8.8",
-		"svelte": "^4.2.19",
+		"svelte": ">=4.2.19",
 		"svelte-preprocess": "^5.0.4",
 		"typescript": "^5.2.2"
 	},
