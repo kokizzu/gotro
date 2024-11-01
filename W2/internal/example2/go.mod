@@ -1,6 +1,8 @@
 module example2
 
-go 1.22
+go 1.22.0
+
+toolchain go1.22.8
 
 // replace with github.com/kokizzu/gotro after copying this example
 replace github.com/kokizzu/gotro => ../../../
