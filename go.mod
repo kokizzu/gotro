@@ -1,8 +1,6 @@
 module github.com/kokizzu/gotro
 
-go 1.22.0
-
-toolchain go1.22.8
+go 1.22
 
 require (
 	github.com/ClickHouse/clickhouse-go/v2 v2.30.0
