@@ -1,6 +1,8 @@
 module github.com/kokizzu/gotro
 
-go 1.22
+go 1.22.0
+
+toolchain go1.22.8
 
 require (
 	github.com/ClickHouse/clickhouse-go/v2 v2.30.0
@@ -88,7 +90,7 @@ require (
 	github.com/nightlyone/lockfile v1.0.0 // indirect
 	github.com/opencontainers/go-digest v1.0.0 // indirect
 	github.com/opencontainers/image-spec v1.1.0 // indirect
-	github.com/opencontainers/runc v1.2.0 // indirect
+	github.com/opencontainers/runc v1.2.1 // indirect
 	github.com/paulmach/orb v0.11.1 // indirect
 	github.com/pierrec/lz4/v4 v4.1.21 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
