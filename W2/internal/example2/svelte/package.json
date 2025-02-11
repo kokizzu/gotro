@@ -17,7 +17,7 @@
 	},
 	"devDependencies": {
 		"chokidar": "^3.6.0",
-		"esbuild": "0.16.17",
+		"esbuild": "0.25.0",
 		"esbuild-svelte": "^0.8.2",
 		"five-server": "^0.1.9",
 		"lodash": "^4.17.21",
