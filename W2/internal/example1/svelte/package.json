@@ -1,6 +1,7 @@
 {
   "name": "svelte-mpa-app",
   "version": "0.0.0",
+  "type": "module",
   "scripts": {
     "start": "npm run dev",
     "watch": "npm run build -- --watch",
@@ -12,19 +13,23 @@
   "devDependencies": {
     "chokidar": "^3.6.0",
     "esbuild": "^0.16.17",
-    "esbuild-svelte": "^0.8.2",
+    "esbuild-svelte": "^0.7.4",
     "five-server": "^0.4.1",
     "lodash": "^4.17.21",
+    "node-notifier": "^10.0.1",
     "parse5": "^7.2.1",
     "prettier": "^2.8.8",
-    "svelte": "^5.22.6",
+    "svelte": "^4.2.19",
     "svelte-preprocess": "^5.1.4",
-    "typescript": "^4.9.5"
+    "typescript": "^5.8.2"
   },
   "prettier": {
     "singleQuote": true,
     "trailingComma": "es5",
     "printWidth": 120,
     "arrowParens": "avoid"
+  },
+  "dependencies": {
+    "lodash-es": "^4.17.21"
   }
 }
