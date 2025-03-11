@@ -179,7 +179,7 @@ func (ctx *Context) Posts() *Posts {
 
 // call next filter or action/handler
 func (ctx *Context) Next() Action {
-	if ctx.Actions == nil || len(ctx.Actions) == 0 {
+	if len(ctx.Actions) == 0 {
 		panic(`action-chain unavailable`)
 	}
 	action := ctx.Actions[0]

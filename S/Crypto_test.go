@@ -2,11 +2,11 @@ package S
 
 import (
 	"fmt"
+	"math/rand/v2"
 	"testing"
 	"time"
 
 	"github.com/stretchr/testify/assert"
-	"golang.org/x/exp/rand"
 )
 
 func TestStringAES(t *testing.T) {
@@ -52,7 +52,7 @@ func TestStructAES(t *testing.T) {
 				C: int8(rand.Int()),
 				D: int16(rand.Int()),
 				E: int32(rand.Int()),
-				F: rand.Int63(),
+				F: rand.Int64(),
 				G: uint(rand.Uint32()),
 				H: uint8(rand.Uint32()),
 				I: uint16(rand.Uint32()),
@@ -83,7 +83,7 @@ func TestMapAES(t *testing.T) {
 				`C`: int8(rand.Int()),
 				`D`: int16(rand.Int()),
 				`E`: int32(rand.Int()),
-				`F`: rand.Int63(),
+				`F`: rand.Int64(),
 				`H`: uint8(rand.Uint32()),
 				`I`: uint16(rand.Uint32()),
 				`J`: rand.Uint32(),
