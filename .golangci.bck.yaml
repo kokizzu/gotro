@@ -1,0 +1,12 @@
+issues:
+  exclude:
+    - "composites: .+ struct literal uses unkeyed fields"
+    - "SA9003: empty branch"
+    - "SA9004: only the first constant in this group has an explicit type"
+    - ".+Mutator has no field or method .+"
+  exclude-rules:
+    - path: W2/internal/example
+      linters: 
+      - unused
+    
+   

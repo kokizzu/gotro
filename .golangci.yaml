@@ -1,12 +1,32 @@
-issues:
-  exclude:
-    - "composites: .+ struct literal uses unkeyed fields"
-    - "SA9003: empty branch"
-    - "SA9004: only the first constant in this group has an explicit type"
-    - ".+Mutator has no field or method .+"
-  exclude-rules:
-    - path: W2/internal/example
-      linters: 
-      - unused
-    
-   
+version: "2"
+linters:
+  exclusions:
+    generated: lax
+    presets:
+      - comments
+      - common-false-positives
+      - legacy
+      - std-error-handling
+    rules:
+      - linters:
+          - unused
+        path: W2/internal/example
+      - path: (.+)\.go$
+        text: 'composites: .+ struct literal uses unkeyed fields'
+      - path: (.+)\.go$
+        text: 'SA9003: empty branch'
+      - path: (.+)\.go$
+        text: 'SA9004: only the first constant in this group has an explicit type'
+      - path: (.+)\.go$
+        text: .+Mutator has no field or method .+
+    paths:
+      - third_party$
+      - builtin$
+      - examples$
+formatters:
+  exclusions:
+    generated: lax
+    paths:
+      - third_party$
+      - builtin$
+      - examples$
