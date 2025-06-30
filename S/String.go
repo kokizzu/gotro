@@ -103,7 +103,7 @@ func LastIndexOf(str, sub string) int {
 //
 //	S.Replace(`bisa`,`is`,`us`) // `busa`
 func Replace(haystack, needle, gold string) string {
-	return strings.Replace(haystack, needle, gold, -1)
+	return strings.ReplaceAll(haystack, needle, gold)
 }
 
 // ToLower change the characters in string to lowercase

@@ -176,12 +176,12 @@ func ParseEmail(str_emails, each_name string) []string {
 		if each_email == `` {
 			continue
 		}
-		each_name = strings.Replace(each_name, `,`, `_`, -1)
-		each_name = strings.Replace(each_name, `.`, `_`, -1)
-		each_name = strings.Replace(each_name, `<`, `_`, -1)
-		each_name = strings.Replace(each_name, `>`, `_`, -1)
-		each_name = strings.Replace(each_name, `(`, `_`, -1)
-		each_name = strings.Replace(each_name, `)`, `_`, -1)
+		each_name = strings.ReplaceAll(each_name, `,`, `_`)
+		each_name = strings.ReplaceAll(each_name, `.`, `_`)
+		each_name = strings.ReplaceAll(each_name, `<`, `_`)
+		each_name = strings.ReplaceAll(each_name, `>`, `_`)
+		each_name = strings.ReplaceAll(each_name, `(`, `_`)
+		each_name = strings.ReplaceAll(each_name, `)`, `_`)
 		temp = append(temp, each_name+`<`+each_email+`>`)
 	}
 	return temp

@@ -18,7 +18,15 @@ linters:
       - path: (.+)\.go$
         text: 'SA9004: only the first constant in this group has an explicit type'
       - path: (.+)\.go$
-        text: .+Mutator has no field or method .+
+        text: '.+Mutator has no field or method .+'
+      - path: (.*)\.go$
+        text: 'QF1008: could remove embedded field .+'
+      - path: (.+)\.go$
+        text: "QF1001: could apply De Morgan's law"
+      - path: (.+)\.go$
+        text: 'QF1010: could convert argument to string'
+      - path: (.+)\.go$
+        text: 'QF1003: could use tagged switch on .+'
     paths:
       - third_party$
       - builtin$

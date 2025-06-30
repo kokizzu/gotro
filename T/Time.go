@@ -29,7 +29,7 @@ var EMPTY = time.Time{}
 //
 //	T.ToIsoStr(time.Now()) // "2016-03-17T10:04:50.6489"
 func ToIsoStr(t time.Time) string {
-	if t == EMPTY {
+	if t.Equal(EMPTY) {
 		return ``
 	}
 	return t.Format(ISO)
@@ -46,7 +46,7 @@ func IsoStr() string {
 //
 //	T.ToDateStr(time.Now()) // output "2016-03-17"
 func ToDateStr(t time.Time) string {
-	if t == EMPTY {
+	if t.Equal(EMPTY) {
 		return ``
 	}
 	return t.Format(YMD)
@@ -62,7 +62,7 @@ func DateStr() string {
 //
 //	T.ToHumanStr(time.Now()) // "17-Mar-2016 10:06"
 func ToHumanStr(t time.Time) string {
-	if t == EMPTY {
+	if t.Equal(EMPTY) {
 		return ``
 	}
 	return t.Format(HUMAN)
@@ -79,7 +79,7 @@ func HumanStr() string {
 //
 //	T.ToDateHourStr(time.Now()) // "2016-03-17 10:07"
 func ToDateHourStr(t time.Time) string {
-	if t == EMPTY {
+	if t.Equal(EMPTY) {
 		return ``
 	}
 	return t.Format(YMD_HM)
@@ -89,7 +89,7 @@ func ToDateHourStr(t time.Time) string {
 //
 //	T.ToDateHourStr(time.Now()) // "230744"
 func ToHhmmssStr(t time.Time) string {
-	if t == EMPTY {
+	if t.Equal(EMPTY) {
 		return ``
 	}
 	return t.Format(HMS)
@@ -113,7 +113,7 @@ func DateHhMmStr() string {
 //
 //	T.ToDateTimeStr(time.Now()) // "2016-03-17 10:07:50"
 func ToDateTimeStr(t time.Time) string {
-	if t == EMPTY {
+	if t.Equal(EMPTY) {
 		return ``
 	}
 	return t.Format(YMD_HMS)

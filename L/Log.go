@@ -198,7 +198,7 @@ func Describe(args ...any) {
 		res := pretty.Formatter(arg)
 		str += fmt.Sprintf("\t%# v\n", res)
 	}
-	LOG.Debug(strings.Replace(str, `%`, `%%`, -1))
+	LOG.Debug(strings.ReplaceAll(str, `%`, `%%`))
 }
 
 // ParentDescribe describe anything
@@ -215,14 +215,14 @@ func ParentDescribe(args ...any) {
 		res := pretty.Formatter(arg)
 		str += fmt.Sprintf("\t%# v\n", res)
 	}
-	LOG.Debug(strings.Replace(str, `%`, `%%`, -1))
+	LOG.Debug(strings.ReplaceAll(str, `%`, `%%`))
 }
 
 // Print replacement for fmt.Println, gives line number
 func Print(any ...any) {
 	_, file, line, _ := runtime.Caller(1)
 	str := color.CyanString(file[len(FILE_PATH):] + `:` + I.ToStr(line) + `: `)
-	LOG.Debug(strings.Replace(str, `%`, `%%`, -1))
+	LOG.Debug(strings.ReplaceAll(str, `%`, `%%`))
 	fmt.Println(any...)
 }
 
@@ -230,7 +230,7 @@ func Print(any ...any) {
 func PrintParent(any ...any) {
 	_, file, line, _ := runtime.Caller(2)
 	str := color.CyanString(file[len(FILE_PATH):] + `:` + I.ToStr(line) + `: `)
-	LOG.Debug(strings.Replace(str, `%`, `%%`, -1))
+	LOG.Debug(strings.ReplaceAll(str, `%`, `%%`))
 	fmt.Println(any...)
 }
 
