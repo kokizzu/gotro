@@ -24,7 +24,7 @@ require (
 	github.com/segmentio/fasthash v1.0.3
 	github.com/tarantool/go-tarantool/v2 v2.4.1
 	github.com/vburenin/nsync v0.0.0-20160822015540-9a75d1c80410
-	github.com/wneessen/go-mail v0.4.0
+	github.com/wneessen/go-mail v0.7.1
 	github.com/zeebo/xxh3 v1.0.2
 	golang.org/x/exp v0.0.0-20251023183803-a4bb9ffd2546
 	golang.org/x/oauth2 v0.27.0
