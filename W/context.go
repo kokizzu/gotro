@@ -46,9 +46,9 @@ func (ctx *Context) Proto() string {
 func (ctx *Context) Headers() M.SS {
 	if ctx.headers == nil {
 		ctx.headers = M.SS{}
-		ctx.Request.Header.VisitAll(func(key, val []byte) {
+		for key, val := range ctx.Request.Header.All() {
 			ctx.headers[S.ToLower(string(key))] = string(val)
-		})
+		}
 	}
 	return ctx.headers
 }

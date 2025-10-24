@@ -41,9 +41,9 @@ func (p *Posts) GetJsonIntArr(key string) []int64 {
 func (p *Posts) FromContext(ctx *Context) {
 	p.Args = ctx.RequestCtx.PostArgs()
 	p.SS = M.SS{}
-	p.Args.VisitAll(func(k, v []byte) {
+	for k, v := range p.Args.All() {
 		p.SS[string(k)] = string(v)
-	})
+	}
 	mf, err := ctx.RequestCtx.MultipartForm()
 	if err == nil {
 		//L.Print(`Multipart Post Data: ` + I.ToStr(len(mf.Value)) + ` keys`)

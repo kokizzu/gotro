@@ -108,9 +108,9 @@ func QueryStringExample(ctx *W.Context) {
 	//params.GetStr(`something`) // $_GET['something']
 	//params.GetInt(`something_else`)
 	data := M.SX{}
-	params.VisitAll(func(key, value []byte) {
+	for key, value := range params.All() {
 		data.Set(X.ToS(key), X.ToS(value))
-	})
+	}
 	ctx.Render(`query_string_example`, M.SX{
 		`title`: `Query String Example`,
 		`data`:  data,

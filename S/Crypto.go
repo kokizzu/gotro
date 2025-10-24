@@ -52,7 +52,7 @@ func EncryptAES(in any, key string) (encryptedStr string) {
 	_, err = io.ReadFull(rand.Reader, iv)
 	L.PanicIf(err, `io.ReadFull rand.Reader`)
 
-	stream := cipher.NewCFBEncrypter(block, iv)
+	stream := cipher.NewCTR(block, iv)
 	stream.XORKeyStream(ciphertext[aes.BlockSize:], plaintext)
 
 	// convert to base64
@@ -72,7 +72,7 @@ func DecryptAES(encryptedStr, key string, out any) bool {
 	iv := ciphertext[:aes.BlockSize]
 	ciphertext = ciphertext[aes.BlockSize:]
 
-	stream := cipher.NewCFBDecrypter(block, iv)
+	stream := cipher.NewCTR(block, iv)
 	stream.XORKeyStream(ciphertext, ciphertext)
 
 	err = msgpack.Unmarshal(ciphertext, out)
