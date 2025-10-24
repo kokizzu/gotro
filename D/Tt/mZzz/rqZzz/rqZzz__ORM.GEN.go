@@ -194,22 +194,22 @@ func (z *Zzz) ToArray() A.X { //nolint:dupl false positive
 }
 
 // FromArray convert slice to receiver fields
-func (z *Zzz) FromArray(a A.X) *Zzz { //nolint:dupl false positive
-	z.Id = X.ToU(a[0])
-	z.CreatedAt = X.ToI(a[1])
-	z.Coords = X.ToArr(a[2])
-	z.Name = X.ToS(a[3])
-	z.HeightMeter = X.ToF(a[4])
+func (z *Zzz) FromArray(ax A.X) *Zzz { //nolint:dupl false positive
+	z.Id = X.ToU(ax[0])
+	z.CreatedAt = X.ToI(ax[1])
+	z.Coords = X.ToArr(ax[2])
+	z.Name = X.ToS(ax[3])
+	z.HeightMeter = X.ToF(ax[4])
 	return z
 }
 
 // FromUncensoredArray convert slice to receiver fields
-func (z *Zzz) FromUncensoredArray(a A.X) *Zzz { //nolint:dupl false positive
-	z.Id = X.ToU(a[0])
-	z.CreatedAt = X.ToI(a[1])
-	z.Coords = X.ToArr(a[2])
-	z.Name = X.ToS(a[3])
-	z.HeightMeter = X.ToF(a[4])
+func (z *Zzz) FromUncensoredArray(ax A.X) *Zzz { //nolint:dupl false positive
+	z.Id = X.ToU(ax[0])
+	z.CreatedAt = X.ToI(ax[1])
+	z.Coords = X.ToArr(ax[2])
+	z.Name = X.ToS(ax[3])
+	z.HeightMeter = X.ToF(ax[4])
 	return z
 }
 

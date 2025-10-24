@@ -530,19 +530,19 @@ func GenerateOrm(tables map[TableName]*TableProp, withGraphql ...bool) {
 
 		// from AX
 		RQ("// FromArray convert slice to receiver fields\n")
-		RQ(`func (` + receiverName + ` *` + structName + `) FromArray(a A.X) *` + structName + " { //nolint:dupl false positive\n")
+		RQ(`func (` + receiverName + ` *` + structName + `) FromArray(ax A.X) *` + structName + " { //nolint:dupl false positive\n")
 		for idx, prop := range props.Fields {
-			RQ("	" + receiverName + "." + S.PascalCase(prop.Name) + ` = ` + TypeToConvertFunc[prop.Type] + "(a[" + X.ToS(idx) + "])\n")
+			RQ("	" + receiverName + "." + S.PascalCase(prop.Name) + ` = ` + TypeToConvertFunc[prop.Type] + "(ax[" + X.ToS(idx) + "])\n")
 		}
 		RQ("	return " + receiverName + NL)
 		RQ("}\n\n")
 
 		// from AX but uncensored
 		RQ("// FromUncensoredArray convert slice to receiver fields\n")
-		RQ(`func (` + receiverName + ` *` + structName + `) FromUncensoredArray(a A.X) *` + structName + " { //nolint:dupl false positive\n")
+		RQ(`func (` + receiverName + ` *` + structName + `) FromUncensoredArray(ax A.X) *` + structName + " { //nolint:dupl false positive\n")
 		for idx, prop := range props.Fields {
 			if !censoredFieldsByName[prop.Name] {
-				RQ("	" + receiverName + "." + S.PascalCase(prop.Name) + ` = ` + TypeToConvertFunc[prop.Type] + "(a[" + X.ToS(idx) + "])\n")
+				RQ("	" + receiverName + "." + S.PascalCase(prop.Name) + ` = ` + TypeToConvertFunc[prop.Type] + "(ax[" + X.ToS(idx) + "])\n")
 			}
 		}
 		RQ("	return " + receiverName + NL)
