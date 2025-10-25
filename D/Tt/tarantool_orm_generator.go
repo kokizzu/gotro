@@ -353,7 +353,7 @@ func GenerateOrm(tables map[TableName]*TableProp, withGraphql ...bool) {
 			RQ("	return " + S.BT(strings.Join(props.Uniques, `__`)) + NL)
 			RQ("}\n\n")
 
-			keyFunc := func(structProp string) string { return "TodoWhatToUseForMultipleKey:" + structProp }
+			keyFunc := func(structProp string) string { return "A.X{" + structProp + "}" }
 			generateMutationByUniqueIndex(uniquePropCamel, structProps, receiverName, structName, keyFunc, RQ, WC)
 		}
 
