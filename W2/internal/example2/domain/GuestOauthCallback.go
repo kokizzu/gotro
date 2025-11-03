@@ -4,6 +4,7 @@ import (
 	"github.com/kokizzu/gotro/L"
 	"github.com/kokizzu/gotro/M"
 	"github.com/kokizzu/gotro/S"
+	"golang.org/x/oauth2"
 
 	"example2/model/mAuth/rqAuth"
 	"example2/model/mAuth/wcAuth"
@@ -104,6 +105,43 @@ func (d *Domain) GuestOauthCallback(in *GuestOauthCallbackIn) (out GuestOauthCal
 			return
 		}
 		out.Email = out.OauthUser.GetStr(`email`)
+	case OauthTwitter:
+		provider := d.Oauth.Twitter[in.Host]
+		if provider == nil {
+			L.Print(in.Host)
+			out.SetError(400, ErrGuestOauthCallbackInvalidUrl)
+			return
+		}
+
+		codeVerifier := in.State
+
+		token, err := provider.Exchange(in.TracerContext, in.Code,
+			oauth2.SetAuthURLParam("redirect_uri", provider.RedirectURL),
+			oauth2.SetAuthURLParam("code_verifier", codeVerifier),
+		)
+		if L.IsError(err, `twitter.provider.Exchange`) {
+			out.SetError(400, ErrGuestOauthCallbackFailedExchange)
+			return
+		}
+
+		client := provider.Client(in.TracerContext, token)
+		out.OauthUser = fetchJsonMap(client,
+			`https://api.x.com/2/users/me?user.fields=id,username,name,profile_image_url,confirmed_email`,
+			&out.ResponseCommon)
+
+		if out.HasError() {
+			return
+		}
+
+		userData := out.OauthUser.GetMSX(`data`)
+
+		if userData != nil {
+			if userData.GetStr(`confirmed_email`) == "" {
+				out.SetError(400, ErrGuestOauthCallbackFailedUserCreation)
+				return
+			}
+			out.Email = userData.GetStr(`confirmed_email`)
+		}
 	}
 
 	user := wcAuth.NewUsersMutator(d.AuthOltp)

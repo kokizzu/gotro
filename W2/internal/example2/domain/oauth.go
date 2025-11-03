@@ -10,7 +10,8 @@ import (
 )
 
 const (
-	OauthGoogle = `google`
+	OauthGoogle  = `google`
+	OauthTwitter = `twitter`
 )
 
 func fetchJsonMap(client *http.Client, url string, res *ResponseCommon) (json M.SX) {

@@ -216,9 +216,9 @@ func LoadFromEnv(ignoreBinary ...any) {
 			RedirectURL:  url + OAUTH_CALLBACK_PATH,
 			Scopes:       TWITTER_SCOPES,
 			Endpoint: oauth2.Endpoint{
-				AuthURL: "https://twitter.com/i/oauth2/authorize?code_challenge_method=plain&code_challenge=CODE_CHALLENGE",
-				// the rest not needed, since twitter oauth are not normal
-				// we exchange manually
+				AuthURL:   "https://twitter.com/i/oauth2/authorize",
+				TokenURL:  "https://api.twitter.com/2/oauth2/token",
+				AuthStyle: oauth2.AuthStyleInHeader,
 			},
 		}
 	}

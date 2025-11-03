@@ -54,8 +54,6 @@ note:
 
 ## Twitter
 
-Not yet completed
-
 1. Go to [developer portal](https://developer.twitter.com/en/portal) and login with your twitter account, choose study option if you wanna try, because the other option will took some time to verify developer account
 2. Fill all mandatory fields and uncheck field that you don't need
 3. Checkbox developer agreement
@@ -63,10 +61,14 @@ Not yet completed
 5. at [developer dashboard](https://developer.twitter.com/en/portal/dashboard), click Project and add app
 6. Choose staging for trial, fill app name, get a key and copy paste to `.env`
 7. at your app, scroll down and click setup at User AUthentication Setting for setup url and callback url
-8. Choose OAUTH V2 and choose type app Web App
-9. Fill Website URL with `http://yourdomain.com`
-10. Fill Callback URI with `http://localhost:9090/api/UserOauth`
-11. Put the ClientID and ClientSecret to `.env`
+8. If you want to get users’ email addresses, you must check “Request email from users.”
+9. Choose OAUTH V2 and choose type app Web App
+10. Fill Website URL with `http://yourdomain.com`
+11. Fill Callback URI with `http://localhost:9090/api/UserOauth`
+12. Fill Organization name with your app name, This name will be shown when users authorize your App.
+13. Fill Terms of Service and Privacy policy, A link to your ToS and Privacy Policy will be shown when users authorize your App.
+14. Put the ClientID and ClientSecret to `.env`
+15. Add these lines to `.env`configure Twitter OAuth scopes: TWITTER_SCOPES=tweet.read,users.read,users.email,offline.access
 
 ## Steam
 
