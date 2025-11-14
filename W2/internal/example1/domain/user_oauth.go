@@ -1,18 +1,23 @@
 package domain
 
 import (
+	"crypto/sha256"
+	"encoding/base64"
 	"fmt"
 	"io"
 	"net/http"
+	"strings"
 
 	"github.com/goccy/go-json"
 	"github.com/kokizzu/id64"
 	"github.com/kokizzu/lexid"
+	"golang.org/x/oauth2"
 	"gopkg.in/resty.v1"
 
 	"example1/conf"
 	"example1/model/mAuth/rqAuth"
 	"example1/model/mAuth/wcAuth"
+
 	"github.com/kokizzu/gotro/A"
 	"github.com/kokizzu/gotro/L"
 	"github.com/kokizzu/gotro/M"
@@ -90,8 +95,16 @@ func (d *Domain) UserExternalLogin(in *UserExternalLogin_In) (out UserExternalLo
 			out.SetError(500, `host not configured with oauth: `+in.Host)
 			return
 		}
-		out.Link = tProvider.AuthCodeURL(csrfState)
-		out.Link = S.Replace(out.Link, `CODE_CHALLENGE`, out.SessionToken)
+		codeVerifier := csrfState
+		hash := sha256.Sum256([]byte(codeVerifier))
+		codeChallenge := base64.URLEncoding.WithPadding(base64.NoPadding).EncodeToString(hash[:])
+		scopes := strings.Join(tProvider.Scopes, " ")
+		out.Link = tProvider.AuthCodeURL(csrfState,
+			oauth2.SetAuthURLParam("redirect_uri", tProvider.RedirectURL),
+			oauth2.SetAuthURLParam("code_challenge", codeChallenge),
+			oauth2.SetAuthURLParam("code_challenge_method", "S256"),
+			oauth2.SetAuthURLParam("scope", scopes),
+		)
 		fmt.Println(out.Link)
 	case Steam:
 		sProvider := conf.STEAM_OAUTH_PROVIDERS[in.Host]
@@ -362,61 +375,30 @@ func (d *Domain) UserOauth(in *UserOauth_In) (out UserOauth_Out) {
 			out.SetError(500, `host not configured with oauth`)
 			return
 		}
-		// exchange, because there's PKCE we cannot use standard library
-		// use: https://developer.twitter.com/en/docs/authentication/oauth-2-0/user-access-token
-		r := resty.New()
-		r.SetBasicAuth(conf.TWITTER_CLIENTID, conf.TWITTER_CLIENTSECRET)
-		res, err := r.R().SetBody(map[string]any{
-			`code`:          in.Code,
-			`grant_type`:    `authorization_code`,
-			`client_id`:     conf.TWITTER_CLIENTID,
-			`redirect_uri`:  tProvider.RedirectURL,
-			`code_verifier`: csrf,
-		}).Post(`https://api.twitter.com/2/oauth2/token`)
-		if err != nil {
-			L.Print(err)
-			out.SetError(500, `failed exchange oauth token`)
-			return
-		}
-		body := res.Body()
-		/* example:
-		{
-		  "token_type":"bearer",
-		  "expires_in":7200,
-		  "access_token":"Q0V2QUQyN25OLXh1bVdBWUxxxxxDM0NDE6MToxOmF0OjE",
-		  "scope":"users.read"
-		}
-		*/
-		token := parseBodyMap(body)
-		if token == nil {
-			out.SetError(500, `failed parse oauth token body`)
-			return
-		}
-		accessToken := token.GetStr(`access_token`)
 
-		res, err = r.R().
-			SetHeader(`Authorization`, `Bearer `+accessToken).
-			Get(`https://api.twitter.com/2/users/me`)
-		if err != nil {
-			L.Print(err)
-			out.SetError(500, `failed fetch user info`)
+		codeVerifier := in.State
+
+		token, err := tProvider.Exchange(in.TracerContext, in.Code,
+			oauth2.SetAuthURLParam("redirect_uri", tProvider.RedirectURL),
+			oauth2.SetAuthURLParam("code_verifier", codeVerifier),
+		)
+		if L.IsError(err, `twitter.provider.Exchange`) {
+			out.SetError(400, `failed exchange oauth token`)
 			return
 		}
-		userInfo := parseBodyMap(res.Body())
-		if userInfo == nil {
-			out.SetError(500, `failed parse user info body`)
+
+		client := tProvider.Client(in.TracerContext, token)
+		out.OauthUser = fetchJsonMap(client,
+			`https://api.x.com/2/users/me?user.fields=id,username,name,profile_image_url,confirmed_email`,
+			&out.ResponseCommon)
+
+		if out.HasError() {
 			return
 		}
-		/*	example:
-			{
-			  "title": "Unauthorized",
-			  "type": "about:blank",
-			  "status": 401,
-			  "detail": "Unauthorized"
-			} */
-		// TODO: continue this: https://stackoverflow.com/questions/70915572/retrieving-e-mail-from-twitter-oauth2
-		// TODO: replace with find user email by twitter id
-		out.Email = out.OauthUser.GetStr(Email)
+
+		userData := out.OauthUser.GetMSX(`data`)
+
+		out.Email = userData.GetStr(`confirmed_email`)
 
 	case Steam:
 		// TODO: continue this, probably not needed to call exchange, since access_token already given at redirect_url

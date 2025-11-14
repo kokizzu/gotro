@@ -12,7 +12,7 @@
 	let user = {/* user */};
     let segments = {/* segments */};
     let google = '#{google}';
-
+    let twitter = '#{twitter}';
     function getCookie(name) {
         let match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'));
         if (match) return match[2];
@@ -297,6 +297,13 @@
                             <a class="button" href={google}>
                                 <img src="/assets/icons/google.svg" alt="Google"/>
                                 <span>Continue with Google</span>
+                            </a>
+                        {/if}
+                        <!-- Twitter OAuth -->
+                        {#if twitter}
+                            <a class="button" href={twitter}>
+                                <img src="/assets/icons/twitter.svg" alt="Twitter"/>
+                                <span>Continue with Twitter</span>
                             </a>
                         {/if}
                     </div>

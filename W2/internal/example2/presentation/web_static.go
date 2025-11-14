@@ -25,11 +25,18 @@ func (w *WebServer) WebStatic(fw *fiber.App, d *domain.Domain) {
 			Provider:      domain.OauthGoogle,
 		})
 		google.ResponseCommon.DecorateSession(c)
-		return views.RenderIndex(c, M.SX{
-			`title`:  `Example2`,
-			`user`:   user,
-			`google`: google.Link,
 
+		twitter := d.GuestExternalAuth(&domain.GuestExternalAuthIn{
+			RequestCommon: in.RequestCommon,
+			Provider:      domain.OauthTwitter,
+		})
+		twitter.ResponseCommon.DecorateSession(c)
+
+		return views.RenderIndex(c, M.SX{
+			`title`:    `Example2`,
+			`user`:     user,
+			`google`:   google.Link,
+			`twitter`:  twitter.Link,
 			`segments`: segments,
 		})
 	})

@@ -1,8 +1,13 @@
 package domain
 
 import (
+	"crypto/sha256"
+	"encoding/base64"
+	"strings"
+
 	"github.com/kokizzu/gotro/S"
 	"github.com/kokizzu/lexid"
+	"golang.org/x/oauth2"
 )
 
 //go:generate gomodifytags -all -add-tags json,form,query,long,msg -transform camelcase --skip-unexported -w -file GuestExternalAuth.go
@@ -53,6 +58,32 @@ func (d *Domain) GuestExternalAuth(in *GuestExternalAuthIn) (out GuestExternalAu
 			return
 		}
 		out.Link = provider.AuthCodeURL(csrfState)
+		out.ClientID = provider.ClientID
+		out.RedirectUrl = provider.RedirectURL
+		out.Scopes = provider.Scopes
+		out.CsrfState = csrfState
+
+	case OauthTwitter:
+		provider := d.Oauth.Twitter[in.Host]
+		if provider == nil {
+			out.SetError(400, GuestExternalAuthInvalidUrl)
+			return
+		}
+
+		codeVerifier := csrfState
+
+		hash := sha256.Sum256([]byte(codeVerifier))
+		codeChallenge := base64.URLEncoding.WithPadding(base64.NoPadding).EncodeToString(hash[:])
+
+		scopes := strings.Join(provider.Scopes, " ")
+
+		out.Link = provider.AuthCodeURL(csrfState,
+			oauth2.SetAuthURLParam("redirect_uri", provider.RedirectURL),
+			oauth2.SetAuthURLParam("code_challenge", codeChallenge),
+			oauth2.SetAuthURLParam("code_challenge_method", "S256"),
+			oauth2.SetAuthURLParam("scope", scopes),
+		)
+
 		out.ClientID = provider.ClientID
 		out.RedirectUrl = provider.RedirectURL
 		out.Scopes = provider.Scopes
