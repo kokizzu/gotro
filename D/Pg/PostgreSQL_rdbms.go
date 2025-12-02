@@ -142,8 +142,8 @@ CREATE TABLE IF NOT EXISTS ` + name + ` (
 		modified_at__index := name + `__modified_at__index`
 		unique_patern__index := name + `__unique__patern__index`
 		query_count_index := `SELECT COUNT(*) FROM pg_indexes WHERE indexname = `
-		ra, _ := tx.DoExec(query).RowsAffected()
-		if ra > 0 {
+		_, err := tx.DoExec(query).RowsAffected()
+		if err == nil {
 			query = query_count_index + Z(is_deleted__index)
 			if tx.QInt(query) == 0 {
 				query = `CREATE INDEX IF NOT EXISTS ` + name + `__is_deleted__index ON ` + name + `(is_deleted);`
