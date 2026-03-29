@@ -31,5 +31,11 @@
   },
   "dependencies": {
     "lodash-es": "^4.17.21"
+  },
+  "pnpm": {
+    "overrides": {
+      "node-forge": "1.4.0",
+      "minimatch": "10.2.4"
+    }
   }
 }

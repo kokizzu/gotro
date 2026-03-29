@@ -950,7 +950,7 @@ func (hash SX) Pretty(sep string) string {
 	for _, key := range keys {
 		buff.WriteString(key)
 		buff.WriteRune(' ')
-		buff.WriteString(fmt.Sprintf("%+v", hash[key]))
+		fmt.Fprintf(&buff, "%+v", hash[key])
 		buff.WriteString(sep)
 	}
 	return buff.String()
