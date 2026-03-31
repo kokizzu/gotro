@@ -32,7 +32,7 @@ func prepareDb(onReady func(db *tarantool.Connection) int) {
 		globalPool, err = dockertest.NewPool("")
 		if err != nil {
 			log.Printf("Could not connect to docker: %s\n", err)
-			return
+			os.Exit(onReady(nil))
 		}
 	}
 	resource, err := globalPool.Run(dockerRepo, imageVer, []string{ // TODO: update to 3.1
@@ -45,7 +45,7 @@ func prepareDb(onReady func(db *tarantool.Connection) int) {
 	})
 	if err != nil {
 		log.Printf("Could not start resource: %s\n", err)
-		return
+		os.Exit(onReady(nil))
 	}
 	var db *tarantool.Connection
 	if err := globalPool.Retry(func() error {
@@ -72,7 +72,7 @@ func prepareDb(onReady func(db *tarantool.Connection) int) {
 		return err
 	}); err != nil {
 		log.Printf("Could not connect to docker: %s\n", err)
-		return
+		os.Exit(onReady(nil))
 	}
 	code := onReady(db)
 	if err := globalPool.Purge(resource); err != nil {
@@ -87,14 +87,14 @@ var dbConn *tarantool.Connection
 func TestMain(m *testing.M) {
 	prepareDb(func(db *tarantool.Connection) int {
 		dbConn = db
-		if db != nil {
-			return m.Run()
-		}
-		return 0
+		return m.Run()
 	})
 }
 
 func TestMigration(t *testing.T) {
+	if dbConn == nil {
+		t.Skip(`docker unavailable`)
+	}
 	a := &Adapter{dbConn, reconnect}
 	const tableName = `test1`
 	dummyTable := &TableProp{
@@ -212,6 +212,9 @@ func TestMigration(t *testing.T) {
 }
 
 func TestMigrationBig(t *testing.T) {
+	if dbConn == nil {
+		t.Skip(`docker unavailable`)
+	}
 	a := Adapter{dbConn, reconnect}
 	const tableName = `test2`
 	const insertCount = 4_000_000 / 10 // increase TT_MEMTX_MEMORY if needed

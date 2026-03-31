@@ -33,13 +33,13 @@ func prepareDb(onReady func(db *tarantool.Connection) int) {
 		globalPool, err = dockertest.NewPool("")
 		if err != nil {
 			log.Printf("Could not connect to docker: %s\n", err)
-			return
+			os.Exit(onReady(nil))
 		}
 	}
 	resource, err := globalPool.Run(dockerRepo, dockerVer, []string{})
 	if err != nil {
 		log.Printf("Could not start resource: %s\n", err)
-		return
+		os.Exit(onReady(nil))
 	}
 	var db *tarantool.Connection
 	if err := globalPool.Retry(func() error {
@@ -66,7 +66,7 @@ func prepareDb(onReady func(db *tarantool.Connection) int) {
 		return err
 	}); err != nil {
 		log.Printf("Could not connect to docker: %s\n", err)
-		return
+		os.Exit(onReady(nil))
 	}
 	code := onReady(db)
 	if err := globalPool.Purge(resource); err != nil {
@@ -81,14 +81,14 @@ var dbConn *tarantool.Connection
 func TestMain(m *testing.M) {
 	prepareDb(func(db *tarantool.Connection) int {
 		dbConn = db
-		if db != nil {
-			return m.Run()
-		}
-		return 0
+		return m.Run()
 	})
 }
 
 func TestAutoIncrementAndCRUD(t *testing.T) {
+	if dbConn == nil {
+		t.Skip(`docker unavailable`)
+	}
 	a := &Tt.Adapter{Connection: dbConn, Reconnect: reconnect}
 	t.Run(`test zzz table`, func(t *testing.T) {
 		ok := a.UpsertTable(mZzz.TableZzz, mZzz.TarantoolTables[mZzz.TableZzz])

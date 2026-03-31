@@ -10,6 +10,9 @@ import (
 )
 
 func TestSanity(t *testing.T) {
+	if dbConn == nil {
+		t.Skip(`docker unavailable`)
+	}
 	conn := dbConn
 
 	// migrate

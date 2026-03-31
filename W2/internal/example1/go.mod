@@ -50,7 +50,7 @@ require (
 	github.com/OneOfOne/cmap v0.0.0-20170825200327-ccaef7657ab8 // indirect
 	github.com/alitto/pond v1.8.3 // indirect
 	github.com/allegro/bigcache v1.2.1 // indirect
-	github.com/andybalholm/brotli v1.2.0 // indirect
+	github.com/andybalholm/brotli v1.2.1 // indirect
 	github.com/cenkalti/backoff/v4 v4.3.0 // indirect
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
 	github.com/clipperhouse/uax29/v2 v2.7.0 // indirect
