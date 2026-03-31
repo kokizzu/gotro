@@ -187,6 +187,8 @@ github.com/klauspost/compress v1.18.5 h1:/h1gH5Ce+VWNLSWqPzOVn6XBO+vJbCNGvjoaGBF
 github.com/klauspost/compress v1.18.5/go.mod h1:cwPg85FWrGar70rWktvGQj8/hthj3wpl0PGDogxkrSQ=
 github.com/klauspost/cpuid/v2 v2.3.0 h1:S4CRMLnYUhGeDFDqkGriYKdfoFlDnMtqTiI/sFzhA9Y=
 github.com/klauspost/cpuid/v2 v2.3.0/go.mod h1:hqwkgyIinND0mEev00jJYCxPNVRVXFQeu1XKlok6oO0=
+github.com/kokizzu/ch-timed-buffer v1.2025.1416 h1:Zv+qFgHXzbzNuZeZ1T9w0i8EqbAh5wQsMYgOfaOnJZw=
+github.com/kokizzu/ch-timed-buffer v1.2025.1416/go.mod h1:suljwZStFE7EWVhtfVP+QHkgduRFGqXS4kTL22UwTRQ=
 github.com/kokizzu/json5b v0.1.3 h1:sqJvDVMdvMUhV1x1p1LF447Sh9oTximvgCJ/nL8sLlE=
 github.com/kokizzu/json5b v0.1.3/go.mod h1:VhiyJjWNejIKGLmRz/w5p/kebWRpbYdcDtrF+BGby0A=
 github.com/kokizzu/rand v0.0.0-20221021123447-6043c55a8bad h1:qWvljqz38n8hxJ3h3vXc571jWNQWEqwN4gwmu2anT3Y=

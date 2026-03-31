@@ -21,6 +21,7 @@ require (
 	github.com/jmoiron/sqlx v1.3.5
 	github.com/jordan-wright/email v4.0.1-0.20210109023952-943e75fe5223+incompatible
 	github.com/jxskiss/base62 v1.1.0
+	github.com/kokizzu/ch-timed-buffer v1.2025.1416
 	github.com/kokizzu/json5b v0.1.3
 	github.com/kokizzu/rand v0.0.0-20221021123447-6043c55a8bad
 	github.com/kpango/fastime v1.1.10

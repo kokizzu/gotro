@@ -58,6 +58,7 @@ var typeTranslator = map[DataType]string{
 
 const connStruct = `Ch.Adapter`
 const connImport = "\n\n\t_ `github.com/ClickHouse/clickhouse-go/v2`"
+const connTestImport = "\n\t_ `github.com/ClickHouse/clickhouse-go/v2`"
 const buffImport = "\n\tchBuffer `github.com/kokizzu/ch-timed-buffer`"
 
 const warning = "// DO NOT EDIT, will be overwritten by github.com/kokizzu/Ch/clickhouse_orm_generator.go\n\n"
@@ -72,10 +73,15 @@ func GenerateOrm(tables map[TableName]*TableProp) {
 
 	// generate
 	apBuf := bytes.Buffer{}
+	apTestBuf := bytes.Buffer{}
 
 	SA := func(str string) {
 		_, err := apBuf.WriteString(str)
 		L.PanicIf(err, `failed apBuf.WriteString`)
+	}
+	SAT := func(str string) {
+		_, err := apTestBuf.WriteString(str)
+		L.PanicIf(err, `failed apTestBuf.WriteString`)
 	}
 
 	// sort by table name to keep the order when regenerating structs
@@ -101,6 +107,9 @@ func GenerateOrm(tables map[TableName]*TableProp) {
 	SA(`package ` + saPkgName)
 	SA("\n\n")
 	SA(warning)
+	SAT(`package ` + saPkgName)
+	SAT("\n\n")
+	SAT(warning)
 
 	SA(`import (`)
 
@@ -123,6 +132,82 @@ func GenerateOrm(tables map[TableName]*TableProp) {
 
 	SA(`
 )` + "\n\n")
+
+	SAT(`import (`)
+	SAT(qi(`database/sql`))
+	SAT(qi(`fmt`))
+	SAT(qi(`log`))
+	SAT(qi(`os`))
+	SAT(qi(`testing`))
+	SAT(qi(`time`))
+	SAT("\n")
+	SAT(connTestImport)
+	SAT(qi(`github.com/ory/dockertest/v3`))
+	SAT(qi(`github.com/stretchr/testify/assert`))
+	SAT(qi(this.PackageName)) // github.com/kokizzu/gotro/D/Ch
+	SAT(qi(`github.com/kokizzu/gotro/L`))
+	if haveIp {
+		SAT(qi(`net`))
+	}
+	SAT(`
+)` + "\n\n")
+
+	SAT(`var globalPool *dockertest.Pool
+var dbConn *sql.DB
+var reconnect func() *sql.DB
+
+func prepareDb(onReady func(db *sql.DB) int) {
+	const dockerRepo = "yandex/clickhouse-server"
+	const dockerVer = "latest"
+	const chPort = "9000/tcp"
+	const dbDriver = "clickhouse"
+	const dbConnStr = "tcp://127.0.0.1:%s?debug=true"
+	var err error
+	if globalPool == nil {
+		globalPool, err = dockertest.NewPool("")
+		if err != nil {
+			log.Printf("Could not connect to docker: %s\n", err)
+			os.Exit(onReady(nil))
+		}
+	}
+	resource, err := globalPool.Run(dockerRepo, dockerVer, []string{})
+	if err != nil {
+		log.Printf("Could not start resource: %s\n", err)
+		os.Exit(onReady(nil))
+	}
+	var db *sql.DB
+	if err := globalPool.Retry(func() error {
+		var err error
+		connStr := fmt.Sprintf(dbConnStr, resource.GetPort(chPort))
+		reconnect = func() *sql.DB {
+			db, err = sql.Open(dbDriver, connStr)
+			L.IsError(err, "sql.Open: "+connStr)
+			return db
+		}
+		reconnect()
+		if err != nil {
+			return err
+		}
+		return db.Ping()
+	}); err != nil {
+		log.Printf("Could not connect to docker: %s\n", err)
+		os.Exit(onReady(nil))
+	}
+	code := onReady(db)
+	if err := globalPool.Purge(resource); err != nil {
+		log.Fatalf("Could not purge resource: %s", err)
+	}
+	os.Exit(code)
+}
+
+func TestMain(m *testing.M) {
+	prepareDb(func(db *sql.DB) int {
+		dbConn = db
+		return m.Run()
+	})
+}
+
+` + "\n")
 
 	SA(`//go:generate gomodifytags -all -add-tags json,form,query,long,msg -transform camelcase --skip-unexported -w -file ` + saPkgName + "__ORM.GEN.go\n")
 	SA(`//go:generate replacer -afterprefix "Id\" form" "Id,string\" form" type ` + saPkgName + "__ORM.GEN.go\n")
@@ -290,6 +375,77 @@ func GenerateOrm(tables map[TableName]*TableProp) {
 		//SA("	return " + receiverName + "\n")
 		//SA("}\n\n")
 
+		// generated tests
+		SAT(`func TestGenerated` + structName + `Helpers(t *testing.T) {` + "\n")
+		SAT(`	obj := New` + structName + `(nil)` + "\n")
+		SAT(`	assert.NotNil(t, obj)` + "\n")
+		SAT(`	assert.NotEmpty(t, obj.TableName())` + "\n")
+		SAT(`	assert.NotEmpty(t, obj.SqlTableName())` + "\n")
+		for _, field := range props.Fields {
+			camel := S.PascalCase(field.Name)
+			SAT(`	obj.` + camel + ` = ` + chTestSampleLiteral(field.Type, false) + "\n")
+		}
+		SAT(`	assert.NotEmpty(t, obj.SqlInsert())` + "\n")
+		SAT(`	assert.NotEmpty(t, obj.SqlCount())` + "\n")
+		SAT(`	assert.NotEmpty(t, obj.SqlSelectAllFields())` + "\n")
+		SAT(`	assert.NotEmpty(t, obj.SqlAllFields())` + "\n")
+		SAT(`	arr := obj.ToArray()` + "\n")
+		SAT(`	assert.Len(t, arr, ` + X.ToS(len(props.Fields)) + `)` + "\n")
+		SAT(`	params := obj.SqlInsertParam()` + "\n")
+		SAT(`	assert.Len(t, params, ` + X.ToS(len(props.Fields)) + `)` + "\n")
+		if len(props.Fields) > 0 {
+			SAT(`	_, ok := ` + structName + `FieldTypeMap[` + S.BT(props.Fields[0].Name) + `]` + "\n")
+			SAT(`	assert.True(t, ok)` + "\n")
+		}
+		for idx, field := range props.Fields {
+			camel := S.PascalCase(field.Name)
+			SAT(`	assert.Equal(t, ` + X.ToS(idx) + `, obj.Idx` + camel + `())` + "\n")
+			SAT(`	assert.Equal(t, ` + S.BT(field.Name) + `, obj.Sql` + camel + `())` + "\n")
+		}
+		SAT(`	prep, ok := Preparators[obj.TableName()]` + "\n")
+		SAT(`	assert.True(t, ok)` + "\n")
+		SAT(`	assert.NotNil(t, prep)` + "\n")
+		SAT(`}` + "\n\n")
+
+		SAT(`func TestGenerated` + structName + `CRUD(t *testing.T) {` + "\n")
+		SAT(`	if dbConn == nil {` + "\n")
+		SAT(`		t.Skip("docker unavailable")` + "\n")
+		SAT(`	}` + "\n")
+		SAT(`	a := &Ch.Adapter{DB: dbConn, Reconnect: reconnect}` + "\n")
+		SAT(`	obj := New` + structName + `(a)` + "\n")
+		SAT(`	ok := a.UpsertTable(obj.TableName(), ` + renderChTablePropLiteral(props) + `)` + "\n")
+		SAT(`	assert.True(t, ok)` + "\n")
+		SAT(`	_, _ = a.Exec("TRUNCATE TABLE " + string(obj.TableName()))` + "\n")
+		SAT(`	row1 := New` + structName + `(a)` + "\n")
+		for _, field := range props.Fields {
+			camel := S.PascalCase(field.Name)
+			SAT(`	row1.` + camel + ` = ` + chTestSampleLiteral(field.Type, false) + "\n")
+		}
+		SAT(`	_, err := a.Exec(row1.SqlInsert(), row1.SqlInsertParam()...)` + "\n")
+		SAT(`	assert.NoError(t, err)` + "\n")
+		SAT(`	rows, err := a.Query("SELECT " + row1.SqlSelectAllFields() + " FROM " + row1.SqlTableName() + " LIMIT 1")` + "\n")
+		SAT(`	assert.NoError(t, err)` + "\n")
+		SAT(`	assert.True(t, rows.Next())` + "\n")
+		SAT(`	got := New` + structName + `(a)` + "\n")
+		SAT(`	assert.NoError(t, got.ScanRowAllCols(rows))` + "\n")
+		SAT(`	assert.NoError(t, rows.Close())` + "\n")
+		SAT(`	row2 := New` + structName + `(a)` + "\n")
+		for _, field := range props.Fields {
+			camel := S.PascalCase(field.Name)
+			SAT(`	row2.` + camel + ` = ` + chTestSampleLiteral(field.Type, true) + "\n")
+		}
+		SAT(`	_, err = a.Exec(row2.SqlInsert(), row2.SqlInsertParam()...)` + "\n")
+		SAT(`	assert.NoError(t, err)` + "\n")
+		SAT(`	rows, err = a.Query("SELECT " + row1.SqlSelectAllFields() + " FROM " + row1.SqlTableName() + " LIMIT 10")` + "\n")
+		SAT(`	assert.NoError(t, err)` + "\n")
+		SAT(`	parsed, err := row1.ScanRowsAllCols(rows, 10)` + "\n")
+		SAT(`	assert.NoError(t, err)` + "\n")
+		SAT(`	assert.GreaterOrEqual(t, len(parsed), 2)` + "\n")
+		SAT(`	var cnt int64` + "\n")
+		SAT(`	assert.NoError(t, a.QueryRow(row1.SqlCount()).Scan(&cnt))` + "\n")
+		SAT(`	assert.GreaterOrEqual(t, cnt, int64(1))` + "\n")
+		SAT(`}` + "\n\n")
+
 		SA(warning)
 
 	}
@@ -303,6 +459,146 @@ func GenerateOrm(tables map[TableName]*TableProp) {
 	if L.IsError(err, `os.WriteFile failed: `+apFname) {
 		return
 	}
+	apTestFname := fmt.Sprintf(`./%s/%s__ORM.GEN_test.go`, saPkgName, saPkgName)
+	err = os.WriteFile(apTestFname, apTestBuf.Bytes(), os.ModePerm)
+	if L.IsError(err, `os.WriteFile failed: `+apTestFname) {
+		return
+	}
+}
+
+func chTypeConst(typ DataType) string {
+	if c, ok := TypeToConst[typ]; ok && c != `` {
+		return c
+	}
+	return `Ch.` + string(typ)
+}
+
+func chTestSampleLiteral(typ DataType, alt bool) string {
+	switch typ {
+	case UInt64:
+		if alt {
+			return `uint64(2)`
+		}
+		return `uint64(1)`
+	case UInt32:
+		if alt {
+			return `uint32(2)`
+		}
+		return `uint32(1)`
+	case UInt16:
+		if alt {
+			return `uint16(2)`
+		}
+		return `uint16(1)`
+	case UInt8:
+		if alt {
+			return `uint8(2)`
+		}
+		return `uint8(1)`
+	case Int64:
+		if alt {
+			return `int64(2)`
+		}
+		return `int64(1)`
+	case Int32:
+		if alt {
+			return `int32(2)`
+		}
+		return `int32(1)`
+	case Int16:
+		if alt {
+			return `int16(2)`
+		}
+		return `int16(1)`
+	case Int8:
+		if alt {
+			return `int8(2)`
+		}
+		return `int8(1)`
+	case Float64:
+		if alt {
+			return `2.5`
+		}
+		return `1.5`
+	case Float32:
+		if alt {
+			return `float32(2.5)`
+		}
+		return `float32(1.5)`
+	case DateTime, DateTime64:
+		if alt {
+			return `time.Now().UTC().Add(time.Second).Truncate(time.Second)`
+		}
+		return `time.Now().UTC().Truncate(time.Second)`
+	case IPv4:
+		if alt {
+			return `net.ParseIP("10.0.0.2")`
+		}
+		return `net.ParseIP("10.0.0.1")`
+	case IPv6:
+		if alt {
+			return `net.ParseIP("2001:db8::2")`
+		}
+		return `net.ParseIP("2001:db8::1")`
+	case Decimal:
+		if alt {
+			return `"2.5"`
+		}
+		return `"1.5"`
+	case FixedString:
+		if alt {
+			return `"sample2"`
+		}
+		return `"sample"`
+	case String:
+		if alt {
+			return `"sample2"`
+		}
+		return `"sample"`
+	default:
+		if alt {
+			return `"sample2"`
+		}
+		return `"sample"`
+	}
+}
+
+func renderChTablePropLiteral(props *TableProp) string {
+	buf := bytes.Buffer{}
+	buf.WriteString("&Ch.TableProp{\n")
+	buf.WriteString("Fields: []Ch.Field{\n")
+	for _, field := range props.Fields {
+		buf.WriteString("{`" + field.Name + "`, " + chTypeConst(field.Type) + "},\n")
+	}
+	buf.WriteString("},\n")
+	if props.Engine != `` {
+		buf.WriteString("Engine: `" + props.Engine + "`,\n")
+	}
+	if len(props.Partitions) > 0 {
+		buf.WriteString("Partitions: []string{")
+		for idx, partition := range props.Partitions {
+			if idx > 0 {
+				buf.WriteString(", ")
+			}
+			buf.WriteString("`" + partition + "`")
+		}
+		buf.WriteString("},\n")
+	}
+	if len(props.Orders) > 0 {
+		buf.WriteString("Orders: []string{")
+		for idx, order := range props.Orders {
+			if idx > 0 {
+				buf.WriteString(", ")
+			}
+			buf.WriteString("`" + order + "`")
+		}
+		buf.WriteString("},\n")
+	}
+	if props.DefaultCodec != `` {
+		buf.WriteString("DefaultCodec: `" + props.DefaultCodec + "`,\n")
+	}
+	buf.WriteString("}")
+	return buf.String()
 }
 
 //func generateMutationByUniqueIndexumns(uniqueCamel, structProp, receiverName, structName string, AP, WC func(str string)) {
