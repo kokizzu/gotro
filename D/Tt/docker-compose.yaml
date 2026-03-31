@@ -1,7 +1,7 @@
 
 services:
   tarantool1:
-    image: tarantool/tarantool:2.11 # 3.1
+    image: tarantool/tarantool:latest
     # https://github.com/tarantool/tarantool/tree/master/docker
     environment:
       TT_APP_NAME: app

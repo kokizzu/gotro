@@ -100,6 +100,8 @@ func GenerateOrm(tables map[TableName]*TableProp, withGraphql ...bool) {
 	// generate
 	rqBuf := bytes.Buffer{}
 	wcBuf := bytes.Buffer{}
+	rqTestBuf := bytes.Buffer{}
+	wcTestBuf := bytes.Buffer{}
 
 	RQ := func(str string) {
 		_, err := rqBuf.WriteString(str)
@@ -108,6 +110,14 @@ func GenerateOrm(tables map[TableName]*TableProp, withGraphql ...bool) {
 	WC := func(str string) {
 		_, err := wcBuf.WriteString(str)
 		L.PanicIf(err, `failed wcBuf.WriteString`)
+	}
+	RQT := func(str string) {
+		_, err := rqTestBuf.WriteString(str)
+		L.PanicIf(err, `failed rqTestBuf.WriteString`)
+	}
+	WCT := func(str string) {
+		_, err := wcTestBuf.WriteString(str)
+		L.PanicIf(err, `failed wcTestBuf.WriteString`)
 	}
 	BOTH := func(str string) {
 		RQ(str)
@@ -119,6 +129,140 @@ func GenerateOrm(tables map[TableName]*TableProp, withGraphql ...bool) {
 	WC(`package ` + wcPkgName)
 	BOTH("\n\n")
 	BOTH(warning)
+	RQT(`package ` + rqPkgName + "\n\n" + warning)
+	WCT(`package ` + wcPkgName + "\n\n" + warning)
+
+	RQT(`import (`)
+	RQT(qi(`testing`))
+	RQT(qi(`github.com/stretchr/testify/assert`))
+	RQT(qi(this.PackageName))
+	RQT(`
+)` + "\n\n")
+
+	WCT(`import (`)
+	WCT(qi(`context`))
+	WCT(qi(`fmt`))
+	WCT(qi(`log`))
+	WCT(qi(`os`))
+	WCT(qi(`testing`))
+	WCT(qi(`time`))
+	WCT(qi(ci.PackageName))
+	WCT(qi(this.PackageName))
+	WCT(qi(`github.com/kokizzu/gotro/L`))
+	WCT(qi(`github.com/kokizzu/gotro/S`))
+	WCT(qi(`github.com/ory/dockertest/v3`))
+	WCT(qi(`github.com/stretchr/testify/assert`))
+	WCT(qi(`github.com/tarantool/go-tarantool/v2`))
+	WCT(`
+)` + "\n\n")
+
+	WCT(`var globalPool *dockertest.Pool
+var reconnect func() *tarantool.Connection
+var dbConn *tarantool.Connection
+
+func prepareDb(onReady func(db *tarantool.Connection) int) {
+	const dockerRepo = "tarantool/tarantool"
+	const dockerVer = "3.1"
+	const ttPort = "3301/tcp"
+	const dbConnStr = "127.0.0.1:%s"
+	const dbUser = "guest"
+	const dbPass = ""
+	var err error
+	if globalPool == nil {
+		globalPool, err = dockertest.NewPool("")
+		if err != nil {
+			log.Printf("Could not connect to docker: %s\n", err)
+			os.Exit(onReady(nil))
+		}
+	}
+	resource, err := globalPool.Run(dockerRepo, dockerVer, []string{})
+	if err != nil {
+		log.Printf("Could not start resource: %s\n", err)
+		os.Exit(onReady(nil))
+	}
+	var db *tarantool.Connection
+	if err := globalPool.Retry(func() error {
+		var err error
+		connStr := fmt.Sprintf(dbConnStr, resource.GetPort(ttPort))
+		reconnect = func() *tarantool.Connection {
+			db, err = tarantool.Connect(context.Background(), tarantool.NetDialer{
+				Address:  connStr,
+				User:     dbUser,
+				Password: dbPass,
+			}, tarantool.Opts{
+				Timeout: 8 * time.Second,
+			})
+			if err != nil && !S.Contains(err.Error(), "failed to read greeting: EOF") {
+				L.IsError(err, "tarantool.Connect")
+			}
+			return db
+		}
+		reconnect()
+		if err != nil {
+			return err
+		}
+		_, err = db.Do(tarantool.NewPingRequest()).Get()
+		return err
+	}); err != nil {
+		log.Printf("Could not connect to docker: %s\n", err)
+		os.Exit(onReady(nil))
+	}
+	code := onReady(db)
+	if err := globalPool.Purge(resource); err != nil {
+		log.Fatalf("Could not purge resource: %s", err)
+	}
+	os.Exit(code)
+}
+
+func TestMain(m *testing.M) {
+	prepareDb(func(db *tarantool.Connection) int {
+		dbConn = db
+		return m.Run()
+	})
+}
+
+func TestGeneratedSanity(t *testing.T) {
+	if dbConn == nil {
+		t.Skip("docker unavailable")
+	}
+	conn := dbConn
+	a := &Tt.Adapter{Connection: conn, Reconnect: reconnect}
+	a.MigrateTables(map[Tt.TableName]*Tt.TableProp{
+		"bands": {
+			Fields: []Tt.Field{
+				{"id", Tt.Unsigned},
+				{"band_name", Tt.String},
+				{"year", Tt.Unsigned},
+			},
+			AutoIncrementId: true,
+			Unique1:         "band_name",
+			Indexes:         []string{"year"},
+		},
+	})
+	tuples := [][]any{
+		{1, "Roxette", 1986},
+		{2, "Scorpions", 1965},
+		{3, "Ace of Base", 1987},
+		{4, "The Beatles", 1960},
+	}
+	for _, tuple := range tuples {
+		_, err := conn.Do(tarantool.NewInsertRequest("bands").Tuple(tuple)).Get()
+		assert.NoError(t, err)
+	}
+	_, err := conn.Do(tarantool.NewSelectRequest("bands").Limit(10).Iterator(tarantool.IterEq).Key([]any{uint(1)})).Get()
+	assert.NoError(t, err)
+	_, err = conn.Do(tarantool.NewSelectRequest("bands").Index("band_name").Limit(10).Iterator(tarantool.IterEq).Key([]any{"The Beatles"})).Get()
+	assert.NoError(t, err)
+	_, err = conn.Do(tarantool.NewUpdateRequest("bands").Key(tarantool.IntKey{2}).Operations(tarantool.NewOperations().Assign(1, "Pink Floyd"))).Get()
+	assert.NoError(t, err)
+	_, err = conn.Do(tarantool.NewUpsertRequest("bands").Tuple([]any{uint(5), "The Rolling Stones", 1962}).Operations(tarantool.NewOperations().Assign(1, "The Doors"))).Get()
+	assert.NoError(t, err)
+	_, err = conn.Do(tarantool.NewReplaceRequest("bands").Tuple([]any{1, "Queen", 1970})).Get()
+	assert.NoError(t, err)
+	_, err = conn.Do(tarantool.NewDeleteRequest("bands").Key([]any{uint(5)})).Get()
+	assert.NoError(t, err)
+}
+` + "\n")
 
 	haveString, haveAutoIncrementId := false, false
 	useGraphql := len(withGraphql) > 0
@@ -684,6 +828,233 @@ func GenerateOrm(tables map[TableName]*TableProp, withGraphql ...bool) {
 			//RQ("}\n\n")
 		}
 
+		uniqueMethodSuffixes := []string{}
+		if props.AutoIncrementId {
+			uniqueMethodSuffixes = append(uniqueMethodSuffixes, S.PascalCase(IdCol))
+		}
+		if props.Unique1 != `` && !(props.AutoIncrementId && props.Unique1 == IdCol) {
+			uniqueMethodSuffixes = append(uniqueMethodSuffixes, S.PascalCase(props.Unique1))
+		}
+		if props.Unique2 != `` && !(props.AutoIncrementId && props.Unique2 == IdCol) {
+			uniqueMethodSuffixes = append(uniqueMethodSuffixes, S.PascalCase(props.Unique2))
+		}
+		if props.Unique3 != `` && !(props.AutoIncrementId && props.Unique3 == IdCol) {
+			uniqueMethodSuffixes = append(uniqueMethodSuffixes, S.PascalCase(props.Unique3))
+		}
+		if len(props.Uniques) > 0 {
+			uniquePropCamel := ``
+			for _, uniq := range props.Uniques {
+				uniquePropCamel += S.PascalCase(uniq)
+			}
+			uniqueMethodSuffixes = append(uniqueMethodSuffixes, uniquePropCamel)
+		}
+
+		lookupSuffix := ``
+		if len(uniqueMethodSuffixes) > 0 {
+			lookupSuffix = uniqueMethodSuffixes[0]
+		}
+		uniqueFieldMap := map[string]bool{}
+		if props.Unique1 != `` {
+			uniqueFieldMap[props.Unique1] = true
+		}
+		if props.Unique2 != `` {
+			uniqueFieldMap[props.Unique2] = true
+		}
+		if props.Unique3 != `` {
+			uniqueFieldMap[props.Unique3] = true
+		}
+		for _, uniq := range props.Uniques {
+			uniqueFieldMap[uniq] = true
+		}
+		if props.AutoIncrementId {
+			uniqueFieldMap[IdCol] = true
+		}
+		updateField := Field{}
+		hasUpdateField := false
+		for _, field := range props.Fields {
+			if field.Name == IdCol || uniqueFieldMap[field.Name] {
+				continue
+			}
+			updateField = field
+			hasUpdateField = true
+			break
+		}
+
+		// reader/unit tests (replacement of rq*_orm_test.go)
+		RQT(`func TestGenerated` + structName + `OrmHelpers(t *testing.T) {` + "\n")
+		RQT(`	q := New` + structName + `(nil)` + "\n")
+		RQT(`	assert.NotNil(t, q)` + "\n")
+		RQT(`	assert.NotEmpty(t, q.SpaceName())` + "\n")
+		RQT(`	assert.NotEmpty(t, q.SqlTableName())` + "\n")
+		for _, field := range props.Fields {
+			camel := S.PascalCase(field.Name)
+			RQT(`	q.` + camel + ` = ` + testSampleLiteral(field.Type) + "\n")
+		}
+		RQT(`	arr := q.ToArray()` + "\n")
+		RQT(`	assert.Len(t, arr, ` + X.ToS(len(props.Fields)) + `)` + "\n")
+		RQT(`	assert.NotNil(t, q.ToUpdateArray())` + "\n")
+		RQT(`	decoded := (&` + structName + `{}).FromArray(arr)` + "\n")
+		for _, field := range props.Fields {
+			camel := S.PascalCase(field.Name)
+			RQT(`	assert.Equal(t, q.` + camel + `, decoded.` + camel + `)` + "\n")
+		}
+		RQT(`	decoded2 := (&` + structName + `{}).FromUncensoredArray(arr)` + "\n")
+		censoredMap := map[string]bool{}
+		for _, f := range props.AutoCensorFields {
+			censoredMap[f] = true
+		}
+		for _, field := range props.Fields {
+			camel := S.PascalCase(field.Name)
+			if censoredMap[field.Name] {
+				RQT(`	assert.Equal(t, ` + TypeToGoNilValue[field.Type] + `, decoded2.` + camel + `)` + "\n")
+			} else {
+				RQT(`	assert.Equal(t, q.` + camel + `, decoded2.` + camel + `)` + "\n")
+			}
+		}
+		for idx, field := range props.Fields {
+			camel := S.PascalCase(field.Name)
+			RQT(`	assert.Equal(t, ` + X.ToS(idx) + `, q.Idx` + camel + `())` + "\n")
+			RQT(`	assert.Equal(t, ` + S.BT(dq(field.Name)) + `, q.Sql` + camel + `())` + "\n")
+		}
+		if len(props.Fields) > 0 {
+			RQT(`	_, ok := ` + structName + `FieldTypeMap[` + S.BT(props.Fields[0].Name) + `]` + "\n")
+			RQT(`	assert.True(t, ok)` + "\n")
+		}
+		for _, suffix := range uniqueMethodSuffixes {
+			RQT(`	assert.NotEmpty(t, q.UniqueIndex` + suffix + `())` + "\n")
+		}
+		if props.Spatial != `` {
+			spatial := S.PascalCase(props.Spatial)
+			RQT(`	assert.Equal(t, ` + S.BT(props.Spatial) + `, q.SpatialIndex` + spatial + `())` + "\n")
+		}
+		if len(props.AutoCensorFields) > 0 {
+			for _, field := range props.AutoCensorFields {
+				camel := S.PascalCase(field)
+				RQT(`	q.` + camel + ` = ` + testSampleLiteral(propByName[field].Type) + "\n")
+			}
+			RQT(`	q.CensorFields()` + "\n")
+			for _, field := range props.AutoCensorFields {
+				camel := S.PascalCase(field)
+				RQT(`	assert.Equal(t, ` + TypeToGoEmptyValue[propByName[field].Type] + `, q.` + camel + `)` + "\n")
+			}
+		}
+		RQT(`}` + "\n\n")
+
+		RQT(`func TestGenerated` + structName + `DbMethodsPanic(t *testing.T) {` + "\n")
+		RQT(`	q := New` + structName + `(&Tt.Adapter{})` + "\n")
+		for _, field := range props.Fields {
+			camel := S.PascalCase(field.Name)
+			RQT(`	q.` + camel + ` = ` + testSampleLiteral(field.Type) + "\n")
+		}
+		for _, suffix := range uniqueMethodSuffixes {
+			RQT(`	assert.Panics(t, func() { _ = q.FindBy` + suffix + `() })` + "\n")
+		}
+		RQT(`	assert.Panics(t, func() { _ = q.FindOffsetLimit(0, 1, "") })` + "\n")
+		RQT(`	assert.Panics(t, func() { _, _ = q.FindArrOffsetLimit(0, 1, "") })` + "\n")
+		RQT(`	assert.Panics(t, func() { _ = q.Total() })` + "\n")
+		RQT(`}` + "\n\n")
+
+		// mutator unit tests (replacement of wc*_unit_test.go)
+		WCT(`func TestGenerated` + structName + `Unit(t *testing.T) {` + "\n")
+		WCT(`	m := New` + structName + `Mutator(nil)` + "\n")
+		WCT(`	assert.NotNil(t, m)` + "\n")
+		WCT(`	assert.False(t, m.HaveMutation())` + "\n")
+		WCT(`	assert.Empty(t, m.Logs())` + "\n")
+		for _, field := range props.Fields {
+			camel := S.PascalCase(field.Name)
+			value := testSampleLiteral(field.Type)
+			WCT(`	assert.True(t, m.Set` + camel + `(` + value + `))` + "\n")
+			if field.Type != Array {
+				WCT(`	assert.False(t, m.Set` + camel + `(` + value + `))` + "\n")
+			}
+		}
+		WCT(`	assert.True(t, m.HaveMutation())` + "\n")
+		WCT(`	from := m.` + structName + "\n")
+		WCT(`	assert.True(t, m.SetAll(from, nil, nil))` + "\n")
+		WCT(`	m2 := New` + structName + `Mutator(nil)` + "\n")
+		WCT(`	fromZero := m2.` + structName + "\n")
+		for _, field := range props.Fields {
+			if field.Type == Array {
+				WCT(`	fromZero.` + S.PascalCase(field.Name) + ` = nil` + "\n")
+			}
+		}
+		WCT(`	assert.False(t, m.SetAll(fromZero, nil, nil))` + "\n")
+		WCT(`	m.ClearMutations()` + "\n")
+		WCT(`	assert.False(t, m.HaveMutation())` + "\n")
+		for _, suffix := range uniqueMethodSuffixes {
+			WCT(`	assert.True(t, m.DoUpdateBy` + suffix + `())` + "\n")
+		}
+		WCT(`}` + "\n\n")
+
+		// mutator integration tests (replacement of wc*_test.go)
+		tableConst := mPkgName + `.Table` + structName
+		WCT(`func TestGenerated` + structName + `CRUD(t *testing.T) {` + "\n")
+		WCT(`	if dbConn == nil {` + "\n")
+		WCT(`		t.Skip("docker unavailable")` + "\n")
+		WCT(`	}` + "\n")
+		WCT(`	a := &Tt.Adapter{Connection: dbConn, Reconnect: reconnect}` + "\n")
+		WCT(`	ok := a.UpsertTable(` + tableConst + `, ` + mPkgName + `.TarantoolTables[` + tableConst + `])` + "\n")
+		WCT(`	assert.True(t, ok)` + "\n")
+		WCT(`	_ = a.TruncateTable(string(` + tableConst + `))` + "\n")
+		WCT(`	seed := func() *` + structName + `Mutator {` + "\n")
+		WCT(`		x := New` + structName + `Mutator(a)` + "\n")
+		for _, field := range props.Fields {
+			if props.AutoIncrementId && field.Name == IdCol {
+				continue
+			}
+			camel := S.PascalCase(field.Name)
+			WCT(`		x.` + camel + ` = ` + testSampleLiteral(field.Type) + "\n")
+		}
+		WCT(`		assert.True(t, x.DoInsert())` + "\n")
+		if props.AutoIncrementId {
+			WCT(`		assert.Greater(t, x.Id, uint64(0))` + "\n")
+		}
+		WCT(`		return x` + "\n")
+		WCT(`	}` + "\n")
+		if lookupSuffix != `` {
+			for idx, suffix := range uniqueMethodSuffixes {
+				recVar := `rec` + X.ToS(idx)
+				rowsVar := `rows` + X.ToS(idx)
+				arrRowsVar := `arrRows` + X.ToS(idx)
+				WCT(`	` + recVar + ` := seed()` + "\n")
+				WCT(`	assert.True(t, ` + recVar + `.FindBy` + suffix + `())` + "\n")
+				WCT(`	assert.True(t, ` + recVar + `.DoUpdateBy` + suffix + `())` + "\n")
+				if hasUpdateField {
+					updCamel := S.PascalCase(updateField.Name)
+					WCT(`	assert.True(t, ` + recVar + `.Set` + updCamel + `(` + testSampleLiteralAlt(updateField.Type) + `))` + "\n")
+					WCT(`	assert.True(t, ` + recVar + `.DoUpdateBy` + suffix + `())` + "\n")
+				}
+				WCT(`	_ = ` + recVar + `.DoOverwriteBy` + suffix + `()` + "\n")
+				WCT(`	assert.True(t, ` + recVar + `.FindBy` + suffix + `())` + "\n")
+				WCT(`	` + rowsVar + ` := ` + recVar + `.FindOffsetLimit(0, 10, ` + recVar + `.UniqueIndex` + suffix + `())` + "\n")
+				WCT(`	assert.NotNil(t, ` + rowsVar + `)` + "\n")
+				WCT(`	` + arrRowsVar + `, _ := ` + recVar + `.FindArrOffsetLimit(0, 10, ` + recVar + `.UniqueIndex` + suffix + `())` + "\n")
+				WCT(`	assert.NotNil(t, ` + arrRowsVar + `)` + "\n")
+				WCT(`	assert.GreaterOrEqual(t, ` + recVar + `.Total(), int64(0))` + "\n")
+				WCT(`	assert.True(t, ` + recVar + `.DoDeletePermanentBy` + suffix + `())` + "\n")
+				WCT(`	assert.False(t, ` + recVar + `.FindBy` + suffix + `())` + "\n")
+			}
+		}
+		if props.AutoIncrementId {
+			WCT(`	u := New` + structName + `Mutator(a)` + "\n")
+			for _, field := range props.Fields {
+				if field.Name == IdCol {
+					continue
+				}
+				camel := S.PascalCase(field.Name)
+				WCT(`	u.` + camel + ` = ` + testSampleLiteral(field.Type) + "\n")
+			}
+			WCT(`	assert.True(t, u.DoUpsertById())` + "\n")
+			WCT(`	assert.Greater(t, u.Id, uint64(0))` + "\n")
+			if hasUpdateField {
+				updCamel := S.PascalCase(updateField.Name)
+				WCT(`	assert.True(t, u.Set` + updCamel + `(` + testSampleLiteralAlt(updateField.Type) + `))` + "\n")
+				WCT(`	assert.True(t, u.DoUpsertById())` + "\n")
+			}
+			WCT(`	assert.True(t, u.DoDeletePermanentById())` + "\n")
+		}
+		WCT(`}` + "\n\n")
+
 		BOTH(warning)
 
 	}
@@ -706,6 +1077,56 @@ func GenerateOrm(tables map[TableName]*TableProp, withGraphql ...bool) {
 	err = os.WriteFile(wcFname, wcBuf.Bytes(), os.ModePerm)
 	if L.IsError(err, `os.WriteFile failed: `+wcFname) {
 		return
+	}
+
+	rqTestFname := fmt.Sprintf(`./%s/%s__ORM.GEN_test.go`, rqPkgName, rqPkgName)
+	err = os.WriteFile(rqTestFname, rqTestBuf.Bytes(), os.ModePerm)
+	if L.IsError(err, `os.WriteFile failed: `+rqTestFname) {
+		return
+	}
+
+	wcTestFname := fmt.Sprintf(`./%s/%s__ORM.GEN_test.go`, wcPkgName, wcPkgName)
+	err = os.WriteFile(wcTestFname, wcTestBuf.Bytes(), os.ModePerm)
+	if L.IsError(err, `os.WriteFile failed: `+wcTestFname) {
+		return
+	}
+}
+
+func testSampleLiteral(typ DataType) string {
+	switch typ {
+	case Unsigned:
+		return `uint64(1)`
+	case String:
+		return `"sample"`
+	case Integer:
+		return `int64(1)`
+	case Double:
+		return `1.5`
+	case Boolean:
+		return `true`
+	case Array:
+		return `[]any{1.1, 2.2}`
+	default:
+		return `nil`
+	}
+}
+
+func testSampleLiteralAlt(typ DataType) string {
+	switch typ {
+	case Unsigned:
+		return `uint64(2)`
+	case String:
+		return `"sample2"`
+	case Integer:
+		return `int64(2)`
+	case Double:
+		return `2.5`
+	case Boolean:
+		return `false`
+	case Array:
+		return `[]any{3.3, 4.4}`
+	default:
+		return `nil`
 	}
 }
 

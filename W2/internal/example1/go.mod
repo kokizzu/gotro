@@ -6,7 +6,7 @@ go 1.25.5
 replace github.com/kokizzu/gotro => ../../../
 
 require (
-	github.com/ClickHouse/clickhouse-go/v2 v2.43.0
+	github.com/ClickHouse/clickhouse-go/v2 v2.44.0
 	github.com/goccy/go-json v0.10.6
 	github.com/goccy/go-yaml v1.11.2
 	github.com/gofiber/fiber/v2 v2.52.12
@@ -93,7 +93,7 @@ require (
 	github.com/opencontainers/image-spec v1.1.1 // indirect
 	github.com/opencontainers/runc v1.3.3 // indirect
 	github.com/orcaman/concurrent-map v1.0.0 // indirect
-	github.com/paulmach/orb v0.12.0 // indirect
+	github.com/paulmach/orb v0.13.0 // indirect
 	github.com/pierrec/lz4/v4 v4.1.26 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
