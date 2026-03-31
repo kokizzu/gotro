@@ -50,12 +50,21 @@ func (z *ZzzMutator) ClearMutations() { //nolint:dupl false positive
 	z.logs = []A.X{}
 }
 
+// toOverwriteArray generate slice of update command without primary index fields
+func (z *ZzzMutator) toOverwriteArray() *tarantool.Operations { //nolint:dupl false positive
+	return tarantool.NewOperations().
+		Assign(1, z.CreatedAt).
+		Assign(2, z.Coords).
+		Assign(3, z.Name).
+		Assign(4, z.HeightMeter)
+}
+
 // DoOverwriteById update all columns, error if not exists, not using mutations/Set*
 func (z *ZzzMutator) DoOverwriteById() bool { //nolint:dupl false positive
 	_, err := z.Adapter.RetryDo(tarantool.NewUpdateRequest(z.SpaceName()).
 		Index(z.UniqueIndexId()).
 		Key(tarantool.UintKey{I:uint(z.Id)}).
-		Operations(z.ToUpdateArray()),
+		Operations(z.toOverwriteArray()),
 	)
 	return !L.IsError(err, `Zzz.DoOverwriteById failed: `+z.SpaceName())
 }
@@ -89,7 +98,7 @@ func (z *ZzzMutator) DoOverwriteByName() bool { //nolint:dupl false positive
 	_, err := z.Adapter.RetryDo(tarantool.NewUpdateRequest(z.SpaceName()).
 		Index(z.UniqueIndexName()).
 		Key(tarantool.StringKey{S:z.Name}).
-		Operations(z.ToUpdateArray()),
+		Operations(z.toOverwriteArray()),
 	)
 	return !L.IsError(err, `Zzz.DoOverwriteByName failed: `+z.SpaceName())
 }

@@ -407,6 +407,55 @@ func TestGeneratedSanity(t *testing.T) {
 		WC(`	` + receiverName + ".logs = []A.X{}\n")
 		WC("}\n\n")
 
+		primaryIndexFields := []string{}
+		if props.AutoIncrementId {
+			primaryIndexFields = append(primaryIndexFields, IdCol)
+		} else if props.Unique1 != `` {
+			primaryIndexFields = append(primaryIndexFields, props.Unique1)
+		} else if props.Unique2 != `` {
+			primaryIndexFields = append(primaryIndexFields, props.Unique2)
+		} else if props.Unique3 != `` {
+			primaryIndexFields = append(primaryIndexFields, props.Unique3)
+		} else if len(props.Uniques) > 0 {
+			primaryIndexFields = append(primaryIndexFields, props.Uniques...)
+		}
+		primaryIndexFieldMap := map[string]bool{}
+		for _, fieldName := range primaryIndexFields {
+			primaryIndexFieldMap[fieldName] = true
+		}
+		overwriteOpsExpr := receiverName + ".ToUpdateArray()"
+		if len(primaryIndexFieldMap) > 0 {
+			nonPrimaryCount := 0
+			for _, field := range props.Fields {
+				if primaryIndexFieldMap[field.Name] {
+					continue
+				}
+				nonPrimaryCount++
+			}
+			overwriteOpsExpr = receiverName + ".toOverwriteArray()"
+			WC("// toOverwriteArray generate slice of update command without primary index fields\n")
+			WC(`func (` + receiverName + ` *` + structName + "Mutator) toOverwriteArray() *tarantool.Operations { //nolint:dupl false positive\n")
+			if nonPrimaryCount == 0 {
+				WC("	return tarantool.NewOperations()\n")
+			} else {
+				WC("	return tarantool.NewOperations().\n")
+				cur := 0
+				for idx, field := range props.Fields {
+					if primaryIndexFieldMap[field.Name] {
+						continue
+					}
+					cur++
+					WC("		Assign(" + I.ToStr(idx) + ", " + receiverName + "." + S.PascalCase(field.Name) + ")")
+					if cur < nonPrimaryCount {
+						WC(".\n")
+					} else {
+						WC("\n")
+					}
+				}
+			}
+			WC("}\n\n")
+		}
+
 		// auto increment id
 		if props.AutoIncrementId {
 			uniquePropCamel := S.PascalCase(IdCol)
@@ -417,7 +466,7 @@ func TestGeneratedSanity(t *testing.T) {
 			RQ("}\n\n")
 
 			keyFunc := Field{Type: Unsigned}.KeyRenderer()
-			generateMutationByUniqueIndex(uniquePropCamel, structProp, receiverName, structName, keyFunc, RQ, WC)
+			generateMutationByUniqueIndex(uniquePropCamel, structProp, receiverName, structName, keyFunc, overwriteOpsExpr, RQ, WC)
 
 			if props.GenGraphqlType {
 				generateGraphqlQueryField(structName, uniquePropCamel, propByName[IdCol], RQ)
@@ -445,7 +494,7 @@ func TestGeneratedSanity(t *testing.T) {
 			RQ("}\n\n")
 
 			keyType := propByName[props.Unique1].KeyRenderer()
-			generateMutationByUniqueIndex(uniquePropCamel, structProp, receiverName, structName, keyType, RQ, WC)
+			generateMutationByUniqueIndex(uniquePropCamel, structProp, receiverName, structName, keyType, overwriteOpsExpr, RQ, WC)
 
 			if props.GenGraphqlType {
 				generateGraphqlQueryField(structName, uniquePropCamel, propByName[props.Unique1], RQ)
@@ -463,7 +512,7 @@ func TestGeneratedSanity(t *testing.T) {
 			RQ("}\n\n")
 
 			keyType := propByName[props.Unique2].KeyRenderer()
-			generateMutationByUniqueIndex(uniquePropCamel, structProp, receiverName, structName, keyType, RQ, WC)
+			generateMutationByUniqueIndex(uniquePropCamel, structProp, receiverName, structName, keyType, overwriteOpsExpr, RQ, WC)
 		}
 
 		// unique index3
@@ -477,7 +526,7 @@ func TestGeneratedSanity(t *testing.T) {
 			RQ("}\n\n")
 
 			keyType := propByName[props.Unique3].KeyRenderer()
-			generateMutationByUniqueIndex(uniquePropCamel, structProp, receiverName, structName, keyType, RQ, WC)
+			generateMutationByUniqueIndex(uniquePropCamel, structProp, receiverName, structName, keyType, overwriteOpsExpr, RQ, WC)
 		}
 
 		// unique indexes
@@ -498,7 +547,7 @@ func TestGeneratedSanity(t *testing.T) {
 			RQ("}\n\n")
 
 			keyFunc := func(structProp string) string { return "A.X{" + structProp + "}" }
-			generateMutationByUniqueIndex(uniquePropCamel, structProps, receiverName, structName, keyFunc, RQ, WC)
+			generateMutationByUniqueIndex(uniquePropCamel, structProps, receiverName, structName, keyFunc, overwriteOpsExpr, RQ, WC)
 		}
 
 		// insert, error if exists
@@ -828,25 +877,48 @@ func TestGeneratedSanity(t *testing.T) {
 			//RQ("}\n\n")
 		}
 
-		uniqueMethodSuffixes := []string{}
+		type uniqueTarget struct {
+			Suffix string
+			Fields []string
+		}
+		uniqueTargets := []uniqueTarget{}
 		if props.AutoIncrementId {
-			uniqueMethodSuffixes = append(uniqueMethodSuffixes, S.PascalCase(IdCol))
+			uniqueTargets = append(uniqueTargets, uniqueTarget{
+				Suffix: S.PascalCase(IdCol),
+				Fields: []string{IdCol},
+			})
 		}
 		if props.Unique1 != `` && !(props.AutoIncrementId && props.Unique1 == IdCol) {
-			uniqueMethodSuffixes = append(uniqueMethodSuffixes, S.PascalCase(props.Unique1))
+			uniqueTargets = append(uniqueTargets, uniqueTarget{
+				Suffix: S.PascalCase(props.Unique1),
+				Fields: []string{props.Unique1},
+			})
 		}
 		if props.Unique2 != `` && !(props.AutoIncrementId && props.Unique2 == IdCol) {
-			uniqueMethodSuffixes = append(uniqueMethodSuffixes, S.PascalCase(props.Unique2))
+			uniqueTargets = append(uniqueTargets, uniqueTarget{
+				Suffix: S.PascalCase(props.Unique2),
+				Fields: []string{props.Unique2},
+			})
 		}
 		if props.Unique3 != `` && !(props.AutoIncrementId && props.Unique3 == IdCol) {
-			uniqueMethodSuffixes = append(uniqueMethodSuffixes, S.PascalCase(props.Unique3))
+			uniqueTargets = append(uniqueTargets, uniqueTarget{
+				Suffix: S.PascalCase(props.Unique3),
+				Fields: []string{props.Unique3},
+			})
 		}
 		if len(props.Uniques) > 0 {
 			uniquePropCamel := ``
 			for _, uniq := range props.Uniques {
 				uniquePropCamel += S.PascalCase(uniq)
 			}
-			uniqueMethodSuffixes = append(uniqueMethodSuffixes, uniquePropCamel)
+			uniqueTargets = append(uniqueTargets, uniqueTarget{
+				Suffix: uniquePropCamel,
+				Fields: props.Uniques,
+			})
+		}
+		uniqueMethodSuffixes := make([]string, 0, len(uniqueTargets))
+		for _, target := range uniqueTargets {
+			uniqueMethodSuffixes = append(uniqueMethodSuffixes, target.Suffix)
 		}
 
 		lookupSuffix := ``
@@ -1012,20 +1084,63 @@ func TestGeneratedSanity(t *testing.T) {
 		WCT(`		return x` + "\n")
 		WCT(`	}` + "\n")
 		if lookupSuffix != `` {
-			for idx, suffix := range uniqueMethodSuffixes {
+			secondaryDeleteCheckAdded := false
+			for idx, target := range uniqueTargets {
+				suffix := target.Suffix
 				recVar := `rec` + X.ToS(idx)
 				rowsVar := `rows` + X.ToS(idx)
 				arrRowsVar := `arrRows` + X.ToS(idx)
+				readInsertVar := `readInsert` + X.ToS(idx)
+				readUpdateVar := `readUpdate` + X.ToS(idx)
+				readOverwriteVar := `readOverwrite` + X.ToS(idx)
 				WCT(`	` + recVar + ` := seed()` + "\n")
-				WCT(`	assert.True(t, ` + recVar + `.FindBy` + suffix + `())` + "\n")
+				WCT(`	` + readInsertVar + ` := New` + structName + `Mutator(a)` + "\n")
+				for _, keyField := range target.Fields {
+					keyCamel := S.PascalCase(keyField)
+					WCT(`	` + readInsertVar + `.` + keyCamel + ` = ` + recVar + `.` + keyCamel + "\n")
+				}
+				WCT(`	assert.True(t, ` + readInsertVar + `.FindBy` + suffix + `())` + "\n")
+				for _, field := range props.Fields {
+					camel := S.PascalCase(field.Name)
+					WCT(`	assert.Equal(t, ` + recVar + `.` + camel + `, ` + readInsertVar + `.` + camel + `)` + "\n")
+				}
 				WCT(`	assert.True(t, ` + recVar + `.DoUpdateBy` + suffix + `())` + "\n")
+				WCT(`	` + readUpdateVar + ` := New` + structName + `Mutator(a)` + "\n")
+				for _, keyField := range target.Fields {
+					keyCamel := S.PascalCase(keyField)
+					WCT(`	` + readUpdateVar + `.` + keyCamel + ` = ` + recVar + `.` + keyCamel + "\n")
+				}
+				WCT(`	assert.True(t, ` + readUpdateVar + `.FindBy` + suffix + `())` + "\n")
+				for _, field := range props.Fields {
+					camel := S.PascalCase(field.Name)
+					WCT(`	assert.Equal(t, ` + recVar + `.` + camel + `, ` + readUpdateVar + `.` + camel + `)` + "\n")
+				}
 				if hasUpdateField {
 					updCamel := S.PascalCase(updateField.Name)
 					WCT(`	assert.True(t, ` + recVar + `.Set` + updCamel + `(` + testSampleLiteralAlt(updateField.Type) + `))` + "\n")
 					WCT(`	assert.True(t, ` + recVar + `.DoUpdateBy` + suffix + `())` + "\n")
+					WCT(`	` + readUpdateVar + ` = New` + structName + `Mutator(a)` + "\n")
+					for _, keyField := range target.Fields {
+						keyCamel := S.PascalCase(keyField)
+						WCT(`	` + readUpdateVar + `.` + keyCamel + ` = ` + recVar + `.` + keyCamel + "\n")
+					}
+					WCT(`	assert.True(t, ` + readUpdateVar + `.FindBy` + suffix + `())` + "\n")
+					for _, field := range props.Fields {
+						camel := S.PascalCase(field.Name)
+						WCT(`	assert.Equal(t, ` + recVar + `.` + camel + `, ` + readUpdateVar + `.` + camel + `)` + "\n")
+					}
 				}
-				WCT(`	_ = ` + recVar + `.DoOverwriteBy` + suffix + `()` + "\n")
-				WCT(`	assert.True(t, ` + recVar + `.FindBy` + suffix + `())` + "\n")
+				WCT(`	assert.True(t, ` + recVar + `.DoOverwriteBy` + suffix + `())` + "\n")
+				WCT(`	` + readOverwriteVar + ` := New` + structName + `Mutator(a)` + "\n")
+				for _, keyField := range target.Fields {
+					keyCamel := S.PascalCase(keyField)
+					WCT(`	` + readOverwriteVar + `.` + keyCamel + ` = ` + recVar + `.` + keyCamel + "\n")
+				}
+				WCT(`	assert.True(t, ` + readOverwriteVar + `.FindBy` + suffix + `())` + "\n")
+				for _, field := range props.Fields {
+					camel := S.PascalCase(field.Name)
+					WCT(`	assert.Equal(t, ` + recVar + `.` + camel + `, ` + readOverwriteVar + `.` + camel + `)` + "\n")
+				}
 				WCT(`	` + rowsVar + ` := ` + recVar + `.FindOffsetLimit(0, 10, ` + recVar + `.UniqueIndex` + suffix + `())` + "\n")
 				WCT(`	assert.NotNil(t, ` + rowsVar + `)` + "\n")
 				WCT(`	` + arrRowsVar + `, _ := ` + recVar + `.FindArrOffsetLimit(0, 10, ` + recVar + `.UniqueIndex` + suffix + `())` + "\n")
@@ -1033,6 +1148,22 @@ func TestGeneratedSanity(t *testing.T) {
 				WCT(`	assert.GreaterOrEqual(t, ` + recVar + `.Total(), int64(0))` + "\n")
 				WCT(`	assert.True(t, ` + recVar + `.DoDeletePermanentBy` + suffix + `())` + "\n")
 				WCT(`	assert.False(t, ` + recVar + `.FindBy` + suffix + `())` + "\n")
+				if !secondaryDeleteCheckAdded && suffix != S.PascalCase(IdCol) {
+					checkerVar := `deletedCheck` + X.ToS(idx)
+					if props.AutoIncrementId && suffix != S.PascalCase(IdCol) {
+						WCT(`	` + checkerVar + ` := New` + structName + `Mutator(a)` + "\n")
+						WCT(`	` + checkerVar + `.Id = ` + recVar + `.Id` + "\n")
+						WCT(`	assert.False(t, ` + checkerVar + `.FindById())` + "\n")
+					} else {
+						WCT(`	` + checkerVar + ` := New` + structName + `Mutator(a)` + "\n")
+						for _, keyField := range target.Fields {
+							keyCamel := S.PascalCase(keyField)
+							WCT(`	` + checkerVar + `.` + keyCamel + ` = ` + recVar + `.` + keyCamel + "\n")
+						}
+						WCT(`	assert.False(t, ` + checkerVar + `.FindBy` + suffix + `())` + "\n")
+					}
+					secondaryDeleteCheckAdded = true
+				}
 			}
 		}
 		if props.AutoIncrementId {
@@ -1046,10 +1177,24 @@ func TestGeneratedSanity(t *testing.T) {
 			}
 			WCT(`	assert.True(t, u.DoUpsertById())` + "\n")
 			WCT(`	assert.Greater(t, u.Id, uint64(0))` + "\n")
+			WCT(`	uRead := New` + structName + `Mutator(a)` + "\n")
+			WCT(`	uRead.Id = u.Id` + "\n")
+			WCT(`	assert.True(t, uRead.FindById())` + "\n")
+			for _, field := range props.Fields {
+				camel := S.PascalCase(field.Name)
+				WCT(`	assert.Equal(t, u.` + camel + `, uRead.` + camel + `)` + "\n")
+			}
 			if hasUpdateField {
 				updCamel := S.PascalCase(updateField.Name)
 				WCT(`	assert.True(t, u.Set` + updCamel + `(` + testSampleLiteralAlt(updateField.Type) + `))` + "\n")
 				WCT(`	assert.True(t, u.DoUpsertById())` + "\n")
+				WCT(`	uRead = New` + structName + `Mutator(a)` + "\n")
+				WCT(`	uRead.Id = u.Id` + "\n")
+				WCT(`	assert.True(t, uRead.FindById())` + "\n")
+				for _, field := range props.Fields {
+					camel := S.PascalCase(field.Name)
+					WCT(`	assert.Equal(t, u.` + camel + `, uRead.` + camel + `)` + "\n")
+				}
 			}
 			WCT(`	assert.True(t, u.DoDeletePermanentById())` + "\n")
 		}
@@ -1163,7 +1308,7 @@ func generateGraphqlQueryField(structName string, uniqueFieldName string, field 
 
 }
 
-func generateMutationByUniqueIndex(uniqueCamel, structProp, receiverName, structName string, keyFunc func(string) string, RQ, WC func(str string)) {
+func generateMutationByUniqueIndex(uniqueCamel, structProp, receiverName, structName string, keyFunc func(string) string, overwriteOpsExpr string, RQ, WC func(str string)) {
 
 	//// primary fields
 	//RQ(`func (` + receiverName + ` *` + structName + ") PrimaryIndex() A.X { //nolint:dupl false positive\n")
@@ -1199,7 +1344,7 @@ func generateMutationByUniqueIndex(uniqueCamel, structProp, receiverName, struct
 	WC("	_, err := " + receiverName + ".Adapter.RetryDo(tarantool.NewUpdateRequest(" + receiverName + ".SpaceName()).\n")
 	WC("		Index(" + receiverName + ".UniqueIndex" + uniqueCamel + "()).\n")
 	WC("		Key(" + keyFunc(structProp) + ").\n")
-	WC("		Operations(" + receiverName + ".ToUpdateArray()),\n")
+	WC("		Operations(" + overwriteOpsExpr + "),\n")
 	WC("	)\n")
 	WC("	return !L.IsError(err, `" + structName + `.DoOverwriteBy` + uniqueCamel + " failed: `+" + receiverName + ".SpaceName())\n")
 	WC("}\n\n")
