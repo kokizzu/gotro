@@ -2,8 +2,12 @@ package Z_test
 
 import (
 	"bytes"
+	"os"
+	"path/filepath"
+	"strings"
 	"testing"
 	"text/template"
+	"time"
 
 	"github.com/stretchr/testify/assert"
 
@@ -152,4 +156,75 @@ func TestFalsePositive(t *testing.T) {
 	dummy2expect := L.ReadFile(`dummy2.rendered`)
 	rendered := Z.FromString(dummy2).Str(M.SX{})
 	assert.Equal(t, dummy2expect, rendered)
+}
+
+func Test_TemplateHelpers(t *testing.T) {
+	tc := Z.FromString(`hello #{name}`)
+	buf := tc.ByteBuffer(M.SX{`name`: `A`})
+	assert.Equal(t, `hello A`, buf.String())
+	tc.Print() // coverage for debug print helper
+}
+
+func Test_PatternsWithSpacePrefix(t *testing.T) {
+	patterns := []string{
+		`hi { /* name */ } and [ /* age */ ]`,
+	}
+	for _, pattern := range patterns {
+		t.Run(pattern, func(t *testing.T) {
+			res := Z.FromString(pattern).Str(M.SX{`name`: `A`, `age`: 21})
+			assert.Equal(t, `hi A and 21`, res)
+		})
+	}
+}
+
+func Test_RenderMissingAndUnusedParam(t *testing.T) {
+	tc := Z.FromString(`x #{known} y #{missing}`, true)
+	var buf bytes.Buffer
+	tc.Render(&buf, M.SX{
+		`known`: `K`,
+		`extra`: `E`,
+	})
+	assert.Equal(t, `x K y missing`, buf.String())
+}
+
+func Test_ReloadBranches(t *testing.T) {
+	t.Run(`in memory`, func(t *testing.T) {
+		tc := Z.FromString(`x #{a}`)
+		tc.InMemory = true
+		nt, err := tc.Reload()
+		assert.NoError(t, err)
+		assert.Equal(t, tc, nt)
+	})
+
+	t.Run(`file not found`, func(t *testing.T) {
+		tc := &Z.TemplateChain{Filename: filepath.Join(t.TempDir(), `missing.html`)}
+		nt, err := tc.Reload()
+		assert.Error(t, err)
+		assert.True(t, len(nt.Parts) == 1)
+		assert.True(t, strings.Contains(string(nt.Parts[0]), `failed to stat the template`))
+	})
+
+	t.Run(`unchanged and modified`, func(t *testing.T) {
+		tmpDir := t.TempDir()
+		path := filepath.Join(tmpDir, `x.html`)
+		assert.NoError(t, os.WriteFile(path, []byte(`hello #{name}`), 0644))
+
+		tc, err := Z.ParseFile(false, false, path)
+		assert.NoError(t, err)
+		assert.Equal(t, `hello A`, tc.Str(M.SX{`name`: `A`}))
+
+		nt1, err := tc.Reload()
+		assert.NoError(t, err)
+		assert.Equal(t, tc, nt1) // unchanged branch returns original pointer
+
+		// Force modtime change so Reload takes modified path branch.
+		assert.NoError(t, os.WriteFile(path, []byte(`bye #{name}`), 0644))
+		future := time.Now().Add(2 * time.Second)
+		assert.NoError(t, os.Chtimes(path, future, future))
+
+		nt2, err := tc.Reload()
+		assert.NoError(t, err)
+		assert.NotEqual(t, tc, nt2)
+		assert.Equal(t, `bye B`, nt2.Str(M.SX{`name`: `B`}))
+	})
 }

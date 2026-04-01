@@ -341,3 +341,224 @@ func TestJson5AndContainerConverters(t *testing.T) {
 		t.Fatalf("ToMSS invalid should be empty: %#v", got)
 	}
 }
+
+func TestToBoolPointerAndNilBranches(t *testing.T) {
+	i, iz := 1, 0
+	u, uz := uint(1), uint(0)
+	i8, i8z := int8(1), int8(0)
+	i16, i16z := int16(1), int16(0)
+	i32, i32z := int32(1), int32(0)
+	i64, i64z := int64(1), int64(0)
+	u8, u8z := uint8(1), uint8(0)
+	u16, u16z := uint16(1), uint16(0)
+	u32, u32z := uint32(1), uint32(0)
+	u64, u64z := uint64(1), uint64(0)
+	f32, f32z := float32(1), float32(0)
+	f64, f64z := float64(1), float64(0)
+
+	// pointer branches intentionally use `== 0` semantics in current implementation.
+	if ToBool(&i) || !ToBool(&iz) || ToBool(&u) || !ToBool(&uz) || ToBool(&i8) || !ToBool(&i8z) ||
+		ToBool(&i16) || !ToBool(&i16z) || ToBool(&i32) || !ToBool(&i32z) || ToBool(&i64) || !ToBool(&i64z) ||
+		ToBool(&u8) || !ToBool(&u8z) || ToBool(&u16) || !ToBool(&u16z) || ToBool(&u32) || !ToBool(&u32z) ||
+		ToBool(&u64) || !ToBool(&u64z) || ToBool(&f32) || !ToBool(&f32z) || ToBool(&f64) || !ToBool(&f64z) {
+		t.Fatalf("ToBool pointer numeric branches mismatch")
+	}
+}
+
+func TestToTimeAndContainerNilBranches(t *testing.T) {
+	var nilBytes *[]byte
+	var nilStr *string
+	var nilAny *any
+	if got := ToTime(nilBytes); !got.IsZero() {
+		t.Fatalf("ToTime(nil *[]byte) should be zero: %v", got)
+	}
+	if got := ToTime(nilStr); !got.IsZero() {
+		t.Fatalf("ToTime(nil *string) should be zero: %v", got)
+	}
+	if got := ToTime(nilAny); !got.IsZero() {
+		t.Fatalf("ToTime(nil *any) should be zero: %v", got)
+	}
+
+	if got := ToAX(nil); len(got) != 0 {
+		t.Fatalf("ToAX(nil) should be empty: %#v", got)
+	}
+	if got := ToAF(nil); len(got) != 0 {
+		t.Fatalf("ToAF(nil) should be empty: %#v", got)
+	}
+	if got := ToMSX(nil); len(got) != 0 {
+		t.Fatalf("ToMSX(nil) should be empty: %#v", got)
+	}
+	if got := ToMSS(nil); len(got) != 0 {
+		t.Fatalf("ToMSS(nil) should be empty: %#v", got)
+	}
+}
+
+func TestConvertersAdditionalScalarAndDefaultBranches(t *testing.T) {
+	var nilAny *any
+
+	for _, tc := range []struct {
+		name string
+		in   any
+		want uint64
+	}{
+		{name: "int", in: int(1), want: 1},
+		{name: "uint", in: uint(2), want: 2},
+		{name: "int8", in: int8(3), want: 3},
+		{name: "int16", in: int16(4), want: 4},
+		{name: "int32", in: int32(5), want: 5},
+		{name: "int64", in: int64(6), want: 6},
+		{name: "uint8", in: uint8(7), want: 7},
+		{name: "uint16", in: uint16(8), want: 8},
+		{name: "uint32", in: uint32(9), want: 9},
+		{name: "float32", in: float32(10.9), want: 10},
+		{name: "float64", in: float64(11.9), want: 11},
+		{name: "bool true", in: true, want: 1},
+		{name: "string int", in: `12`, want: 12},
+		{name: "string float", in: `13.9`, want: 13},
+		{name: "nil *any", in: nilAny, want: 0},
+		{name: "default", in: struct{}{}, want: 0},
+	} {
+		if got := ToU(tc.in); got != tc.want {
+			t.Fatalf("ToU %s mismatch: want=%d got=%d", tc.name, tc.want, got)
+		}
+	}
+
+	for _, tc := range []struct {
+		name string
+		in   any
+		want byte
+	}{
+		{name: "int", in: int(1), want: 1},
+		{name: "uint", in: uint(2), want: 2},
+		{name: "int8", in: int8(3), want: 3},
+		{name: "int16", in: int16(4), want: 4},
+		{name: "int32", in: int32(5), want: 5},
+		{name: "int64", in: int64(6), want: 6},
+		{name: "uint16", in: uint16(8), want: 8},
+		{name: "uint32", in: uint32(9), want: 9},
+		{name: "uint64", in: uint64(10), want: 10},
+		{name: "float32", in: float32(11.9), want: 11},
+		{name: "float64", in: float64(12.9), want: 12},
+		{name: "bool true", in: true, want: 1},
+		{name: "string int", in: `13`, want: 13},
+		{name: "string float", in: `14.7`, want: 14},
+		{name: "nil *any", in: nilAny, want: 0},
+		{name: "default", in: struct{}{}, want: 0},
+	} {
+		if got := ToByte(tc.in); got != tc.want {
+			t.Fatalf("ToByte %s mismatch: want=%d got=%d", tc.name, tc.want, got)
+		}
+	}
+
+	for _, tc := range []struct {
+		name string
+		in   any
+		want int64
+	}{
+		{name: "int64 fast path", in: int64(99), want: 99},
+		{name: "int", in: int(1), want: 1},
+		{name: "uint", in: uint(2), want: 2},
+		{name: "int8", in: int8(3), want: 3},
+		{name: "int16", in: int16(4), want: 4},
+		{name: "int32", in: int32(5), want: 5},
+		{name: "uint8", in: uint8(6), want: 6},
+		{name: "uint16", in: uint16(7), want: 7},
+		{name: "uint32", in: uint32(8), want: 8},
+		{name: "uint64", in: uint64(9), want: 9},
+		{name: "float32", in: float32(10.9), want: 10},
+		{name: "float64", in: float64(11.9), want: 11},
+		{name: "string int", in: `12`, want: 12},
+		{name: "bool false", in: false, want: 0},
+		{name: "nil *any", in: nilAny, want: 0},
+		{name: "default", in: struct{}{}, want: 0},
+	} {
+		if got := ToI(tc.in); got != tc.want {
+			t.Fatalf("ToI %s mismatch: want=%d got=%d", tc.name, tc.want, got)
+		}
+	}
+
+	for _, tc := range []struct {
+		name string
+		in   any
+		want float64
+	}{
+		{name: "float64 fast path", in: float64(99.5), want: 99.5},
+		{name: "int", in: int(1), want: 1},
+		{name: "uint", in: uint(2), want: 2},
+		{name: "int8", in: int8(3), want: 3},
+		{name: "int16", in: int16(4), want: 4},
+		{name: "int32", in: int32(5), want: 5},
+		{name: "int64", in: int64(6), want: 6},
+		{name: "uint8", in: uint8(7), want: 7},
+		{name: "uint16", in: uint16(8), want: 8},
+		{name: "uint32", in: uint32(9), want: 9},
+		{name: "uint64", in: uint64(10), want: 10},
+		{name: "string", in: `12.5`, want: 12.5},
+		{name: "bool true", in: true, want: 1},
+		{name: "nil *any", in: nilAny, want: 0},
+		{name: "default", in: struct{}{}, want: 0},
+	} {
+		if got := ToF(tc.in); got != tc.want {
+			t.Fatalf("ToF %s mismatch: want=%v got=%v", tc.name, tc.want, got)
+		}
+	}
+}
+
+func TestToSBoolToArrAndJson5AdditionalBranches(t *testing.T) {
+	var nilAny *any
+
+	if ToS(`plain`) != `plain` || ToS(uint(2)) != `2` || ToS(uint64(3)) != `3` || ToS(float64(4.5)) != `4.5` {
+		t.Fatalf("ToS scalar branches mismatch")
+	}
+	if ToS(nilAny) != `` {
+		t.Fatalf("ToS(nil *any) should be empty")
+	}
+
+	if !ToBool(true) || ToBool(false) || !ToBool(int8(1)) || ToBool(int16(0)) || !ToBool(uint8(1)) ||
+		ToBool(uint16(0)) || !ToBool(float32(1)) || ToBool(float64(0)) {
+		t.Fatalf("ToBool scalar branches mismatch")
+	}
+	for _, v := range []string{``, `0`, `f`, `false`, `no`, `n`, ` N `} {
+		if ToBool(v) {
+			t.Fatalf("ToBool false-string mismatch for %q", v)
+		}
+	}
+	for _, v := range []boolStr{``, `0`, `f`, `false`, `no`, `n`, ` yes `} {
+		got := ToBool(v)
+		want := strings.TrimSpace(strings.ToLower(v.String()))
+		expect := !(want == `` || want == `0` || want == `f` || want == `false` || want == `no` || want == `n`)
+		if got != expect {
+			t.Fatalf("ToBool stringer mismatch for %q: want=%v got=%v", v, expect, got)
+		}
+	}
+
+	if got := ToArr(nil); len(got) != 0 {
+		t.Fatalf("ToArr(nil) should be empty: %#v", got)
+	}
+
+	assertMapLike := func(name, got string, contains ...string) {
+		t.Helper()
+		if !strings.HasPrefix(got, "{") || !strings.HasSuffix(got, "}") {
+			t.Fatalf("%s malformed map json5: %q", name, got)
+		}
+		if len(contains) > 1 && !strings.Contains(got, ",") {
+			t.Fatalf("%s should contain comma for multi-entry map: %q", name, got)
+		}
+		for _, must := range contains {
+			if !strings.Contains(got, must) {
+				t.Fatalf("%s missing %q in %q", name, must, got)
+			}
+		}
+	}
+
+	assertMapLike("json5fromMIB", json5fromMIB(map[int64]bool{1: true, 2: false}), `1:true`, `2:false`)
+	assertMapLike("json5fromMIX", json5fromMIX(map[int64]any{1: `x`, 2: 3}), `1:"x"`, `2:3`)
+	assertMapLike("json5fromMIAX", json5fromMIAX(map[int64][]any{1: {`a`}, 2: {1}}), `1:["a"]`, `2:[1]`)
+	assertMapLike("json5fromMSAX", json5fromMSAX(map[string][]any{`a`: {1}, `b`: {`x`}}), `"a":[1]`, `"b":["x"]`)
+	assertMapLike("json5fromMSI", json5fromMSI(map[string]int64{`1`: 1, `abc`: 2, `a-b`: 3, ``: 4}), `'1':1`, `'abc':2`, `'a-b':3`, `'':4`)
+
+	assertMapLike("ToJson5 map[int64]any", ToJson5(map[int64]any{1: `x`, 2: true}), `1:"x"`, `2:true`)
+	assertMapLike("ToJson5 map[int64][]any", ToJson5(map[int64][]any{1: {`x`}, 2: {1}}), `1:["x"]`, `2:[1]`)
+	assertMapLike("ToJson5 map[string][]any", ToJson5(map[string][]any{`a`: {1}, `b`: {`x`}}), `"a":[1]`, `"b":["x"]`)
+	assertMapLike("ToJson5 map[string]int64", ToJson5(map[string]int64{`1`: 1, `abc`: 2}), `'1':1`, `'abc':2`)
+}

@@ -1102,5 +1102,76 @@ func TestFastestCopyStruct(t *testing.T) {
 	}
 }
 
+type structWrapA struct {
+	A int
+	B string
+	c bool
+}
+
+type structWrapB struct {
+	A int
+	B string
+}
+
+func TestStructWrappersAndInvalidPaths(t *testing.T) {
+	src := &structWrapA{A: 7, B: "x", c: true}
+
+	// StructMap cache path and wrapper FromStruct/ToStruct.
+	sm1 := StructMap(src)
+	sm2 := StructMap(src)
+	if sm1 != sm2 {
+		t.Fatalf("StructMap should return cached mapper for same type")
+	}
+
+	m := FromStruct(src)
+	if m["A"] != 7 || m["B"] != "x" {
+		t.Fatalf("FromStruct mismatch: %#v", m)
+	}
+	if _, ok := m["c"]; ok {
+		t.Fatalf("FromStruct should skip unexported fields: %#v", m)
+	}
+
+	var dst structWrapA
+	m.ToStruct(&dst)
+	if dst.A != 7 || dst.B != "x" || dst.c {
+		t.Fatalf("ToStruct mismatch: %#v", dst)
+	}
+
+	// MapToStruct should skip nil value and unknown field.
+	sm := ParseStruct(&structWrapA{}, RawFieldName)
+	dst2 := structWrapA{A: 9, B: "old", c: true}
+	sm.MapToStruct(SX{"A": nil, "B": "new", "Unknown": 1}, &dst2)
+	if dst2.A != 9 || dst2.B != "new" || !dst2.c {
+		t.Fatalf("MapToStruct nil/unknown handling mismatch: %#v", dst2)
+	}
+
+	// invalid type (not struct) and different struct type paths
+	mm := map[string]any{}
+	sm.MapToStruct(SX{"A": 1}, &mm) // should not panic
+	other := structWrapB{}
+	sm.MapToStruct(SX{"A": 1, "B": "y"}, &other)
+	if other.A != 0 || other.B != "" {
+		t.Fatalf("MapToStruct should ignore different struct type: %#v", other)
+	}
+
+	if got := sm.StructToMap(&mm); len(got) != 0 {
+		t.Fatalf("StructToMap invalid type should be empty: %#v", got)
+	}
+	if got := sm.StructToMap(&other); len(got) != 0 {
+		t.Fatalf("StructToMap different type should be empty: %#v", got)
+	}
+}
+
+func TestParseStructNilPointer(t *testing.T) {
+	var nilPtr *structWrapA
+	sm := ParseStruct(nilPtr, RawFieldName)
+	if sm == nil {
+		t.Fatalf("ParseStruct(nil pointer) should return non-nil mapper")
+	}
+	if sm.StructName != "" {
+		t.Fatalf("ParseStruct(nil pointer) should keep empty struct name, got %q", sm.StructName)
+	}
+}
+
 // TODO: test time
 // TODO: setting wrong value (eg. float to int, []byte to string, etc)
