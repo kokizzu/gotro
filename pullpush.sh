@@ -57,7 +57,9 @@ echo "imports checked.."
 golangci-lint run
 
 # run tests
-go test ./...
+go test -coverprofile=coverage.out ./...
+go tool cover -func=coverage.out | grep '^total:'
+echo "coverage printed.."
 
 # add and commit all files
 git add .

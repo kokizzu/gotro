@@ -1,10 +1,20 @@
 package M
 
 import (
+	"bytes"
+	"reflect"
 	"testing"
 
+	"github.com/goccy/go-json"
 	"github.com/hexops/autogold"
 	"github.com/hexops/valast"
+	"github.com/kokizzu/gotro/A"
+	"github.com/kokizzu/gotro/B"
+	"github.com/kokizzu/gotro/C"
+	"github.com/kokizzu/gotro/F"
+	"github.com/kokizzu/gotro/I"
+	"github.com/kokizzu/gotro/L"
+	"github.com/kokizzu/gotro/S"
 )
 
 func TestParseStruct(t *testing.T) {
@@ -845,6 +855,251 @@ func TestParseStruct(t *testing.T) {
 		})
 		want.Equal(t, mv)
 	})
+}
+
+func json5fromMIB(orig map[int64]bool) string {
+	b := bytes.Buffer{}
+	b.WriteByte('{')
+	first := true
+	for k, v := range orig {
+		if !first {
+			b.WriteByte(',')
+		} else {
+			first = false
+		}
+		b.WriteString(I.ToS(k))
+		b.WriteByte(':')
+		b.WriteString(ToJson5(v))
+	}
+	b.WriteByte('}')
+	return b.String()
+}
+
+func json5fromMIX(orig map[int64]any) string {
+	b := bytes.Buffer{}
+	b.WriteByte('{')
+	first := true
+	for k, v := range orig {
+		if !first {
+			b.WriteByte(',')
+		} else {
+			first = false
+		}
+		b.WriteString(I.ToS(k))
+		b.WriteByte(':')
+		b.WriteString(ToJson5(v))
+	}
+	b.WriteByte('}')
+	return b.String()
+}
+
+func json5fromMIAX(orig map[int64][]any) string {
+	b := bytes.Buffer{}
+	b.WriteByte('{')
+	first := true
+	for k, v := range orig {
+		if !first {
+			b.WriteByte(',')
+		} else {
+			first = false
+		}
+		b.WriteString(I.ToS(k))
+		b.WriteByte(':')
+		b.WriteString(ToJson5(v))
+	}
+	b.WriteByte('}')
+	return b.String()
+}
+
+func json5fromMSAX(orig map[string][]any) string {
+	b := bytes.Buffer{}
+	b.WriteByte('{')
+	first := true
+	for k, v := range orig {
+		if !first {
+			b.WriteByte(',')
+		} else {
+			first = false
+		}
+		b.WriteString(S.ZZ(k))
+		b.WriteByte(':')
+		b.WriteString(ToJson5(v))
+	}
+	b.WriteByte('}')
+	return b.String()
+}
+
+func json5fromMSI(orig map[string]int64) string {
+	b := bytes.Buffer{}
+	b.WriteByte('{')
+	first := true
+	for k, v := range orig {
+		if !first {
+			b.WriteByte(',')
+		} else {
+			first = false
+		}
+		quote := true
+		if len(k) > 0 {
+			ch := k[0]
+			if C.IsDigit(ch) && ch != '0' {
+				for _, ch := range k[1:] {
+					// find non digit
+					if !C.IsDigit(uint8(ch)) {
+						quote = true
+						break
+					}
+				}
+			} else if C.IsIdentStart(k[0]) {
+				for _, ch := range k[1:] {
+					// find non identifier character
+					if !C.IsIdent(uint8(ch)) {
+						quote = true
+						break
+					}
+				}
+			} else {
+				quote = true
+			}
+		}
+		if quote {
+			k = S.Q(k)
+		}
+		b.WriteString(k)
+		b.WriteByte(':')
+		b.WriteString(I.ToS(v))
+	}
+	b.WriteByte('}')
+	return b.String()
+}
+
+// ToJson5 convert to json5
+func ToJson5(x any) string {
+	// bug when using map[int64]any
+	if x == nil {
+		return `''`
+	}
+	switch orig := x.(type) {
+	case bytes.Buffer: // return as is
+		return orig.String()
+	case string:
+		return S.ZJJ(orig)
+	case []byte:
+		return S.ZJJ(string(orig))
+	case int:
+		return I.ToStr(orig)
+	case int64:
+		return I.ToS(orig)
+	case int32:
+		return I.ToS(int64(orig))
+	case uint:
+		return I.UToStr(orig)
+	case uint64:
+		return I.UToS(orig)
+	case uint32:
+		return I.UToS(uint64(orig))
+	case float32:
+		return F.ToS(float64(orig))
+	case float64:
+		return F.ToS(orig)
+	case bool:
+		return B.ToS(orig)
+	case IB:
+		return json5fromMIB(orig)
+	case map[int64]bool:
+		return json5fromMIB(orig)
+	case IX:
+		return json5fromMIX(orig)
+	case map[int64]any:
+		return json5fromMIX(orig)
+	case IAX:
+		return json5fromMIAX(orig)
+	case map[int64][]any:
+		return json5fromMIAX(orig)
+	case SAX:
+		return json5fromMSAX(orig)
+	case map[string][]any:
+		return json5fromMSAX(orig)
+	case SX:
+		return orig.ToJson()
+	case map[string]any:
+		return ToJson(orig)
+	//   return any.(M.SX).ToJson()
+	case SI:
+		return json5fromMSI(orig)
+	case map[string]int64:
+		return json5fromMSI(orig)
+	case A.X:
+		return A.ToJson(orig)
+	case []any:
+		return A.ToJson(orig)
+	default:
+		str, err := json.Marshal(x)
+		L.IsError(err, `X.ToJson5 failed`, x)
+		return string(str)
+	}
+	// TODO: add more types (M/A) here, do not EVER TRY to use reflection in this case
+}
+
+type fastestSrc struct {
+	Name  string
+	Age   int64
+	Score float64
+}
+
+func TestFastestMapToStruct(t *testing.T) {
+	src := map[string]any{
+		"Name":  "alice",
+		"Age":   int64(21),
+		"Score": 98.5,
+	}
+	var dst fastestSrc
+	FastestMapToStruct(src, &dst)
+	if dst.Name != "alice" || dst.Age != 21 || dst.Score != 98.5 {
+		t.Fatalf("FastestMapToStruct mismatch: %#v", dst)
+	}
+}
+
+func TestFastestStructToMap(t *testing.T) {
+	src := fastestSrc{
+		Name:  "bob",
+		Age:   33,
+		Score: 77.25,
+	}
+	got := FastestStructToMap(src)
+	want := map[string]any{
+		"Name":  "bob",
+		"Age":   int64(33),
+		"Score": 77.25,
+	}
+	if !reflect.DeepEqual(got, want) {
+		t.Fatalf("FastestStructToMap mismatch:\nwant=%#v\ngot=%#v", want, got)
+	}
+}
+
+func TestFastestCopyStruct(t *testing.T) {
+	src := fastestSrc{
+		Name:  "carol",
+		Age:   45,
+		Score: 88.8,
+	}
+
+	var dstStruct fastestSrc
+	FastestCopyStruct(src, &dstStruct)
+	if !reflect.DeepEqual(src, dstStruct) {
+		t.Fatalf("FastestCopyStruct to struct mismatch:\nwant=%#v\ngot=%#v", src, dstStruct)
+	}
+
+	dstMap := map[string]any{}
+	FastestCopyStruct(src, &dstMap)
+	wantMap := map[string]any{
+		"Name":  "carol",
+		"Age":   int64(45),
+		"Score": 88.8,
+	}
+	if !reflect.DeepEqual(dstMap, wantMap) {
+		t.Fatalf("FastestCopyStruct to map mismatch:\nwant=%#v\ngot=%#v", wantMap, dstMap)
+	}
 }
 
 // TODO: test time

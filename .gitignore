@@ -33,3 +33,5 @@ public/mod.js
 public/mod.css
 
 vendor
+
+coverage.out

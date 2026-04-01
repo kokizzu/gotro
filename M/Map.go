@@ -628,10 +628,10 @@ func (json SX) GetMSB(key string) SB {
 			}
 		}
 		return res
-	} else {
-		L.Describe(`Property [` + key + `] is not a M.SB: ` + fmt.Sprintf("%T", v))
-		return SB{}
 	}
+
+	L.Describe(`Property [` + key + `] is not a M.SB: ` + fmt.Sprintf("%T", v))
+	return SB{}
 }
 
 // GetMSF get map string float64 value from map
@@ -657,10 +657,10 @@ func (json SX) GetMSF(key string) SF {
 			}
 		}
 		return res
-	} else {
-		L.Describe(`Property [` + key + `] is not a M.SF: ` + fmt.Sprintf("%T", v))
-		return SF{}
 	}
+
+	L.Describe(`Property [` + key + `] is not a M.SF: ` + fmt.Sprintf("%T", v))
+	return SF{}
 }
 
 // GetMSI get map string int64 value from map
@@ -686,10 +686,10 @@ func (json SX) GetMSI(key string) SI {
 			}
 		}
 		return res
-	} else {
-		L.Describe(`Property [` + key + `] is not a M.SF: ` + fmt.Sprintf("%T", v))
-		return SI{}
 	}
+
+	L.Describe(`Property [` + key + `] is not a M.SF: ` + fmt.Sprintf("%T", v))
+	return SI{}
 }
 
 // GetMIB get map string int64 value from map
@@ -713,10 +713,10 @@ func (json SX) GetMIB(key string) IB {
 			}
 		}
 		return res
-	} else {
-		L.Describe(`Property [` + key + `] is not a M.SB: ` + fmt.Sprintf("%T", v))
-		return IB{}
 	}
+
+	L.Describe(`Property [` + key + `] is not a M.SB: ` + fmt.Sprintf("%T", v))
+	return IB{}
 }
 
 // GetMSX get map string anything value from map
@@ -732,10 +732,10 @@ func (json SX) GetMSX(key string) SX {
 		return val
 	} else if val, ok := v.(SX); ok {
 		return val
-	} else {
-		L.Describe(`Property [` + key + `] is not a M.SX: ` + fmt.Sprintf("%T", v))
-		return SX{}
 	}
+
+	L.Describe(`Property [` + key + `] is not a M.SX: ` + fmt.Sprintf("%T", v))
+	return SX{}
 }
 
 // GetAX get array of anything value from map
@@ -749,10 +749,10 @@ func (json SX) GetAX(key string) []any {
 	}
 	if val, ok := v.([]any); ok {
 		return val
-	} else {
-		L.Describe(`Property [` + key + `] is not a A.X: ` + fmt.Sprintf("%T", v))
-		return []any{}
 	}
+
+	L.Describe(`Property [` + key + `] is not a A.X: ` + fmt.Sprintf("%T", v))
+	return []any{}
 }
 
 // GetIntArr get array int64 value from map
@@ -809,10 +809,10 @@ func (json SX) GetIntArr(key string) []int64 {
 			}
 		}
 		return res
-	} else {
-		L.Describe(`Property [` + key + `] is not a []int64: ` + fmt.Sprintf("%T", v))
-		return []int64{}
 	}
+
+	L.Describe(`Property [` + key + `] is not a []int64: ` + fmt.Sprintf("%T", v))
+	return []int64{}
 }
 
 // GetInt get int64 from from map
