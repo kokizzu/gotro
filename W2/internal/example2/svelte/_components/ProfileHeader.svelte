@@ -1,18 +1,17 @@
 <script>
     // @ts-nocheck
     import {isSideMenuOpen, langOptions} from './uiState.js';
-    import Icon from 'svelte-icons-pack/Icon.svelte';
-    import FaSolidBars from 'svelte-icons-pack/fa/FaSolidBars';
+    import { Icon } from 'svelte-icons-pack';
+    import { FaSolidBars } from 'svelte-icons-pack/fa';
     import {onMount} from 'svelte';
-    import {UserUpdateProfile} from '../jsApi.GEN.js';
 
-    export let user = null;
+    let { user = null } = $props();
 
     function openSideMenu() {
         isSideMenuOpen.set(!$isSideMenuOpen);
     }
 
-    let selectedLanguage = '';
+    let selectedLanguage = $state('');
     onMount(() => {
         console.log('onMount.ProfileHeader')
         selectedLanguage = 'EN';
@@ -24,7 +23,7 @@
 <header class='profile_header'>
     <nav class='navbar'>
         <div class='label_menu'>
-            <button on:click|preventDefault={openSideMenu}>
+            <button onclick={openSideMenu}>
                 <Icon color='#FFF' size={20} src={FaSolidBars}/>
             </button>
             <p>DASHBOARD</p>

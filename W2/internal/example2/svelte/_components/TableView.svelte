@@ -3,29 +3,34 @@
     import { onMount } from 'svelte';
     import { datetime } from './formatter.js';
 
-    import Icon from 'svelte-icons-pack/Icon.svelte';
-    import HiOutlinePencil from 'svelte-icons-pack/hi/HiOutlinePencil';
-    import FaSolidAngleRight from 'svelte-icons-pack/fa/FaSolidAngleRight';
-    import FaSolidAngleLeft from 'svelte-icons-pack/fa/FaSolidAngleLeft';
-    import FaSolidAngleDoubleRight from 'svelte-icons-pack/fa/FaSolidAngleDoubleRight';
-    import FaSolidAngleDoubleLeft from 'svelte-icons-pack/fa/FaSolidAngleDoubleLeft';
-    import FaSolidFilter from 'svelte-icons-pack/fa/FaSolidFilter';
-    import FaSolidSyncAlt from 'svelte-icons-pack/fa/FaSolidSyncAlt';
+    import { Icon } from 'svelte-icons-pack';
+    import { HiOutlinePencil } from 'svelte-icons-pack/hi';
+    import {
+        FaSolidAnglesLeft,
+        FaSolidAnglesRight,
+        FaSolidAngleLeft,
+        FaSolidAngleRight,
+        FaSolidFilter,
+        FaSolidRotate
+    } from 'svelte-icons-pack/fa';
 
-    export let arrayOfArray = true;
-    export let fields = []; // array of field object
-    export let rows = []; // 2 dimension array or array of object if arrayOfArray = false
-    export let pager = {}; // pagination
-    export let extraActions = []; // array of object {icon, label, onClick}
-    export let onRefreshTableView = function( pager ) {
+    let {
+        arrayOfArray = true,
+        fields = [],
+        rows = [],
+        pager = $bindable({}),
+        extraActions = [],
+        onRefreshTableView = function( pager ) {
         console.log( 'TableView.onRefreshTableView', pager );
-    };
-    export let onEditRow = function( id, row ) {
+        },
+        onEditRow = function( id, row ) {
         console.log( 'TableView.onEditRow', id, row );
-    };
-    export let widths = {}; // array of key and css width
+        },
+        widths = {},
+        children
+    } = $props();
 
-    let deletedAtIdx = -1;
+    let deletedAtIdx = $state(-1);
     onMount( () => {
         console.log( 'onMount.TableView' );
         console.log( 'fields=', fields );
@@ -46,11 +51,9 @@
         oldFilterStr = JSON.stringify( filtersMap );
     } );
 
-    let oldFilterStr = '{}';
-    let newFilterStr = '';
-    $: newFilterStr = JSON.stringify( filtersMap );
-
-    let filtersMap = {};
+    let oldFilterStr = $state('{}');
+    let filtersMap = $state({});
+    let newFilterStr = $derived(JSON.stringify(filtersMap));
 
     function filterKeyDown( event ) {
         if( event.key==='Enter' ) applyFilter();
@@ -92,21 +95,21 @@
         return row[ field.name ] || '';
     }
 
-    $: allowPrevPage = pager.page>1;
-    $: allowNextPage = pager.page<pager.pages;
+    let allowPrevPage = $derived((pager.page || 0) > 1);
+    let allowNextPage = $derived((pager.page || 0) < (pager.pages || 0));
 
 </script>
 
 <section>
     <div class='action_options_container'>
         <div class='left'>
-            <slot />
+            {@render children?.()}
             <button class='action_btn' disabled={oldFilterStr===newFilterStr} onclick={applyFilter}>
                 <Icon color={oldFilterStr === newFilterStr ? '#5C646F' : '#FFF'} size={17} src={FaSolidFilter} />
                 <span>Apply Filter</span>
             </button>
-            <button class='action_btn' on:click={() => gotoPage(pager.page)}>
-                <Icon color='#FFF' size={17} src={FaSolidSyncAlt} />
+            <button class='action_btn' onclick={() => gotoPage(pager.page)}>
+                <Icon color='#FFF' size={17} src={FaSolidRotate} />
                 <span>Refresh</span>
             </button>
         </div>
@@ -134,7 +137,7 @@ multiple filter from other fields will do AND operation'
                                    type='text'
                                    class='input_filter'
                                    bind:value={filtersMap[field.name]}
-                                   on:keydown={filterKeyDown}
+                                   onkeydown={filterKeyDown}
                             />
                         </th>
                     {/if}
@@ -148,7 +151,7 @@ multiple filter from other fields will do AND operation'
                         {#if field.name==='id'}
                             <td class='col_action'>
                                 <div>
-                                    <button class='action' title='Edit' on:click={() => onEditRow(cell(row,i,field), row)}>
+                                    <button class='action' title='Edit' onclick={() => onEditRow(cell(row,i,field), row)}>
                                         <Icon src={HiOutlinePencil} />
                                     </button>
                                     {#each extraActions as action}
@@ -157,7 +160,7 @@ multiple filter from other fields will do AND operation'
                                                 <Icon src={action.icon} />
                                             </a>
                                         {:else}
-                                            <button class='action' title='{action.label || ""}' on:click={() => action.onClick(row)}>
+                                            <button class='action' title='{action.label || ""}' onclick={() => action.onClick(row)}>
                                                 <Icon src={action.icon} />
                                             </button>
                                         {/if}
@@ -187,7 +190,7 @@ multiple filter from other fields will do AND operation'
                     class='perPage'
                     id='perPage'
                     min='0'
-                    on:change={() => changePerPage(pager.perPage)}
+                    onchange={() => changePerPage(pager.perPage)}
                     type='number'
             />
             <span>rows per page.</span>
@@ -196,17 +199,17 @@ multiple filter from other fields will do AND operation'
         <p>Total: {pager.countResult | 0}</p>
 
         <div class='pagination'>
-            <button disabled={!allowPrevPage} on:click={() => gotoPage(1)} title='Go to first page'>
-                <Icon color={!allowPrevPage ? '#5C646F' : '#FFF'} size={18} src={FaSolidAngleDoubleLeft} />
+            <button disabled={!allowPrevPage} onclick={() => gotoPage(1)} title='Go to first page'>
+                <Icon color={!allowPrevPage ? '#5C646F' : '#FFF'} size={18} src={FaSolidAnglesLeft} />
             </button>
-            <button disabled={!allowPrevPage} on:click={() => gotoPage(pager.page - 1)} title='Go to previous page'>
+            <button disabled={!allowPrevPage} onclick={() => gotoPage(pager.page - 1)} title='Go to previous page'>
                 <Icon color={!allowPrevPage ? '#5C646F' : '#FFF'} size={18} src={FaSolidAngleLeft} />
             </button>
-            <button disabled={!allowNextPage} on:click={() => gotoPage(pager.page + 1)} title='Go to next page'>
+            <button disabled={!allowNextPage} onclick={() => gotoPage(pager.page + 1)} title='Go to next page'>
                 <Icon color={!allowNextPage ? '#5C646F' : '#FFF'} size={18} src={FaSolidAngleRight} />
             </button>
-            <button disabled={!allowNextPage} on:click={() => gotoPage(pager.pages)} title='Go to last page'>
-                <Icon color={!allowNextPage ? '#5C646F' : '#FFF'} size={18} src={FaSolidAngleDoubleRight} />
+            <button disabled={!allowNextPage} onclick={() => gotoPage(pager.pages)} title='Go to last page'>
+                <Icon color={!allowNextPage ? '#5C646F' : '#FFF'} size={18} src={FaSolidAnglesRight} />
             </button>
         </div>
     </div>

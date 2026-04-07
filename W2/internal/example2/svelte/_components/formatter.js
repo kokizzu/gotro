@@ -1,4 +1,4 @@
-function datetime( unixSec, humanize ) {
+export function datetime( unixSec, humanize ) {
     if( !unixSec ) return '';
     if( typeof unixSec==='string' ) return unixSec; // might not be unix time
     let dt = new Date( unixSec * 1000 );
@@ -12,7 +12,7 @@ function datetime( unixSec, humanize ) {
 }
 
 
-function localeDatetime( unixSec ) {
+export function localeDatetime( unixSec ) {
     if( !unixSec ) return '';
     const dt = new Date( unixSec * 1000 );
     const day = dt.toLocaleDateString( 'default', {weekday: 'long'} );
@@ -26,8 +26,3 @@ function localeDatetime( unixSec ) {
     const formattedDate = `${day}, ${date} ${month} ${year} ${hh}:${mm}`;
     return formattedDate;
 }
-
-module.exports = {
-    datetime: datetime,
-    localeDatetime: localeDatetime,
-};

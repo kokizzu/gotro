@@ -1,5 +1,5 @@
 <script>
-	export let title = ''
+	let { title = '' } = $props();
 
 	// since _components starts with underscore, should not generate .html automatically
 
@@ -10,4 +10,4 @@
 	}
 </script>
 
-<button on:click={hitApi}>{title}</button>
+<button onclick={hitApi}>{title}</button>

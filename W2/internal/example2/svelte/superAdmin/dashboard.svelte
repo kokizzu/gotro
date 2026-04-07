@@ -5,7 +5,7 @@
     import ProfileHeader from '../_components/ProfileHeader.svelte';
     import Footer from '../_components/Footer.svelte';
 
-    let segments = {/* segments */};
+    let { segments = {/* segments */} } = $props();
 
 </script>
 
@@ -13,14 +13,14 @@
 <section class='dashboard'>
     <Menu access={segments} />
     <div class='dashboard_main_content'>
-        <ProfileHeader></ProfileHeader>
-        <AdminSubMenu></AdminSubMenu>
+        <ProfileHeader />
+        <AdminSubMenu />
         <div class='content'>
             <section class='tableview_container'>
                 dashboard admin
             </section>
         </div>
-        <Footer></Footer>
+        <Footer />
     </div>
 </section>
 

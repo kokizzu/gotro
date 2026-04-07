@@ -1,16 +1,14 @@
 <script>
 	//@ts-nocheck
-	import {GuestForgotPassword, GuestLogin, GuestRegister, GuestResendVerificationEmail} from './jsApi.GEN.js';
 	import {onMount, tick} from 'svelte';
-	import FaSolidCircleNotch from "svelte-icons-pack/fa/FaSolidCircleNotch";
-	import Icon from 'svelte-icons-pack/Icon.svelte';
-	import {UserLogout} from "./jsApi.GEN";
+	import { Icon } from 'svelte-icons-pack';
+	import { FaSolidCircleNotch } from 'svelte-icons-pack/fa';
 	import Footer from "./_components/Footer.svelte";
 	import Menu from "./_components/Menu.svelte";
 	import ProfileHeader from "./_components/ProfileHeader.svelte";
 
-	let user = {/* user */};
-    let segments = {/* segments */};
+	let user = $state({/* user */});
+    let segments = $state({/* segments */});
     let google = '#{google}';
     let twitter = '#{twitter}';
     function getCookie(name) {
@@ -23,22 +21,29 @@
     // TODO: print session or fetch from cookie
 
     // local state
-    let email = '';
-    let password = '';
-    let confirmPass = '';
+    let email = $state('');
+    let password = $state('');
+    let confirmPass = $state('');
 
     // binding to element
-    let emailInput = {};
-    let passInput = {};
+    let emailInput = $state();
+    let passInput = $state();
 
     const LOGIN = 'LOGIN';
     const REGISTER = 'REGISTER';
     const RESEND_VERIFICATION_EMAIL = 'RESEND_VERIFICATION_EMAIL';
     const FORGOT_PASSWORD = 'FORGOT_PASSWORD';
     const USER = '';
-    let mode = LOGIN;
+    let mode = $state(LOGIN);
 
-    let isSubmitted = false;
+    let isSubmitted = $state(false);
+
+    let apiModule;
+
+    async function loadApi() {
+        apiModule ??= await import('./jsApi.GEN.cjs');
+        return apiModule;
+    }
 
     async function onHashChange() {
         console.log('onHashChange.start')
@@ -87,6 +92,7 @@
         }
         // TODO: send to backend
         const i = {email, password};
+        const { GuestRegister } = await loadApi();
         await GuestRegister(i, async function (o) {
             // TODO: codegen commonResponse (o.error, etc)
             // TODO: codegen list of possible errors
@@ -117,6 +123,7 @@
             alert('Password must be at least 12 characters');
             return
         }
+        const { GuestLogin } = await loadApi();
         const i = {email, password};
         await GuestLogin(i, function (o) {
             console.log(o.segments);
@@ -143,6 +150,7 @@
             alert('Email is required');
             return
         }
+        const { GuestResendVerificationEmail } = await loadApi();
         const i = {email};
         await GuestResendVerificationEmail(i, function (o) {
             console.log(o);
@@ -164,6 +172,7 @@
             alert('Email is required');
             return
         }
+        const { GuestForgotPassword } = await loadApi();
         const i = {email};
         await GuestForgotPassword(i, function (o) {
             console.log(o);
@@ -178,7 +187,7 @@
     }
 
     function doLogout() {
-        UserLogout({}, function (o) {
+        loadApi().then(({ UserLogout }) => UserLogout({}, function (o) {
             console.log(o);
             if (o.error) {
                 alert(o.error);
@@ -187,23 +196,23 @@
             user = null;
             segments = null;
             window.document.location = '/';
-        })
+        }))
     }
 </script>
 
 
-<svelte:window on:hashchange={onHashChange}/>
+<svelte:window onhashchange={onHashChange}/>
 {#if mode === USER}
     <section class='dashboard'>
         <Menu access={segments}/>
         <div class='dashboard_main_content'>
-            <ProfileHeader></ProfileHeader>
+            <ProfileHeader />
             <div class='content'>
                 <section class='tableview_container'>
                     TODO fill with proper menu
                 </section>
             </div>
-            <Footer></Footer>
+            <Footer />
         </div>
     </section>
 {:else}
@@ -238,13 +247,13 @@
                 {#if mode === LOGIN}
                     <p class="forgot_password">
                         Forgot Password?
-                        <a href="#FORGOT_PASSWORD" on:click|preventDefault={() => (mode = FORGOT_PASSWORD)}>Reset
+                        <a href="#FORGOT_PASSWORD" onclick={(event) => { event.preventDefault(); mode = FORGOT_PASSWORD; }}>Reset
                             here</a>
                     </p>
                 {/if}
                 <div class="button_container">
                     {#if mode === REGISTER}
-                        <button on:click={guestRegister}>
+                        <button onclick={guestRegister}>
                             {#if isSubmitted === true}
                                 <Icon className="spin" color='#FFF' size={15} src={FaSolidCircleNotch}/>
                             {/if}
@@ -254,7 +263,7 @@
                         </button>
                     {/if}
                     {#if mode === LOGIN}
-                        <button on:click={guestLogin}>
+                        <button onclick={guestLogin}>
                             {#if isSubmitted === true}
                                 <Icon className="spin" color='#FFF' size={15} src={FaSolidCircleNotch}/>
                             {/if}
@@ -264,7 +273,7 @@
                         </button>
                     {/if}
                     {#if mode === RESEND_VERIFICATION_EMAIL}
-                        <button on:click={guestResendVerificationEmail}>
+                        <button onclick={guestResendVerificationEmail}>
                             {#if isSubmitted === true}
                                 <Icon className="spin" color='#FFF' size={15} src={FaSolidCircleNotch}/>
                             {/if}
@@ -274,7 +283,7 @@
                         </button>
                     {/if}
                     {#if mode === FORGOT_PASSWORD}
-                        <button on:click={guestForgotPassword}>
+                        <button onclick={guestForgotPassword}>
                             {#if isSubmitted === true}
                                 <Icon className="spin" color='#FFF' size={15} src={FaSolidCircleNotch}/>
                             {/if}
@@ -288,9 +297,9 @@
                 {#if mode === REGISTER || mode === LOGIN}
                     <div class="oauth_container">
                         <div class="or_separator">
-                            <span/>
+                            <span></span>
                             <p>or</p>
-                            <span/>
+                            <span></span>
                         </div>
                         <!-- Google OAuth -->
                         {#if google}
@@ -310,16 +319,16 @@
                 {/if}
                 <div class="foot_auth">
                     {#if mode !== REGISTER}
-                        <p>Have no account? <a href="#REGISTER" on:click={() => (mode = REGISTER)}>register</a></p>
+                        <p>Have no account? <a href="#REGISTER" onclick={() => (mode = REGISTER)}>register</a></p>
                     {/if}
                     {#if mode !== LOGIN}
-                        <p>Already have account? <a href="#LOGIN" on:click={() => (mode = LOGIN)}>login</a></p>
+                        <p>Already have account? <a href="#LOGIN" onclick={() => (mode = LOGIN)}>login</a></p>
                     {/if}
                     {#if mode !== RESEND_VERIFICATION_EMAIL}
                         <p>
                             Email not yet verified? <a
                                 href="#RESEND_VERIFICATION_EMAIL"
-                                on:click={() => (mode = RESEND_VERIFICATION_EMAIL)}>request verification email</a
+                                onclick={() => (mode = RESEND_VERIFICATION_EMAIL)}>request verification email</a
                         >
                         </p>
                     {/if}

@@ -5,20 +5,25 @@
     import ProfileHeader from '../_components/ProfileHeader.svelte';
     import Footer from '../_components/Footer.svelte';
     import TableView from '../_components/TableView.svelte';
-    import { SuperAdminUserManagement } from '../jsApi.GEN';
     import ModalForm from '../_components/ModalForm.svelte';
     import Growl from '../_components/Growl.svelte';
 
-    import Icon from 'svelte-icons-pack/Icon.svelte';
-    import FaSolidPlusCircle from "svelte-icons-pack/fa/FaSolidPlusCircle";
+    import { Icon } from 'svelte-icons-pack';
+    import { FaSolidCirclePlus } from 'svelte-icons-pack/fa';
 
     let segments = {/* segments */};
     let fields = [/* fields */];
-    let users = [/* users */];
-    let pager = {/* pager */};
+    let users = $state([/* users */]);
+    let pager = $state({/* pager */});
 
     // $: console.log( users, fields, pager );
     let growl = Growl;
+    let apiModule;
+
+    async function loadApi() {
+        apiModule ??= await import('../jsApi.GEN.cjs');
+        return apiModule;
+    }
 
     // return true if got error
     function handleResponse( res ) {
@@ -33,6 +38,7 @@
 
     async function refreshTableView( pagerIn ) {
         // console.log( 'pagerIn=',pagerIn );
+        const { SuperAdminUserManagement } = await loadApi();
         await SuperAdminUserManagement( {
             pager: pagerIn,
             cmd: 'list',
@@ -44,6 +50,7 @@
     let form = ModalForm; // for lookup
 
     async function editRow( id, row ) {
+        const { SuperAdminUserManagement } = await loadApi();
         await SuperAdminUserManagement( {
             user: {id},
             cmd: 'form',
@@ -60,6 +67,7 @@
     async function saveRow( action, row ) {
         let user = {...row};
         if( !user.id ) user.id = '0';
+        const { SuperAdminUserManagement } = await loadApi();
         await SuperAdminUserManagement( {
             user: user,
             cmd: action,
@@ -77,14 +85,14 @@
 <section class='dashboard'>
     <Menu access={segments} />
     <div class='dashboard_main_content'>
-        <ProfileHeader></ProfileHeader>
-        <AdminSubMenu></AdminSubMenu>
+            <ProfileHeader />
+            <AdminSubMenu />
         <div class='content'>
             <ModalForm {fields}
                        rowType='User'
                        bind:this={form}
                        onConfirm={saveRow}
-            ></ModalForm>
+            />
             <section class='tableview_container'>
                 <TableView {fields}
                            bind:pager={pager}
@@ -92,14 +100,14 @@
                            onRefreshTableView={refreshTableView}
                            onEditRow={editRow}
                 >
-                    <button on:click={addRow} class='action_btn'>
-                        <Icon size={17} color='#FFF' src={FaSolidPlusCircle} />
+                    <button onclick={addRow} class='action_btn'>
+                        <Icon size={17} color='#FFF' src={FaSolidCirclePlus} />
                         <span>Add</span>
                     </button>
                 </TableView>
             </section>
         </div>
-        <Footer></Footer>
+        <Footer />
     </div>
 </section>
 

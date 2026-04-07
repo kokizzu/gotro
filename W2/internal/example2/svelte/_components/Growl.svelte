@@ -1,14 +1,11 @@
 <script>
-    import Icon from 'svelte-icons-pack/Icon.svelte';
-    import FaSolidInfoCircle from 'svelte-icons-pack/fa/FaSolidInfoCircle'; // info
-    import FaSolidCheckCircle from 'svelte-icons-pack/fa/FaSolidCheckCircle'; // success
-    import FaSolidExclamationTriangle from 'svelte-icons-pack/fa/FaSolidExclamationTriangle'; // warning
-    import FaSolidTimesCircle from 'svelte-icons-pack/fa/FaSolidTimesCircle'; // error
+    import { Icon } from 'svelte-icons-pack';
+    import { FaSolidCircleInfo, FaSolidCircleCheck, FaSolidTriangleExclamation, FaSolidCircleXmark } from 'svelte-icons-pack/fa';
 
-    let message = 'This is growl, XD';
-    let growlType = 'info'; // info, warning, error, success
-    let isShow = false;
-    let icon = FaSolidInfoCircle;
+    let message = $state('This is growl, XD');
+    let growlType = $state('info'); // info, warning, error, success
+    let isShow = $state(false);
+    let icon = $state(FaSolidCircleInfo);
 
     function show( msg, typ, ico ) {
         icon = ico;
@@ -22,22 +19,22 @@
 
     export const showInfo = function( msg ) {
         console.log( 'grow.showInfo', msg );
-        show( msg, 'info', FaSolidInfoCircle );
+        show( msg, 'info', FaSolidCircleInfo );
     };
 
     export const showWarning = function( msg ) {
         console.log( 'grow.showWarning', msg );
-        show( msg, 'warning', FaSolidExclamationTriangle );
+        show( msg, 'warning', FaSolidTriangleExclamation );
     };
 
     export const showError = function( msg ) {
         console.log( 'grow.showError', msg );
-        show( msg, 'error', FaSolidTimesCircle );
+        show( msg, 'error', FaSolidCircleXmark );
     };
 
     export const showSuccess = function( msg ) {
         console.log( 'grow.showSuccess', msg );
-        show( msg, 'success', FaSolidCheckCircle );
+        show( msg, 'success', FaSolidCircleCheck );
     };
 </script>
 

@@ -1,15 +1,19 @@
 <script>
     import { datetime } from './formatter.js';
 
-    export let fields = []; // list of editable properties
-    export let visible = false;
-    export let loading = false;
-    export let row = {};
-    export let rowType = 'Row';
-    export let onConfirm = function( action, row ) {
+    let {
+        fields = [],
+        rowType = 'Row',
+        onConfirm = function( action, row ) {
         // action = upsert, delete, restore
         console.log( 'ModalForm.onConfirm', action, row );
-    };
+        },
+        children
+    } = $props();
+
+    let visible = $state(false);
+    let loading = $state(false);
+    let row = $state({});
 
     let originalRowJson = '';
 
@@ -66,10 +70,6 @@
             visible = false;
         }
     }
-
-
-    $: JSON.stringify(row)
-    $: JSON.stringify(fields)
 </script>
 
 {#if visible}
@@ -81,8 +81,8 @@
                 {:else}
                     <h2>New {rowType}</h2>
                 {/if}
-                <button aria-label='close' title='Close' type='button' on:click={cancelPressed}>
-                    <i class='gg-close' />
+                <button aria-label='close' title='Close' type='button' onclick={cancelPressed}>
+                    <i class='gg-close'></i>
                 </button>
             </header>
             <div class="input_container">
@@ -129,10 +129,10 @@
                         {/if}
                     {/if}
                 {/each}
-                <slot />
+                {@render children?.()}
             </div>
             <div class='button_container'>
-                <button tabindex='0' style='margin: 0 auto 0 0' class='cancel' on:click={cancelPressed}>
+                <button tabindex='0' style='margin: 0 auto 0 0' class='cancel' onclick={cancelPressed}>
                     Cancel
                 </button>
                 {#if loading}
@@ -140,16 +140,16 @@
                 {:else}
                     {#if row.id}
                         {#if row.deletedAt>0}
-                            <button tabindex='0' class='restore' on:click={restorePressed}>
+                            <button tabindex='0' class='restore' onclick={restorePressed}>
                                 Restore
                             </button>
                         {:else}
-                            <button tabindex='0' class='delete' on:click={deletePressed}>
+                            <button tabindex='0' class='delete' onclick={deletePressed}>
                                 Delete
                             </button>
                         {/if}
                     {/if}
-                    <button tabindex='0' class='save' on:click={savePressed}>
+                    <button tabindex='0' class='save' onclick={savePressed}>
                         Save
                     </button>
                 {/if}

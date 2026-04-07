@@ -1,10 +1,10 @@
 <script>
   // should generate page2/index.html from outer _layout.html
-  import Links from '../_components/links.svelte'
-  import Row from '../_components/row.svelte'
-  
-  export let list = [/* from_server */] // this comment should not be deleted
-	export let str = '#{from_server2}';
+  import Links from '../_components/links.svelte';
+  import Row from '../_components/row.svelte';
+
+	let list = [/* from_server */]; // this comment should not be deleted
+	let str = '#{from_server2}';
 	
 	if (!list.length) {
 		list = [
@@ -26,10 +26,10 @@
 		</thead>
 		<tbody>
 		{#each list as row}
-			<Row cells={row}></Row>
+			<Row cells={row} />
 		{/each}
 		</tbody>
 	</table>
 </div>
 
-<Links></Links>
+<Links />

@@ -1,6 +1,7 @@
 <script>
     import { onMount } from 'svelte';
-    let segment2;
+    let segment2 = $state('');
+
     onMount(() => {
         console.log('onMount.AdminSubMenu')
         segment2 = window.location.pathname.split('/').pop() || '';
@@ -9,7 +10,7 @@
 
 <div class="admin_submenu">
     <nav class='menu'>
-        <a href="/superAdmin/userManagement" class:active={segment2==='userManagement'}>Users</a>
+        <a href="/superAdmin/userManagement" class:active={segment2 === 'userManagement'}>Users</a>
 <!--        <a href="/admin/accessLogs" class:active={segment2==='accessLogs'}>Access Logs</a>-->
 <!--        <a href="/admin/files" class:active={segment2==='files'}>Files</a>-->
     </nav>

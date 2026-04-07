@@ -1,31 +1,34 @@
 <script>
     // @ts-nocheck
-    import { UserLogout } from '../jsApi.GEN.js';
     import { onMount } from 'svelte';
     import { isSideMenuOpen } from './uiState.js';
 
-    import Icon from 'svelte-icons-pack/Icon.svelte';
-    import FaSolidHome from 'svelte-icons-pack/fa/FaSolidHome';
-    import FaSolidShoppingBag from 'svelte-icons-pack/fa/FaSolidShoppingBag';
-    import FaSolidBuilding from 'svelte-icons-pack/fa/FaSolidBuilding';
-    import FaSolidSlidersH from 'svelte-icons-pack/fa/FaSolidSlidersH';
-    import FaSolidUserCircle from 'svelte-icons-pack/fa/FaSolidUserCircle';
-    import FaSolidSignInAlt from 'svelte-icons-pack/fa/FaSolidSignInAlt';
-    import FaSolidTimes from 'svelte-icons-pack/fa/FaSolidTimes';
+    import { Icon } from 'svelte-icons-pack';
+    import {
+        FaSolidBuilding,
+        FaSolidCircleUser,
+        FaSolidHouse,
+        FaSolidBagShopping,
+        FaSolidRightFromBracket,
+        FaSolidSliders,
+        FaSolidXmark
+    } from 'svelte-icons-pack/fa';
 
-    export let doToggle = function() {
+    let {
+        doToggle = function() {
         isSideMenuOpen.set( !$isSideMenuOpen );
-    };
-    export let access = {
+        },
+        access = {
         'superAdmin': false,
         'tenantAdmin': false,
         'entryUser': false,
         'reportViewer': false,
         'guest': false,
         'user': false,
-    };
+        }
+    } = $props();
 
-    let segment1;
+    let segment1 = $state('');
     onMount( () => {
         console.log( 'onMount.Menu' );
         console.log( access );
@@ -33,6 +36,7 @@
     } );
 
     async function userLogout() {
+        const { UserLogout } = await import('../jsApi.GEN.cjs');
         await UserLogout( {}, function( o ) {
             console.log( o );
             if( o.error ) return alert( o.error );
@@ -46,8 +50,8 @@
         <div class='side_menu_admin_container'>
             <header>
                 <h3>Example2</h3>
-                <button on:click|preventDefault={doToggle}>
-                    <Icon size={20} color='#475569' src={FaSolidTimes} />
+                <button onclick={doToggle}>
+                    <Icon size={20} color='#475569' src={FaSolidXmark} />
                 </button>
             </header>
             <div class='menu_container'>
@@ -56,12 +60,12 @@
                 <h6>MENU</h6>
                 <nav class='menu'>
                     <a href='/' class:active={segment1 === ''}>
-                        <Icon size={22} className={segment1 === '' ? 'icon_active' : 'icon_dark'} src={FaSolidHome} />
+                        <Icon size={22} className={segment1 === '' ? 'icon_active' : 'icon_dark'} src={FaSolidHouse} />
                         <span>HOME</span>
                     </a>
                     {#if access.superAdmin }
                         <a href='/superAdmin/dashboard' class:active={segment1 === 'superAdmin'}>
-                            <Icon size={22} className={segment1 === 'superAdmin' ? 'icon_active' : 'icon_dark'} src={FaSolidShoppingBag} />
+                            <Icon size={22} className={segment1 === 'superAdmin' ? 'icon_active' : 'icon_dark'} src={FaSolidBagShopping} />
                             <span>SUPER ADMIN</span>
                         </a>
                     {/if}
@@ -73,25 +77,25 @@
                     {/if}
                     {#if access.entryUser }
                         <a href='/entryUser' class:active={segment1 === 'entryUser'}>
-                            <Icon size={20} className={segment1 === 'entryUser' ? 'icon_active' : 'icon_dark'} src={FaSolidSlidersH} />
+                            <Icon size={20} className={segment1 === 'entryUser' ? 'icon_active' : 'icon_dark'} src={FaSolidSliders} />
                             <span>ENTRY USER</span>
                         </a>
                     {/if}
                     {#if access.reportViewer }
                         <a href='/reportViewer' class:active={segment1 === 'reportViewer'}>
-                            <Icon size={20} className={segment1 === 'reportViewer' ? 'icon_active' : 'icon_dark'} src={FaSolidSlidersH} />
+                            <Icon size={20} className={segment1 === 'reportViewer' ? 'icon_active' : 'icon_dark'} src={FaSolidSliders} />
                             <span>REPORT VIEWER</span>
                         </a>
                     {/if}
                     {#if access.guest }
                         <a href='/guest' class:active={segment1 === 'guest'}>
-                            <Icon size={20} className={segment1 === 'guest' ? 'icon_active' : 'icon_dark'} src={FaSolidSlidersH} />
+                            <Icon size={20} className={segment1 === 'guest' ? 'icon_active' : 'icon_dark'} src={FaSolidSliders} />
                             <span>GUEST</span>
                         </a>
                     {/if}
                     {#if access.user }
                         <a href='/user' class:active={segment1 === 'user'}>
-                            <Icon size={20} className={segment1 === 'user' ? 'icon_active' : 'icon_dark'} src={FaSolidSlidersH} />
+                            <Icon size={20} className={segment1 === 'user' ? 'icon_active' : 'icon_dark'} src={FaSolidSliders} />
                             <span>USER</span>
                         </a>
                     {/if}
@@ -102,13 +106,13 @@
                 <nav class='menu'>
                     {#if access.user}
                         <a href='/user' class:active={segment1 === 'user'}>
-                            <Icon size={22} className={segment1 === 'user' ? 'icon_active' : 'icon_dark'} src={FaSolidUserCircle} />
+                            <Icon size={22} className={segment1 === 'user' ? 'icon_active' : 'icon_dark'} src={FaSolidCircleUser} />
                             <span>PROFILE</span>
                         </a>
                     {/if}
                     {#if access.user || access.superAdmin}
-                        <button on:click={userLogout} class='logout'>
-                            <Icon size={22} className='icon_dark' src={FaSolidSignInAlt} />
+                        <button onclick={userLogout} class='logout'>
+                            <Icon size={22} className='icon_dark' src={FaSolidRightFromBracket} />
                             <span>LOGOUT</span>
                         </button>
                     {/if}
