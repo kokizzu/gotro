@@ -9,20 +9,20 @@ import (
 )
 
 type Meili struct {
-	meilisearch.Client
+	meilisearch.ServiceManager
 	Log *onelog.Logger
 }
 
 func (m *Meili) Query(index, str string, searchReq *meilisearch.SearchRequest) (*meilisearch.SearchResponse, error) {
-	return m.Client.Index(index).Search(str, searchReq)
+	return m.Index(index).Search(str, searchReq)
 }
 
 func (m *Meili) UpsertOne(index string, rows A.MSX) (*meilisearch.Task, error) {
-	task, err := m.Client.Index(index).AddDocuments(rows)
+	task, err := m.Index(index).AddDocuments(rows, nil)
 	if L.IsError(err, `Ms.Client.Index.AddDocuments`) {
 		return nil, err
 	}
-	return m.Client.WaitForTask(task)
+	return m.WaitForTask(task.TaskUID, 0)
 }
 
 func (m *Meili) MigrateMeilisearch(space string, primaryKey string, rankingRules []string) error {
@@ -33,7 +33,7 @@ func (m *Meili) MigrateMeilisearch(space string, primaryKey string, rankingRules
 	if L.IsError(err, `Ms.Client.CreateIndex`) {
 		return err
 	}
-	_, err = m.Client.WaitForTask(task)
+	_, err = m.WaitForTask(task.TaskUID, 0)
 	if L.IsError(err, `Ms.Client.WaitForTask.CreateIndex`) {
 		return err
 	}
@@ -41,7 +41,7 @@ func (m *Meili) MigrateMeilisearch(space string, primaryKey string, rankingRules
 	if L.IsError(err, `Ms.Index.UpdateRankingRules`) {
 		return err
 	}
-	_, err = m.Client.WaitForTask(task)
+	_, err = m.WaitForTask(task.TaskUID, 0)
 	L.IsError(err, `Ms.Client.WaitForTask.UpdateRankingRules`)
 	return err
 }
