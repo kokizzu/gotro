@@ -5,6 +5,8 @@ settings:
   excludeLinksFromLockfile: false
 
 overrides:
+  devalue: ^5.8.1
+  fast-uri: ^3.1.1
   follow-redirects: ^1.16.0
   lodash: ^4.18.1
   lodash-es: ^4.18.1
@@ -22,7 +24,7 @@ dependencies:
     version: 4.18.1
   svelte-icons-pack:
     specifier: ^3.1.3
-    version: 3.1.3(svelte@5.55.4)
+    version: 3.1.3(svelte@5.55.8)
 
 devDependencies:
   chokidar:
@@ -33,7 +35,7 @@ devDependencies:
     version: 0.27.7
   esbuild-svelte:
     specifier: ^0.9.4
-    version: 0.9.4(esbuild@0.27.7)(svelte@5.55.4)
+    version: 0.9.4(esbuild@0.27.7)(svelte@5.55.8)
   five-server:
     specifier: ^0.4.1
     version: 0.4.5
@@ -50,11 +52,11 @@ devDependencies:
     specifier: ^2.8.8
     version: 2.8.8
   svelte:
-    specifier: ^5.55.1
-    version: 5.55.4
+    specifier: ^5.55.7
+    version: 5.55.8
   svelte-preprocess:
     specifier: ^5.1.4
-    version: 5.1.4(svelte@5.55.4)(typescript@5.9.3)
+    version: 5.1.4(svelte@5.55.8)(typescript@5.9.3)
   typescript:
     specifier: ^5.8.2
     version: 5.9.3
@@ -436,7 +438,7 @@ packages:
     resolution: {integrity: sha512-B/gBuNg5SiMTrPkC+A2+cW0RszwxYmn6VYxB/inlBStS5nx6xHIt/ehKRhIMhqusl7a8LjQoZnjCs5vhwxOQ1g==}
     dependencies:
       fast-deep-equal: 3.1.3
-      fast-uri: 3.1.0
+      fast-uri: 3.1.2
       json-schema-traverse: 1.0.0
       require-from-string: 2.0.2
     dev: true
@@ -699,8 +701,8 @@ packages:
     engines: {node: '>=8'}
     dev: true
 
-  /devalue@5.7.1:
-    resolution: {integrity: sha512-MUbZ586EgQqdRnC4yDrlod3BEdyvE4TapGYHMW2CiaW+KkkFmWEFqBUaLltEZCGi0iFXCEjRF0OjF0DV2QHjOA==}
+  /devalue@5.8.1:
+    resolution: {integrity: sha512-4CXDYRBGqN+57wVJkuXBYmpAVUSg3L6JAQa/DFqm238G73E1wuyc/JhGQJzN7vUf/CMphYau2zXbfWzDR5aTEw==}
 
   /dom-serializer@1.4.1:
     resolution: {integrity: sha512-VHwB3KfrcOOkelEG2ZOfxqLZdfkil8PtJi4P8N2MMXucZq2yLp75ClViUlOVwyoHEDjYU433Aq+5zWP61+RGag==}
@@ -795,7 +797,7 @@ packages:
     resolution: {integrity: sha512-SOp9Phqvqn7jtEUxPWdWfWoLmyt2VaJ6MpvP9Comy1MceMXqE6bxvaTu4iaxpYYPzhny28Lc+M87/c2cPK6lDg==}
     dev: true
 
-  /esbuild-svelte@0.9.4(esbuild@0.27.7)(svelte@5.55.4):
+  /esbuild-svelte@0.9.4(esbuild@0.27.7)(svelte@5.55.8):
     resolution: {integrity: sha512-v/a0GjkKN06nal2QLluxjk2GXsei3fdtjIuHRa6pVnri5rQBZ6pj4a2WwjLfRojgRsLwDHl4xSeZ1BeUHsqQrw==}
     engines: {node: '>=18'}
     peerDependencies:
@@ -804,7 +806,7 @@ packages:
     dependencies:
       '@jridgewell/trace-mapping': 0.3.31
       esbuild: 0.27.7
-      svelte: 5.55.4
+      svelte: 5.55.8
     dev: true
 
   /esbuild@0.27.7:
@@ -916,8 +918,8 @@ packages:
     resolution: {integrity: sha512-f3qQ9oQy9j2AhBe/H9VC91wLmKBCCU/gDOnKNAYG5hswO7BLKj09Hc5HYNz9cGI++xlpDCIgDaitVs03ATR84Q==}
     dev: true
 
-  /fast-uri@3.1.0:
-    resolution: {integrity: sha512-iPeeDKJSWf4IEOasVVrknXpaBV0IApz/gp7S2bb7Z4Lljbl2MGJRqInZiUrQwV16cpzw/D3S5j5Julj/gT52AA==}
+  /fast-uri@3.1.2:
+    resolution: {integrity: sha512-rVjf7ArG3LTk+FS6Yw81V1DLuZl1bRbNrev6Tmd/9RaroeeRRJhAt7jg/6YFxbvAQXUCavSoZhPPj6oOx+5KjQ==}
     dev: true
 
   /fill-range@7.1.1:
@@ -1736,15 +1738,15 @@ packages:
       has-flag: 4.0.0
     dev: true
 
-  /svelte-icons-pack@3.1.3(svelte@5.55.4):
+  /svelte-icons-pack@3.1.3(svelte@5.55.8):
     resolution: {integrity: sha512-sJ/ZiFkbim5zfU+T8V/kEendOluEYtJ7rp207Gc2c/NFgaj4CvWScUbuiByZrdf3Xm8n731Fug36IiXuLTkR9A==}
     peerDependencies:
       svelte: ^3.44.0 || ^4.0.0 || ^5.0.0-next.1
     dependencies:
-      svelte: 5.55.4
+      svelte: 5.55.8
     dev: false
 
-  /svelte-preprocess@5.1.4(svelte@5.55.4)(typescript@5.9.3):
+  /svelte-preprocess@5.1.4(svelte@5.55.8)(typescript@5.9.3):
     resolution: {integrity: sha512-IvnbQ6D6Ao3Gg6ftiM5tdbR6aAETwjhHV+UKGf5bHGYR69RQvF1ho0JKPcbUON4vy4R7zom13jPjgdOWCQ5hDA==}
     engines: {node: '>= 16.0.0'}
     requiresBuild: true
@@ -1787,12 +1789,12 @@ packages:
       magic-string: 0.30.21
       sorcery: 0.11.1
       strip-indent: 3.0.0
-      svelte: 5.55.4
+      svelte: 5.55.8
       typescript: 5.9.3
     dev: true
 
-  /svelte@5.55.4:
-    resolution: {integrity: sha512-q8DFohk6vUswSng95IZb9nzWJnbINZsK7OiM1snAa3qCjJBL0ZQpvMyAaVXjUukdM75J/m8UE8xwqat8Ors/zQ==}
+  /svelte@5.55.8:
+    resolution: {integrity: sha512-4D6lyrMHmDaZalQOEBMCWCCidyZjSnec14/oPn0k627G6goxcck9xqMwz1tFLlQz+ZFvtTTHfFOlUayuAz0z6Q==}
     engines: {node: '>=18'}
     dependencies:
       '@jridgewell/remapping': 2.3.5
@@ -1804,7 +1806,7 @@ packages:
       aria-query: 5.3.1
       axobject-query: 4.1.0
       clsx: 2.1.1
-      devalue: 5.7.1
+      devalue: 5.8.1
       esm-env: 1.2.2
       esrap: 2.2.5
       is-reference: 3.0.3
