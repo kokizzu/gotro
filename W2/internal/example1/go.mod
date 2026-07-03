@@ -6,7 +6,7 @@ go 1.25.5
 replace github.com/kokizzu/gotro => ../../../
 
 require (
-	github.com/ClickHouse/clickhouse-go/v2 v2.45.0
+	github.com/ClickHouse/clickhouse-go/v2 v2.46.0
 	github.com/goccy/go-json v0.10.6
 	github.com/goccy/go-yaml v1.11.2
 	github.com/gofiber/fiber/v2 v2.52.13
@@ -33,7 +33,7 @@ require (
 	github.com/zeebo/xxh3 v1.1.0
 	go.opentelemetry.io/otel v1.43.0
 	go.opentelemetry.io/otel/trace v1.43.0
-	golang.org/x/crypto v0.50.0
+	golang.org/x/crypto v0.51.0
 	golang.org/x/oauth2 v0.27.0
 	gopkg.in/natefinch/lumberjack.v2 v2.0.0
 	gopkg.in/resty.v1 v1.12.0
@@ -117,10 +117,10 @@ require (
 	go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp v0.64.0 // indirect
 	go.opentelemetry.io/otel/metric v1.43.0 // indirect
 	go.yaml.in/yaml/v3 v3.0.4 // indirect
-	golang.org/x/exp v0.0.0-20260410095643-746e56fc9e2f // indirect
-	golang.org/x/net v0.52.0 // indirect
-	golang.org/x/sys v0.44.0 // indirect
-	golang.org/x/text v0.36.0 // indirect
+	golang.org/x/exp v0.0.0-20260508232706-74f9aab9d74a // indirect
+	golang.org/x/net v0.55.0 // indirect
+	golang.org/x/sys v0.45.0 // indirect
+	golang.org/x/text v0.37.0 // indirect
 	golang.org/x/xerrors v0.0.0-20231012003039-104605ab7028 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
