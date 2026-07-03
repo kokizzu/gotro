@@ -6,7 +6,7 @@ go 1.25.5
 replace github.com/kokizzu/gotro => ../../../
 
 require (
-	github.com/ClickHouse/clickhouse-go/v2 v2.45.0
+	github.com/ClickHouse/clickhouse-go/v2 v2.46.0
 	github.com/davecgh/go-spew v1.1.1
 	github.com/gabriel-vasile/mimetype v1.4.3
 	github.com/goccy/go-json v0.10.6
@@ -26,7 +26,7 @@ require (
 	github.com/vburenin/nsync v0.0.0-20160822015540-9a75d1c80410
 	github.com/wneessen/go-mail v0.7.1
 	github.com/zeebo/xxh3 v1.1.0
-	golang.org/x/exp v0.0.0-20260410095643-746e56fc9e2f
+	golang.org/x/exp v0.0.0-20260508232706-74f9aab9d74a
 	golang.org/x/oauth2 v0.27.0
 	golang.org/x/sync v0.20.0
 	gopkg.in/natefinch/lumberjack.v2 v2.0.0
@@ -107,9 +107,9 @@ require (
 	go.opentelemetry.io/otel/metric v1.43.0 // indirect
 	go.opentelemetry.io/otel/trace v1.43.0 // indirect
 	go.yaml.in/yaml/v3 v3.0.4 // indirect
-	golang.org/x/crypto v0.50.0 // indirect
-	golang.org/x/net v0.52.0 // indirect
-	golang.org/x/sys v0.44.0 // indirect
-	golang.org/x/text v0.36.0 // indirect
+	golang.org/x/crypto v0.51.0 // indirect
+	golang.org/x/net v0.55.0 // indirect
+	golang.org/x/sys v0.45.0 // indirect
+	golang.org/x/text v0.37.0 // indirect
 	golang.org/x/xerrors v0.0.0-20231012003039-104605ab7028 // indirect
 )
