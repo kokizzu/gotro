@@ -7,7 +7,7 @@ updates:
     target-branch: security/fast-uri-pnpm
     schedule:
       interval: daily
-      time: "10:25"
+      time: "10:30"
       timezone: Etc/UTC
     open-pull-requests-limit: 2
     allow:
