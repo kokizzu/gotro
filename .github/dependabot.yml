@@ -1,0 +1,14 @@
+version: 2
+updates:
+  - package-ecosystem: npm
+    directories:
+      - /W2/internal/example1/svelte
+      - /W2/internal/example2/svelte
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 0
+    groups:
+      fast-uri-security:
+        applies-to: security-updates
+        patterns:
+          - fast-uri
