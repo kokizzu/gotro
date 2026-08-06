@@ -4,10 +4,11 @@ updates:
     directories:
       - /W2/internal/example1/svelte
       - /W2/internal/example2/svelte
+    target-branch: security/fast-uri-pnpm
     schedule:
       interval: daily
-      time: "10:20"
+      time: "10:25"
       timezone: Etc/UTC
-    open-pull-requests-limit: 1
+    open-pull-requests-limit: 2
     allow:
       - dependency-name: fast-uri
