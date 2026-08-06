@@ -6,6 +6,8 @@ updates:
       - /W2/internal/example2/svelte
     schedule:
       interval: daily
+      time: "10:20"
+      timezone: Etc/UTC
     open-pull-requests-limit: 1
     allow:
       - dependency-name: fast-uri
